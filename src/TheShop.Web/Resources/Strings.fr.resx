@@ -78,6 +78,9 @@
   <data name="Nav_Account" xml:space="preserve">
     <value>Compte</value>
   </data>
+  <data name="Nav_AdminPanel" xml:space="preserve">
+    <value>Panneau d'administration</value>
+  </data>
 
   <!-- ============================================================ -->
   <!-- Home page                                                    -->
@@ -125,6 +128,9 @@
   </data>
   <data name="Product_ImageAlt" xml:space="preserve">
     <value>Photo de {0}</value>
+  </data>
+  <data name="Product_StockWarning" xml:space="preserve">
+    <value>Seulement {0} en stock</value>
   </data>
   <data name="ProductNotFound" xml:space="preserve">
     <value>Ce produit est introuvable.</value>
@@ -191,6 +197,22 @@
   </data>
   <data name="Password_TooShort" xml:space="preserve">
     <value>Le mot de passe doit comporter au moins 8 caractères.</value>
+  </data>
+
+  <!-- ============================================================ -->
+  <!-- Admin                                                        -->
+  <!-- ============================================================ -->
+  <data name="AdminDashboard_PageTitle" xml:space="preserve">
+    <value>Tableau de bord — Admin — The Vape Shop Sarnia</value>
+  </data>
+  <data name="AdminProducts_PageTitle" xml:space="preserve">
+    <value>Produits — Admin — The Vape Shop Sarnia</value>
+  </data>
+  <data name="AdminOrders_PageTitle" xml:space="preserve">
+    <value>Commandes — Admin — The Vape Shop Sarnia</value>
+  </data>
+  <data name="AdminCustomers_PageTitle" xml:space="preserve">
+    <value>Clients — Admin — The Vape Shop Sarnia</value>
   </data>
 
 </root>
