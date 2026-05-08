@@ -1,3 +1,14 @@
 <Solution>
-  <Project Path="TheShop.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src\TheShop.Domain\TheShop.Domain.csproj" />
+    <Project Path="src\TheShop.Application\TheShop.Application.csproj" />
+    <Project Path="src\TheShop.Infrastructure\TheShop.Infrastructure.csproj" />
+    <Project Path="src\TheShop.Web\TheShop.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests\TheShop.Domain.Tests\TheShop.Domain.Tests.csproj" />
+    <Project Path="tests\TheShop.Application.Tests\TheShop.Application.Tests.csproj" />
+    <Project Path="tests\TheShop.Infrastructure.Tests\TheShop.Infrastructure.Tests.csproj" />
+    <Project Path="tests\TheShop.Web.Tests\TheShop.Web.Tests.csproj" />
+  </Folder>
 </Solution>

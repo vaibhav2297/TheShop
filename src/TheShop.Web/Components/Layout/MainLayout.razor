@@ -1,0 +1,29 @@
+@inherits LayoutComponentBase
+@inject ShopTheme Theme
+@inject IStringLocalizer<Strings> Localizer
+
+<MudThemeProvider Theme="@Theme.BuildTheme()" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Primary">
+        <MudText Typo="Typo.h6">@Localizer["AppName"]</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@ShopIcons.Cart"
+                       Color="Color.Inherit"
+                       Href="/cart"
+                       AriaLabel="@Localizer["Nav_Cart"]" />
+        <MudIconButton Icon="@ShopIcons.Account"
+                       Color="Color.Inherit"
+                       Href="/account"
+                       AriaLabel="@Localizer["Nav_Account"]" />
+    </MudAppBar>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>

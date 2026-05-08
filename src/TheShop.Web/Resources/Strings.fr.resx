@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- ============================================================ -->
+  <!-- Common / Shared                                              -->
+  <!-- ============================================================ -->
+  <data name="AppName" xml:space="preserve">
+    <value>The Vape Shop Sarnia</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continuer</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Retour</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Chargement…</value>
+  </data>
+
+  <!-- ============================================================ -->
+  <!-- Navigation                                                   -->
+  <!-- ============================================================ -->
+  <data name="Nav_Home" xml:space="preserve">
+    <value>Accueil</value>
+  </data>
+  <data name="Nav_Products" xml:space="preserve">
+    <value>Produits</value>
+  </data>
+  <data name="Nav_Cart" xml:space="preserve">
+    <value>Panier</value>
+  </data>
+  <data name="Nav_Account" xml:space="preserve">
+    <value>Compte</value>
+  </data>
+
+  <!-- ============================================================ -->
+  <!-- Home page                                                    -->
+  <!-- ============================================================ -->
+  <data name="Home_PageTitle" xml:space="preserve">
+    <value>Accueil — The Vape Shop Sarnia</value>
+  </data>
+  <data name="Home_Welcome" xml:space="preserve">
+    <value>Bienvenue à The Vape Shop Sarnia</value>
+  </data>
+
+  <!-- ============================================================ -->
+  <!-- Not Found page                                               -->
+  <!-- ============================================================ -->
+  <data name="NotFound_PageTitle" xml:space="preserve">
+    <value>Page introuvable — The Vape Shop Sarnia</value>
+  </data>
+  <data name="NotFound_Heading" xml:space="preserve">
+    <value>404 — Page introuvable</value>
+  </data>
+  <data name="NotFound_Message" xml:space="preserve">
+    <value>Désolé, la page que vous cherchez n'existe pas.</value>
+  </data>
+  <data name="NotFound_GoHome" xml:space="preserve">
+    <value>Aller à l'accueil</value>
+  </data>
+
+  <!-- ============================================================ -->
+  <!-- Products                                                     -->
+  <!-- ============================================================ -->
+  <data name="Products_PageTitle" xml:space="preserve">
+    <value>Produits — The Vape Shop Sarnia</value>
+  </data>
+  <data name="ProductDetail_PageTitle" xml:space="preserve">
+    <value>Détails du produit — The Vape Shop Sarnia</value>
+  </data>
+  <data name="AddToCart" xml:space="preserve">
+    <value>Ajouter au panier</value>
+  </data>
+  <data name="AddedToCart" xml:space="preserve">
+    <value>Article ajouté à votre panier.</value>
+  </data>
+  <data name="AddToCart_Failed" xml:space="preserve">
+    <value>Impossible d'ajouter l'article au panier. Veuillez réessayer.</value>
+  </data>
+  <data name="Product_ImageAlt" xml:space="preserve">
+    <value>Photo de {0}</value>
+  </data>
+  <data name="ProductNotFound" xml:space="preserve">
+    <value>Ce produit est introuvable.</value>
+  </data>
+  <data name="Empty_NoResults" xml:space="preserve">
+    <value>Aucun produit trouvé.</value>
+  </data>
+
+  <!-- ============================================================ -->
+  <!-- Cart                                                         -->
+  <!-- ============================================================ -->
+  <data name="Cart_PageTitle" xml:space="preserve">
+    <value>Panier — The Vape Shop Sarnia</value>
+  </data>
+  <data name="Empty_Cart" xml:space="preserve">
+    <value>Votre panier est vide.</value>
+  </data>
+
+  <!-- ============================================================ -->
+  <!-- Checkout                                                     -->
+  <!-- ============================================================ -->
+  <data name="Checkout_PageTitle" xml:space="preserve">
+    <value>Paiement — The Vape Shop Sarnia</value>
+  </data>
+  <data name="Checkout_PlaceOrder" xml:space="preserve">
+    <value>Passer la commande</value>
+  </data>
+  <data name="OrderPlaced" xml:space="preserve">
+    <value>Votre commande a été passée avec succès!</value>
+  </data>
+
+  <!-- ============================================================ -->
+  <!-- Account / Auth                                               -->
+  <!-- ============================================================ -->
+  <data name="Account_PageTitle" xml:space="preserve">
+    <value>Mon compte — The Vape Shop Sarnia</value>
+  </data>
+  <data name="Login_PageTitle" xml:space="preserve">
+    <value>Se connecter — The Vape Shop Sarnia</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Se connecter</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Se déconnecter</value>
+  </data>
+  <data name="Confirm_Logout" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir vous déconnecter?</value>
+  </data>
+  <data name="Email_Label" xml:space="preserve">
+    <value>Adresse courriel</value>
+  </data>
+  <data name="Email_Placeholder" xml:space="preserve">
+    <value>vous@exemple.com</value>
+  </data>
+  <data name="Email_Required" xml:space="preserve">
+    <value>L'adresse courriel est requise.</value>
+  </data>
+  <data name="Password_Label" xml:space="preserve">
+    <value>Mot de passe</value>
+  </data>
+  <data name="Password_Hint" xml:space="preserve">
+    <value>Minimum 8 caractères.</value>
+  </data>
+  <data name="Password_TooShort" xml:space="preserve">
+    <value>Le mot de passe doit comporter au moins 8 caractères.</value>
+  </data>
+
+</root>

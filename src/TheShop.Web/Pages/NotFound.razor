@@ -1,0 +1,15 @@
+@page "/not-found"
+@layout TheShop.Web.Components.Layout.MainLayout
+@inject IStringLocalizer<Strings> Localizer
+
+<PageTitle>@Localizer["NotFound_PageTitle"]</PageTitle>
+
+<MudStack Spacing="4" AlignItems="AlignItems.Center" Class="mt-12">
+    <MudText Typo="Typo.h4">@Localizer["NotFound_Heading"]</MudText>
+    <MudText Typo="Typo.body1">@Localizer["NotFound_Message"]</MudText>
+    <MudButton Href="/"
+               Variant="Variant.Filled"
+               Color="Color.Primary">
+        @Localizer["NotFound_GoHome"]
+    </MudButton>
+</MudStack>
