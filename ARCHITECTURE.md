@@ -209,7 +209,7 @@ public class AddToCartHandler : IRequestHandler<AddToCartCommand, Result<CartDto
     {
         var product = await _products.GetByIdAsync(cmd.ProductId, ct);
         if (product is null) 
-            return Result.Fail<CartDto>("ProductNotFound"); // resource KEY
+            return Result.Fail<CartDto>(nameof(Strings.ProductNotFound)); // compile-time-safe key
 
         var cart = await _carts.GetForUserAsync(_user.Id, ct) 
                    ?? Cart.CreateFor(_user.Id);
@@ -301,12 +301,13 @@ public class SupabaseProductRepository : IProductRepository
 
 ```razor
 @page "/products/{Slug}"
+@using TheShop.Web.Resources
 @inject IMediator Mediator
 @inject CartState Cart
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Strings> Localizer
 
-<PageTitle>@Localizer["ProductDetail_PageTitle"]</PageTitle>
+<PageTitle>@Strings.ProductDetail_PageTitle</PageTitle>
 
 @if (_product is not null)
 {
@@ -317,7 +318,7 @@ public class SupabaseProductRepository : IProductRepository
                    Color="Color.Primary" 
                    Variant="Variant.Filled"
                    StartIcon="@ShopIcons.Cart">
-            @Localizer["AddToCart"]
+            @Strings.AddToCart
         </MudButton>
     </MudCard>
 }
@@ -340,17 +341,22 @@ public class SupabaseProductRepository : IProductRepository
         if (result.IsSuccess)
         {
             Cart.UpdateFromDto(result.Value);
-            Snackbar.Add(Localizer["AddedToCart"], Severity.Success);
+            Snackbar.Add(Strings.AddedToCart, Severity.Success);
         }
         else
         {
+            // result.Error is a runtime key — Localizer indexer is the right tool here
             Snackbar.Add(Localizer[result.Error], Severity.Error);
         }
     }
 }
 ```
 
-Note the use of `IStringLocalizer<Strings> Localizer` for strings and `ShopIcons.Cart` for the icon — both required by `DESIGN.md`.
+Note the two access patterns:
+- **Static keys** (`Strings.ProductDetail_PageTitle`, `Strings.AddToCart`, `Strings.AddedToCart`) — accessed directly via the auto-generated `Strings` class. Compile-time safe.
+- **Runtime keys** (`Localizer[result.Error]`) — when the Application layer returns a key as a string, use the `IStringLocalizer` indexer. This is the only legitimate use of indexer access.
+
+Both `ShopIcons.Cart` for the icon and the typed string access are required by `DESIGN.md`.
 
 ---
 
@@ -455,10 +461,21 @@ TheShop.sln
         │   ├── Cart/
         │   ├── Checkout/
         │   └── Account/
+        │   └── Admin/                       // Admin pages — uses AdminLayout
+        │       ├── _Imports.razor           // Applies layout + [Authorize] to all admin pages
+        │       ├── AdminDashboard.razor     // /admin
+        │       ├── AdminProducts.razor      // /admin/products
+        │       ├── AdminOrders.razor        // /admin/orders
+        │       └── AdminCustomers.razor     // /admin/customers
         ├── Components/
+        │   ├── Layout/
+        │   │   ├── MainLayout.razor         // Customer layout
+        │   │   └── AdminLayout.razor        // Admin layout (sidebar, admin styling)
         │   ├── Layout/
         │   ├── Products/
         │   └── Shared/
+        ├── Auth/                            // Auth state provider for Blazor
+        │   └── SupabaseAuthStateProvider.cs		
         ├── State/                           // Client state stores
         │   ├── CartState.cs
         │   ├── AuthState.cs
@@ -512,13 +529,13 @@ This project enforces strict separation between code and resources. **All visual
 
 These rules are enforced project-wide. Full details in `DESIGN.md`:
 
-1. **No hardcoded user-facing strings.** Every string a user reads must come from `Strings.resx` via `IStringLocalizer<Strings>`. Page titles, button labels, validation messages, toast messages, ARIA labels — all from resources.
+1. **No hardcoded user-facing strings, no magic-string keys.** Every string a user reads must come from `Strings.resx`. Static keys are accessed via the strongly-typed `Strings.{KeyName}` accessor (e.g. `@Strings.AddToCart`) — never via `Localizer["AddToCart"]` magic-string indexer. The `Localizer[...]` indexer is reserved for runtime keys only (e.g. `Localizer[result.Error]`).
 
 2. **All theme classes use the `Shop` prefix.** `ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`. This prevents collision with MudBlazor's built-in types and makes project-specific tokens immediately identifiable.
 
 3. **MudBlazor components only.** If a UI requirement cannot be met by MudBlazor, ask the user before implementing any alternative.
 
-If you encounter `<MudText>Add to Cart</MudText>` (hardcoded string) or `Color="#101010"` (hardcoded color), that is a violation. Refactor before committing.
+If you encounter `<MudText>Add to Cart</MudText>` (hardcoded string), `<MudText>@Localizer["AddToCart"]</MudText>` (magic-string key), or `Color="#101010"` (hardcoded color), that is a violation. Refactor before committing.
 
 ---
 
@@ -535,6 +552,215 @@ The .NET compiler enforces architecture at the project level.
 
 ---
 
+## Admin Architecture
+ 
+The admin panel lives **inside the same Blazor app** under the `/admin/*` route prefix. Customer and admin UIs share one project, one deployment, one auth flow — but use different layouts, different routes, and different authorization requirements.
+ 
+### Why this approach
+ 
+- One codebase, one deployment, no duplication
+- Shared MudBlazor components, shared DTOs, shared business logic
+- Same Supabase auth flow with role-based access control
+- Faster MVP delivery — admin can be built in parallel with customer features
+- Migration path preserved — Clean Architecture means admin can be extracted to a separate project later without rewriting business logic
+### Routing layout
+ 
+```
+yourvapestore.ca/                  → public landing (MainLayout)
+yourvapestore.ca/products          → public catalog (MainLayout)
+yourvapestore.ca/cart              → authenticated customer (MainLayout)
+yourvapestore.ca/account           → authenticated customer (MainLayout)
+yourvapestore.ca/admin             → requires "admin" role (AdminLayout)
+yourvapestore.ca/admin/products    → requires "admin" role (AdminLayout)
+yourvapestore.ca/admin/orders      → requires "admin" role (AdminLayout)
+yourvapestore.ca/admin/customers   → requires "admin" role (AdminLayout)
+```
+ 
+### The `_Imports.razor` shortcut — apply layout & authorization to all admin pages
+ 
+Drop a `_Imports.razor` file inside `Pages/Admin/`. Blazor automatically applies its directives to every `.razor` file in that folder, so you don't have to repeat the layout and authorize attribute on each page.
+ 
+```razor
+@* Web/Pages/Admin/_Imports.razor *@
+@using Microsoft.AspNetCore.Authorization
+@using VapeShop.Web.Components.Layout
+ 
+@layout AdminLayout
+@attribute [Authorize(Roles = "admin")]
+```
+ 
+Every page in `Pages/Admin/` automatically gets `AdminLayout` and the admin role requirement. Individual admin pages stay clean:
+ 
+```razor
+@* Web/Pages/Admin/AdminProducts.razor *@
+@page "/admin/products"
+@using TheShop.Web.Resources
+@inject IMediator Mediator
+ 
+<PageTitle>@Strings.AdminProducts_PageTitle</PageTitle>
+ 
+<MudText Typo="Typo.h4">@Strings.AdminProducts_Heading</MudText>
+ 
+<MudDataGrid Items="@_products" Loading="@_loading">
+    @* columns *@
+</MudDataGrid>
+ 
+@code {
+    private List<ProductDto> _products = new();
+    private bool _loading = true;
+ 
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Mediator.Send(new ListProductsQuery());
+        if (result.IsSuccess) _products = result.Value;
+        _loading = false;
+    }
+}
+```
+ 
+No layout directive, no authorize attribute on the page itself — the `_Imports.razor` handles both.
+ 
+### AdminLayout component
+ 
+Distinct layout for admin pages — sidebar navigation, admin-specific styling. Customer pages continue using `MainLayout`.
+ 
+```razor
+@* Web/Components/Layout/AdminLayout.razor *@
+@inherits LayoutComponentBase
+@using TheShop.Web.Resources
+ 
+<MudLayout>
+    <MudAppBar Color="Color.Primary">
+        <MudText Typo="Typo.h6">@Strings.Admin_AppName</MudText>
+    </MudAppBar>
+ 
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+```
+ 
+### Authorization wiring
+ 
+Configure Blazor's authorization system in `Program.cs`:
+ 
+```csharp
+// Web/Program.cs
+builder.Services.AddAuthorizationCore(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("admin"));
+});
+ 
+builder.Services.AddScoped<AuthenticationStateProvider, SupabaseAuthStateProvider>();
+```
+ 
+Custom `AuthenticationStateProvider` reads the role claim from the Supabase JWT:
+ 
+```csharp
+// Web/Auth/SupabaseAuthStateProvider.cs
+public class SupabaseAuthStateProvider : AuthenticationStateProvider
+{
+    private readonly Supabase.Client _supabase;
+ 
+    public SupabaseAuthStateProvider(Supabase.Client supabase) => _supabase = supabase;
+ 
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    {
+        var session = _supabase.Auth.CurrentSession;
+ 
+        if (session is null)
+            return new AuthenticationState(new ClaimsPrincipal());
+ 
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, session.User.Id),
+            new(ClaimTypes.Email, session.User.Email),
+        };
+ 
+        // Read the "role" claim from the Supabase JWT
+        var role = session.User.UserMetadata?["role"]?.ToString() ?? "customer";
+        claims.Add(new Claim(ClaimTypes.Role, role));
+ 
+        var identity = new ClaimsIdentity(claims, "supabase");
+        return new AuthenticationState(new ClaimsPrincipal(identity));
+    }
+}
+```
+ 
+### Hiding admin links from customers
+ 
+Use Blazor's `AuthorizeView` to conditionally render admin navigation links — only logged-in admins see them.
+ 
+```razor
+@* Web/Components/Layout/MainLayout.razor — header nav *@
+@using TheShop.Web.Resources
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+        <MudButton Href="/admin" Color="Color.Primary">
+            @Strings.Nav_AdminPanel
+        </MudButton>
+    </Authorized>
+</AuthorizeView>
+```
+ 
+### Security — three layers, all required
+ 
+URL prefixes are NOT security. Anyone can type `/admin/products` in their browser. Real protection comes from three independent layers — all three must be in place.
+ 
+| Layer | What it protects against | Where it lives |
+|---|---|---|
+| 1. Authorize attribute | Logged-in customers navigating to admin pages | `Pages/Admin/_Imports.razor` |
+| 2. Authorization policies | Role mismatches, expired sessions | `Program.cs` policy config |
+| 3. Supabase RLS | Direct API calls bypassing the UI | Database policies |
+ 
+**Layer 3 is the only real security boundary.** Layers 1 and 2 are UX checks — they keep honest users away from admin pages. A determined attacker can bypass them by calling Supabase APIs directly. Only Row-Level Security (RLS) policies enforced at the database level can stop that.
+ 
+#### Example RLS policies
+ 
+```sql
+-- products table: anyone can read, only admin can write
+CREATE POLICY "products_select_all" ON products
+    FOR SELECT USING (true);
+ 
+CREATE POLICY "products_admin_write" ON products
+    FOR ALL USING (auth.jwt() ->> 'role' = 'admin');
+ 
+-- orders table: customers see only their own, admin sees all
+CREATE POLICY "orders_customer_select" ON orders
+    FOR SELECT USING (customer_id = auth.uid());
+ 
+CREATE POLICY "orders_admin_all" ON orders
+    FOR ALL USING (auth.jwt() ->> 'role' = 'admin');
+```
+ 
+**Every Supabase table that contains admin-only or user-scoped data must have RLS policies. No exceptions.**
+ 
+### Promoting a user to admin
+ 
+After a user signs up, they default to the `customer` role. To promote them, update the `raw_user_meta_data` field in Supabase:
+ 
+```sql
+UPDATE auth.users
+SET raw_user_meta_data = raw_user_meta_data || '{"role": "admin"}'::jsonb
+WHERE email = 'you@yourvapestore.ca';
+```
+ 
+**Important — log the user out and back in.** JWTs are issued at login and contain the role at that moment. Updating the database doesn't change existing tokens. The user must log out and back in to receive a new JWT with the admin role.
+ 
+### Future migration path
+ 
+If the business outgrows this single-app pattern (e.g. 5+ admin staff requiring independent deployment cadence, IP allowlisting needs, or admin team scaling significantly), the admin can be promoted to:
+ 
+- **A separate subdomain** (`admin.yourvapestore.ca`) — DNS configuration only, no code changes
+- **A separate Blazor project** — UI extraction only, since `Application`, `Domain`, and `Infrastructure` are already shared
+Clean Architecture preserves these migration options. Don't optimize for them prematurely.
+ 
+---
+
 ## Feature Flow Example — Add to Cart
 
 This walkthrough shows how a single user action flows through every layer. **Use this as the template for every feature you build.**
@@ -543,6 +769,7 @@ This walkthrough shows how a single user action flows through every layer. **Use
 
 ```razor
 @page "/products/{Slug}"
+@using TheShop.Web.Resources
 @inject IMediator Mediator
 @inject CartState Cart
 @inject ISnackbar Snackbar
@@ -551,7 +778,7 @@ This walkthrough shows how a single user action flows through every layer. **Use
 <MudButton OnClick="@AddToCart" 
            Color="Color.Primary" 
            StartIcon="@ShopIcons.Cart">
-    @Localizer["AddToCart"]
+    @Strings.AddToCart
 </MudButton>
 
 @code {
@@ -563,10 +790,11 @@ This walkthrough shows how a single user action flows through every layer. **Use
         if (result.IsSuccess)
         {
             Cart.UpdateFromDto(result.Value);
-            Snackbar.Add(Localizer["AddedToCart"], Severity.Success);
+            Snackbar.Add(Strings.AddedToCart, Severity.Success);
         }
         else
         {
+            // result.Error is a runtime key — use Localizer indexer
             Snackbar.Add(Localizer[result.Error], Severity.Error);
         }
     }
@@ -585,7 +813,7 @@ public class AddToCartHandler : IRequestHandler<AddToCartCommand, Result<CartDto
     {
         var product = await _products.GetByIdAsync(cmd.ProductId, ct);
         if (product is null) 
-            return Result.Fail<CartDto>("ProductNotFound");  // resource KEY
+            return Result.Fail<CartDto>(nameof(Strings.ProductNotFound));  // compile-time-safe key
 
         var cart = await _carts.GetForUserAsync(_user.Id, ct) 
                    ?? Cart.CreateFor(_user.Id);
@@ -599,7 +827,7 @@ public class AddToCartHandler : IRequestHandler<AddToCartCommand, Result<CartDto
 }
 ```
 
-**Note:** Application returns resource KEYS, not English text — UI looks up the localized string. This keeps Application layer language-agnostic.
+**Note:** Application returns resource KEYS, not English text — UI looks up the localized string. Use `nameof(Strings.{Key})` instead of magic-string literals so the key is verified at compile time. This keeps the Application layer language-agnostic AND type-safe.
 
 ### Step 3 — Infrastructure: Supabase repository executes
 
@@ -664,8 +892,8 @@ Every async method that crosses a layer boundary accepts a `CancellationToken`.
 ### 10. Immutable DTOs
 Use `record` types for DTOs and Commands/Queries.
 
-### 11. No hardcoded strings
-All user-facing strings come from `Strings.resx` via `IStringLocalizer<Strings>`. See `DESIGN.md`.
+### 11. No hardcoded strings, no magic-string keys
+All user-facing strings come from `Strings.resx`. Static keys are accessed via the strongly-typed `Strings.{KeyName}` accessor (e.g. `@Strings.AddToCart`), not via `Localizer["AddToCart"]`. The indexer form is reserved for runtime-determined keys only (e.g. `@Localizer[result.Error]`). Application layer error keys use `nameof(Strings.{Key})`. See `DESIGN.md`.
 
 ### 12. No hardcoded design tokens
 All colors, icons, and typography come from `Shop*` classes or MudBlazor's `Color` enum / `Typo` parameter. Never use `#101010`, raw icon paths, or inline `font-size` directly. See `DESIGN.md`.
@@ -879,7 +1107,7 @@ using Supabase;  // NEVER in Domain
 ```csharp
 if (product is null) throw new NotFoundException();  // BAD for business rules
 ```
-**Fix:** Return `Result.Fail("ProductNotFound")`.
+**Fix:** Return `Result.Fail(nameof(Strings.ProductNotFound))`.
 
 ### ❌ Anemic domain models
 ```csharp
@@ -897,7 +1125,7 @@ public async Task<Product> Handle(...)  // BAD
 ```razor
 <MudText>Add to Cart</MudText>  // NEVER
 ```
-**Fix:** `<MudText>@Localizer["AddToCart"]</MudText>` — see `DESIGN.md`.
+**Fix:** `<MudText>@Strings.AddToCart</MudText>` — see `DESIGN.md`.
 
 ### ❌ Hardcoded colors or design tokens
 ```razor
@@ -948,5 +1176,5 @@ If any answer is "no", stop and reconsider before proceeding.
 
 **End of Architecture Instructions**
 
-*Last updated: May 2026 · Version 1.0*
+*Last updated: May 2026 · Version 1.4*
 *See `DESIGN.md` for visual language, theming, and resource conventions.*

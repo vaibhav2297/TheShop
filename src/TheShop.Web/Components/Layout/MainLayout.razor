@@ -1,6 +1,5 @@
 @inherits LayoutComponentBase
 @inject ShopTheme Theme
-@inject IStringLocalizer<Strings> Localizer
 
 <MudThemeProvider Theme="@Theme.BuildTheme()" />
 <MudPopoverProvider />
@@ -9,16 +8,16 @@
 
 <MudLayout>
     <MudAppBar Elevation="1" Color="Color.Primary">
-        <MudText Typo="Typo.h6">@Localizer["AppName"]</MudText>
+        <MudText Typo="Typo.h6">@Strings.AppName</MudText>
         <MudSpacer />
         <MudIconButton Icon="@ShopIcons.Cart"
                        Color="Color.Inherit"
                        Href="/cart"
-                       AriaLabel="@Localizer["Nav_Cart"]" />
+                       aria-label="@Strings.Nav_Cart" />
         <MudIconButton Icon="@ShopIcons.Account"
                        Color="Color.Inherit"
                        Href="/account"
-                       AriaLabel="@Localizer["Nav_Account"]" />
+                       aria-label="@Strings.Nav_Account" />
     </MudAppBar>
 
     <MudMainContent>
