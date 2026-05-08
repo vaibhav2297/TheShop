@@ -455,10 +455,21 @@ TheShop.sln
         │   ├── Cart/
         │   ├── Checkout/
         │   └── Account/
+        │   └── Admin/                       // Admin pages — uses AdminLayout
+        │       ├── _Imports.razor           // Applies layout + [Authorize] to all admin pages
+        │       ├── AdminDashboard.razor     // /admin
+        │       ├── AdminProducts.razor      // /admin/products
+        │       ├── AdminOrders.razor        // /admin/orders
+        │       └── AdminCustomers.razor     // /admin/customers
         ├── Components/
+        │   ├── Layout/
+        │   │   ├── MainLayout.razor         // Customer layout
+        │   │   └── AdminLayout.razor        // Admin layout (sidebar, admin styling)
         │   ├── Layout/
         │   ├── Products/
         │   └── Shared/
+        ├── Auth/                            // Auth state provider for Blazor
+        │   └── SupabaseAuthStateProvider.cs		
         ├── State/                           // Client state stores
         │   ├── CartState.cs
         │   ├── AuthState.cs
@@ -533,6 +544,213 @@ If you encounter `<MudText>Add to Cart</MudText>` (hardcoded string) or `Color="
 
 The .NET compiler enforces architecture at the project level.
 
+---
+
+## Admin Architecture
+ 
+The admin panel lives **inside the same Blazor app** under the `/admin/*` route prefix. Customer and admin UIs share one project, one deployment, one auth flow — but use different layouts, different routes, and different authorization requirements.
+ 
+### Why this approach
+ 
+- One codebase, one deployment, no duplication
+- Shared MudBlazor components, shared DTOs, shared business logic
+- Same Supabase auth flow with role-based access control
+- Faster MVP delivery — admin can be built in parallel with customer features
+- Migration path preserved — Clean Architecture means admin can be extracted to a separate project later without rewriting business logic
+### Routing layout
+ 
+```
+yourvapestore.ca/                  → public landing (MainLayout)
+yourvapestore.ca/products          → public catalog (MainLayout)
+yourvapestore.ca/cart              → authenticated customer (MainLayout)
+yourvapestore.ca/account           → authenticated customer (MainLayout)
+yourvapestore.ca/admin             → requires "admin" role (AdminLayout)
+yourvapestore.ca/admin/products    → requires "admin" role (AdminLayout)
+yourvapestore.ca/admin/orders      → requires "admin" role (AdminLayout)
+yourvapestore.ca/admin/customers   → requires "admin" role (AdminLayout)
+```
+ 
+### The `_Imports.razor` shortcut — apply layout & authorization to all admin pages
+ 
+Drop a `_Imports.razor` file inside `Pages/Admin/`. Blazor automatically applies its directives to every `.razor` file in that folder, so you don't have to repeat the layout and authorize attribute on each page.
+ 
+```razor
+@* Web/Pages/Admin/_Imports.razor *@
+@using Microsoft.AspNetCore.Authorization
+@using VapeShop.Web.Components.Layout
+ 
+@layout AdminLayout
+@attribute [Authorize(Roles = "admin")]
+```
+ 
+Every page in `Pages/Admin/` automatically gets `AdminLayout` and the admin role requirement. Individual admin pages stay clean:
+ 
+```razor
+@* Web/Pages/Admin/AdminProducts.razor *@
+@page "/admin/products"
+@inject IMediator Mediator
+@inject IStringLocalizer<Strings> L
+ 
+<PageTitle>@L["AdminProducts_PageTitle"]</PageTitle>
+ 
+<MudText Typo="Typo.h4">@L["AdminProducts_Heading"]</MudText>
+ 
+<MudDataGrid Items="@_products" Loading="@_loading">
+    @* columns *@
+</MudDataGrid>
+ 
+@code {
+    private List<ProductDto> _products = new();
+    private bool _loading = true;
+ 
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Mediator.Send(new ListProductsQuery());
+        if (result.IsSuccess) _products = result.Value;
+        _loading = false;
+    }
+}
+```
+ 
+No layout directive, no authorize attribute on the page itself — the `_Imports.razor` handles both.
+ 
+### AdminLayout component
+ 
+Distinct layout for admin pages — sidebar navigation, admin-specific styling. Customer pages continue using `MainLayout`.
+ 
+```razor
+@* Web/Components/Layout/AdminLayout.razor *@
+@inherits LayoutComponentBase
+@inject IStringLocalizer<Strings> Localizer
+ 
+<MudLayout>
+    <MudAppBar Color="Color.Primary">
+        <MudText Typo="Typo.h6">@Localizer["Admin_AppName"]</MudText>
+    </MudAppBar>
+ 
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+```
+ 
+### Authorization wiring
+ 
+Configure Blazor's authorization system in `Program.cs`:
+ 
+```csharp
+// Web/Program.cs
+builder.Services.AddAuthorizationCore(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("admin"));
+});
+ 
+builder.Services.AddScoped<AuthenticationStateProvider, SupabaseAuthStateProvider>();
+```
+ 
+Custom `AuthenticationStateProvider` reads the role claim from the Supabase JWT:
+ 
+```csharp
+// Web/Auth/SupabaseAuthStateProvider.cs
+public class SupabaseAuthStateProvider : AuthenticationStateProvider
+{
+    private readonly Supabase.Client _supabase;
+ 
+    public SupabaseAuthStateProvider(Supabase.Client supabase) => _supabase = supabase;
+ 
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    {
+        var session = _supabase.Auth.CurrentSession;
+ 
+        if (session is null)
+            return new AuthenticationState(new ClaimsPrincipal());
+ 
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, session.User.Id),
+            new(ClaimTypes.Email, session.User.Email),
+        };
+ 
+        // Read the "role" claim from the Supabase JWT
+        var role = session.User.UserMetadata?["role"]?.ToString() ?? "customer";
+        claims.Add(new Claim(ClaimTypes.Role, role));
+ 
+        var identity = new ClaimsIdentity(claims, "supabase");
+        return new AuthenticationState(new ClaimsPrincipal(identity));
+    }
+}
+```
+ 
+### Hiding admin links from customers
+ 
+Use Blazor's `AuthorizeView` to conditionally render admin navigation links — only logged-in admins see them.
+ 
+```razor
+@* Web/Components/Layout/MainLayout.razor — header nav *@
+<AuthorizeView Roles="admin">
+    <Authorized>
+        <MudButton Href="/admin" Color="Color.Primary">
+            @L["Nav_AdminPanel"]
+        </MudButton>
+    </Authorized>
+</AuthorizeView>
+```
+ 
+### Security — three layers, all required
+ 
+URL prefixes are NOT security. Anyone can type `/admin/products` in their browser. Real protection comes from three independent layers — all three must be in place.
+ 
+| Layer | What it protects against | Where it lives |
+|---|---|---|
+| 1. Authorize attribute | Logged-in customers navigating to admin pages | `Pages/Admin/_Imports.razor` |
+| 2. Authorization policies | Role mismatches, expired sessions | `Program.cs` policy config |
+| 3. Supabase RLS | Direct API calls bypassing the UI | Database policies |
+ 
+**Layer 3 is the only real security boundary.** Layers 1 and 2 are UX checks — they keep honest users away from admin pages. A determined attacker can bypass them by calling Supabase APIs directly. Only Row-Level Security (RLS) policies enforced at the database level can stop that.
+ 
+#### Example RLS policies
+ 
+```sql
+-- products table: anyone can read, only admin can write
+CREATE POLICY "products_select_all" ON products
+    FOR SELECT USING (true);
+ 
+CREATE POLICY "products_admin_write" ON products
+    FOR ALL USING (auth.jwt() ->> 'role' = 'admin');
+ 
+-- orders table: customers see only their own, admin sees all
+CREATE POLICY "orders_customer_select" ON orders
+    FOR SELECT USING (customer_id = auth.uid());
+ 
+CREATE POLICY "orders_admin_all" ON orders
+    FOR ALL USING (auth.jwt() ->> 'role' = 'admin');
+```
+ 
+**Every Supabase table that contains admin-only or user-scoped data must have RLS policies. No exceptions.**
+ 
+### Promoting a user to admin
+ 
+After a user signs up, they default to the `customer` role. To promote them, update the `raw_user_meta_data` field in Supabase:
+ 
+```sql
+UPDATE auth.users
+SET raw_user_meta_data = raw_user_meta_data || '{"role": "admin"}'::jsonb
+WHERE email = 'you@yourvapestore.ca';
+```
+ 
+**Important — log the user out and back in.** JWTs are issued at login and contain the role at that moment. Updating the database doesn't change existing tokens. The user must log out and back in to receive a new JWT with the admin role.
+ 
+### Future migration path
+ 
+If the business outgrows this single-app pattern (e.g. 5+ admin staff requiring independent deployment cadence, IP allowlisting needs, or admin team scaling significantly), the admin can be promoted to:
+ 
+- **A separate subdomain** (`admin.yourvapestore.ca`) — DNS configuration only, no code changes
+- **A separate Blazor project** — UI extraction only, since `Application`, `Domain`, and `Infrastructure` are already shared
+Clean Architecture preserves these migration options. Don't optimize for them prematurely.
+ 
 ---
 
 ## Feature Flow Example — Add to Cart
