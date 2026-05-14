@@ -1,7 +1,7 @@
-# Vape E-commerce — Design System & Resource Conventions
+# E-commerce — Design System & Resource Conventions
 
 > **Audience:** AI coding agent (Claude, Copilot, Cursor, etc.)
-> **Project:** The Vape Shop Sarnia
+> **Project:** The Shop
 > **Companion file:** `ARCHITECTURE.md` (architecture rules)
 
 This document is the canonical reference for all visual, theming, and resource concerns. **Read this entire file before generating any UI code.** Any code that hardcodes strings, colors, icons, or typography values must be flagged and refactored.
@@ -944,52 +944,7 @@ public static class IconLibrary { }
 
 ## Design Checklist
 
-Before generating or accepting any UI code, verify:
-
-### Strings
-- [ ] All user-facing text comes from `Strings.resx` (no hardcoded English in `.razor` files)?
-- [ ] Static keys accessed via `Strings.{KeyName}` directly — NOT via `Localizer["{KeyName}"]`?
-- [ ] `Localizer[...]` only used for runtime keys (e.g. `Localizer[result.Error]`)?
-- [ ] Resource keys follow the `{Context}_{Purpose}` naming convention?
-- [ ] Resource keys are valid C# identifiers (no hyphens, spaces, or leading digits)?
-- [ ] `Strings.resx` configured with `PublicResXFileCodeGenerator` custom tool?
-- [ ] French resource file (`Strings.fr.resx`) updated alongside English?
-- [ ] Application layer returns resource KEYS via `nameof(Strings.{Key})` (not magic strings)?
-
-### Components
-- [ ] Only MudBlazor components used (no custom buttons, inputs, custom HTML)?
-- [ ] If MudBlazor cannot meet the requirement, has the user been asked before implementing an alternative?
-- [ ] All interactive states handled (hover, focus, disabled)?
-- [ ] Component variants follow MudBlazor patterns?
-
-### Colors
-- [ ] First preference: `Color="Color.Primary"` (or other `Color` enum) used?
-- [ ] Second preference: `Class="mud-theme-primary"` used when `Color` enum not possible?
-- [ ] Last resort: Ask User with a comment explaining why?
-- [ ] No hardcoded hex values anywhere in `.razor` files?
-
-### Icons
-- [ ] All icons come from `ShopIcons`?
-- [ ] No direct `Icons.Material.*` references?
-- [ ] Icon names are semantic (`Cart`) not visual (`ShoppingCart`)?
-- [ ] When adding a new icon, semantic naming convention followed?
-
-### Typography
-- [ ] All text uses `<MudText>` with the `Typo` parameter?
-- [ ] No `<span>`, `<p>`, `<h1>`-`<h6>`, or other native text elements?
-- [ ] No inline `font-size`, `font-weight`, or `line-height` styles?
-- [ ] Need a new typography variant? — User asked first?
-
-### Brand
-- [ ] All theme classes use the `Shop` prefix?
-
-### Images
-- [ ] WebP format used for raster images?
-- [ ] `width`, `height`, and `loading="lazy"` attributes set?
-- [ ] Alt text from resources?
-- [ ] `MudImage` used where appropriate?
-
-If any answer is "no", stop and refactor before proceeding.
+Both the Design Checklist and the Code Generation Checklist live in `references/checklists.md`. Run both before declaring any task complete.
 
 ---
 

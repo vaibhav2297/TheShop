@@ -1,7 +1,7 @@
-# Vape E-commerce — Blazor WASM Clean Architecture Instructions
+# E-commerce — Blazor WASM Clean Architecture Instructions
 
 > **Audience:** AI coding agent (Claude, Copilot, Cursor, etc.)
-> **Project:** Premium vape e-commerce platform (Canadian market)
+> **Project:** Premium e-commerce platform (Canadian market)
 > **Stack:** Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend
 > **Companion files:** `DESIGN.md` (visual language and theming)
 
@@ -566,14 +566,14 @@ The admin panel lives **inside the same Blazor app** under the `/admin/*` route 
 ### Routing layout
  
 ```
-yourvapestore.ca/                  → public landing (MainLayout)
-yourvapestore.ca/products          → public catalog (MainLayout)
-yourvapestore.ca/cart              → authenticated customer (MainLayout)
-yourvapestore.ca/account           → authenticated customer (MainLayout)
-yourvapestore.ca/admin             → requires "admin" role (AdminLayout)
-yourvapestore.ca/admin/products    → requires "admin" role (AdminLayout)
-yourvapestore.ca/admin/orders      → requires "admin" role (AdminLayout)
-yourvapestore.ca/admin/customers   → requires "admin" role (AdminLayout)
+yourshop.ca/                  → public landing (MainLayout)
+yourshop.ca/products          → public catalog (MainLayout)
+yourshop.ca/cart              → authenticated customer (MainLayout)
+yourshop.ca/account           → authenticated customer (MainLayout)
+yourshop.ca/admin             → requires "admin" role (AdminLayout)
+yourshop.ca/admin/products    → requires "admin" role (AdminLayout)
+yourshop.ca/admin/orders      → requires "admin" role (AdminLayout)
+yourshop.ca/admin/customers   → requires "admin" role (AdminLayout)
 ```
  
 ### The `_Imports.razor` shortcut — apply layout & authorization to all admin pages
@@ -583,7 +583,7 @@ Drop a `_Imports.razor` file inside `Pages/Admin/`. Blazor automatically applies
 ```razor
 @* Web/Pages/Admin/_Imports.razor *@
 @using Microsoft.AspNetCore.Authorization
-@using VapeShop.Web.Components.Layout
+@using TheShop.Web.Components.Layout
  
 @layout AdminLayout
 @attribute [Authorize(Roles = "admin")]
@@ -746,7 +746,7 @@ After a user signs up, they default to the `customer` role. To promote them, upd
 ```sql
 UPDATE auth.users
 SET raw_user_meta_data = raw_user_meta_data || '{"role": "admin"}'::jsonb
-WHERE email = 'you@yourvapestore.ca';
+WHERE email = 'you@yourshop.ca';
 ```
  
 **Important — log the user out and back in.** JWTs are issued at login and contain the role at that moment. Updating the database doesn't change existing tokens. The user must log out and back in to receive a new JWT with the admin role.
@@ -755,7 +755,7 @@ WHERE email = 'you@yourvapestore.ca';
  
 If the business outgrows this single-app pattern (e.g. 5+ admin staff requiring independent deployment cadence, IP allowlisting needs, or admin team scaling significantly), the admin can be promoted to:
  
-- **A separate subdomain** (`admin.yourvapestore.ca`) — DNS configuration only, no code changes
+- **A separate subdomain** (`admin.yourshop.ca`) — DNS configuration only, no code changes
 - **A separate Blazor project** — UI extraction only, since `Application`, `Domain`, and `Infrastructure` are already shared
 Clean Architecture preserves these migration options. Don't optimize for them prematurely.
  
@@ -1140,27 +1140,7 @@ Use MudBlazor consistently. If MudBlazor cannot meet the requirement, ask the us
 
 ## Code Generation Checklist
 
-Before writing or accepting any code, verify:
-
-### Architecture
-- [ ] Is this in the right layer?
-- [ ] Does it follow the dependency rule?
-- [ ] Are external SDKs (Supabase/Stripe/Resend) only in Infrastructure?
-- [ ] Are entities staying in Domain (not leaking to UI)?
-- [ ] Is business logic in Domain entities or Application handlers?
-- [ ] Are use cases dispatched through MediatR?
-- [ ] Is `Result<T>` used for expected failures?
-- [ ] Are DTOs (records) used to cross layer boundaries?
-- [ ] Is dependency injection via constructor?
-- [ ] Do async methods accept `CancellationToken`?
-- [ ] Are commands/queries records (immutable)?
-- [ ] Is the file in the correct folder per the structure?
-- [ ] Does the class name follow naming conventions?
-- [ ] Is there a corresponding test for this code?
-
-For design-related checks, see the **Design Checklist** in `DESIGN.md`.
-
-If any answer is "no", stop and reconsider before proceeding.
+Both the Code Generation Checklist and the Design Checklist live in `references/checklists.md`. Run both before declaring any task complete.
 
 ---
 
