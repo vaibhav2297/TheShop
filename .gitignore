@@ -364,3 +364,9 @@ FodyWeavers.xsd
 
 # Claude Code MCP config (contains API tokens)
 .mcp.json
+
+# Claude Code local settings (machine-specific, not shared)
+.claude/settings.local.json
+
+# MudBlazor MCP server cache (auto-downloaded, not project code)
+data/
