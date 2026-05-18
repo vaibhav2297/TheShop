@@ -1,7 +1,7 @@
 @inherits LayoutComponentBase
-@inject ShopTheme Theme
+@using TheShop.Web.Theme
 
-<MudThemeProvider Theme="@Theme.BuildTheme()" />
+<MudThemeProvider Theme="@ShopTheme.BuildTheme()" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
