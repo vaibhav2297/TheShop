@@ -8,7 +8,9 @@
       "mcp__figma-console__figma_get_design_system_kit",
       "mcp__figma-console__figma_execute",
       "mcp__mudblazor__get_api_reference",
-      "PowerShell(Get-ChildItem *)"
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell($files = Get-ChildItem \"C:\\\\Users\\\\vaibh\\\\Downloads\\\\Arrow\" -Recurse; Write-Output \"Count: $\\($files.Count\\)\"; $files | ForEach-Object { Write-Output $_.FullName })",
+      "PowerShell(Get-Content *)"
     ]
   },
   "enableAllProjectMcpServers": true,
