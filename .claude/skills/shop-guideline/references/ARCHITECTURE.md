@@ -1140,7 +1140,27 @@ Use MudBlazor consistently. If MudBlazor cannot meet the requirement, ask the us
 
 ## Code Generation Checklist
 
-Both the Code Generation Checklist and the Design Checklist live in `references/checklists.md`. Run both before declaring any task complete.
+Before writing or accepting any code, verify. If any item fails, **stop and fix it** before proceeding.
+
+### Architecture
+- [ ] Is this in the right layer (Domain / Application / Infrastructure / Web)?
+- [ ] Does it follow the dependency rule (dependencies point inward)?
+- [ ] Are external SDKs (Supabase / Stripe / Resend) used **only** in Infrastructure?
+- [ ] Are entities staying in Domain (not leaking to UI)?
+- [ ] Is business logic in Domain entities or Application handlers (not in `@code` blocks or services)?
+- [ ] Are use cases dispatched through MediatR (`IMediator.Send`)?
+- [ ] Is `Result<T>` used for expected failures (not exceptions)?
+- [ ] Are DTOs (records) used to cross layer boundaries — entities never crossing into UI?
+- [ ] Is dependency injection via constructor with `readonly` fields?
+- [ ] Do async methods accept `CancellationToken`?
+- [ ] Are Commands/Queries declared as `record` (immutable)?
+- [ ] Is the file in the correct folder per the structure?
+- [ ] Does the class name follow the naming conventions?
+- [ ] Is there a corresponding test in the matching `tests/` project?
+
+For design-related checks, see the **Design Checklist** in `references/DESIGN.md`.
+
+If any answer is "no", stop and reconsider before proceeding.
 
 ---
 

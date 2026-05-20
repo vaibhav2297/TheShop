@@ -54,11 +54,11 @@ The skill takes one required input: a **feature name**.
 Before writing, take a quick pass for context — but don't turn this into a long interview.
 
 - Glance at related files in the workspace if obviously relevant (existing specs in `.claude/specs/`, project README, product docs).
-- If one or two product-level details would meaningfully change the spec, ask up to **two** focused questions. Keep questions in WHAT/WHY territory:
+- If one or two product-level details would meaningfully change the spec, ask focused questions. Keep questions in WHAT/WHY territory:
   - ✅ "Does this apply to logged-out users too, or only signed-in?"
   - ✅ "Should the cart persist across sessions?"
   - ❌ "Should we use localStorage or a backend session?" (that's HOW)
-- Otherwise, make reasonable assumptions and call them out explicitly inside the spec.
+- DO NOT make reasonable assumptions, stop, ask user and clarify.
 
 ### 3. Write the spec using the template below
 

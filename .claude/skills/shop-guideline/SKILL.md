@@ -5,7 +5,7 @@ description: Architecture and design rules for "The Shop" — a .NET 10 Blazor W
 
 # The Shop — Project Rules
 
-You are working on **The Shop**, a premium Canadian e-commerce platform.
+You are working on **The Shop**, a premium e-commerce platform.
 
 **Stack:** .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend, hosted on Azure Static Web Apps.
 
