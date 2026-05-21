@@ -82,7 +82,13 @@ If `CLAUDE.md` is present, it's already in context (loaded automatically by Clau
 ### 4. Consult MCPs when they sharpen the plan (not by default)
 
 - **MudBlazor MCP** — call when the spec implies UI components and you need to pick the right one or verify a parameter. Use `mudblazor:search_components`, `mudblazor:get_component_detail`, or `mudblazor:get_component_parameters`. Don't enumerate all components "for completeness."
-- **Figma MCP** — call when the spec describes a designed UI flow and you need canonical tokens (colors, typography, spacing) or component specs. Use `figma-console:figma_get_design_system_kit` or `figma-console:figma_get_component`. For the current feature, a separate Figma page has been created for each feature — fetch and review the Figma page that corresponds to this feature, and plan the implementation to match that design exactly, because the feature must be built the same as it is designed in Figma. Plan accordingly. Don't call it for non-UI features.
+- **Figma MCP** — call when the spec describes a designed UI flow. Use `figma-console:figma_get_design_system_kit` or `figma-console:figma_get_component`. A separate Figma page has been created for each feature — fetch and review the Figma page that corresponds to this feature, and plan the implementation to match that design exactly. The downstream `shop-ui-implementer` agent will **re-fetch these nodes at implementation time** to translate them with high fidelity, so the plan must capture three things explicitly:
+
+  1. The **Figma file URL** (the canonical link).
+  2. The **per-page/component node ID** for every page or component this feature introduces or modifies — node IDs are the contract the UI implementer reads.
+  3. A **one-sentence "visual intent"** per node — what the node is and how it fits into the feature flow. Not a re-description of the design; a hook so a reader (or the implementer) can confirm "this is the sign-in OTP step, not the sign-up first step."
+
+  Capture these in Section 7 Phase 4 (Web) of the plan using the **Figma references** subsection (see the template). If a node ID is missing or ambiguous, surface it as an open question in Section 11 — do not paper over it. Don't call Figma for non-UI features.
 
 Both are skippable for backend-only or domain-rule features.
 
@@ -238,8 +244,20 @@ Result<CartDto> returned to ProductDetail.razor → CartState updated → UI re-
 - Write integration tests with Testcontainers.
 
 ### Phase 4 — Web
-- Update `ProductDetail.razor` to wire the "Add to Cart" button.
-- Update `CartState` to hold the new `CartDto`.
+
+**Figma references** *(required when the phase touches UI — read by `shop-ui-implementer` at impl time)*
+
+- **File:** {full Figma file URL}
+- **Nodes:**
+  - `123:456` — ProductDetail page (Add to Cart CTA, quantity stepper, success toast layout)
+  - `123:457` — CartIcon header badge (count + animation on update)
+- **Visual intent notes:** {one sentence per node — what it is, where it fits. Not a redescription; a hook for the implementer to confirm they're looking at the right node.}
+
+**Tasks**
+
+- Update `ProductDetail.razor` to wire the "Add to Cart" button (matches node `123:456`).
+- Update `CartState` to hold the new `CartDto`; the header `CartIcon` re-renders against node `123:457`.
+- Add `Routes.Products.Detail` if missing; add `BusyKeys.Cart.Add`.
 - Write bUnit component tests.
 
 ### Phase 5 — End-to-end & polish
