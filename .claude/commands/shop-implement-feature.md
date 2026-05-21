@@ -36,7 +36,7 @@ Check `.claude/plans/$ARGUMENTS.md` exists. If not, halt:
 ### Pre-flight 2 — Solution must build clean before we start
 
 ```bash
-dotnet build TheShop.sln --nologo
+dotnet build TheShop.slnx --nologo
 ```
 
 If the solution is already broken, halt:
@@ -130,7 +130,7 @@ Verify each agent's summary independently:
 After both succeed, run the **full solution build** as the cross-layer integration gate:
 
 ```bash
-dotnet build TheShop.sln --nologo
+dotnet build TheShop.slnx --nologo
 ```
 
 If the solution build fails despite both layer builds passing, you have a cross-layer issue (e.g., the DI registration is wrong, or Web is using a DTO field Application didn't ship). Halt with template C and quote the solution-level errors — do not silently re-invoke; the user needs to see the cross-layer break.
@@ -208,7 +208,7 @@ Always produce one of these three templates verbatim. No extra prose.
 
 ## Build status
 
-- ✅ `dotnet build TheShop.sln` — 0 warnings / 0 errors.
+- ✅ `dotnet build TheShop.slnx` — 0 warnings / 0 errors.
 
 ## Open items the agents flagged
 

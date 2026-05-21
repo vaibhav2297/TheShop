@@ -6,6 +6,11 @@ using TheShop.Web.Resources;
 
 namespace TheShop.Web.Auth;
 
+/// <summary>
+/// Component rendered by <c>AuthorizeRouteView</c> when the user is not authenticated.
+/// Shows a session-expired snackbar and redirects to the sign-in page, preserving the
+/// current URL as <c>returnUrl</c> so the user lands back after signing in.
+/// </summary>
 public partial class RedirectToSignIn : ComponentBase
 {
     [Inject] private NavigationManager Nav { get; set; } = default!;

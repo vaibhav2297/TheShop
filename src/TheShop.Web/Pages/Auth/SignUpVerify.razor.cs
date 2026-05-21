@@ -13,6 +13,12 @@ using TheShop.Web.State;
 
 namespace TheShop.Web.Pages.Auth;
 
+/// <summary>
+/// Sign-up OTP verification page. Verifies the code via <see cref="VerifySignUpOtpCommand"/>,
+/// which creates the customer record. On success, updates <see cref="AuthState"/>,
+/// clears <see cref="PendingSignUpState"/>, and navigates home.
+/// Manages the 60-second resend countdown timer.
+/// </summary>
 [Route(Routes.Auth.SignUpVerify)]
 public partial class SignUpVerify : ComponentBase, IDisposable
 {

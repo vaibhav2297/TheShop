@@ -9,6 +9,10 @@ using TheShop.Web.State;
 
 namespace TheShop.Web.Components.Layout;
 
+/// <summary>
+/// Root layout for all authenticated and public pages. Hosts the app shell (nav, header)
+/// and handles global sign-out via <see cref="SignOutCommand"/>.
+/// </summary>
 public partial class MainLayout : LayoutComponentBase
 {
     [Inject] private IMediator Mediator { get; set; } = default!;

@@ -4,6 +4,10 @@ using TheShop.Application.Features.Auth.DTOs;
 
 namespace TheShop.Application.Features.Auth.Commands.RequestSignUpOtp;
 
+/// <summary>
+/// Sends a sign-up OTP to a new email address. Fails when an account for that email
+/// already exists.
+/// </summary>
 public sealed record RequestSignUpOtpCommand(
     string FirstName,
     string LastName,

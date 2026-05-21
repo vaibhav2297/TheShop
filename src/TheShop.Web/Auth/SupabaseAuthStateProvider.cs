@@ -5,6 +5,13 @@ using TheShop.Application.Common.Interfaces;
 
 namespace TheShop.Web.Auth;
 
+/// <summary>
+/// Blazor <see cref="AuthenticationStateProvider"/> backed by <see cref="IAuthService"/>.
+/// Builds a <see cref="System.Security.Claims.ClaimsPrincipal"/> from the current
+/// <see cref="AuthSession"/>, including any roles extracted from the JWT access token.
+/// Subscribes to <see cref="IAuthService.AuthStateChanged"/> so that sign-in and
+/// sign-out events propagate to all <c>AuthorizeView</c> components automatically.
+/// </summary>
 public sealed class SupabaseAuthStateProvider : AuthenticationStateProvider, IDisposable
 {
     private static readonly ClaimsPrincipal Anonymous = new(new ClaimsIdentity());
@@ -20,6 +27,10 @@ public sealed class SupabaseAuthStateProvider : AuthenticationStateProvider, IDi
     public override Task<AuthenticationState> GetAuthenticationStateAsync() =>
         Task.FromResult(new AuthenticationState(BuildPrincipal(_auth.CurrentSession)));
 
+    /// <summary>
+    /// Forces an immediate re-evaluation of the authentication state for all subscribers.
+    /// Call this after manually updating <see cref="State.AuthState"/> (e.g., post OTP verification).
+    /// </summary>
     public void NotifyChanged() =>
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
 

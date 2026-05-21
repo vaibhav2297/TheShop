@@ -9,6 +9,11 @@ using TheShop.Web.State;
 
 namespace TheShop.Web.Pages.Auth;
 
+/// <summary>
+/// Sign-up page. Collects the customer's profile details and sends a sign-up OTP via
+/// <see cref="RequestSignUpOtpCommand"/>. Stores the profile in <see cref="PendingSignUpState"/>
+/// for use by the verification step, then navigates to OTP entry.
+/// </summary>
 [Route(Routes.Auth.SignUp)]
 public partial class SignUp : ComponentBase
 {

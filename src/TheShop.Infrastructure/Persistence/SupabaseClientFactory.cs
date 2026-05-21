@@ -5,8 +5,20 @@ using Supabase.Gotrue.Interfaces;
 
 namespace TheShop.Infrastructure.Persistence;
 
+/// <summary>
+/// Constructs and configures the singleton <see cref="Supabase.Client"/> used across
+/// the Infrastructure layer.
+/// </summary>
 public static class SupabaseClientFactory
 {
+    /// <summary>
+    /// Builds a <see cref="Supabase.Client"/> from <c>Supabase:Url</c> and
+    /// <c>Supabase:AnonKey</c> in configuration, wiring the provided
+    /// <paramref name="sessionPersistence"/> as the session handler.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when either configuration key is missing or empty.
+    /// </exception>
     public static Supabase.Client Build(
         IConfiguration configuration,
         IGotrueSessionPersistence<Session> sessionPersistence)

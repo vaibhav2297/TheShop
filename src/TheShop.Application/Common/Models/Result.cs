@@ -1,8 +1,17 @@
 namespace TheShop.Application.Common.Models;
 
+/// <summary>
+/// A discriminated success/failure value returned by Application layer handlers.
+/// On failure, <see cref="Error"/> carries a resource key from <c>Strings.resx</c>
+/// that the UI resolves via <c>Localizer[result.Error]</c>.
+/// </summary>
 public class Result
 {
     public bool IsSuccess { get; }
+
+    /// <summary>
+    /// The resource key describing the failure, or <c>null</c> on success.
+    /// </summary>
     public string? Error { get; }
     public bool IsFailure => !IsSuccess;
 
@@ -25,10 +34,17 @@ public class Result
     public static Result<T> Fail<T>(string errorKey) => Result<T>.Fail(errorKey);
 }
 
+/// <summary>
+/// A <see cref="Result"/> that also carries a strongly-typed payload on success.
+/// </summary>
 public class Result<T> : Result
 {
     private readonly T? _value;
 
+    /// <summary>
+    /// The success payload.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when accessed on a failed result.</exception>
     public T Value =>
         IsSuccess
             ? _value!

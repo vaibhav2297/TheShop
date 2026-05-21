@@ -8,6 +8,10 @@ using TheShop.Web.Resources;
 
 namespace TheShop.Web.Pages.Auth;
 
+/// <summary>
+/// Sign-in page. Collects the user's email, sends a sign-in OTP via
+/// <see cref="RequestSignInOtpCommand"/>, then navigates to the verification step.
+/// </summary>
 [Route(Routes.Auth.SignIn)]
 public partial class SignIn : ComponentBase
 {

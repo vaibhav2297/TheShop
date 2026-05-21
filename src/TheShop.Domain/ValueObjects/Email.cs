@@ -3,6 +3,9 @@ using TheShop.Domain.Exceptions;
 
 namespace TheShop.Domain.ValueObjects;
 
+/// <summary>
+/// A validated email address. Comparison is case-insensitive.
+/// </summary>
 public sealed partial class Email : IEquatable<Email>
 {
     private const string EmailInvalidKey = "Email_Invalid";
@@ -14,6 +17,13 @@ public sealed partial class Email : IEquatable<Email>
         Value = value;
     }
 
+    /// <summary>
+    /// Creates an <see cref="Email"/> after trimming and validating the format.
+    /// </summary>
+    /// <exception cref="DomainException">
+    /// Thrown when the input is null, whitespace, or not a valid email format.
+    /// Carries <c>MessageKey = nameof(Strings.Email_Invalid)</c>.
+    /// </exception>
     public static Email Create(string? input)
     {
         if (string.IsNullOrWhiteSpace(input))

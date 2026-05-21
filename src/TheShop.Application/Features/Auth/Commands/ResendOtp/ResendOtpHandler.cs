@@ -5,11 +5,20 @@ using TheShop.Application.Features.Auth.DTOs;
 
 namespace TheShop.Application.Features.Auth.Commands.ResendOtp;
 
+/// <summary>
+/// Handles <see cref="ResendOtpCommand"/>. Routes the resend to the sign-up or sign-in
+/// OTP flow based on <see cref="OtpPurpose"/> and re-checks the account-existence invariant.
+/// </summary>
 public sealed class ResendOtpHandler(ICustomerRepository customers, IAuthService auth)
     : IRequestHandler<ResendOtpCommand, Result<OtpRequestedDto>>
 {
     private const int ResendCooldownSeconds = 60;
 
+    /// <summary>
+    /// Returns <see cref="Result{T}.Ok"/> with the email and resend cooldown on success,
+    /// or a failure result when the account state conflicts with the requested purpose
+    /// or the auth provider rejects the resend (e.g. rate limit).
+    /// </summary>
     public async Task<Result<OtpRequestedDto>> Handle(
         ResendOtpCommand request,
         CancellationToken cancellationToken)

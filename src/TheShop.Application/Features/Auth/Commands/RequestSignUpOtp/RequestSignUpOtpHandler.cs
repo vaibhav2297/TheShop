@@ -5,11 +5,20 @@ using TheShop.Application.Features.Auth.DTOs;
 
 namespace TheShop.Application.Features.Auth.Commands.RequestSignUpOtp;
 
+/// <summary>
+/// Handles <see cref="RequestSignUpOtpCommand"/>. Guards against duplicate accounts,
+/// then delegates OTP delivery to <see cref="IAuthService"/>.
+/// </summary>
 public sealed class RequestSignUpOtpHandler(ICustomerRepository customers, IAuthService auth)
     : IRequestHandler<RequestSignUpOtpCommand, Result<OtpRequestedDto>>
 {
     private const int ResendCooldownSeconds = 60;
 
+    /// <summary>
+    /// Returns <see cref="Result{T}.Ok"/> with the email and resend cooldown on success,
+    /// or a failure result with <see cref="AuthErrorKeys.AccountAlreadyExists"/> when the
+    /// email is already registered.
+    /// </summary>
     public async Task<Result<OtpRequestedDto>> Handle(
         RequestSignUpOtpCommand request,
         CancellationToken cancellationToken)

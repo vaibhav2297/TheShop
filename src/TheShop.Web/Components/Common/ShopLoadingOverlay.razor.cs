@@ -3,6 +3,10 @@ using TheShop.Web.Common;
 
 namespace TheShop.Web.Components.Common;
 
+/// <summary>
+/// Full-page loading overlay that appears whenever the <c>"global"</c> busy key is active
+/// in <see cref="BusyState"/>. Mounted once in <c>MainLayout</c>.
+/// </summary>
 public partial class ShopLoadingOverlay : ComponentBase, IDisposable
 {
     [Inject] private BusyState BusyState { get; set; } = default!;

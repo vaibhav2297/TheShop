@@ -5,9 +5,18 @@ using TheShop.Application.Features.Auth.DTOs;
 
 namespace TheShop.Application.Features.Auth.Commands.VerifySignInOtp;
 
+/// <summary>
+/// Handles <see cref="VerifySignInOtpCommand"/>. Verifies the OTP with the auth provider,
+/// then loads the matching customer record to populate the session DTO.
+/// </summary>
 public sealed class VerifySignInOtpHandler(IAuthService auth, ICustomerRepository customers)
     : IRequestHandler<VerifySignInOtpCommand, Result<SessionDto>>
 {
+    /// <summary>
+    /// Returns <see cref="Result{T}.Ok"/> with a <see cref="SessionDto"/> on success.
+    /// Returns a failure result when the OTP is invalid or the customer record is not found
+    /// (in the latter case the newly-created auth session is also immediately revoked).
+    /// </summary>
     public async Task<Result<SessionDto>> Handle(
         VerifySignInOtpCommand request,
         CancellationToken cancellationToken)

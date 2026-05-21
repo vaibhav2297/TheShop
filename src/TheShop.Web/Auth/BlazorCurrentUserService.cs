@@ -4,6 +4,10 @@ using TheShop.Application.Common.Interfaces;
 
 namespace TheShop.Web.Auth;
 
+/// <summary>
+/// Blazor WebAssembly implementation of <see cref="ICurrentUserService"/>. Resolves
+/// the current user's identity synchronously from the active <see cref="AuthenticationStateProvider"/>.
+/// </summary>
 public sealed class BlazorCurrentUserService(AuthenticationStateProvider provider)
     : ICurrentUserService
 {

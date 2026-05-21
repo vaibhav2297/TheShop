@@ -17,6 +17,10 @@ public sealed class PendingSignUpState
         !string.IsNullOrWhiteSpace(Email) &&
         DateOfBirth.HasValue;
 
+    /// <summary>
+    /// Stores the profile data collected on the sign-up form, to be consumed by the
+    /// verify step when the OTP is confirmed.
+    /// </summary>
     public void Set(string firstName, string lastName, string email, DateOnly dateOfBirth)
     {
         FirstName = firstName;
@@ -25,6 +29,9 @@ public sealed class PendingSignUpState
         DateOfBirth = dateOfBirth;
     }
 
+    /// <summary>
+    /// Discards the pending sign-up data. Call after a successful or abandoned verification.
+    /// </summary>
     public void Clear()
     {
         FirstName = null;

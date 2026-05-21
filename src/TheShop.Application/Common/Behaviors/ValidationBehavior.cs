@@ -4,10 +4,19 @@ using TheShop.Application.Common.Models;
 
 namespace TheShop.Application.Common.Behaviors;
 
+/// <summary>
+/// MediatR pipeline behavior that runs all registered <see cref="IValidator{T}"/> instances
+/// before the handler. When <typeparamref name="TResponse"/> is <see cref="Result"/> or
+/// <see cref="Result{T}"/>, the first validation error is returned as a failure result
+/// instead of throwing. For all other response types, a <see cref="ValidationException"/> is thrown.
+/// </summary>
 public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
+    /// <summary>
+    /// Validates the request and, if valid, delegates to the next handler in the pipeline.
+    /// </summary>
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,

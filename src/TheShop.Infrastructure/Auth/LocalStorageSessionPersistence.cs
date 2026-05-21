@@ -4,6 +4,10 @@ using Supabase.Gotrue.Interfaces;
 
 namespace TheShop.Infrastructure.Auth;
 
+/// <summary>
+/// Persists the Supabase Gotrue session to browser local storage so that it survives
+/// page refreshes. Injected into <see cref="SupabaseClientFactory"/> as the session handler.
+/// </summary>
 public sealed class LocalStorageSessionPersistence(ISyncLocalStorageService storage)
     : IGotrueSessionPersistence<Session>
 {

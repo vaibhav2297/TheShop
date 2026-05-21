@@ -18,12 +18,12 @@ $relevant = $changed | Where-Object { $_ -match '\.(cs|razor)$' }
 
 if ($relevant) {
     Write-Host "[format-on-stop] $($relevant.Count) C# / Razor file(s) changed — running dotnet format..."
-    & dotnet format TheShop.sln --no-restore --verbosity quiet
+    & dotnet format TheShop.slnx --no-restore --verbosity quiet
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "[format-on-stop] dotnet format exited with code $LASTEXITCODE (non-fatal — files may still need attention)."
+        Write-Host "[format-on-stop] dotnet format exited with code $LASTEXITCODE (non-fatal - files may still need attention)."
     }
 } else {
-    Write-Host "[format-on-stop] No .cs / .razor changes in diff — skipping format."
+    Write-Host "[format-on-stop] No .cs / .razor changes in diff - skipping format."
 }
 
 exit 0

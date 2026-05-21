@@ -3,6 +3,10 @@ using Supabase.Postgrest.Models;
 
 namespace TheShop.Infrastructure.Persistence.Records;
 
+/// <summary>
+/// Postgrest row model for the <c>customers</c> table. Used only by
+/// <see cref="Repositories.SupabaseCustomerRepository"/> and <see cref="Mappers.CustomerMapper"/>.
+/// </summary>
 [Table("customers")]
 public sealed class CustomerRecord : BaseModel
 {

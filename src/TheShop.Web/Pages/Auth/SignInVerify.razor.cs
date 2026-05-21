@@ -13,6 +13,11 @@ using TheShop.Web.State;
 
 namespace TheShop.Web.Pages.Auth;
 
+/// <summary>
+/// Sign-in OTP verification page. Verifies the code via <see cref="VerifySignInOtpCommand"/>,
+/// then updates <see cref="AuthState"/> and navigates to the return URL or home.
+/// Manages the 60-second resend countdown timer.
+/// </summary>
 [Route(Routes.Auth.SignInVerify)]
 public partial class SignInVerify : ComponentBase, IDisposable
 {

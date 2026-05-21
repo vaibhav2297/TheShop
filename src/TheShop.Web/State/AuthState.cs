@@ -12,6 +12,9 @@ public class AuthState
 
     public event Action? OnChange;
 
+    /// <summary>
+    /// Records a successfully authenticated user and fires <see cref="OnChange"/>.
+    /// </summary>
     public void SetUser(string userId, string email)
     {
         UserId = userId;
@@ -20,6 +23,9 @@ public class AuthState
         NotifyStateChanged();
     }
 
+    /// <summary>
+    /// Clears the user identity after sign-out and fires <see cref="OnChange"/>.
+    /// </summary>
     public void Clear()
     {
         UserId = null;

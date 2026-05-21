@@ -5,6 +5,10 @@ using TheShop.Infrastructure.Persistence.Records;
 
 namespace TheShop.Infrastructure.Persistence.Repositories;
 
+/// <summary>
+/// Supabase-backed implementation of <see cref="ICustomerRepository"/>.
+/// Maps between <see cref="CustomerRecord"/> rows and <see cref="Customer"/> domain entities.
+/// </summary>
 public sealed class SupabaseCustomerRepository(Supabase.Client client) : ICustomerRepository
 {
     private const string CustomerExistsRpc = "customer_exists";
