@@ -1,5 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Supabase.Gotrue;
+using Supabase.Gotrue.Interfaces;
+using TheShop.Application.Common.Interfaces;
+using TheShop.Infrastructure.Auth;
+using TheShop.Infrastructure.Persistence;
+using TheShop.Infrastructure.Persistence.Repositories;
 
 namespace TheShop.Infrastructure;
 
@@ -9,11 +15,28 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // TODO: Register Supabase client (SupabaseProductRepository, etc.)
-        // TODO: Register StripePaymentService : IPaymentService
-        // TODO: Register ResendEmailSender  : IEmailSender
-        // TODO: Register SupabaseAuthService : IAuthService
+        services.AddScoped<IGotrueSessionPersistence<Session>, LocalStorageSessionPersistence>();
+
+        services.AddScoped(sp =>
+        {
+            var persistence = sp.GetRequiredService<IGotrueSessionPersistence<Session>>();
+            return SupabaseClientFactory.Build(configuration, persistence);
+        });
+
+        services.AddScoped<IAuthService, SupabaseAuthService>();
+        services.AddScoped<ICustomerRepository, SupabaseCustomerRepository>();
 
         return services;
+    }
+
+    /// <summary>
+    /// Initializes the Supabase client so the persisted session is restored
+    /// before the first render. Call this once at app start from
+    /// <c>Program.cs</c> after <c>host.Build()</c>.
+    /// </summary>
+    public static async Task InitializeInfrastructureAsync(this IServiceProvider services)
+    {
+        var supabase = services.GetRequiredService<Supabase.Client>();
+        await supabase.InitializeAsync();
     }
 }

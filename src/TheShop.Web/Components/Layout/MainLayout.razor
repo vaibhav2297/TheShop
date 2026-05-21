@@ -1,4 +1,6 @@
 @inherits LayoutComponentBase
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
 @using TheShop.Web.Theme
 
 <MudThemeProvider Theme="@ShopTheme.BuildTheme()" />
@@ -6,18 +8,37 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
+<ShopLoadingOverlay />
+
 <MudLayout>
     <MudAppBar Elevation="1" Color="Color.Primary">
         <MudText Typo="Typo.h6">@Strings.AppName</MudText>
         <MudSpacer />
         <MudIconButton Icon="@ShopIcons.Interface.Shopping_Cart_01"
                        Color="Color.Inherit"
-                       Href="/cart"
+                       Href="@Routes.Cart"
                        aria-label="@Strings.Nav_Cart" />
-        <MudIconButton Icon="@ShopIcons.User.User_Circle"
-                       Color="Color.Inherit"
-                       Href="/account"
-                       aria-label="@Strings.Nav_Account" />
+
+        <AuthorizeView>
+            <Authorized>
+                <MudMenu Icon="@ShopIcons.User.User_Circle"
+                         Color="Color.Inherit"
+                         AnchorOrigin="Origin.BottomRight"
+                         TransformOrigin="Origin.TopRight"
+                         aria-label="@Strings.Nav_Account">
+                    <MudMenuItem OnClick="OnSignOutAsync">@Strings.Logout</MudMenuItem>
+                </MudMenu>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Inherit"
+                           Href="@Routes.Auth.SignIn">@Strings.Login</MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Inherit"
+                           Href="@Routes.Auth.SignUp"
+                           Class="ml-2">@Strings.SignUp</MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
     </MudAppBar>
 
     <MudMainContent>

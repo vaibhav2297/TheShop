@@ -200,6 +200,127 @@
   </data>
 
   <!-- ============================================================ -->
+  <!-- Authentication — OTP flow                                    -->
+  <!-- ============================================================ -->
+  <data name="SignUp_PageTitle" xml:space="preserve">
+    <value>Sign Up — The Vape Shop Sarnia</value>
+  </data>
+  <data name="SignUp_Heading" xml:space="preserve">
+    <value>Create your account</value>
+  </data>
+  <data name="SignUp_HaveAccount" xml:space="preserve">
+    <value>Already have an account?</value>
+  </data>
+  <data name="SignIn_PageTitle" xml:space="preserve">
+    <value>Sign In — The Vape Shop Sarnia</value>
+  </data>
+  <data name="SignIn_Heading" xml:space="preserve">
+    <value>Sign in to your account</value>
+  </data>
+  <data name="SignIn_NoAccount" xml:space="preserve">
+    <value>Don't have an account?</value>
+  </data>
+  <data name="SignUp" xml:space="preserve">
+    <value>Sign Up</value>
+  </data>
+  <data name="Verify_PageTitle" xml:space="preserve">
+    <value>Verify Code — The Vape Shop Sarnia</value>
+  </data>
+  <data name="Verify_Heading" xml:space="preserve">
+    <value>Enter your verification code</value>
+  </data>
+  <data name="Verify_Subheading" xml:space="preserve">
+    <value>We sent a 6-digit code to {0}. Check your inbox (and spam folder).</value>
+  </data>
+  <data name="Verify_CodeLabel" xml:space="preserve">
+    <value>Verification code</value>
+  </data>
+  <data name="Verify_CodeHint" xml:space="preserve">
+    <value>6 digits</value>
+  </data>
+  <data name="Verify_Submit" xml:space="preserve">
+    <value>Verify</value>
+  </data>
+  <data name="Verify_Resend" xml:space="preserve">
+    <value>Resend code</value>
+  </data>
+  <data name="Verify_ResendIn" xml:space="preserve">
+    <value>Resend in {0}s</value>
+  </data>
+  <data name="Auth_SendCode" xml:space="preserve">
+    <value>Send code</value>
+  </data>
+  <data name="FirstName_Label" xml:space="preserve">
+    <value>First name</value>
+  </data>
+  <data name="LastName_Label" xml:space="preserve">
+    <value>Last name</value>
+  </data>
+  <data name="DateOfBirth_Label" xml:space="preserve">
+    <value>Date of birth</value>
+  </data>
+  <data name="DateOfBirth_Hint" xml:space="preserve">
+    <value>You must be at least 19 years old.</value>
+  </data>
+  <data name="Auth_AccountAlreadyExists" xml:space="preserve">
+    <value>An account with this email already exists.</value>
+  </data>
+  <data name="Auth_AccountNotFound" xml:space="preserve">
+    <value>No account found for this email.</value>
+  </data>
+  <data name="Auth_Underage" xml:space="preserve">
+    <value>You must be at least 19 years old to create an account.</value>
+  </data>
+  <data name="Auth_Code_Incorrect" xml:space="preserve">
+    <value>Incorrect code. Please try again.</value>
+  </data>
+  <data name="Auth_CodeExpired" xml:space="preserve">
+    <value>This code has expired. Please request a new one.</value>
+  </data>
+  <data name="Auth_TooManyAttempts" xml:space="preserve">
+    <value>Too many incorrect attempts. Please start again.</value>
+  </data>
+  <data name="Auth_Code_Invalid" xml:space="preserve">
+    <value>Please enter the 6-digit code from your email.</value>
+  </data>
+  <data name="Auth_ResendTooSoon" xml:space="preserve">
+    <value>Please wait before requesting a new code.</value>
+  </data>
+  <data name="Auth_FirstName_Required" xml:space="preserve">
+    <value>First name is required.</value>
+  </data>
+  <data name="Auth_LastName_Required" xml:space="preserve">
+    <value>Last name is required.</value>
+  </data>
+  <data name="Auth_Dob_InPast" xml:space="preserve">
+    <value>Please enter a valid date of birth.</value>
+  </data>
+  <data name="Email_Invalid" xml:space="preserve">
+    <value>Please enter a valid email address.</value>
+  </data>
+  <data name="Auth_CodeSent" xml:space="preserve">
+    <value>We sent a 6-digit code to your email.</value>
+  </data>
+  <data name="Auth_SignedIn" xml:space="preserve">
+    <value>Signed in.</value>
+  </data>
+  <data name="Auth_SignedOut" xml:space="preserve">
+    <value>You have been signed out.</value>
+  </data>
+  <data name="Auth_SessionExpired" xml:space="preserve">
+    <value>Please sign in again to continue.</value>
+  </data>
+  <data name="Auth_Unexpected" xml:space="preserve">
+    <value>Something went wrong. Please try again.</value>
+  </data>
+  <data name="Account_Welcome" xml:space="preserve">
+    <value>Welcome, {0}!</value>
+  </data>
+  <data name="Account_SignedInAs" xml:space="preserve">
+    <value>Signed in as {0}</value>
+  </data>
+
+  <!-- ============================================================ -->
   <!-- Admin                                                        -->
   <!-- ============================================================ -->
   <data name="AdminDashboard_PageTitle" xml:space="preserve">

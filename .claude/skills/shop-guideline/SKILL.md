@@ -34,7 +34,7 @@ If a question fits within the rules summarized below and doesn't require detaile
 
 ---
 
-## The 12 non-negotiable rules
+## The 15 non-negotiable rules
 
 These are the rules you must enforce on every code generation. The detailed reasoning and examples live in the reference files.
 
@@ -65,6 +65,12 @@ These are the rules you must enforce on every code generation. The detailed reas
 11. **Color hierarchy is strict.** Apply colors in this priority order: `Color="Color.Primary"` first → `Class="mud-theme-primary"` second → `ShopColors.Primary` only as last resort with a comment explaining why. Never hardcode hex values in `.razor` files.
 
 12. **Always `MudText` with `Typo`.** Never use `<span>`, `<p>`, `<h1>` through `<h6>`, or any other native HTML text element to display content.
+
+13. **Code-behind separation.** Every `.razor` with more than markup needs a sibling `.razor.cs` partial class. Markup-only files may stay single-file. No inline `@code` blocks larger than ~5 lines. Pages declare their route via `[Route(Routes.X)]` on the code-behind, never `@page "/..."` in markup.
+
+14. **Centralised routes — no hardcoded URLs.** Every route lives in `TheShop.Web/Common/Routes.cs`. References in `NavigateTo`, `Href`, and redirects must use `Routes.X`. The `Routes` class lives in the Web layer — Application/Domain must not know URLs exist.
+
+15. **Busy state is centralised — `_isBusy` is banned.** Pages wrap awaitable work in `await BusyState.RunAsync(BusyKeys.X, ...)`. UI surfaces busy state via `<BusyFor Key="@BusyKeys.X" Context="busy">` for per-operation indicators, or `<ShopLoadingOverlay />` (mounted once in `MainLayout`) keyed to `BusyKeys.Global` for app-blocking loads. `BusyState`, `BusyKeys`, `BusyFor`, `ShopLoadingOverlay` all live in `TheShop.Web` — busy state is a presentation concern and must not leak into Application.
 
 ---
 
@@ -101,6 +107,9 @@ These decisions are answerable from this SKILL.md alone:
 - **"How do I color this MudButton?"** `<MudButton Color="Color.Primary">` — first preference.
 - **"Should this be a `<span>`?"** No. Use `<MudText Typo="Typo.body2">`.
 - **"Where does business logic go?"** Domain entity method (e.g., `cart.AddItem(...)`), not a service or page.
+- **"Need a route?"** `@Routes.Auth.SignIn` (or the right nested constant). Never inline `"/sign-in"`.
+- **"Need a loader?"** Wrap the affected control in `<BusyFor Key="@BusyKeys.X" Context="busy">` and drive the underlying call with `await BusyState.RunAsync(BusyKeys.X, ...)`.
+- **"Page has @code with logic?"** Move it to a sibling `.razor.cs` partial class. Declare the route with `[Route(Routes.X)]` on the partial class.
 
 ---
 

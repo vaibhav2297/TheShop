@@ -983,6 +983,17 @@ Before writing or accepting any UI code, verify. If any item fails, **stop and f
 ### Brand
 - [ ] All theme classes use the `Shop` prefix (`ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`)?
 
+### Loaders & routes
+- [ ] No `_isBusy` field in the page — busy state goes through `await BusyState.RunAsync(BusyKeys.X, ...)`?
+- [ ] Spinner is inside `<BusyFor Key="@BusyKeys.X" Context="busy">`, never hand-rolled?
+- [ ] No hardcoded route strings — `Href`, `NavigateTo`, redirect targets all use `Routes.X`?
+- [ ] Page declares its route via `[Route(Routes.X)]` on the code-behind, not `@page "/..."` in markup?
+
+### Code-behind
+- [ ] Page has a sibling `.razor.cs` partial class for any `@code` logic beyond ~5 lines?
+- [ ] Markup file has no `@code` block (only directives + render tree)?
+- [ ] Feature-specific `@using` directives live in the `.razor` file, not in `_Imports.razor`?
+
 ### Images
 - [ ] WebP format used for raster images?
 - [ ] `width`, `height`, and `loading="lazy"` attributes set?
@@ -990,6 +1001,110 @@ Before writing or accepting any UI code, verify. If any item fails, **stop and f
 - [ ] `MudImage` used where appropriate?
 
 If any answer above is "no", stop and refactor before declaring the task complete.
+
+---
+
+## Loading & Busy Indicators
+
+The project owns spinner placement and styling centrally. Pages must not hand-roll loaders.
+
+### Inline button busy state
+
+Wrap the affected control in `<BusyFor Key="@BusyKeys.X" Context="busy">` and bind `MudButton.Disabled="@busy"` plus an inline `MudProgressCircular` when `busy` is true. The `BusyFor` component subscribes to `BusyState.Changed` and re-renders only its child fragment on transitions.
+
+```razor
+<BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(!_isFormValid || busy)"
+               OnClick="OnSubmitAsync">
+        @if (busy)
+        {
+            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+        }
+        @Strings.Auth_SendCode
+    </MudButton>
+</BusyFor>
+```
+
+The page's code-behind drives the busy state explicitly:
+
+```csharp
+private async Task OnSubmitAsync()
+{
+    await BusyState.RunAsync(BusyKeys.Auth.SignIn, async () =>
+    {
+        var result = await Mediator.Send(new RequestSignInOtpCommand(_email));
+        // ...
+    });
+}
+```
+
+### App-blocking busy state
+
+`<ShopLoadingOverlay />` is mounted once in `MainLayout.razor` and observes `BusyKeys.Global`. Trigger it from page code for app-blocking work (session restore on startup, sign-out, etc.):
+
+```csharp
+await BusyState.RunAsync(BusyKeys.Global, () => RestoreSessionAsync());
+```
+
+### Rules
+
+- Never hand-roll `MudProgressCircular` outside the `BusyFor` `ChildContent` fragment — placement and styling live in that component.
+- No `_isBusy` boolean fields in pages. `BusyState` is the only source of truth.
+- `BusyKeys` constants only — no magic strings at call sites.
+
+---
+
+## Code-Behind Separation
+
+Every `.razor` file with logic has a sibling `.razor.cs` partial class. Markup-only files (simple display components) may stay single-file.
+
+### File split
+
+`.razor` holds:
+- Markup (component tree, render fragments)
+- Directives: `@inherits`, `@implements`, `@typeparam`, `@attribute`
+- Local `@using` directives for namespaces the markup references
+- **No** `@page` directive — route declarations live in code-behind
+
+`.razor.cs` holds:
+- `public partial class X : ComponentBase` (or `LayoutComponentBase`)
+- `[Route(Routes.X)]` attribute for pages
+- All `[Inject]`, `[Parameter]`, fields, methods, lifecycle hooks, `IDisposable` implementations
+
+### Example
+
+```razor
+@* Pages/Auth/SignIn.razor *@
+@attribute [AllowAnonymous]
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.SignIn_PageTitle</PageTitle>
+<MudContainer>...</MudContainer>
+```
+
+```csharp
+// Pages/Auth/SignIn.razor.cs
+using Microsoft.AspNetCore.Components;
+using TheShop.Web.Common;
+
+namespace TheShop.Web.Pages.Auth;
+
+[Route(Routes.Auth.SignIn)]
+public partial class SignIn : ComponentBase
+{
+    [Inject] private IMediator Mediator { get; set; } = default!;
+    // ...
+}
+```
+
+### Rules
+
+- No inline `@code` blocks larger than ~5 lines.
+- Page namespaces follow folder structure (`Pages/Auth/SignIn.razor.cs` → `TheShop.Web.Pages.Auth`).
+- Add `@using` directives directly in the `.razor` file that needs them — don't pollute `_Imports.razor` with feature-specific namespaces.
 
 ---
 

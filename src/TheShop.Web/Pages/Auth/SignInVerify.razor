@@ -1,0 +1,56 @@
+@attribute [AllowAnonymous]
+@implements IDisposable
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.Verify_PageTitle</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="py-8">
+    <MudPaper Class="pa-8" Elevation="2">
+        <MudText Typo="Typo.h4" Class="mb-2">@Strings.Verify_Heading</MudText>
+        <MudText Typo="Typo.body2" Class="mb-6">
+            @string.Format(Strings.Verify_Subheading, Email ?? string.Empty)
+        </MudText>
+
+        <MudTextField T="string"
+                      @bind-Value="_code"
+                      Label="@Strings.Verify_CodeLabel"
+                      HelperText="@Strings.Verify_CodeHint"
+                      InputMode="InputMode.numeric"
+                      MaxLength="6"
+                      Class="mb-3" />
+
+        <BusyFor Key="@BusyKeys.Auth.SignInVerify" Context="busy">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Disabled="@(busy || _code.Length != 6)"
+                       OnClick="OnVerifyAsync"
+                       Class="mt-4">
+                @if (busy)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                @Strings.Verify_Submit
+            </MudButton>
+        </BusyFor>
+
+        <BusyFor Key="@BusyKeys.Auth.ResendOtp" Context="resending">
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Disabled="@(resending || _resendSeconds > 0)"
+                       OnClick="OnResendAsync"
+                       Class="mt-2">
+                @if (_resendSeconds > 0)
+                {
+                    @string.Format(Strings.Verify_ResendIn, _resendSeconds)
+                }
+                else
+                {
+                    @Strings.Verify_Resend
+                }
+            </MudButton>
+        </BusyFor>
+    </MudPaper>
+</MudContainer>

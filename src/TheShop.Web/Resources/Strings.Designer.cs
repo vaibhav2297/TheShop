@@ -308,6 +308,205 @@ namespace TheShop.Web.Resources {
         }
 
         // ============================================================
+        // Authentication — OTP flow
+        // ============================================================
+
+        /// <summary>Sign Up — The Vape Shop Sarnia</summary>
+        public static string SignUp_PageTitle {
+            get { return ResourceManager.GetString("SignUp_PageTitle", resourceCulture)!; }
+        }
+
+        /// <summary>Create your account</summary>
+        public static string SignUp_Heading {
+            get { return ResourceManager.GetString("SignUp_Heading", resourceCulture)!; }
+        }
+
+        /// <summary>Already have an account?</summary>
+        public static string SignUp_HaveAccount {
+            get { return ResourceManager.GetString("SignUp_HaveAccount", resourceCulture)!; }
+        }
+
+        /// <summary>Sign In — The Vape Shop Sarnia</summary>
+        public static string SignIn_PageTitle {
+            get { return ResourceManager.GetString("SignIn_PageTitle", resourceCulture)!; }
+        }
+
+        /// <summary>Sign in to your account</summary>
+        public static string SignIn_Heading {
+            get { return ResourceManager.GetString("SignIn_Heading", resourceCulture)!; }
+        }
+
+        /// <summary>Don't have an account?</summary>
+        public static string SignIn_NoAccount {
+            get { return ResourceManager.GetString("SignIn_NoAccount", resourceCulture)!; }
+        }
+
+        /// <summary>Sign Up</summary>
+        public static string SignUp {
+            get { return ResourceManager.GetString("SignUp", resourceCulture)!; }
+        }
+
+        /// <summary>Verify Code — The Vape Shop Sarnia</summary>
+        public static string Verify_PageTitle {
+            get { return ResourceManager.GetString("Verify_PageTitle", resourceCulture)!; }
+        }
+
+        /// <summary>Enter your verification code</summary>
+        public static string Verify_Heading {
+            get { return ResourceManager.GetString("Verify_Heading", resourceCulture)!; }
+        }
+
+        /// <summary>We sent a 6-digit code to {0}. Check your inbox (and spam folder).</summary>
+        public static string Verify_Subheading {
+            get { return ResourceManager.GetString("Verify_Subheading", resourceCulture)!; }
+        }
+
+        /// <summary>Verification code</summary>
+        public static string Verify_CodeLabel {
+            get { return ResourceManager.GetString("Verify_CodeLabel", resourceCulture)!; }
+        }
+
+        /// <summary>6 digits</summary>
+        public static string Verify_CodeHint {
+            get { return ResourceManager.GetString("Verify_CodeHint", resourceCulture)!; }
+        }
+
+        /// <summary>Verify</summary>
+        public static string Verify_Submit {
+            get { return ResourceManager.GetString("Verify_Submit", resourceCulture)!; }
+        }
+
+        /// <summary>Resend code</summary>
+        public static string Verify_Resend {
+            get { return ResourceManager.GetString("Verify_Resend", resourceCulture)!; }
+        }
+
+        /// <summary>Resend in {0}s</summary>
+        public static string Verify_ResendIn {
+            get { return ResourceManager.GetString("Verify_ResendIn", resourceCulture)!; }
+        }
+
+        /// <summary>Send code</summary>
+        public static string Auth_SendCode {
+            get { return ResourceManager.GetString("Auth_SendCode", resourceCulture)!; }
+        }
+
+        /// <summary>First name</summary>
+        public static string FirstName_Label {
+            get { return ResourceManager.GetString("FirstName_Label", resourceCulture)!; }
+        }
+
+        /// <summary>Last name</summary>
+        public static string LastName_Label {
+            get { return ResourceManager.GetString("LastName_Label", resourceCulture)!; }
+        }
+
+        /// <summary>Date of birth</summary>
+        public static string DateOfBirth_Label {
+            get { return ResourceManager.GetString("DateOfBirth_Label", resourceCulture)!; }
+        }
+
+        /// <summary>You must be at least 19 years old.</summary>
+        public static string DateOfBirth_Hint {
+            get { return ResourceManager.GetString("DateOfBirth_Hint", resourceCulture)!; }
+        }
+
+        /// <summary>An account with this email already exists.</summary>
+        public static string Auth_AccountAlreadyExists {
+            get { return ResourceManager.GetString("Auth_AccountAlreadyExists", resourceCulture)!; }
+        }
+
+        /// <summary>No account found for this email.</summary>
+        public static string Auth_AccountNotFound {
+            get { return ResourceManager.GetString("Auth_AccountNotFound", resourceCulture)!; }
+        }
+
+        /// <summary>You must be at least 19 years old to create an account.</summary>
+        public static string Auth_Underage {
+            get { return ResourceManager.GetString("Auth_Underage", resourceCulture)!; }
+        }
+
+        /// <summary>Incorrect code. Please try again.</summary>
+        public static string Auth_Code_Incorrect {
+            get { return ResourceManager.GetString("Auth_Code_Incorrect", resourceCulture)!; }
+        }
+
+        /// <summary>This code has expired. Please request a new one.</summary>
+        public static string Auth_CodeExpired {
+            get { return ResourceManager.GetString("Auth_CodeExpired", resourceCulture)!; }
+        }
+
+        /// <summary>Too many incorrect attempts. Please start again.</summary>
+        public static string Auth_TooManyAttempts {
+            get { return ResourceManager.GetString("Auth_TooManyAttempts", resourceCulture)!; }
+        }
+
+        /// <summary>Please enter the 6-digit code from your email.</summary>
+        public static string Auth_Code_Invalid {
+            get { return ResourceManager.GetString("Auth_Code_Invalid", resourceCulture)!; }
+        }
+
+        /// <summary>Please wait before requesting a new code.</summary>
+        public static string Auth_ResendTooSoon {
+            get { return ResourceManager.GetString("Auth_ResendTooSoon", resourceCulture)!; }
+        }
+
+        /// <summary>First name is required.</summary>
+        public static string Auth_FirstName_Required {
+            get { return ResourceManager.GetString("Auth_FirstName_Required", resourceCulture)!; }
+        }
+
+        /// <summary>Last name is required.</summary>
+        public static string Auth_LastName_Required {
+            get { return ResourceManager.GetString("Auth_LastName_Required", resourceCulture)!; }
+        }
+
+        /// <summary>Please enter a valid date of birth.</summary>
+        public static string Auth_Dob_InPast {
+            get { return ResourceManager.GetString("Auth_Dob_InPast", resourceCulture)!; }
+        }
+
+        /// <summary>Please enter a valid email address.</summary>
+        public static string Email_Invalid {
+            get { return ResourceManager.GetString("Email_Invalid", resourceCulture)!; }
+        }
+
+        /// <summary>We sent a 6-digit code to your email.</summary>
+        public static string Auth_CodeSent {
+            get { return ResourceManager.GetString("Auth_CodeSent", resourceCulture)!; }
+        }
+
+        /// <summary>Signed in.</summary>
+        public static string Auth_SignedIn {
+            get { return ResourceManager.GetString("Auth_SignedIn", resourceCulture)!; }
+        }
+
+        /// <summary>You have been signed out.</summary>
+        public static string Auth_SignedOut {
+            get { return ResourceManager.GetString("Auth_SignedOut", resourceCulture)!; }
+        }
+
+        /// <summary>Please sign in again to continue.</summary>
+        public static string Auth_SessionExpired {
+            get { return ResourceManager.GetString("Auth_SessionExpired", resourceCulture)!; }
+        }
+
+        /// <summary>Something went wrong. Please try again.</summary>
+        public static string Auth_Unexpected {
+            get { return ResourceManager.GetString("Auth_Unexpected", resourceCulture)!; }
+        }
+
+        /// <summary>Welcome, {0}!</summary>
+        public static string Account_Welcome {
+            get { return ResourceManager.GetString("Account_Welcome", resourceCulture)!; }
+        }
+
+        /// <summary>Signed in as {0}</summary>
+        public static string Account_SignedInAs {
+            get { return ResourceManager.GetString("Account_SignedInAs", resourceCulture)!; }
+        }
+
+        // ============================================================
         // Admin
         // ============================================================
 

@@ -1,12 +1,12 @@
-@page "/not-found"
 @layout TheShop.Web.Components.Layout.MainLayout
+@using TheShop.Web.Common
 
 <PageTitle>@Strings.NotFound_PageTitle</PageTitle>
 
 <MudStack Spacing="4" AlignItems="AlignItems.Center" Class="mt-12">
     <MudText Typo="Typo.h4">@Strings.NotFound_Heading</MudText>
     <MudText Typo="Typo.body1">@Strings.NotFound_Message</MudText>
-    <MudButton Href="/"
+    <MudButton Href="@Routes.Home"
                Variant="Variant.Filled"
                Color="Color.Primary">
         @Strings.NotFound_GoHome

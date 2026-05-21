@@ -1,0 +1,66 @@
+@attribute [AllowAnonymous]
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.SignUp_PageTitle</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="py-8">
+    <MudPaper Class="pa-8" Elevation="2">
+        <MudText Typo="Typo.h4" Class="mb-6">@Strings.SignUp_Heading</MudText>
+
+        <MudForm @ref="_form" @bind-IsValid="_isFormValid">
+            <MudTextField T="string"
+                          @bind-Value="_firstName"
+                          Label="@Strings.FirstName_Label"
+                          Required="true"
+                          RequiredError="@Localizer[nameof(Strings.Auth_FirstName_Required)]"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          @bind-Value="_lastName"
+                          Label="@Strings.LastName_Label"
+                          Required="true"
+                          RequiredError="@Localizer[nameof(Strings.Auth_LastName_Required)]"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          @bind-Value="_email"
+                          Label="@Strings.Email_Label"
+                          Placeholder="@Strings.Email_Placeholder"
+                          InputType="InputType.Email"
+                          Required="true"
+                          RequiredError="@Localizer[nameof(Strings.Email_Required)]"
+                          Validation="@(new Func<string, string?>(ValidateEmail))"
+                          Class="mb-3" />
+
+            <MudDatePicker @bind-Date="_dateOfBirth"
+                           Label="@Strings.DateOfBirth_Label"
+                           HelperText="@Strings.DateOfBirth_Hint"
+                           MaxDate="DateTime.Today.AddDays(-1)"
+                           Required="true"
+                           RequiredError="@Localizer[nameof(Strings.Auth_Dob_InPast)]"
+                           Validation="@(new Func<DateTime?, string?>(ValidateDateOfBirth))"
+                           Class="mb-3" />
+
+            <BusyFor Key="@BusyKeys.Auth.SignUp" Context="busy">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           FullWidth="true"
+                           Disabled="@(!_isFormValid || busy)"
+                           OnClick="OnSubmitAsync"
+                           Class="mt-4">
+                    @if (busy)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @Strings.Auth_SendCode
+                </MudButton>
+            </BusyFor>
+        </MudForm>
+
+        <MudText Typo="Typo.body2" Class="mt-6 text-center">
+            @Strings.SignUp_HaveAccount
+            <MudLink Href="@Routes.Auth.SignIn">@Strings.Login</MudLink>
+        </MudText>
+    </MudPaper>
+</MudContainer>

@@ -1138,6 +1138,119 @@ Use MudBlazor consistently. If MudBlazor cannot meet the requirement, ask the us
 
 ---
 
+## Modern C# Idioms (.NET 10)
+
+The project targets .NET 10 with C# 13. Use these idioms wherever they don't sacrifice clarity.
+
+### Primary constructors
+
+Apply primary constructors to any class whose constructor just stores dependencies — handlers, repositories, services, pipeline behaviors. The parameter is in scope throughout the class body; no backing field needed.
+
+```csharp
+// ✅ Preferred
+public sealed class RequestSignInOtpHandler(ICustomerRepository customers, IAuthService auth)
+    : IRequestHandler<RequestSignInOtpCommand, Result<OtpRequestedDto>>
+{
+    public async Task<Result<OtpRequestedDto>> Handle(...) =>
+        await customers.ExistsForEmailAsync(...);  // 'customers' in scope
+}
+
+// ❌ Avoid
+public sealed class RequestSignInOtpHandler : IRequestHandler<...>
+{
+    private readonly ICustomerRepository _customers;
+    public RequestSignInOtpHandler(ICustomerRepository customers) { _customers = customers; }
+    // ...
+}
+```
+
+**Do NOT** apply primary constructors when the constructor has:
+- Validation logic (e.g., value objects like `Email`, `DateOfBirth`)
+- Side-effects such as event subscription (e.g., `SupabaseAuthService` subscribing to Gotrue state changes)
+- Composition logic that builds the dependency from inputs (e.g., `SupabaseClientFactory`)
+- Factory-pattern methods that need explicit constructors (e.g., `Result<T>`)
+
+In those cases, an explicit constructor body reads better than a field initializer hack.
+
+### Collection expressions
+
+Replace `new List<T>()`, `new[] { ... }`, `Array.Empty<T>()`, and `new List<T> { a, b }` with collection expression syntax.
+
+```csharp
+// ✅ Preferred
+List<Claim> claims = [new(ClaimTypes.NameIdentifier, userId)];
+int[] sizes = [1, 2, 3];
+string[] empty = [];
+var merged = [..first, ..second];
+
+// ❌ Avoid
+var claims = new List<Claim> { new Claim(...) };
+var sizes = new[] { 1, 2, 3 };
+var empty = Array.Empty<string>();
+```
+
+---
+
+## Cross-cutting presentation services
+
+Some primitives are presentation concerns and belong purely in `TheShop.Web`. They MUST NOT leak into Application or Domain via interfaces or behaviors.
+
+### `BusyState` (Web only)
+
+`TheShop.Web/Common/BusyState.cs` is a scoped service holding a keyed reference counter (`Dictionary<string, int>`) and a `Changed` event. Pages drive it explicitly:
+
+```csharp
+await BusyState.RunAsync(BusyKeys.Auth.SignIn, async () =>
+{
+    var result = await Mediator.Send(command);
+    // ...
+});
+```
+
+The counter (not a bool) lets concurrent operations under the same key compose correctly. `Changed` fires only on per-key transitions across zero, preventing spurious re-renders.
+
+`BusyKeys` (`TheShop.Web/Common/BusyKeys.cs`) is a static class with nested string constants — never magic strings at call sites.
+
+**Why this stays in Web:** A MediatR pipeline behavior would force `IBusyState` into Application, leaking a UI primitive across the layer boundary. The cost of one explicit `RunAsync(...)` line per call site is small; the architectural payoff is real.
+
+UI surfaces busy state via two components in `TheShop.Web/Components/Common/`:
+- `<BusyFor Key="@BusyKeys.X" Context="busy">` — render-prop component for per-operation indicators (button spinners, disabled states).
+- `<ShopLoadingOverlay />` — mounted once in `MainLayout.razor`, observes `BusyKeys.Global` for app-blocking overlays.
+
+### `Routes` (Web only)
+
+`TheShop.Web/Common/Routes.cs` is a static class with nested route constants and helper methods for parameterised URLs.
+
+```csharp
+public static class Routes
+{
+    public const string Home = "/";
+    public static class Auth
+    {
+        public const string SignIn = "/sign-in";
+        public static string SignInWithReturn(string returnUrl) =>
+            $"{SignIn}?returnUrl={Uri.EscapeDataString(returnUrl)}";
+    }
+}
+```
+
+Pages declare their route via `[Route(Routes.X)]` on the code-behind partial class — never `@page "/..."` in markup. All `NavigateTo`, `Href`, and redirect references go through `Routes.X`.
+
+URLs are a presentation concern. Application and Domain don't know URLs exist.
+
+---
+
+## Layer placement — quick table
+
+| What | Layer |
+|---|---|
+| Entities, value objects, domain exceptions, business invariants | Domain |
+| MediatR commands/queries, handlers, validators, DTOs, repository interfaces, pipeline behaviors (e.g., `ValidationBehavior`) | Application |
+| Supabase repositories, Stripe/Resend adapters, `SupabaseAuthService`, session persistence | Infrastructure |
+| Pages (`.razor` + `.razor.cs`), MudBlazor components, state stores, `Routes`, `BusyState`, `BusyKeys`, `BusyFor`, `ShopLoadingOverlay`, `ShopTheme`, `ShopColors`, `ShopIcons` | Web (presentation only) |
+
+---
+
 ## Code Generation Checklist
 
 Before writing or accepting any code, verify. If any item fails, **stop and fix it** before proceeding.
@@ -1151,12 +1264,14 @@ Before writing or accepting any code, verify. If any item fails, **stop and fix 
 - [ ] Are use cases dispatched through MediatR (`IMediator.Send`)?
 - [ ] Is `Result<T>` used for expected failures (not exceptions)?
 - [ ] Are DTOs (records) used to cross layer boundaries — entities never crossing into UI?
-- [ ] Is dependency injection via constructor with `readonly` fields?
+- [ ] Are dependencies injected via primary constructor (no backing fields unless validation/side-effects are needed)?
+- [ ] Are collection initialisers using collection expressions (`[]`, `[a, b]`, `[..items]`) instead of `new List<>()`, `new[] {}`, `Array.Empty<>`?
 - [ ] Do async methods accept `CancellationToken`?
 - [ ] Are Commands/Queries declared as `record` (immutable)?
 - [ ] Is the file in the correct folder per the structure?
 - [ ] Does the class name follow the naming conventions?
 - [ ] Is there a corresponding test in the matching `tests/` project?
+- [ ] Is `BusyState`, `BusyKeys`, `BusyFor`, `Routes` referenced only inside `TheShop.Web` — never in Application or Domain?
 
 For design-related checks, see the **Design Checklist** in `references/DESIGN.md`.
 
