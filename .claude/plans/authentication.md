@@ -236,6 +236,17 @@ Result<SessionDto> → page updates AuthState, persists session via LocalStorage
 
 ### Phase 5 — Web
 
+**Figma references** *(read by `shop-ui-implementer` at impl time)*
+
+- **File:** `https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=2263-4709`
+- **Nodes:**
+  - `2267:8121` — Login — Sign-in page: email input + "Send code" CTA; maps to `SignIn.razor` (`/sign-in`).
+  - `2276:8368` — Login - Verify — Sign-in OTP entry: 6-digit code field, "Verify" button, active "Resend" link; maps to `SignInVerify.razor` (`/sign-in/verify`).
+  - `2267:8169` — Login - Verify - Send Again — Sign-in verify page in its post-resend / cooldown-active state; shows timer state for the resend button.
+  - `2276:8443` — Sign Up — Sign-up page: First Name, Last Name, Email, Date of Birth fields + "Send code" CTA; maps to `SignUp.razor` (`/sign-up`).
+  - `2276:8504` — Sign Up - Verify — Sign-up OTP entry: 6-digit code field, "Verify" button, resend link; maps to `SignUpVerify.razor` (`/sign-up/verify`).
+  - `2276:8572` — Sign Up - Verify - Send Again — Sign-up verify page in its post-resend / cooldown-active state; shows timer state for the resend button.
+
 - `TheShop.Web/Auth/SupabaseAuthStateProvider.cs` — see `ARCHITECTURE.md §Authorization wiring` template; subscribe to `client.Auth.AddStateChangedListener` and call `NotifyAuthenticationStateChanged`.
 - `TheShop.Web/State/PendingSignUpState.cs` — holds the in-flight sign-up form data (scoped per circuit, but really per-tab in WASM).
 - `TheShop.Web/Pages/Account/SignUp.razor` (`/sign-up`) — `MudForm` with `MudTextField` × 3 + `MudDatePicker` + Send-code button.

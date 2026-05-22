@@ -30,7 +30,11 @@ If a section starts pulling toward "what the user sees," redirect — that belon
 
 ## Inputs
 
-The skill takes one required input: a **spec file name** (matching `.claude/specs/{file_name}.md`).
+The skill takes one required input and one optional input:
+
+### Required — spec file name
+
+Must match `.claude/specs/{file_name}.md`.
 
 - If the user provided a name, use it. Strip the `.md` extension if they included it.
 - If the user did **not** provide a name, stop and ask:
@@ -44,6 +48,22 @@ The skill takes one required input: a **spec file name** (matching `.claude/spec
   > "I couldn't find a spec at `.claude/specs/{name}.md`. I generate implementation plans from specs — please create the spec first (the `/create-spec` skill helps) and re-invoke me."
 
   Do not proceed without a spec.
+
+### Optional — Figma link or node ID (`--figma`)
+
+The user may supply a Figma URL or node ID alongside the feature name, in any of these forms:
+
+```
+/create-plan add-to-cart --figma https://www.figma.com/file/XXXXX/TheShop?node-id=123-456
+/create-plan add-to-cart --figma 123:456
+/create-plan add-to-cart --figma 123:456,789:012
+```
+
+- **Full URL** — extract the file key and any `node-id` query parameter from the URL. Use the file key to open the correct Figma file; use the node ID as the starting frame.
+- **Node ID(s)** — one or more `node:id` values (comma-separated). Treat these as the explicit starting frames for this feature; you will still fetch them via Figma MCP to verify and extract child node IDs.
+- **Not provided** — see Step 4 below for how to discover node IDs without an explicit hint.
+
+When the user provides `--figma`, skip the "ask the user" prompt in Step 4 and go straight to fetching.
 
 ---
 
@@ -82,13 +102,31 @@ If `CLAUDE.md` is present, it's already in context (loaded automatically by Clau
 ### 4. Consult MCPs when they sharpen the plan (not by default)
 
 - **MudBlazor MCP** — call when the spec implies UI components and you need to pick the right one or verify a parameter. Use `mudblazor:search_components`, `mudblazor:get_component_detail`, or `mudblazor:get_component_parameters`. Don't enumerate all components "for completeness."
-- **Figma MCP** — call when the spec describes a designed UI flow. Use `figma-console:figma_get_design_system_kit` or `figma-console:figma_get_component`. A separate Figma page has been created for each feature — fetch and review the Figma page that corresponds to this feature, and plan the implementation to match that design exactly. The downstream `shop-ui-implementer` agent will **re-fetch these nodes at implementation time** to translate them with high fidelity, so the plan must capture three things explicitly:
+- **Figma MCP** — call when the spec describes a designed UI flow. The downstream `shop-ui-implementer` agent will **re-fetch these nodes at implementation time** to translate them with high fidelity, so the plan must capture three things explicitly:
 
   1. The **Figma file URL** (the canonical link).
   2. The **per-page/component node ID** for every page or component this feature introduces or modifies — node IDs are the contract the UI implementer reads.
   3. A **one-sentence "visual intent"** per node — what the node is and how it fits into the feature flow. Not a re-description of the design; a hook so a reader (or the implementer) can confirm "this is the sign-in OTP step, not the sign-up first step."
 
-  Capture these in Section 7 Phase 4 (Web) of the plan using the **Figma references** subsection (see the template). If a node ID is missing or ambiguous, surface it as an open question in Section 11 — do not paper over it. Don't call Figma for non-UI features.
+  **How to find node IDs — follow this sequence:**
+
+  **a. If the user supplied `--figma`** — use the file key and/or node IDs directly from their input. Call `figma-console:figma_get_component_for_development` on each provided node ID to confirm it exists and get its children. Use those children as the per-component node IDs for the plan.
+
+  **b. If no `--figma` was supplied and the spec implies UI** — ask the user once before fetching:
+
+  > "This feature has a UI phase. Do you have a Figma link or node ID for it? If yes, provide it now (e.g., `https://figma.com/...` or `123:456`). If no, I'll search the open Figma file for a page matching this feature — reply `skip` to skip Figma entirely for this feature."
+
+  Wait for the reply. Then:
+  - **URL/node ID given** — proceed as in (a).
+  - **`skip` or no Figma** — omit the "Figma references" subsection from Phase 4 and add an open question in Section 11: "Figma node IDs not provided — `shop-ui-implementer` will need them before building the UI."
+  - **No file open in Figma** — if the Figma MCP returns no open file, note it and surface as an open question in Section 11.
+
+  **c. Extracting per-component node IDs** — once you have a starting frame or page node:
+  1. Call `figma-console:figma_get_component_for_development` on the top-level frame to get direct children.
+  2. For each child that maps to a distinct page or major component in the feature (e.g., "Sign-in form", "OTP step", "Error state"), record its node ID and a one-sentence visual intent.
+  3. Do not go deeper than one level of children unless a child is itself a complex nested component that warrants its own node ID entry.
+
+  Capture all of this in Section 7 Phase 4 (Web) of the plan using the **Figma references** subsection (see the template). If a node ID is missing or ambiguous, surface it as an open question in Section 11 — do not paper over it. Don't call Figma for non-UI features.
 
 Both are skippable for backend-only or domain-rule features.
 
@@ -393,3 +431,17 @@ CREATE POLICY "carts_admin_select" ON carts
 > User: invokes `create-plan` with feature name `add-to-cart`
 >
 > Skill: "A plan at `.claude/plans/add-to-cart.md` already exists. Should I overwrite, save as `add-to-cart-v2.md`, or cancel?"
+
+**Example 5 — Figma URL provided via `--figma`:**
+
+> User: `/create-plan user-authentication --figma https://www.figma.com/file/XXXXX/TheShop?node-id=42-100`
+>
+> Skill: extracts file key `XXXXX` and node ID `42:100` from the URL → calls `figma_get_component_for_development` on node `42:100` → records child node IDs and visual intent in Phase 4 → no prompting needed.
+
+**Example 6 — No `--figma` supplied, spec implies UI:**
+
+> User: `/create-plan user-authentication`
+>
+> Skill: detects Phase 4 (UI) in the plan → asks: "This feature has a UI phase. Do you have a Figma link or node ID for it?" → user replies with URL or node ID → skill fetches and records IDs → continues.
+>
+> If user replies `skip` → Figma references section is omitted; open question logged in Section 11.

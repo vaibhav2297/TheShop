@@ -1,16 +1,18 @@
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using TheShop.Application.Features.Auth.Commands.RequestSignInOtp;
 using TheShop.Web.Common;
 using TheShop.Web.Resources;
+using TheShop.Web.State;
 
 namespace TheShop.Web.Pages.Auth;
 
 /// <summary>
-/// Sign-in page. Collects the user's email, sends a sign-in OTP via
-/// <see cref="RequestSignInOtpCommand"/>, then navigates to the verification step.
+/// Sign-in page (step 1 of 2). Collects the user's email and dispatches
+/// <see cref="RequestSignInOtpCommand"/>. On success navigates to the OTP verify page.
 /// </summary>
 [Route(Routes.Auth.SignIn)]
 public partial class SignIn : ComponentBase
@@ -21,38 +23,41 @@ public partial class SignIn : ComponentBase
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
 
-    [Parameter, SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+    /// <summary>
+    /// Optional URL to redirect to after a successful sign-in. When absent, the user is
+    /// sent to the home page.
+    /// </summary>
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
 
     private MudForm _form = default!;
-    private bool _isFormValid;
     private string _email = string.Empty;
+    private bool _isFormValid;
 
-    private string? ValidateEmail(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return Localizer[nameof(Strings.Email_Required)];
+    private readonly Func<string, string?> _emailValidation = email =>
+        string.IsNullOrWhiteSpace(email)
+            ? Strings.Email_Required
+            : !email.Contains('@')
+                ? Strings.Email_Invalid
+                : null;
 
-        var attr = new System.ComponentModel.DataAnnotations.EmailAddressAttribute();
-        return attr.IsValid(value) ? null : Localizer[nameof(Strings.Email_Invalid)].Value;
-    }
-
-    private async Task OnSubmitAsync()
+    private async Task OnSendCodeAsync()
     {
         await _form.ValidateAsync();
         if (!_isFormValid) return;
 
         await BusyState.RunAsync(BusyKeys.Auth.SignIn, async () =>
         {
-            var result = await Mediator.Send(new RequestSignInOtpCommand(_email));
+            var result = await Mediator.Send(new RequestSignInOtpCommand(_email.Trim()));
 
-            if (result.IsFailure)
+            if (result.IsSuccess)
             {
-                Snackbar.Add(Localizer[result.Error!], Severity.Error);
-                return;
+                Snackbar.Add(Strings.Auth_CodeSent, Severity.Success);
+                Nav.NavigateTo(Routes.Auth.SignInVerifyWith(_email.Trim(), ReturnUrl));
             }
-
-            Snackbar.Add(Localizer[nameof(Strings.Auth_CodeSent)], Severity.Success);
-            Nav.NavigateTo(Routes.Auth.SignInVerifyWith(_email, ReturnUrl));
+            else
+            {
+                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], Severity.Error);
+            }
         });
     }
 }

@@ -1,12 +1,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using TheShop.Application.Features.Auth;
 using TheShop.Application.Features.Auth.Commands.ResendOtp;
 using TheShop.Application.Features.Auth.Commands.VerifySignInOtp;
-using TheShop.Web.Auth;
 using TheShop.Web.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
@@ -14,9 +12,8 @@ using TheShop.Web.State;
 namespace TheShop.Web.Pages.Auth;
 
 /// <summary>
-/// Sign-in OTP verification page. Verifies the code via <see cref="VerifySignInOtpCommand"/>,
-/// then updates <see cref="AuthState"/> and navigates to the return URL or home.
-/// Manages the 60-second resend countdown timer.
+/// Sign-in page (step 2 of 2). Collects the 6-digit OTP, dispatches
+/// <see cref="VerifySignInOtpCommand"/>, and manages the 60-second resend cooldown.
 /// </summary>
 [Route(Routes.Auth.SignInVerify)]
 public partial class SignInVerify : ComponentBase, IDisposable
@@ -25,89 +22,124 @@ public partial class SignInVerify : ComponentBase, IDisposable
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
-    [Inject] private AuthState AuthState { get; set; } = default!;
-    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
+    [Inject] private AuthState AuthState { get; set; } = default!;
 
-    [Parameter, SupplyParameterFromQuery] public string? Email { get; set; }
-    [Parameter, SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+    /// <summary>
+    /// The email address the OTP was sent to. Supplied by <see cref="SignIn"/> via query string.
+    /// If absent, <see cref="OnInitialized"/> redirects back to the sign-in page.
+    /// </summary>
+    [SupplyParameterFromQuery] public string? Email { get; set; }
 
-    private string _code = string.Empty;
-    private int _resendSeconds = 60;
-    private System.Threading.Timer? _timer;
+    /// <summary>
+    /// Optional URL to redirect to after a successful sign-in. When absent, the user is
+    /// sent to the home page.
+    /// </summary>
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+
+    private MudForm _form = default!;
+    private readonly string[] _digits = ["", "", "", "", "", ""];
+    private bool _isFormValid;
+    private int _resendCooldown;
+    private Timer? _cooldownTimer;
+
+    private string _email => Email ?? string.Empty;
+    private bool _isCodeComplete => _digits.All(d => d.Length == 1 && char.IsDigit(d[0]));
+    private string _otpCode => string.Concat(_digits);
 
     protected override void OnInitialized()
     {
-        if (string.IsNullOrWhiteSpace(Email))
+        if (string.IsNullOrWhiteSpace(_email))
         {
             Nav.NavigateTo(Routes.Auth.SignIn, replace: true);
             return;
         }
 
-        StartResendCountdown();
+        StartCooldown(60);
     }
 
-    private void StartResendCountdown()
+    private void OnDigitChanged(int index, string value)
     {
-        _resendSeconds = 60;
-        _timer?.Dispose();
-        _timer = new System.Threading.Timer(_ =>
-        {
-            if (_resendSeconds > 0)
-            {
-                _resendSeconds--;
-                InvokeAsync(StateHasChanged);
-            }
-        }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+        if (value.Length > 1)
+            value = value[^1..];
+
+        _digits[index] = value;
+        StateHasChanged();
     }
 
     private async Task OnVerifyAsync()
     {
-        if (string.IsNullOrWhiteSpace(Email)) return;
+        if (!_isCodeComplete) return;
 
         await BusyState.RunAsync(BusyKeys.Auth.SignInVerify, async () =>
         {
-            var result = await Mediator.Send(new VerifySignInOtpCommand(Email, _code));
+            var result = await Mediator.Send(new VerifySignInOtpCommand(_email, _otpCode));
 
-            if (result.IsFailure)
+            if (result.IsSuccess)
             {
-                Snackbar.Add(Localizer[result.Error!], Severity.Error);
+                var session = result.Value;
+                AuthState.SetUser(session.UserId.ToString(), session.Email);
+                Snackbar.Add(Strings.Auth_SignedIn, Severity.Success);
 
-                if (result.Error == AuthErrorKeys.TooManyAttempts)
-                    Nav.NavigateTo(Routes.Auth.SignIn, replace: true);
-                return;
+                var destination = !string.IsNullOrWhiteSpace(ReturnUrl)
+                    ? ReturnUrl
+                    : Routes.Home;
+                Nav.NavigateTo(destination, forceLoad: false);
             }
+            else
+            {
+                var key = result.Error ?? nameof(Strings.Auth_Unexpected);
 
-            var session = result.Value;
-            AuthState.SetUser(session.UserId.ToString(), session.Email);
+                // Too many attempts: redirect back to email entry
+                if (key == nameof(Strings.Auth_TooManyAttempts))
+                {
+                    Snackbar.Add(Localizer[key], Severity.Error);
+                    Nav.NavigateTo(Routes.Auth.SignIn, replace: true);
+                    return;
+                }
 
-            if (AuthStateProvider is SupabaseAuthStateProvider sup)
-                sup.NotifyChanged();
+                Snackbar.Add(Localizer[key], Severity.Error);
 
-            Snackbar.Add(Localizer[nameof(Strings.Auth_SignedIn)], Severity.Success);
-
-            Nav.NavigateTo(string.IsNullOrWhiteSpace(ReturnUrl) ? Routes.Home : ReturnUrl);
+                // Clear the digits on failure so the user types fresh
+                for (var i = 0; i < _digits.Length; i++) _digits[i] = "";
+                await InvokeAsync(StateHasChanged);
+            }
         });
     }
 
     private async Task OnResendAsync()
     {
-        if (string.IsNullOrWhiteSpace(Email)) return;
+        if (_resendCooldown > 0) return;
 
         await BusyState.RunAsync(BusyKeys.Auth.ResendOtp, async () =>
         {
-            var result = await Mediator.Send(new ResendOtpCommand(Email, OtpPurpose.SignIn));
+            var result = await Mediator.Send(new ResendOtpCommand(_email, OtpPurpose.SignIn));
 
-            if (result.IsFailure)
+            if (result.IsSuccess)
             {
-                Snackbar.Add(Localizer[result.Error!], Severity.Error);
-                return;
+                Snackbar.Add(Strings.Auth_CodeSent, Severity.Success);
+                StartCooldown(result.Value.ResendCooldownSeconds);
             }
-
-            Snackbar.Add(Localizer[nameof(Strings.Auth_CodeSent)], Severity.Success);
-            StartResendCountdown();
+            else
+            {
+                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], Severity.Error);
+            }
         });
     }
 
-    public void Dispose() => _timer?.Dispose();
+    private void StartCooldown(int seconds)
+    {
+        _resendCooldown = seconds;
+        _cooldownTimer?.Dispose();
+        _cooldownTimer = new Timer(_ =>
+        {
+            if (_resendCooldown > 0)
+            {
+                _resendCooldown--;
+                InvokeAsync(StateHasChanged);
+            }
+        }, null, 1000, 1000);
+    }
+
+    public void Dispose() => _cooldownTimer?.Dispose();
 }

@@ -1,12 +1,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using TheShop.Application.Features.Auth;
 using TheShop.Application.Features.Auth.Commands.ResendOtp;
 using TheShop.Application.Features.Auth.Commands.VerifySignUpOtp;
-using TheShop.Web.Auth;
 using TheShop.Web.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
@@ -14,10 +12,9 @@ using TheShop.Web.State;
 namespace TheShop.Web.Pages.Auth;
 
 /// <summary>
-/// Sign-up OTP verification page. Verifies the code via <see cref="VerifySignUpOtpCommand"/>,
-/// which creates the customer record. On success, updates <see cref="AuthState"/>,
-/// clears <see cref="PendingSignUpState"/>, and navigates home.
-/// Manages the 60-second resend countdown timer.
+/// Sign-up page (step 2 of 2). Reads profile data from <see cref="PendingSignUpState"/>,
+/// dispatches <see cref="VerifySignUpOtpCommand"/>, and manages the resend cooldown.
+/// If the pending state is absent (deep-link or refresh), redirects to <c>/sign-up</c>.
 /// </summary>
 [Route(Routes.Auth.SignUpVerify)]
 public partial class SignUpVerify : ComponentBase, IDisposable
@@ -26,98 +23,115 @@ public partial class SignUpVerify : ComponentBase, IDisposable
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
-    [Inject] private PendingSignUpState Pending { get; set; } = default!;
-    [Inject] private AuthState AuthState { get; set; } = default!;
-    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
+    [Inject] private AuthState AuthState { get; set; } = default!;
+    [Inject] private PendingSignUpState PendingSignUp { get; set; } = default!;
 
-    private string _code = string.Empty;
-    private int _resendSeconds = 60;
-    private System.Threading.Timer? _timer;
+    private MudForm _form = default!;
+    private readonly string[] _digits = ["", "", "", "", "", ""];
+    private bool _isFormValid;
+    private int _resendCooldown;
+    private System.Threading.Timer? _cooldownTimer;
+
+    private string _pendingEmail => PendingSignUp.Email ?? string.Empty;
+    private bool _isCodeComplete => _digits.All(d => d.Length == 1 && char.IsDigit(d[0]));
+    private string _otpCode => string.Concat(_digits);
 
     protected override void OnInitialized()
     {
-        if (!Pending.HasData)
+        if (!PendingSignUp.HasData)
         {
             Nav.NavigateTo(Routes.Auth.SignUp, replace: true);
             return;
         }
 
-        StartResendCountdown();
+        StartCooldown(60);
     }
 
-    private void StartResendCountdown()
+    private void OnDigitChanged(int index, string value)
     {
-        _resendSeconds = 60;
-        _timer?.Dispose();
-        _timer = new System.Threading.Timer(_ =>
-        {
-            if (_resendSeconds > 0)
-            {
-                _resendSeconds--;
-                InvokeAsync(StateHasChanged);
-            }
-        }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+        if (value.Length > 1)
+            value = value[^1..];
+
+        _digits[index] = value;
+        StateHasChanged();
     }
 
     private async Task OnVerifyAsync()
     {
-        if (!Pending.HasData) return;
+        if (!_isCodeComplete || !PendingSignUp.HasData) return;
 
         await BusyState.RunAsync(BusyKeys.Auth.SignUpVerify, async () =>
         {
-            var command = new VerifySignUpOtpCommand(
-                Pending.Email!,
-                _code,
-                Pending.FirstName!,
-                Pending.LastName!,
-                Pending.DateOfBirth!.Value);
+            var result = await Mediator.Send(new VerifySignUpOtpCommand(
+                PendingSignUp.Email!,
+                _otpCode,
+                PendingSignUp.FirstName!,
+                PendingSignUp.LastName!,
+                PendingSignUp.DateOfBirth!.Value));
 
-            var result = await Mediator.Send(command);
-
-            if (result.IsFailure)
+            if (result.IsSuccess)
             {
-                Snackbar.Add(Localizer[result.Error!], Severity.Error);
-
-                if (result.Error == AuthErrorKeys.TooManyAttempts)
-                {
-                    Pending.Clear();
-                    Nav.NavigateTo(Routes.Auth.SignUp, replace: true);
-                }
-                return;
+                var session = result.Value;
+                PendingSignUp.Clear();
+                AuthState.SetUser(session.UserId.ToString(), session.Email);
+                Snackbar.Add(Strings.Auth_SignedIn, Severity.Success);
+                Nav.NavigateTo(Routes.Home, forceLoad: false);
             }
+            else
+            {
+                var key = result.Error ?? nameof(Strings.Auth_Unexpected);
 
-            var session = result.Value;
-            AuthState.SetUser(session.UserId.ToString(), session.Email);
-            Pending.Clear();
+                // Too many attempts: redirect back to sign-up start
+                if (key == nameof(Strings.Auth_TooManyAttempts))
+                {
+                    Snackbar.Add(Localizer[key], Severity.Error);
+                    PendingSignUp.Clear();
+                    Nav.NavigateTo(Routes.Auth.SignUp, replace: true);
+                    return;
+                }
 
-            if (AuthStateProvider is SupabaseAuthStateProvider sup)
-                sup.NotifyChanged();
-
-            Snackbar.Add(Localizer[nameof(Strings.Auth_SignedIn)], Severity.Success);
-            Nav.NavigateTo(Routes.Home);
+                Snackbar.Add(Localizer[key], Severity.Error);
+                for (var i = 0; i < _digits.Length; i++) _digits[i] = "";
+                await InvokeAsync(StateHasChanged);
+            }
         });
     }
 
     private async Task OnResendAsync()
     {
-        if (!Pending.HasData) return;
+        if (_resendCooldown > 0 || !PendingSignUp.HasData) return;
 
         await BusyState.RunAsync(BusyKeys.Auth.ResendOtp, async () =>
         {
-            var result = await Mediator.Send(
-                new ResendOtpCommand(Pending.Email!, OtpPurpose.SignUp));
+            var result = await Mediator.Send(new ResendOtpCommand(
+                PendingSignUp.Email!, OtpPurpose.SignUp));
 
-            if (result.IsFailure)
+            if (result.IsSuccess)
             {
-                Snackbar.Add(Localizer[result.Error!], Severity.Error);
-                return;
+                Snackbar.Add(Strings.Auth_CodeSent, Severity.Success);
+                StartCooldown(result.Value.ResendCooldownSeconds);
             }
-
-            Snackbar.Add(Localizer[nameof(Strings.Auth_CodeSent)], Severity.Success);
-            StartResendCountdown();
+            else
+            {
+                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], Severity.Error);
+            }
         });
     }
 
-    public void Dispose() => _timer?.Dispose();
+    private void StartCooldown(int seconds)
+    {
+        _resendCooldown = seconds;
+        _cooldownTimer?.Dispose();
+        _cooldownTimer = new System.Threading.Timer(_ =>
+        {
+            if (_resendCooldown > 0)
+            {
+                _resendCooldown--;
+                InvokeAsync(StateHasChanged);
+            }
+        }, null, 1000, 1000);
+    }
+
+    public void Dispose() => _cooldownTimer?.Dispose();
 }

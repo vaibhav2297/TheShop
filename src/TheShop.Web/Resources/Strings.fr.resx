@@ -250,6 +250,24 @@
   <data name="Auth_SendCode" xml:space="preserve">
     <value>Envoyer le code</value>
   </data>
+  <data name="App_Tagline" xml:space="preserve">
+    <value>Vapotage premium, sélectionné pour vous.</value>
+  </data>
+  <data name="Login_Instruction" xml:space="preserve">
+    <value>Connectez-vous avec votre courriel</value>
+  </data>
+  <data name="SignUp_Instruction" xml:space="preserve">
+    <value>Rejoignez The Vape Shop — la destination vapotage premium du Canada</value>
+  </data>
+  <data name="Account_Greeting" xml:space="preserve">
+    <value>Bon retour!</value>
+  </data>
+  <data name="SignUp_AgeConfirm" xml:space="preserve">
+    <value>Je confirme avoir 19 ans ou plus</value>
+  </data>
+  <data name="SignIn_WelcomeBack" xml:space="preserve">
+    <value>Bon retour au Vape Shop</value>
+  </data>
   <data name="FirstName_Label" xml:space="preserve">
     <value>Prénom</value>
   </data>

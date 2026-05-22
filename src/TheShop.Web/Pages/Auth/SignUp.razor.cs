@@ -10,9 +10,9 @@ using TheShop.Web.State;
 namespace TheShop.Web.Pages.Auth;
 
 /// <summary>
-/// Sign-up page. Collects the customer's profile details and sends a sign-up OTP via
-/// <see cref="RequestSignUpOtpCommand"/>. Stores the profile in <see cref="PendingSignUpState"/>
-/// for use by the verification step, then navigates to OTP entry.
+/// Sign-up page (step 1 of 2). Collects the user's profile details and dispatches
+/// <see cref="RequestSignUpOtpCommand"/>. On success stores data in <see cref="PendingSignUpState"/>
+/// and navigates to the OTP verify page.
 /// </summary>
 [Route(Routes.Auth.SignUp)]
 public partial class SignUp : ComponentBase
@@ -21,63 +21,65 @@ public partial class SignUp : ComponentBase
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
-    [Inject] private PendingSignUpState Pending { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
+    [Inject] private PendingSignUpState PendingSignUp { get; set; } = default!;
 
     private MudForm _form = default!;
-    private bool _isFormValid;
-
     private string _firstName = string.Empty;
     private string _lastName = string.Empty;
     private string _email = string.Empty;
     private DateTime? _dateOfBirth;
+    private bool _ageConfirmed;
+    private bool _isFormValid;
 
-    private string? ValidateEmail(string value)
+    // Maximum selectable date: today minus 19 years — enforces age on picker level (UX hint only;
+    // authoritative check is in the domain / Application layer).
+    private readonly DateTime _maxDate = DateTime.Today.AddYears(-19);
+
+    private readonly Func<string, string?> _emailValidation = email =>
+        string.IsNullOrWhiteSpace(email)
+            ? Strings.Email_Required
+            : !email.Contains('@')
+                ? Strings.Email_Invalid
+                : null;
+
+    private readonly Func<DateTime?, string?> _dobValidation = dob =>
     {
-        if (string.IsNullOrWhiteSpace(value))
-            return Localizer[nameof(Strings.Email_Required)];
+        if (dob is null) return Strings.Auth_Dob_InPast;
+        if (dob.Value >= DateTime.Today) return Strings.Auth_Dob_InPast;
 
-        var attr = new System.ComponentModel.DataAnnotations.EmailAddressAttribute();
-        return attr.IsValid(value) ? null : Localizer[nameof(Strings.Email_Invalid)].Value;
-    }
+        var age = DateTime.Today.Year - dob.Value.Year;
+        if (dob.Value.Date > DateTime.Today.AddYears(-age)) age--;
+        if (age < 19) return Strings.Auth_Underage;
 
-    private string? ValidateDateOfBirth(DateTime? value)
-    {
-        if (!value.HasValue)
-            return Localizer[nameof(Strings.Auth_Dob_InPast)].Value;
+        return null;
+    };
 
-        var dob = DateOnly.FromDateTime(value.Value);
-        var today = DateOnly.FromDateTime(DateTime.UtcNow.Date);
-
-        if (dob >= today)
-            return Localizer[nameof(Strings.Auth_Dob_InPast)].Value;
-
-        var age = today.Year - dob.Year;
-        if (today < dob.AddYears(age)) age--;
-
-        return age >= 19 ? null : Localizer[nameof(Strings.Auth_Underage)].Value;
-    }
-
-    private async Task OnSubmitAsync()
+    private async Task OnSendCodeAsync()
     {
         await _form.ValidateAsync();
-        if (!_isFormValid || !_dateOfBirth.HasValue) return;
+        if (!_isFormValid) return;
+
+        var dob = DateOnly.FromDateTime(_dateOfBirth!.Value);
 
         await BusyState.RunAsync(BusyKeys.Auth.SignUp, async () =>
         {
-            var dob = DateOnly.FromDateTime(_dateOfBirth.Value);
-            var result = await Mediator.Send(
-                new RequestSignUpOtpCommand(_firstName, _lastName, _email, dob));
+            var result = await Mediator.Send(new RequestSignUpOtpCommand(
+                _firstName.Trim(),
+                _lastName.Trim(),
+                _email.Trim(),
+                dob));
 
-            if (result.IsFailure)
+            if (result.IsSuccess)
             {
-                Snackbar.Add(Localizer[result.Error!], Severity.Error);
-                return;
+                PendingSignUp.Set(_firstName.Trim(), _lastName.Trim(), _email.Trim(), dob);
+                Snackbar.Add(Strings.Auth_CodeSent, Severity.Success);
+                Nav.NavigateTo(Routes.Auth.SignUpVerify);
             }
-
-            Pending.Set(_firstName, _lastName, _email, dob);
-            Snackbar.Add(Localizer[nameof(Strings.Auth_CodeSent)], Severity.Success);
-            Nav.NavigateTo(Routes.Auth.SignUpVerify);
+            else
+            {
+                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], Severity.Error);
+            }
         });
     }
 }
