@@ -13,7 +13,7 @@ public static class SupabaseClientFactory
 {
     /// <summary>
     /// Builds a <see cref="Supabase.Client"/> from <c>Supabase:Url</c> and
-    /// <c>Supabase:AnonKey</c> in configuration, wiring the provided
+    /// <c>Supabase:PublishableKey</c> in configuration, wiring the provided
     /// <paramref name="sessionPersistence"/> as the session handler.
     /// </summary>
     /// <exception cref="InvalidOperationException">
@@ -25,8 +25,8 @@ public static class SupabaseClientFactory
     {
         var url = configuration["Supabase:Url"]
             ?? throw new InvalidOperationException("Supabase:Url is not configured.");
-        var anonKey = configuration["Supabase:AnonKey"]
-            ?? throw new InvalidOperationException("Supabase:AnonKey is not configured.");
+        var publishableKey = configuration["Supabase:PublishableKey"]
+            ?? throw new InvalidOperationException("Supabase:PublishableKey is not configured.");
 
         var options = new SupabaseOptions
         {
@@ -35,7 +35,7 @@ public static class SupabaseClientFactory
             SessionHandler = new SessionHandlerAdapter(sessionPersistence),
         };
 
-        return new Supabase.Client(url, anonKey, options);
+        return new Supabase.Client(url, publishableKey, options);
     }
 
     private sealed class SessionHandlerAdapter : IGotrueSessionPersistence<Session>
