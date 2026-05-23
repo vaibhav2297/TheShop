@@ -9,6 +9,10 @@ public static class Routes
     public const string Home = "/";
     public const string NotFound = "/not-found";
     public const string Cart = "/cart";
+    public const string Products = "/products";
+    public const string Categories = "/categories";
+    public const string Brands = "/brands";
+    public const string Deals = "/deals";
 
     /// <summary>Auth-flow route constants and query-string helpers.</summary>
     public static class Auth

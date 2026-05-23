@@ -1,0 +1,12 @@
+@inherits LayoutComponentBase
+@using TheShop.Web.Theme
+@using TheShop.Web.Components.Common
+
+<MudThemeProvider Theme="@ShopTheme.BuildTheme()" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<ShopLoadingOverlay />
+
+@Body

@@ -81,6 +81,21 @@
   <data name="Nav_AdminPanel" xml:space="preserve">
     <value>Admin Panel</value>
   </data>
+  <data name="Nav_Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="Nav_Brands" xml:space="preserve">
+    <value>Brands</value>
+  </data>
+  <data name="Nav_Deals" xml:space="preserve">
+    <value>Deals</value>
+  </data>
+  <data name="Nav_Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="AnnouncementBar_Message" xml:space="preserve">
+    <value>Free shipping on orders $75+ or promo codes.</value>
+  </data>
 
   <!-- ============================================================ -->
   <!-- Home page                                                    -->

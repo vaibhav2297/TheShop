@@ -81,6 +81,21 @@
   <data name="Nav_AdminPanel" xml:space="preserve">
     <value>Panneau d'administration</value>
   </data>
+  <data name="Nav_Categories" xml:space="preserve">
+    <value>[TODO]</value>
+  </data>
+  <data name="Nav_Brands" xml:space="preserve">
+    <value>[TODO]</value>
+  </data>
+  <data name="Nav_Deals" xml:space="preserve">
+    <value>[TODO]</value>
+  </data>
+  <data name="Nav_Search" xml:space="preserve">
+    <value>[TODO]</value>
+  </data>
+  <data name="AnnouncementBar_Message" xml:space="preserve">
+    <value>[TODO]</value>
+  </data>
 
   <!-- ============================================================ -->
   <!-- Home page                                                    -->

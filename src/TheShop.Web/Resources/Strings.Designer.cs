@@ -590,6 +590,51 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Nav_Products", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Categories.
+        /// </summary>
+        public static string Nav_Categories {
+            get {
+                return ResourceManager.GetString("Nav_Categories", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Brands.
+        /// </summary>
+        public static string Nav_Brands {
+            get {
+                return ResourceManager.GetString("Nav_Brands", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Deals.
+        /// </summary>
+        public static string Nav_Deals {
+            get {
+                return ResourceManager.GetString("Nav_Deals", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string Nav_Search {
+            get {
+                return ResourceManager.GetString("Nav_Search", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Free shipping on orders $75+ or promo codes.
+        /// </summary>
+        public static string AnnouncementBar_Message {
+            get {
+                return ResourceManager.GetString("AnnouncementBar_Message", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Go to Home.

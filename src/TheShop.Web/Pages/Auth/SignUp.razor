@@ -1,3 +1,4 @@
+@layout TheShop.Web.Components.Layout.AuthLayout
 @attribute [AllowAnonymous]
 @using TheShop.Web.Common
 @using TheShop.Web.Components.Common
@@ -47,7 +48,7 @@
                             <MudItem xs="12" sm="6">
                                 <MudTextField T="string"
                                               @bind-Value="_lastName"
-                                              Label="@Strings.LastName_Label"
+                                              Placeholder="@Strings.LastName_Label"
                                               Variant="Variant.Filled"
                                               FullWidth="true"
                                               Required="true"
@@ -59,8 +60,7 @@
 
                         <MudTextField T="string"
                                       @bind-Value="_email"
-                                      Label="@Strings.Email_Label"
-                                      Placeholder="@Strings.Email_Placeholder"
+                                      Placeholder="@Strings.Email_Label"
                                       InputType="InputType.Email"
                                       Variant="Variant.Filled"
                                       FullWidth="true"

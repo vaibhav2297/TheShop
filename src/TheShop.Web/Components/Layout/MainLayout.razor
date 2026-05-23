@@ -1,5 +1,4 @@
 @inherits LayoutComponentBase
-@using TheShop.Web.Common
 @using TheShop.Web.Components.Common
 @using TheShop.Web.Theme
 
@@ -11,35 +10,8 @@
 <ShopLoadingOverlay />
 
 <MudLayout>
-    <MudAppBar Elevation="1" Color="Color.Primary">
-        <MudText Typo="Typo.h6">@Strings.AppName</MudText>
-        <MudSpacer />
-        <MudIconButton Icon="@ShopIcons.Interface.Shopping_Cart_01"
-                       Color="Color.Inherit"
-                       Href="@Routes.Cart"
-                       aria-label="@Strings.Nav_Cart" />
-
-        <AuthorizeView>
-            <Authorized>
-                <MudMenu Icon="@ShopIcons.User.User_Circle"
-                         Color="Color.Inherit"
-                         AnchorOrigin="Origin.BottomRight"
-                         TransformOrigin="Origin.TopRight"
-                         aria-label="@Strings.Nav_Account">
-                    <MudMenuItem OnClick="OnSignOutAsync">@Strings.Logout</MudMenuItem>
-                </MudMenu>
-            </Authorized>
-            <NotAuthorized>
-                <MudButton Variant="Variant.Text"
-                           Color="Color.Inherit"
-                           Href="@Routes.Auth.SignIn">@Strings.Login</MudButton>
-                <MudButton Variant="Variant.Outlined"
-                           Color="Color.Inherit"
-                           Href="@Routes.Auth.SignUp"
-                           Class="ml-2">@Strings.SignUp</MudButton>
-            </NotAuthorized>
-        </AuthorizeView>
-    </MudAppBar>
+    <ShopAnnouncementBar />
+    <ShopAppBar />
 
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
