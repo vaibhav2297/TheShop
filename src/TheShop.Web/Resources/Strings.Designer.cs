@@ -160,6 +160,15 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Free shipping on orders $75+ or promo codes..
+        /// </summary>
+        public static string AnnouncementBar_Message {
+            get {
+                return ResourceManager.GetString("AnnouncementBar_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Premium Vaping, Curated for You..
         /// </summary>
         public static string App_Tagline {
@@ -565,11 +574,38 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Brands.
+        /// </summary>
+        public static string Nav_Brands {
+            get {
+                return ResourceManager.GetString("Nav_Brands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cart.
         /// </summary>
         public static string Nav_Cart {
             get {
                 return ResourceManager.GetString("Nav_Cart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Categories.
+        /// </summary>
+        public static string Nav_Categories {
+            get {
+                return ResourceManager.GetString("Nav_Categories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deals.
+        /// </summary>
+        public static string Nav_Deals {
+            get {
+                return ResourceManager.GetString("Nav_Deals", resourceCulture);
             }
         }
         
@@ -590,49 +626,13 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Nav_Products", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Categories.
-        /// </summary>
-        public static string Nav_Categories {
-            get {
-                return ResourceManager.GetString("Nav_Categories", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Brands.
-        /// </summary>
-        public static string Nav_Brands {
-            get {
-                return ResourceManager.GetString("Nav_Brands", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Deals.
-        /// </summary>
-        public static string Nav_Deals {
-            get {
-                return ResourceManager.GetString("Nav_Deals", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Search.
         /// </summary>
         public static string Nav_Search {
             get {
                 return ResourceManager.GetString("Nav_Search", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Free shipping on orders $75+ or promo codes.
-        /// </summary>
-        public static string AnnouncementBar_Message {
-            get {
-                return ResourceManager.GetString("AnnouncementBar_Message", resourceCulture);
             }
         }
         
@@ -779,15 +779,6 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("SignIn_NoAccount", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Welcome back to The Vape Shop.
-        /// </summary>
-        public static string SignIn_WelcomeBack {
-            get {
-                return ResourceManager.GetString("SignIn_WelcomeBack", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to Sign In — The Vape Shop Sarnia.
@@ -795,6 +786,15 @@ namespace TheShop.Web.Resources {
         public static string SignIn_PageTitle {
             get {
                 return ResourceManager.GetString("SignIn_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome back to The Vape Shop.
+        /// </summary>
+        public static string SignIn_WelcomeBack {
+            get {
+                return ResourceManager.GetString("SignIn_WelcomeBack", resourceCulture);
             }
         }
         
@@ -808,14 +808,17 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Already have an account?.
+        ///   Looks up a localized string similar to I confirm I am 19 years of age or older.
         /// </summary>
         public static string SignUp_AgeConfirm {
             get {
                 return ResourceManager.GetString("SignUp_AgeConfirm", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Already have an account?.
+        /// </summary>
         public static string SignUp_HaveAccount {
             get {
                 return ResourceManager.GetString("SignUp_HaveAccount", resourceCulture);
@@ -846,6 +849,15 @@ namespace TheShop.Web.Resources {
         public static string SignUp_PageTitle {
             get {
                 return ResourceManager.GetString("SignUp_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stay tuned — We’ll be live soon.
+        /// </summary>
+        public static string Stay_Tuned {
+            get {
+                return ResourceManager.GetString("Stay_Tuned", resourceCulture);
             }
         }
         
