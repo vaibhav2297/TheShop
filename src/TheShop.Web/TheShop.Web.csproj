@@ -15,11 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Preserve reflection-scanned assemblies (MediatR, FluentValidation, AutoMapper) from IL trimmer -->
-    <TrimmerRootDescriptor Include="LinkerConfig.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <!-- Wire PublicResXFileCodeGenerator so Strings.Designer.cs is auto-generated on build -->
     <EmbeddedResource Update="Resources\Strings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
