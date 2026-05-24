@@ -75,6 +75,7 @@
                             <BusyFor Key="@BusyKeys.Auth.ResendOtp" Context="resending">
                                 <MudButton Variant="Variant.Text"
                                            Color="Color.Primary"
+                                           EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
                                            Disabled="@(_resendCooldown > 0 || resending)"
                                            OnClick="OnResendAsync">
                                     @if (_resendCooldown > 0)
@@ -100,7 +101,7 @@
     <MudItem xs="12" md="6" Class="d-none d-md-flex mud-theme-surface">
         <MudStack AlignItems="AlignItems.Center"
                   Justify="Justify.Center"
-                  Class="mud-height-full pa-4"
+                  Class="flex-1 ma-4 mud-surface"
                   Spacing="4">
             <MudImage Src="/images/logo/logo.svg"
                       Alt="@Strings.AppName"

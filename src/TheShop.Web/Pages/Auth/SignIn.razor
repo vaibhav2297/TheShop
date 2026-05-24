@@ -35,7 +35,6 @@
                     <MudStack Spacing="3">
                         <MudTextField T="string"
                                       @bind-Value="_email"
-                                      Label="@Strings.Email_Label"
                                       Placeholder="@Strings.Email_Placeholder"
                                       InputType="InputType.Email"
                                       Variant="Variant.Filled"
@@ -51,6 +50,7 @@
                                        Color="Color.Primary"
                                        Size="Size.Large"
                                        Disabled="@(!_isFormValid || busy)"
+                                       EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
                                        OnClick="OnSendCodeAsync">
                                 @if (busy)
                                 {
@@ -67,10 +67,10 @@
     </MudItem>
 
     @* Right panel: brand splash — hidden on small screens *@
-    <MudItem xs="12" md="6" Class="d-none d-md-flex mud-theme-surface">
+    <MudItem xs="12" md="6" Class="d-none d-md-flex">
         <MudStack AlignItems="AlignItems.Center"
                   Justify="Justify.Center"
-                  Class="mud-height-full pa-4 "
+                  Class="flex-1 ma-4 mud-surface"
                   Spacing="4">
             <MudImage Src="/images/logo/logo.svg"
                       Alt="@Strings.AppName"

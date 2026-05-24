@@ -144,6 +144,7 @@ public class ShopTheme
             FontSize      = ShopTypography.Button_Size,
             FontWeight    = ShopTypography.Button_Weight,
             LineHeight    = ShopTypography.Button_LineHeight,
+            TextTransform = "capitalize",
             LetterSpacing = "normal",
         },
         Caption = new CaptionTypography

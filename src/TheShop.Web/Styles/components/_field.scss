@@ -1,0 +1,14 @@
+// Match filled MudTextField height to the outlined variant (~56px) since
+// fields use placeholders, not floating labels. The :not() is a specificity
+// bump to outweigh MudBlazor's default padding rule, not a real guard.
+.mud-input.mud-input-filled:not(.mud-input-filled-with-label) {
+    > input,
+    > textarea {
+        padding-top: 18.5px;
+        padding-bottom: 18.5px;
+    }
+
+    .mud-input-adornment {
+        margin-top: 0;
+    }
+}

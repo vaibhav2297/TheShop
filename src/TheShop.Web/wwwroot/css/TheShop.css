@@ -6,4 +6,13 @@
   color: var(--mud-palette-surface) !important;
 }
 
+.mud-input.mud-input-filled:not(.mud-input-filled-with-label) > input,
+.mud-input.mud-input-filled:not(.mud-input-filled-with-label) > textarea {
+  padding-top: 18.5px;
+  padding-bottom: 18.5px;
+}
+.mud-input.mud-input-filled:not(.mud-input-filled-with-label) .mud-input-adornment {
+  margin-top: 0;
+}
+
 /*# sourceMappingURL=TheShop.css.map */
