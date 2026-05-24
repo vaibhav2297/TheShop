@@ -4,10 +4,11 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using TheShop.Application.Features.Auth.Commands.SignOut;
 using TheShop.Web.Common;
+using TheShop.Web.Components.Layout;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
 
-namespace TheShop.Web.Components.Layout;
+namespace TheShop.Web.Components.Common;
 
 /// <summary>
 /// Top navigation bar rendered in <see cref="MainLayout"/>. Displays the brand logo,
