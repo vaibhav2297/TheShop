@@ -1,6 +1,6 @@
 {
   "globalHeaders": {
-    "Blazor-Environment": "dev",
+    "Blazor-Environment": "Development",
     "X-Robots-Tag": "noindex, nofollow"
   },
   "navigationFallback": {
