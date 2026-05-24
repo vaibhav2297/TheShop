@@ -1,8 +1,10 @@
 @inherits LayoutComponentBase
+
 @using TheShop.Web.Components.Common
 @using TheShop.Web.Theme
 
-<MudThemeProvider Theme="@ShopTheme.BuildTheme()" />
+<MudThemeProvider Theme="@ShopTheme.BuildTheme()"
+                  IsDarkMode="false" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -10,12 +12,9 @@
 <ShopLoadingOverlay />
 
 <MudLayout>
-    <ShopAnnouncementBar />
     <ShopAppBar />
 
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
-            @Body
-        </MudContainer>
+    <MudMainContent Class="mud-height-full">
+        @Body
     </MudMainContent>
 </MudLayout>

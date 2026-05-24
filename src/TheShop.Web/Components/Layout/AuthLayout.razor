@@ -1,12 +1,19 @@
 @inherits LayoutComponentBase
+
 @using TheShop.Web.Theme
 @using TheShop.Web.Components.Common
 
-<MudThemeProvider Theme="@ShopTheme.BuildTheme()" />
+<MudThemeProvider Theme="@ShopTheme.BuildTheme()"
+                  IsDarkMode="false" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <ShopLoadingOverlay />
 
-@Body
+<MudLayout>
+    <MudMainContent Class="mud-height-full pt-0">
+        @Body
+    </MudMainContent>
+</MudLayout>
+

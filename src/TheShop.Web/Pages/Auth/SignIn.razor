@@ -5,11 +5,11 @@
 
 <PageTitle>@Strings.SignIn_PageTitle</PageTitle>
 
-<MudGrid Spacing="0" Style="min-height:100vh;">
+<MudGrid Spacing="0" Class="mud-height-full">
 
     @* Left panel: sign-in form — space-between aligns heading at top, form at bottom *@
     <MudItem xs="12" md="6">
-        <MudStack Style="height:100%;min-height:100vh;padding:64px;"
+        <MudStack Class="mud-height-full pa-16"
                   Justify="Justify.SpaceBetween">
 
             @* Top bar: cross-navigation link only *@
@@ -70,7 +70,7 @@
     <MudItem xs="12" md="6" Class="d-none d-md-flex mud-theme-surface">
         <MudStack AlignItems="AlignItems.Center"
                   Justify="Justify.Center"
-                  Style="height:100%;width:100%;min-height:100vh;"
+                  Class="mud-height-full pa-4 "
                   Spacing="4">
             <MudImage Src="/images/logo/logo.svg"
                       Alt="@Strings.AppName"
