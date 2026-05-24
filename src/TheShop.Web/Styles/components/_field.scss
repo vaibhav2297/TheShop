@@ -12,3 +12,11 @@
         margin-top: 0;
     }
 }
+
+// MudBlazor's DefaultBorderRadius layout property sets --mud-default-borderradius
+// but filled inputs apply it as "4px 4px 0 0" (Material Design top-round). In v9
+// this doesn't reliably reach every component, so force zero radius here.
+// Covers MudTextField, MudSelect, MudDatePicker, MudAutocomplete, etc.
+.mud-input-filled {
+    border-radius: 0 !important;
+}

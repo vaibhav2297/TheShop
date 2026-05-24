@@ -239,7 +239,25 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Auth_CodeSent", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Change.
+        /// </summary>
+        public static string Auth_Change {
+            get {
+                return ResourceManager.GetString("Auth_Change", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string Auth_Create_Submit {
+            get {
+                return ResourceManager.GetString("Auth_Create_Submit", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Please enter a valid date of birth..
         /// </summary>
@@ -266,7 +284,16 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Auth_LastName_Required", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Login.
+        /// </summary>
+        public static string Auth_Login_Submit {
+            get {
+                return ResourceManager.GetString("Auth_Login_Submit", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Please wait before requesting a new code..
         /// </summary>
@@ -887,7 +914,16 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Verify_Heading", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to You are logged in as.
+        /// </summary>
+        public static string Verify_LoggedInAs {
+            get {
+                return ResourceManager.GetString("Verify_LoggedInAs", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Verify Code — The Vape Shop Sarnia.
         /// </summary>
@@ -914,7 +950,16 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Verify_ResendIn", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to You are signing up as.
+        /// </summary>
+        public static string Verify_SigningUpAs {
+            get {
+                return ResourceManager.GetString("Verify_SigningUpAs", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to We sent a 6-digit code to {0}. Check your inbox (and spam folder)..
         /// </summary>

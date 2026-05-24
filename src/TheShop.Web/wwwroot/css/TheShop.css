@@ -15,8 +15,17 @@
   margin-top: 0;
 }
 
+.mud-input-filled {
+  border-radius: 0 !important;
+}
+
 .mud-button-filled {
   box-shadow: none;
+}
+
+.mud-picker .mud-input > input {
+  font-size: 0.875rem;
+  font-weight: 400;
 }
 
 /*# sourceMappingURL=TheShop.css.map */

@@ -1,0 +1,8 @@
+// MudDatePicker/MudTimePicker have no Typo parameter. The Class attribute
+// lands on the outer wrapper and never reaches the <input>, so typography
+// must be applied here. Targets only picker inputs; MudTextField uses its
+// own Typo parameter and is unaffected.
+.mud-picker .mud-input > input {
+    font-size: 0.875rem;  // body2 = 14px (Space Grotesk Regular)
+    font-weight: 400;
+}

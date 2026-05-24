@@ -12,6 +12,9 @@ public static class ShopTypography
     public const string WeightBold      = "700";
     public const string WeightExtraBold = "800";
 
+    // Letter spacing — all Figma text styles use 0.25 px (uniform across the scale)
+    public const string LetterSpacing = "0.25px";
+
     // H1 — Barlow Condensed ExtraBold 96px
     public const string H1_Size       = "6rem";
     public const string H1_Weight     = WeightExtraBold;

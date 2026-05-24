@@ -233,10 +233,10 @@
     <value>My Account — The Vape Shop Sarnia</value>
   </data>
   <data name="Login_PageTitle" xml:space="preserve">
-    <value>Sign In — The Vape Shop Sarnia</value>
+    <value>Login — The Vape Shop Sarnia</value>
   </data>
   <data name="Login" xml:space="preserve">
-    <value>Sign In</value>
+    <value>Login</value>
   </data>
   <data name="Logout" xml:space="preserve">
     <value>Sign Out</value>
@@ -267,37 +267,52 @@
   <!-- Authentication — OTP flow                                    -->
   <!-- ============================================================ -->
   <data name="SignUp_PageTitle" xml:space="preserve">
-    <value>Sign Up — The Vape Shop Sarnia</value>
+    <value>Create — The Vape Shop Sarnia</value>
   </data>
   <data name="SignUp_Heading" xml:space="preserve">
-    <value>Create your account</value>
+    <value>Create</value>
   </data>
   <data name="SignUp_HaveAccount" xml:space="preserve">
     <value>Already have an account?</value>
   </data>
   <data name="SignIn_PageTitle" xml:space="preserve">
-    <value>Sign In — The Vape Shop Sarnia</value>
+    <value>Login — The Vape Shop Sarnia</value>
   </data>
   <data name="SignIn_Heading" xml:space="preserve">
-    <value>Sign in to your account</value>
+    <value>Login</value>
   </data>
   <data name="SignIn_NoAccount" xml:space="preserve">
     <value>Don't have an account?</value>
   </data>
   <data name="SignUp" xml:space="preserve">
-    <value>Sign Up</value>
+    <value>Create Account</value>
   </data>
   <data name="Verify_PageTitle" xml:space="preserve">
-    <value>Verify Code — The Vape Shop Sarnia</value>
+    <value>Verify — The Vape Shop Sarnia</value>
   </data>
   <data name="Verify_Heading" xml:space="preserve">
-    <value>Enter your verification code</value>
+    <value>Verify</value>
   </data>
   <data name="Verify_Subheading" xml:space="preserve">
     <value>We sent a 6-digit code to {0}. Check your inbox (and spam folder).</value>
   </data>
   <data name="Verify_CodeLabel" xml:space="preserve">
-    <value>Verification code</value>
+    <value>Enter the six-digit code sent to your email address</value>
+  </data>
+  <data name="Verify_LoggedInAs" xml:space="preserve">
+    <value>You are logged in as</value>
+  </data>
+  <data name="Verify_SigningUpAs" xml:space="preserve">
+    <value>You are signing up as</value>
+  </data>
+  <data name="Auth_Change" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Auth_Login_Submit" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Auth_Create_Submit" xml:space="preserve">
+    <value>Create</value>
   </data>
   <data name="Verify_CodeHint" xml:space="preserve">
     <value>6 digits</value>

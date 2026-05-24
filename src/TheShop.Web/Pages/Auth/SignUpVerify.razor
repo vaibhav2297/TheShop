@@ -19,17 +19,23 @@
                            Href="@Routes.Auth.SignIn">@Strings.Login</MudButton>
             </MudStack>
 
-            @* Hero heading block *@
-            <MudStack Spacing="2">
+            @* Hero block: heading + active-email banner with "Change" link back to sign-up *@
+            <MudStack Spacing="9">
                 <MudText Typo="Typo.h2" Color="Color.Primary">@Strings.Verify_Heading</MudText>
-                <MudText Typo="Typo.body1" Color="Color.Secondary">
-                    @string.Format(Strings.Verify_Subheading, _pendingEmail)
-                </MudText>
+                <MudStack Spacing="2">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.Verify_SigningUpAs</MudText>
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Primary"
+                                   Href="@Routes.Auth.SignUp">@Strings.Auth_Change</MudButton>
+                    </MudStack>
+                    <MudText Typo="Typo.body1" Color="Color.Primary">@_pendingEmail</MudText>
+                </MudStack>
             </MudStack>
 
             @* Form block *@
             <MudStack Spacing="4">
-                <MudText Typo="Typo.body1" Color="Color.Secondary">
+                <MudText Typo="Typo.subtitle1" Color="Color.Secondary">
                     @Strings.Verify_CodeLabel
                 </MudText>
 
@@ -48,10 +54,10 @@
                                               Value="@_digits[idx]"
                                               ValueChanged="@((v) => OnDigitChanged(idx, v))"
                                               Variant="Variant.Filled"
-                                              Typo="Typo.body2"
+                                              Typo="Typo.h6"
                                               InputType="InputType.Number"
                                               MaxLength="1"
-                                              Style="width:56px;text-align:center;"
+                                              Style="width:79px;text-align:center;"
                                               autocomplete="one-time-code"
                                               Class="otp-digit-field" />
                             }
@@ -106,8 +112,8 @@
                   Spacing="4">
             <MudImage Src="/images/logo/logo_primary.svg"
                       Alt="@Strings.AppName"
-                      Width="320"
-                      Height="320"
+                      Width="380"
+                      Height="380"
                       ObjectFit="ObjectFit.Contain" />
             <MudText Typo="Typo.h6" Color="Color.Secondary">@Strings.App_Tagline</MudText>
         </MudStack>

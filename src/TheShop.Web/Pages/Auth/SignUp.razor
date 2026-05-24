@@ -22,7 +22,7 @@
             @* Hero heading block *@
             <MudStack Spacing="2">
                 <MudText Typo="Typo.h2" Color="Color.Primary">@Strings.SignUp_Heading</MudText>
-                <MudText Typo="Typo.body1" Color="Color.Secondary">@Strings.SignUp_Instruction</MudText>
+                <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.SignUp_Instruction</MudText>
             </MudStack>
 
             @* Form block *@
@@ -68,17 +68,23 @@
                                       Typo="Typo.body2"
                                       FullWidth="true"
                                       Required="true"
+                                      Adornment="Adornment.Start"
+                                      AdornmentColor="Color.Primary"
+                                      AdornmentIcon="@ShopIcons.Edit.Mention"
                                       RequiredError="@Strings.Email_Required"
                                       Validation="@_emailValidation"
                                       Immediate="true"
                                       autocomplete="email" />
 
-                        <MudDatePicker Label="@Strings.DateOfBirth_Label"
-                                       HelperText="@Strings.DateOfBirth_Hint"
+                        <MudDatePicker Placeholder="@Strings.DateOfBirth_Label"
                                        Variant="Variant.Filled"
                                        @bind-Date="_dateOfBirth"
                                        MaxDate="@_maxDate"
                                        Required="true"
+                                       AdornmentIcon="@ShopIcons.Calendar.Calendar_"
+                                       Adornment="Adornment.End"
+                                       AdornmentColor="Color.Primary"
+                                       OpenTo="OpenTo.Year"
                                        RequiredError="@Strings.Auth_Dob_InPast"
                                        Validation="@_dobValidation"
                                        Editable="true"
@@ -89,23 +95,26 @@
                                      Color="Color.Primary"
                                      Required="true"
                                      RequiredError="@Strings.Auth_Underage">
-                            <MudText Typo="Typo.body2">@Strings.SignUp_AgeConfirm</MudText>
+                            <MudText Typo="Typo.caption">@Strings.SignUp_AgeConfirm</MudText>
                         </MudCheckBox>
 
-                        <BusyFor Key="@BusyKeys.Auth.SignUp" Context="busy">
-                            <MudButton Variant="Variant.Filled"
-                                       Color="Color.Primary"
-                                       Size="Size.Large"
-                                       EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
-                                       Disabled="@(!_isFormValid || busy)"
-                                       OnClick="OnSendCodeAsync">
-                                @if (busy)
-                                {
-                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-                                }
-                                @Strings.Auth_SendCode
-                            </MudButton>
-                        </BusyFor>
+                        @* Row wrapper prevents MudStack stretch from expanding the button to full width *@
+                        <MudStack Row="true">
+                            <BusyFor Key="@BusyKeys.Auth.SignUp" Context="busy">
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           Size="Size.Large"
+                                           EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
+                                           Disabled="@(!_isFormValid || busy)"
+                                           OnClick="OnSendCodeAsync">
+                                    @if (busy)
+                                    {
+                                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                    }
+                                    @Strings.Auth_Create_Submit
+                                </MudButton>
+                            </BusyFor>
+                        </MudStack>
 
                     </MudStack>
                 </MudForm>
@@ -122,8 +131,8 @@
                   Spacing="4">
             <MudImage Src="/images/logo/logo_primary.svg"
                       Alt="@Strings.AppName"
-                      Width="320"
-                      Height="320"
+                      Width="380"
+                      Height="380"
                       ObjectFit="ObjectFit.Contain" />
             <MudText Typo="Typo.h6" Color="Color.Secondary">@Strings.App_Tagline</MudText>
         </MudStack>

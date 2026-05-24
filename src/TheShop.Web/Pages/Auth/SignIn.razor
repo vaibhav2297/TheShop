@@ -19,49 +19,60 @@
                            Href="@Routes.Auth.SignUp">@Strings.SignUp</MudButton>
             </MudStack>
 
-            @* Hero heading block *@
-            <MudStack Spacing="2">
-                <MudText Typo="Typo.h2" Color="Color.Primary">@Strings.SignIn_Heading</MudText>
-                <MudText Typo="Typo.body1" Color="Color.Secondary">@Strings.SignIn_WelcomeBack</MudText>
-            </MudStack>
+            <MudStack Justify="Justify.SpaceBetween"
+                      Class="flex-1">
 
-            @* Form block: label + input + submit *@
-            <MudStack Spacing="4">
-                <MudText Typo="Typo.body1" Color="Color.Secondary">@Strings.Login_Instruction</MudText>
+                @* Hero heading block *@
+                <MudStack Spacing="2">
+                    <MudText Typo="Typo.h2" Color="Color.Primary">@Strings.SignIn_Heading</MudText>
+                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.SignIn_WelcomeBack</MudText>
+                </MudStack>
 
-                <MudForm @ref="_form"
-                         @bind-IsValid="_isFormValid"
-                         SuppressImplicitSubmission="true">
-                    <MudStack Spacing="3">
-                        <MudTextField T="string"
-                                      @bind-Value="_email"
-                                      Placeholder="@Strings.Email_Placeholder"
-                                      InputType="InputType.Email"
-                                      Variant="Variant.Filled"
-                                      FullWidth="true"
-                                      Typo="Typo.body2"
-                                      Required="true"
-                                      RequiredError="@Strings.Email_Required"
-                                      Validation="@_emailValidation"
-                                      Immediate="true"
-                                      autocomplete="email" />
+                @* Form block: label + input + submit *@
+                <MudStack Spacing="4">
+                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.Login_Instruction</MudText>
 
-                        <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
-                            <MudButton Variant="Variant.Filled"
-                                       Color="Color.Primary"
-                                       Size="Size.Large"
-                                       Disabled="@(!_isFormValid || busy)"
-                                       EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
-                                       OnClick="OnSendCodeAsync">
-                                @if (busy)
-                                {
-                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-                                }
-                                @Strings.Auth_SendCode
-                            </MudButton>
-                        </BusyFor>
-                    </MudStack>
-                </MudForm>
+                    <MudForm @ref="_form"
+                             @bind-IsValid="_isFormValid"
+                             SuppressImplicitSubmission="true">
+                        <MudStack Spacing="3">
+                            <MudTextField T="string"
+                                          @bind-Value="_email"
+                                          Placeholder="@Strings.Email_Placeholder"
+                                          InputType="InputType.Email"
+                                          Variant="Variant.Filled"
+                                          FullWidth="true"
+                                          Typo="Typo.body2"
+                                          Required="true"
+                                          Adornment="Adornment.Start"
+                                          AdornmentColor="Color.Primary"
+                                          AdornmentIcon="@ShopIcons.Edit.Mention"
+                                          RequiredError="@Strings.Email_Required"
+                                          Validation="@_emailValidation"
+                                          Immediate="true"
+                                          autocomplete="email" />
+
+                            @* Row wrapper prevents MudStack stretch from expanding the button to full width *@
+                            <MudStack Row="true">
+                                <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Size="Size.Large"
+                                               Disabled="@(!_isFormValid || busy)"
+                                               EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
+                                               OnClick="OnSendCodeAsync">
+                                        @if (busy)
+                                        {
+                                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                        }
+                                        @Strings.Auth_Login_Submit
+                                    </MudButton>
+                                </BusyFor>
+                            </MudStack>
+                        </MudStack>
+                    </MudForm>
+                </MudStack>
+
             </MudStack>
 
         </MudStack>
@@ -75,8 +86,8 @@
                   Spacing="4">
             <MudImage Src="/images/logo/logo_primary.svg"
                       Alt="@Strings.AppName"
-                      Width="320"
-                      Height="320"
+                      Width="380"
+                      Height="380"
                       ObjectFit="ObjectFit.Contain" />
             <MudText Typo="Typo.h6" Color="Color.Secondary">@Strings.App_Tagline</MudText>
         </MudStack>

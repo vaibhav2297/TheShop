@@ -56,7 +56,7 @@ public class ShopTheme
             FontSize      = ShopTypography.Body1_Size,
             FontWeight    = ShopTypography.Body1_Weight,
             LineHeight    = ShopTypography.Body1_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         H1 = new H1Typography
         {
@@ -64,7 +64,7 @@ public class ShopTheme
             FontSize      = ShopTypography.H1_Size,
             FontWeight    = ShopTypography.H1_Weight,
             LineHeight    = ShopTypography.H1_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         H2 = new H2Typography
         {
@@ -72,7 +72,7 @@ public class ShopTheme
             FontSize      = ShopTypography.H2_Size,
             FontWeight    = ShopTypography.H2_Weight,
             LineHeight    = ShopTypography.H2_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         H3 = new H3Typography
         {
@@ -80,7 +80,7 @@ public class ShopTheme
             FontSize      = ShopTypography.H3_Size,
             FontWeight    = ShopTypography.H3_Weight,
             LineHeight    = ShopTypography.H3_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         H4 = new H4Typography
         {
@@ -88,7 +88,7 @@ public class ShopTheme
             FontSize      = ShopTypography.H4_Size,
             FontWeight    = ShopTypography.H4_Weight,
             LineHeight    = ShopTypography.H4_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         H5 = new H5Typography
         {
@@ -96,7 +96,7 @@ public class ShopTheme
             FontSize      = ShopTypography.H5_Size,
             FontWeight    = ShopTypography.H5_Weight,
             LineHeight    = ShopTypography.H5_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         H6 = new H6Typography
         {
@@ -104,7 +104,7 @@ public class ShopTheme
             FontSize      = ShopTypography.H6_Size,
             FontWeight    = ShopTypography.H6_Weight,
             LineHeight    = ShopTypography.H6_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         Subtitle1 = new Subtitle1Typography
         {
@@ -112,7 +112,7 @@ public class ShopTheme
             FontSize      = ShopTypography.Subtitle1_Size,
             FontWeight    = ShopTypography.Subtitle1_Weight,
             LineHeight    = ShopTypography.Subtitle1_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         Subtitle2 = new Subtitle2Typography
         {
@@ -120,7 +120,7 @@ public class ShopTheme
             FontSize      = ShopTypography.Subtitle2_Size,
             FontWeight    = ShopTypography.Subtitle2_Weight,
             LineHeight    = ShopTypography.Subtitle2_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         Body1 = new Body1Typography
         {
@@ -128,7 +128,7 @@ public class ShopTheme
             FontSize      = ShopTypography.Body1_Size,
             FontWeight    = ShopTypography.Body1_Weight,
             LineHeight    = ShopTypography.Body1_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         Body2 = new Body2Typography
         {
@@ -136,7 +136,7 @@ public class ShopTheme
             FontSize      = ShopTypography.Body2_Size,
             FontWeight    = ShopTypography.Body2_Weight,
             LineHeight    = ShopTypography.Body2_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         Button = new ButtonTypography
         {
@@ -145,7 +145,7 @@ public class ShopTheme
             FontWeight    = ShopTypography.Button_Weight,
             LineHeight    = ShopTypography.Button_LineHeight,
             TextTransform = "capitalize",
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         Caption = new CaptionTypography
         {
@@ -153,7 +153,7 @@ public class ShopTheme
             FontSize      = ShopTypography.Caption_Size,
             FontWeight    = ShopTypography.Caption_Weight,
             LineHeight    = ShopTypography.Caption_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
         Overline = new OverlineTypography
         {
@@ -161,7 +161,7 @@ public class ShopTheme
             FontSize      = ShopTypography.Overline_Size,
             FontWeight    = ShopTypography.Overline_Weight,
             LineHeight    = ShopTypography.Overline_LineHeight,
-            LetterSpacing = "normal",
+            LetterSpacing = ShopTypography.LetterSpacing,
         },
     };
 
