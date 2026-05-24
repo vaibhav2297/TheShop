@@ -1,0 +1,9 @@
+@use 'variables' as *;
+
+.mud-surface {
+    background-color: var(--mud-palette-surface) !important;
+}
+
+.mud-text-surface {
+    color: var(--mud-palette-surface) !important;
+}

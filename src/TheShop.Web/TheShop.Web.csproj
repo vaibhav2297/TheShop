@@ -40,4 +40,12 @@
     <PackageReference Include="Microsoft.Extensions.Localization" Version="10.*" />
   </ItemGroup>
 
+  <!-- Compile SCSS → CSS before every build. Expanded + source map in Debug; compressed + no map in Release. -->
+  <Target Name="CompileSass" BeforeTargets="Build">
+    <Exec Condition="'$(Configuration)' == 'Debug'"
+          Command="sass Styles/TheShop.scss wwwroot/css/TheShop.css --style=expanded" />
+    <Exec Condition="'$(Configuration)' != 'Debug'"
+          Command="sass Styles/TheShop.scss wwwroot/css/TheShop.css --style=compressed --no-source-map" />
+  </Target>
+
 </Project>
