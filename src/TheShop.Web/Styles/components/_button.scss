@@ -1,0 +1,6 @@
+// Flatten contained MudButton at rest. MudBlazor's own :hover rule
+// re-applies elevation via higher specificity, so no explicit hover
+// declaration is needed here.
+.mud-button-filled {
+    box-shadow: none;
+}
