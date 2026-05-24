@@ -65,6 +65,7 @@ public class ShopTheme
             FontWeight    = ShopTypography.H1_Weight,
             LineHeight    = ShopTypography.H1_LineHeight,
             LetterSpacing = ShopTypography.LetterSpacing,
+            TextTransform = "uppercase"
         },
         H2 = new H2Typography
         {
@@ -73,6 +74,7 @@ public class ShopTheme
             FontWeight    = ShopTypography.H2_Weight,
             LineHeight    = ShopTypography.H2_LineHeight,
             LetterSpacing = ShopTypography.LetterSpacing,
+            TextTransform = "uppercase"
         },
         H3 = new H3Typography
         {
