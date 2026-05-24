@@ -25,22 +25,29 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_customers_email ON customers (lower(email)
 -- ============================================================================
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 
--- A signed-in customer can read only their own row.
-CREATE POLICY "customers_self_select" ON customers
-    FOR SELECT USING (id = auth.uid());
+-- A signed-in customer or admin can read rows:
+--   • self  — own row only        (id = caller's auth.uid())
+--   • admin — all rows            (role claim on JWT = 'admin')
+--
+-- Both auth calls are wrapped in (select ...) so Postgres evaluates them
+-- once per query rather than once per row (fixes auth_rls_initplan advisory).
+-- Merged into one policy to avoid the multiple_permissive_policies advisory.
+CREATE POLICY "customers_select" ON customers
+    FOR SELECT USING (
+        (SELECT auth.uid()) = id
+        OR (SELECT auth.jwt() ->> 'role') = 'admin'
+    );
 
 -- A signed-in customer can insert their own row (used immediately after
 -- VerifyOTP succeeds, when auth.uid() has just been minted).
 CREATE POLICY "customers_self_insert" ON customers
-    FOR INSERT WITH CHECK (id = auth.uid());
+    FOR INSERT WITH CHECK ((SELECT auth.uid()) = id);
 
 -- A signed-in customer can update only their own row.
 CREATE POLICY "customers_self_update" ON customers
-    FOR UPDATE USING (id = auth.uid()) WITH CHECK (id = auth.uid());
-
--- Admins (role claim on JWT) can read all rows for support.
-CREATE POLICY "customers_admin_select" ON customers
-    FOR SELECT USING ((auth.jwt() ->> 'role') = 'admin');
+    FOR UPDATE
+    USING     ((SELECT auth.uid()) = id)
+    WITH CHECK ((SELECT auth.uid()) = id);
 
 -- ============================================================================
 -- customer_exists(p_email) — SECURITY DEFINER
@@ -49,16 +56,19 @@ CREATE POLICY "customers_admin_select" ON customers
 -- has authenticated, but RLS blocks anonymous SELECT on `customers`. This
 -- SECURITY DEFINER function performs the existence check inside a privileged
 -- context and returns only a boolean — no PII is leaked.
+--
+-- search_path is locked to '' (empty) to prevent search_path injection.
+-- The customers table is therefore referenced with its full schema qualifier.
 -- ============================================================================
 CREATE OR REPLACE FUNCTION public.customer_exists(p_email TEXT)
 RETURNS BOOLEAN
 LANGUAGE sql
 STABLE
 SECURITY DEFINER
-SET search_path = public
+SET search_path = ''
 AS $$
     SELECT EXISTS (
-        SELECT 1 FROM customers WHERE lower(email) = lower(p_email)
+        SELECT 1 FROM public.customers WHERE lower(email) = lower(p_email)
     )
 $$;
 
