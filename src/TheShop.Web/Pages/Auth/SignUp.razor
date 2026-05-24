@@ -9,7 +9,7 @@
 
     @* Left panel: sign-up form — space-between aligns heading at top, form at bottom *@
     <MudItem xs="12" md="6">
-        <MudStack Class="mud-height-full pa-16"
+        <MudStack Class="mud-height-full px-16 py-4"
                   Justify="Justify.SpaceBetween">
 
             @* Top bar: cross-navigation link only *@
@@ -19,105 +19,110 @@
                            Href="@Routes.Auth.SignIn">@Strings.Login</MudButton>
             </MudStack>
 
-            @* Hero heading block *@
-            <MudStack Spacing="2">
-                <MudText Typo="Typo.h2" Color="Color.Primary">@Strings.SignUp_Heading</MudText>
-                <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.SignUp_Instruction</MudText>
-            </MudStack>
+            <MudStack Justify="Justify.SpaceBetween"
+                      Class="flex-1">
 
-            @* Form block *@
-            <MudStack Spacing="4">
-                <MudForm @ref="_form"
-                         @bind-IsValid="_isFormValid"
-                         SuppressImplicitSubmission="true">
-                    <MudStack Spacing="3">
+                @* Hero heading block *@
+                <MudStack Spacing="2">
+                    <MudText Typo="Typo.h2" Color="Color.Primary">@Strings.SignUp_Heading</MudText>
+                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.SignUp_Instruction</MudText>
+                </MudStack>
 
-                        @* Name row: first + last side-by-side *@
-                        <MudGrid Spacing="3">
-                            <MudItem xs="12" sm="6">
-                                <MudTextField T="string"
-                                              @bind-Value="_firstName"
-                                              Placeholder="@Strings.FirstName_Label"
-                                              Variant="Variant.Filled"
-                                              Typo="Typo.body2"
-                                              FullWidth="true"
-                                              Required="true"
-                                              RequiredError="@Strings.Auth_FirstName_Required"
-                                              Immediate="true"
-                                              autocomplete="given-name" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudTextField T="string"
-                                              @bind-Value="_lastName"
-                                              Placeholder="@Strings.LastName_Label"
-                                              Variant="Variant.Filled"
-                                              Typo="Typo.body2"
-                                              FullWidth="true"
-                                              Required="true"
-                                              RequiredError="@Strings.Auth_LastName_Required"
-                                              Immediate="true"
-                                              autocomplete="family-name" />
-                            </MudItem>
-                        </MudGrid>
+                @* Form block *@
+                <MudStack Spacing="4">
+                    <MudForm @ref="_form"
+                             @bind-IsValid="_isFormValid"
+                             SuppressImplicitSubmission="true">
+                        <MudStack Spacing="3">
 
-                        <MudTextField T="string"
-                                      @bind-Value="_email"
-                                      Placeholder="@Strings.Email_Label"
-                                      InputType="InputType.Email"
-                                      Variant="Variant.Filled"
-                                      Typo="Typo.body2"
-                                      FullWidth="true"
-                                      Required="true"
-                                      Adornment="Adornment.Start"
-                                      AdornmentColor="Color.Primary"
-                                      AdornmentIcon="@ShopIcons.Edit.Mention"
-                                      RequiredError="@Strings.Email_Required"
-                                      Validation="@_emailValidation"
-                                      Immediate="true"
-                                      autocomplete="email" />
+                            @* Name row: first + last side-by-side *@
+                            <MudGrid Spacing="3">
+                                <MudItem xs="12" sm="6">
+                                    <MudTextField T="string"
+                                                  @bind-Value="_firstName"
+                                                  Placeholder="@Strings.FirstName_Label"
+                                                  Variant="Variant.Filled"
+                                                  Typo="Typo.body2"
+                                                  FullWidth="true"
+                                                  Required="true"
+                                                  RequiredError="@Strings.Auth_FirstName_Required"
+                                                  Immediate="true"
+                                                  autocomplete="given-name" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6">
+                                    <MudTextField T="string"
+                                                  @bind-Value="_lastName"
+                                                  Placeholder="@Strings.LastName_Label"
+                                                  Variant="Variant.Filled"
+                                                  Typo="Typo.body2"
+                                                  FullWidth="true"
+                                                  Required="true"
+                                                  RequiredError="@Strings.Auth_LastName_Required"
+                                                  Immediate="true"
+                                                  autocomplete="family-name" />
+                                </MudItem>
+                            </MudGrid>
 
-                        <MudDatePicker Placeholder="@Strings.DateOfBirth_Label"
-                                       Variant="Variant.Filled"
-                                       @bind-Date="_dateOfBirth"
-                                       MaxDate="@_maxDate"
-                                       Required="true"
-                                       AdornmentIcon="@ShopIcons.Calendar.Calendar_"
-                                       Adornment="Adornment.End"
-                                       AdornmentColor="Color.Primary"
-                                       OpenTo="OpenTo.Year"
-                                       RequiredError="@Strings.Auth_Dob_InPast"
-                                       Validation="@_dobValidation"
-                                       Editable="true"
-                                       DateFormat="yyyy-MM-dd" />
+                            <MudTextField T="string"
+                                          @bind-Value="_email"
+                                          Placeholder="@Strings.Email_Label"
+                                          InputType="InputType.Email"
+                                          Variant="Variant.Filled"
+                                          Typo="Typo.body2"
+                                          FullWidth="true"
+                                          Required="true"
+                                          Adornment="Adornment.Start"
+                                          AdornmentColor="Color.Primary"
+                                          AdornmentIcon="@ShopIcons.Edit.Mention"
+                                          RequiredError="@Strings.Email_Required"
+                                          Validation="@_emailValidation"
+                                          Immediate="true"
+                                          autocomplete="email" />
 
-                        <MudCheckBox T="bool"
-                                     @bind-Value="_ageConfirmed"
-                                     Color="Color.Primary"
-                                     Required="true"
-                                     RequiredError="@Strings.Auth_Underage">
-                            <MudText Typo="Typo.caption">@Strings.SignUp_AgeConfirm</MudText>
-                        </MudCheckBox>
+                            <MudDatePicker Placeholder="@Strings.DateOfBirth_Label"
+                                           Variant="Variant.Filled"
+                                           @bind-Date="_dateOfBirth"
+                                           MaxDate="@_maxDate"
+                                           Required="true"
+                                           AdornmentIcon="@ShopIcons.Calendar.Calendar_"
+                                           Adornment="Adornment.End"
+                                           AdornmentColor="Color.Primary"
+                                           OpenTo="OpenTo.Year"
+                                           RequiredError="@Strings.Auth_Dob_InPast"
+                                           Validation="@_dobValidation"
+                                           Editable="true"
+                                           DateFormat="yyyy-MM-dd" />
 
-                        @* Row wrapper prevents MudStack stretch from expanding the button to full width *@
-                        <MudStack Row="true">
-                            <BusyFor Key="@BusyKeys.Auth.SignUp" Context="busy">
-                                <MudButton Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           Size="Size.Large"
-                                           EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
-                                           Disabled="@(!_isFormValid || busy)"
-                                           OnClick="OnSendCodeAsync">
-                                    @if (busy)
-                                    {
-                                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-                                    }
-                                    @Strings.Auth_Create_Submit
-                                </MudButton>
-                            </BusyFor>
+                            <MudCheckBox T="bool"
+                                         @bind-Value="_ageConfirmed"
+                                         Color="Color.Primary"
+                                         Required="true"
+                                         RequiredError="@Strings.Auth_Underage">
+                                <MudText Typo="Typo.caption">@Strings.SignUp_AgeConfirm</MudText>
+                            </MudCheckBox>
+
+                            @* Row wrapper prevents MudStack stretch from expanding the button to full width *@
+                            <MudStack Row="true">
+                                <BusyFor Key="@BusyKeys.Auth.SignUp" Context="busy">
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Size="Size.Large"
+                                               EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
+                                               Disabled="@(!_isFormValid || busy)"
+                                               OnClick="OnSendCodeAsync">
+                                        @if (busy)
+                                        {
+                                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                        }
+                                        @Strings.Auth_Create_Submit
+                                    </MudButton>
+                                </BusyFor>
+                            </MudStack>
+
                         </MudStack>
+                    </MudForm>
+                </MudStack>
 
-                    </MudStack>
-                </MudForm>
             </MudStack>
 
         </MudStack>
@@ -127,14 +132,14 @@
     <MudItem xs="12" md="6" Class="d-none d-md-flex mud-theme-surface">
         <MudStack AlignItems="AlignItems.Center"
                   Justify="Justify.Center"
-                  Class="flex-1 ma-4 mud-surface"
+                  Class="flex-1 my-4 me-4 mud-surface"
                   Spacing="4">
             <MudImage Src="/images/logo/logo_primary.svg"
                       Alt="@Strings.AppName"
-                      Width="380"
-                      Height="380"
+                      Width="280"
+                      Height="280"
                       ObjectFit="ObjectFit.Contain" />
-            <MudText Typo="Typo.h6" Color="Color.Secondary">@Strings.App_Tagline</MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Strings.App_Tagline</MudText>
         </MudStack>
     </MudItem>
 

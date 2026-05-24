@@ -9,7 +9,7 @@
 
     @* Left panel: sign-in form — space-between aligns heading at top, form at bottom *@
     <MudItem xs="12" md="6">
-        <MudStack Class="mud-height-full pa-16"
+        <MudStack Class="mud-height-full px-16 py-4"
                   Justify="Justify.SpaceBetween">
 
             @* Top bar: cross-navigation link only *@
@@ -82,14 +82,15 @@
     <MudItem xs="12" md="6" Class="d-none d-md-flex">
         <MudStack AlignItems="AlignItems.Center"
                   Justify="Justify.Center"
-                  Class="flex-1 ma-4 mud-surface"
+                  Class="flex-1 my-4 me-4 mud-surface"
                   Spacing="4">
             <MudImage Src="/images/logo/logo_primary.svg"
                       Alt="@Strings.AppName"
-                      Width="380"
-                      Height="380"
+                      Width="280"
+                      Height="280"
                       ObjectFit="ObjectFit.Contain" />
-            <MudText Typo="Typo.h6" Color="Color.Secondary">@Strings.App_Tagline</MudText>
+
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Strings.App_Tagline</MudText>
         </MudStack>
     </MudItem>
 
