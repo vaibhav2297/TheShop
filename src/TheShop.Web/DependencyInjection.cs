@@ -13,7 +13,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
-        services.AddLocalization(options => options.ResourcesPath = "Resources");
+        services.AddLocalization();
 
         services.AddSingleton<ShopTheme>();
         services.AddScoped<BusyState>();

@@ -392,6 +392,9 @@
   <data name="Auth_SessionExpired" xml:space="preserve">
     <value>Veuillez vous reconnecter pour continuer.</value>
   </data>
+  <data name="Auth_Network" xml:space="preserve">
+    <value>Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.</value>
+  </data>
   <data name="Auth_Unexpected" xml:space="preserve">
     <value>Une erreur est survenue. Veuillez réessayer.</value>
   </data>

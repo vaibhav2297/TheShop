@@ -22,5 +22,6 @@ public static class AuthErrorKeys
     public const string EmailRequired = "Email_Required";
     public const string EmailInvalid = "Email_Invalid";
     public const string SessionExpired = "Auth_SessionExpired";
+    public const string Network = "Auth_Network";
     public const string Unexpected = "Auth_Unexpected";
 }

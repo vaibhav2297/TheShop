@@ -407,6 +407,9 @@
   <data name="Auth_SessionExpired" xml:space="preserve">
     <value>Please sign in again to continue.</value>
   </data>
+  <data name="Auth_Network" xml:space="preserve">
+    <value>Can't reach the server. Please check your connection and try again.</value>
+  </data>
   <data name="Auth_Unexpected" xml:space="preserve">
     <value>Something went wrong. Please try again.</value>
   </data>

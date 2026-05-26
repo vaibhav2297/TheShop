@@ -38,7 +38,11 @@ public sealed class SupabaseAuthService : IAuthService
         }
         catch (GotrueException ex)
         {
-            return Result.Fail(MapGotrueError(ex));
+            return Result.Fail(MapSendOtpError(ex));
+        }
+        catch (Exception ex) when (IsTransportFailure(ex))
+        {
+            return Result.Fail(AuthErrorKeys.Network);
         }
     }
 
@@ -54,7 +58,11 @@ public sealed class SupabaseAuthService : IAuthService
         }
         catch (GotrueException ex)
         {
-            return Result.Fail(MapGotrueError(ex));
+            return Result.Fail(MapSendOtpError(ex));
+        }
+        catch (Exception ex) when (IsTransportFailure(ex))
+        {
+            return Result.Fail(AuthErrorKeys.Network);
         }
     }
 
@@ -70,7 +78,11 @@ public sealed class SupabaseAuthService : IAuthService
         }
         catch (GotrueException ex)
         {
-            return Result.Fail<AuthSession>(MapGotrueError(ex));
+            return Result.Fail<AuthSession>(MapVerifyOtpError(ex));
+        }
+        catch (Exception ex) when (IsTransportFailure(ex))
+        {
+            return Result.Fail<AuthSession>(AuthErrorKeys.Network);
         }
     }
 
@@ -83,6 +95,10 @@ public sealed class SupabaseAuthService : IAuthService
         catch (GotrueException)
         {
             // Best-effort sign-out; the local session has already been discarded by the caller.
+        }
+        catch (Exception ex) when (IsTransportFailure(ex))
+        {
+            // Best-effort sign-out; same rationale as above.
         }
     }
 
@@ -107,13 +123,22 @@ public sealed class SupabaseAuthService : IAuthService
             session.ExpiresAt());
     }
 
-    private static string MapGotrueError(GotrueException ex)
+    private static string MapSendOtpError(GotrueException ex)
     {
         return ex.Reason switch
         {
             FailureHint.Reason.UserAlreadyRegistered => AuthErrorKeys.AccountAlreadyExists,
             FailureHint.Reason.UserTooManyRequests => AuthErrorKeys.ResendTooSoon,
             FailureHint.Reason.UserBadEmailAddress => AuthErrorKeys.EmailInvalid,
+            _ when LooksLikeRateLimited(ex) => AuthErrorKeys.ResendTooSoon,
+            _ => AuthErrorKeys.Unexpected,
+        };
+    }
+
+    private static string MapVerifyOtpError(GotrueException ex)
+    {
+        return ex.Reason switch
+        {
             FailureHint.Reason.UserBadLogin => AuthErrorKeys.CodeIncorrect,
             FailureHint.Reason.UserMissingInformation => AuthErrorKeys.CodeIncorrect,
             FailureHint.Reason.ExpiredRefreshToken => AuthErrorKeys.CodeExpired,
@@ -131,4 +156,7 @@ public sealed class SupabaseAuthService : IAuthService
     private static bool LooksLikeRateLimited(GotrueException ex) =>
         (int?)ex.StatusCode == 429 ||
         ex.Message.Contains("rate limit", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsTransportFailure(Exception ex) =>
+        ex is HttpRequestException or TaskCanceledException;
 }

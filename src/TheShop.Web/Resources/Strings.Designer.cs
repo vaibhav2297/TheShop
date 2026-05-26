@@ -295,6 +295,15 @@ namespace TheShop.Web.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Can't reach the server. Please check your connection and try again..
+        /// </summary>
+        public static string Auth_Network {
+            get {
+                return ResourceManager.GetString("Auth_Network", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Please wait before requesting a new code..
         /// </summary>
         public static string Auth_ResendTooSoon {
