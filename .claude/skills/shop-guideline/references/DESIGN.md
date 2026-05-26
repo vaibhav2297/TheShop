@@ -21,8 +21,13 @@ For architecture, layer separation, and code structure rules, see `ARCHITECTURE.
 7. [MudBlazor Theme — `ShopTheme`](#mudblazor-theme--shoptheme)
 8. [Imagery & Static Assets](#imagery--static-assets)
 9. [Component Design Rules](#component-design-rules)
-10. [Anti-Patterns to Reject](#anti-patterns-to-reject)
-11. [Design Checklist](#design-checklist)
+10. [CSS Classes & Inline Styles](#css-classes--inline-styles)
+11. [SCSS Stylesheets](#scss-stylesheets)
+12. [Anti-Patterns to Reject](#anti-patterns-to-reject)
+13. [Loading & Busy Indicators](#loading--busy-indicators)
+14. [Code-Behind Separation](#code-behind-separation)
+15. [Final Reminders for AI Agents](#final-reminders-for-ai-agents)
+16. [Design Checklist](#design-checklist)
 
 ---
 
@@ -75,13 +80,23 @@ When applying color to any MudBlazor component, follow this strict order of pref
    <MudIcon Color="Color.Secondary" Icon="@ShopIcons.Cart" />
    ```
 
-2. **Second — if the `Color` enum doesn't have what you need, use MudBlazor's generated CSS theme classes.**
+2. **Second — if the `Color` enum doesn't have what you need, use any of MudBlazor's auto-generated color CSS classes.** MudBlazor's `_colors.scss` (see [`MudBlazor/Styles/abstracts/_colors.scss`](https://github.com/MudBlazor/MudBlazor/blob/dev/src/MudBlazor/Styles/abstracts/_colors.scss)) emits a wide family of color utility classes — not just `mud-theme-*`. Pick the one that semantically matches your need. The full set includes (non-exhaustive):
+   - `mud-theme-{name}` — themed background + contrasting text (`primary`, `secondary`, `tertiary`, `info`, `success`, `warning`, `error`, `dark`, `surface`)
+   - `mud-{name}-text` — text color only (`mud-primary-text`, `mud-secondary-text`, `mud-error-text`, …)
+   - `mud-{name}-bg` / `mud-bg-{name}` — background color only
+   - `mud-{name}-hover` — hover state color
+   - `mud-border-{name}` — border color
+   - `mud-icon-default`, `mud-icon-{name}` — icon colors
+   - `mud-text-primary`, `mud-text-secondary`, `mud-text-disabled` — palette text shortcuts
+   - Lighten/darken variants where MudBlazor emits them
    ```razor
-   <div class="mud-theme-primary">...</div>
-   <MudPaper Class="mud-theme-secondary">...</MudPaper>
+   <MudPaper Class="mud-theme-secondary">Filled secondary surface</MudPaper>
+   <MudText Class="mud-error-text">Error message</MudText>
+   <div class="mud-border-primary">Bordered block</div>
    ```
+   Always prefer a more specific MudBlazor class (e.g. `mud-error-text`) over `mud-theme-*` when you only need one color facet.
 
-3. **Last resort — Ask User.** Only when neither the `Color` enum nor the `mud-theme-*` CSS classes can produce the required result. Ask user with detailed expaination why and proceed with user choice.
+3. **Last resort — Ask User.** Only when neither the `Color` enum nor any of MudBlazor's auto-generated color classes can produce the required result. Ask the user with a detailed explanation of why, and proceed only with their chosen approach.
 
 **Never hardcode hex values directly in `.razor` files.**
 
@@ -102,6 +117,24 @@ All text rendering must use `MudText` with the `Typo` parameter. Never use `<spa
 ```
 
 **Exception:** Native HTML elements are acceptable inside MudBlazor components where required by the component's API (e.g. when building a custom child template).
+
+**Typography escape hatch — SCSS utility classes.** If a design needs a font size or weight that no `Typo` value cleanly produces, do NOT inline-style and do NOT invent a one-off CSS class. Compose `MudText` with the project's SCSS-generated utility classes from `src/TheShop.Web/Styles/abstracts/_typography.scss`:
+
+- `fs-{n}` — font-size utility (e.g. `fs-12`, `fs-14`, `fs-18`, `fs-24`, `fs-48`). Add new sizes to the `$font-sizes` SCSS list — don't write a bespoke class.
+- `fw-{n}` — font-weight utility (e.g. `fw-400`, `fw-500`, `fw-600`, `fw-700`). Add new weights to the `$font-weights` SCSS list.
+
+```razor
+@* ✅ Good — Typo + utility classes when Typo alone doesn't fit *@
+<MudText Typo="Typo.h4" Class="fs-22 fw-600">Off-spec heading</MudText>
+
+@* ❌ Bad — inline style *@
+<MudText Style="font-size: 22px; font-weight: 600;">Off-spec heading</MudText>
+
+@* ❌ Bad — one-off page-scoped class *@
+<MudText Class="product-title-22">Off-spec heading</MudText>
+```
+
+Still always pick the closest `Typo` first — utility classes are a fine-tune, not a replacement.
 
 ---
 
@@ -401,29 +434,38 @@ Available `Color` enum values: `Default`, `Primary`, `Secondary`, `Tertiary`, `I
 
 These are wired to your `ShopColors` values inside `ShopTheme.cs` — so when MudBlazor renders `Color.Primary`, it uses your brand's primary color automatically.
 
-#### 2. Second choice — MudBlazor's generated CSS theme classes
+#### 2. Second choice — MudBlazor's auto-generated color CSS classes
 
-When the `Color` enum doesn't fit (e.g. styling a `MudPaper`, `MudStack`, custom div, or applying color to a property that doesn't accept a `Color` enum), use MudBlazor's auto-generated CSS classes:
+When the `Color` enum doesn't fit (e.g. styling a `MudPaper`, `MudStack`, custom div, or applying color to a property that doesn't accept a `Color` enum), reach for one of MudBlazor's auto-generated color CSS classes — and **pick the most specific one** that does what you need.
+
+The full set is emitted by [`MudBlazor/Styles/abstracts/_colors.scss`](https://github.com/MudBlazor/MudBlazor/blob/dev/src/MudBlazor/Styles/abstracts/_colors.scss). Browse that file (or your built CSS) before reaching for `style="..."`. The available families include:
+
+| Family | What it does | Examples |
+|---|---|---|
+| `mud-theme-{name}` | Background + contrasting text together | `mud-theme-primary`, `mud-theme-secondary`, `mud-theme-tertiary`, `mud-theme-info`, `mud-theme-success`, `mud-theme-warning`, `mud-theme-error`, `mud-theme-dark`, `mud-theme-surface` |
+| `mud-{name}-text` | Text color only | `mud-primary-text`, `mud-secondary-text`, `mud-error-text`, `mud-success-text`, … |
+| `mud-{name}-bg` / `mud-bg-{name}` | Background color only | `mud-primary-bg`, `mud-error-bg`, … |
+| `mud-{name}-hover` | Hover-state color | `mud-primary-hover`, … |
+| `mud-border-{name}` | Border color | `mud-border-primary`, `mud-border-lines-default` |
+| `mud-icon-{name}` | Icon-specific palette colors | `mud-icon-default`, `mud-icon-primary`, … |
+| `mud-text-{slot}` | Palette text shortcuts | `mud-text-primary`, `mud-text-secondary`, `mud-text-disabled` |
+| Lighten / darken variants | Where MudBlazor emits them | per the SCSS source |
 
 ```razor
-@* ✅ Good — uses generated theme CSS classes *@
-<div class="mud-theme-primary">Primary background with contrasting text</div>
-<MudPaper Class="mud-theme-secondary">Secondary themed paper</MudPaper>
-<MudStack Class="mud-theme-tertiary">...</MudStack>
+@* ✅ Good — full themed surface (bg + text together) *@
+<MudPaper Class="mud-theme-secondary">Themed paper</MudPaper>
+
+@* ✅ Better — only need text color, so pick the specific class *@
+<MudText Class="mud-error-text">Validation failed</MudText>
+
+@* ✅ Good — only need a border tint *@
+<div class="mud-border-primary">Bordered block</div>
+
+@* ❌ Avoid — `mud-theme-*` when you only wanted one color facet *@
+<MudText Class="mud-theme-error">Validation failed</MudText>
 ```
 
-Available CSS classes generated by MudBlazor from your theme:
-- `mud-theme-primary`
-- `mud-theme-secondary`
-- `mud-theme-tertiary`
-- `mud-theme-info`
-- `mud-theme-success`
-- `mud-theme-warning`
-- `mud-theme-error`
-- `mud-theme-dark`
-- `mud-theme-surface`
-
-These classes apply both background color and contrasting text color appropriately for the theme value.
+Rule of thumb: if you only need text, use a `*-text` class. If you only need a background, use a `*-bg` class. Reach for `mud-theme-*` only when you actually want the matched background + foreground pair.
 
 #### 3. Last resort — Ask User.
 
@@ -612,9 +654,30 @@ Available `Typo` enum values: `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `subtitle1`, `
 <MudText Typo="Typo.caption" Color="Color.Error">Error message</MudText>
 ```
 
+### Off-spec sizes & weights — SCSS utility classes
+
+If the design needs a size or weight that no `Typo` value cleanly produces, **do not inline-style** and **do not invent a one-off CSS class**. Compose `MudText` with the project's SCSS-generated utility classes from `src/TheShop.Web/Styles/abstracts/_typography.scss`:
+
+- `fs-{n}` — font-size in pixels. Already-generated sizes: see the `$font-sizes` SCSS list (`10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 34, 48, 60, 96`).
+- `fw-{n}` — font-weight. Already-generated weights: see the `$font-weights` SCSS list (`400, 500, 600, 700`).
+
+```razor
+@* ✅ Good — Typo gives type-family/line-height, utilities fine-tune size/weight *@
+<MudText Typo="Typo.h4" Class="fs-22 fw-600">Off-spec heading</MudText>
+<MudText Typo="Typo.body1" Class="fw-500">Emphasized body</MudText>
+
+@* ❌ Bad — inline font styles *@
+<MudText Style="font-size: 22px; font-weight: 600;">Off-spec heading</MudText>
+
+@* ❌ Bad — one-off page-scoped CSS class *@
+<MudText Class="product-title-22">Off-spec heading</MudText>
+```
+
+If the size or weight you need is not already in the SCSS list, add it to the `$font-sizes` or `$font-weights` collection in `_typography.scss` (one entry — the loop generates the class). Never hand-write a `.fs-{n}` rule individually.
+
 ### Adding a new typography variant
 
-If you need a typography style that doesn't fit any of the existing `Typo` values, **stop and ask the user first** (per Rule 3 — MudBlazor components only). Do not introduce custom CSS classes or inline styles.
+If you need a structural typography style that doesn't fit any of the existing `Typo` values (different font family, line-height, letter-spacing, etc.), **stop and ask the user first** (per Rule 3 — MudBlazor components only). Do not introduce custom CSS classes or inline styles for structural typography changes.
 
 ---
 
@@ -816,11 +879,84 @@ public static IServiceCollection AddPresentation(this IServiceCollection service
 
 ## Component Design Rules
 
-### 1. MudBlazor only
+### General — applies to every component
+
+#### 1. MudBlazor only
 - Use only MudBlazor components — never invent custom buttons, inputs, dialogs, etc.
 - If MudBlazor doesn't have a component or cannot meet a requirement, **ask the user first** (per Rule 3) before introducing alternatives.
 
-### 2. Include all states
+#### 2. Reusable components must inherit from `MudComponentBase`
+
+Every reusable Blazor component in this project must have `MudBlazor.MudComponentBase` somewhere in its inheritance chain (direct parent or a transitive ancestor — both are acceptable). This is what makes `Class`, `Style`, `UserAttributes`, and other consumer-side overrides available without the component having to re-declare them.
+
+```csharp
+// ✅ Good — direct child of MudComponentBase
+public partial class ShopProductCard : MudComponentBase { }
+
+// ✅ Good — MudComponentBase is somewhere in the chain
+public partial class ShopOrderCard : ShopProductCard { }   // ShopProductCard : MudComponentBase
+
+// ✅ Good — extending an existing Mud component (which itself derives from MudComponentBase)
+public partial class ShopBrandedButton : MudButton { }
+
+// ❌ Bad — no MudComponentBase in the hierarchy
+public partial class ShopProductCard : ComponentBase { }   // missing Class/Style/UserAttributes plumbing
+```
+
+A consumer must always be able to write `<ShopProductCard Class="my-spacing" Style="@(...)" />` and have it work without the component re-declaring pass-through attributes. Inheriting from `MudComponentBase` is what gives you that for free.
+
+#### 3. Reusable components must forward `Class` and `Style` to their root element
+
+`MudComponentBase` exposes `Class` and `Style` as parameters — but it does NOT automatically apply them to your render tree. Every reusable component must explicitly forward those values to its root element. There are two acceptable patterns:
+
+**Pattern A — root element has no internal classes/styles.** Forward `Class` and `Style` directly:
+
+```razor
+@* ✅ ShopSection.razor — no internal styling on the root, just pass through *@
+<MudGrid Class="@Class"
+         Style="@Style">
+    <MudPaper>
+        @ChildContent
+    </MudPaper>
+</MudGrid>
+```
+
+**Pattern B — root element has its own internal classes/styles.** Compose using `CssBuilder` / `StyleBuilder` and always end the chain with `.AddClass(Class)` / `.AddStyle(Style)` so consumer-supplied values land last and can override:
+
+```razor
+@* ✅ ShopAlert.razor *@
+<MudGrid Class="@Classname"
+         Style="@Stylename">
+    <MudPaper>
+        @ChildContent
+    </MudPaper>
+</MudGrid>
+```
+
+```csharp
+// ✅ ShopAlert.razor.cs
+protected string Classname => new CssBuilder("mud-alert")
+    .AddClass("mud-dense", Dense)
+    .AddClass("mud-square", Square)
+    .AddClass(Class)                  // consumer's Class added last
+    .Build();
+
+private string Stylename => new StyleBuilder()
+    .AddStyle("margin-top", "4px")
+    .AddStyle(Style)                  // consumer's Style added last
+    .Build();
+```
+
+```razor
+@* ❌ Bad — consumer's Class/Style is silently dropped *@
+<MudGrid Class="mud-alert">           @* hard-coded, ignores @Class *@
+    <MudPaper>@ChildContent</MudPaper>
+</MudGrid>
+```
+
+This rule is what makes spacing and layout adjustments composable at the call site instead of forcing every minor tweak into a new component prop.
+
+#### 4. Include all states
 Every interactive component must visually handle:
 - Default
 - Hover
@@ -829,7 +965,7 @@ Every interactive component must visually handle:
 - Disabled
 - Loading (where applicable)
 
-### 3. Component naming convention
+#### 5. Component naming convention
 `Component / Type / Variant / State`
 
 Examples:
@@ -839,13 +975,13 @@ Examples:
 
 Avoid: `Button1`, `NewButton`, `FinalCard`.
 
-### 4. Follow MudBlazor variants
+#### 6. Follow MudBlazor variants
 Every component must support its standard variants:
 - Buttons: `Variant.Filled`, `Variant.Outlined`, `Variant.Text`
 - Sizes: `Size.Small`, `Size.Medium`, `Size.Large`
 - Colors: `Color.Primary`, `Color.Secondary`, `Color.Tertiary`
 
-### 5. Build base components first
+#### 7. Build base components first
 Before building feature-specific UI, ensure these MudBlazor wrappers exist (only if customization is needed beyond MudBlazor defaults):
 - Buttons (with all variants)
 - Inputs (text, number, email, password)
@@ -857,6 +993,216 @@ Before building feature-specific UI, ensure these MudBlazor wrappers exist (only
 - Loading spinner / skeleton
 
 If standard MudBlazor components meet your needs, use them directly — don't create unnecessary wrappers.
+
+### Per-component rules
+
+This section captures rules that apply to specific MudBlazor components. More rules will be added over time.
+
+#### `MudTextField`
+
+**Always use `Placeholder`, never `Label`.** The project's input style relies on placeholder-only fields — `Label` produces an outline/floating-label layout we explicitly don't want.
+
+```razor
+@* ✅ Good *@
+<MudTextField @bind-Value="_email"
+              Placeholder="@Strings.Email_Placeholder"
+              HelperText="@Strings.Email_Hint" />
+
+@* ❌ Bad — uses Label *@
+<MudTextField @bind-Value="_email"
+              Label="@Strings.Email_Label" />
+```
+
+If a design genuinely needs a label-above-input pattern, render the label as a separate `<MudText>` above the field — don't fall back to `MudTextField.Label`:
+
+```razor
+@* ✅ When a visible field name above the input is required *@
+<MudText Typo="Typo.caption">@Strings.Email_Label</MudText>
+<MudTextField @bind-Value="_email"
+              Placeholder="@Strings.Email_Placeholder" />
+```
+
+---
+
+## CSS Classes & Inline Styles
+
+Most UI in this project should be achievable using MudBlazor components and their built-in parameters. Reach for classes only when parameters can't express the design, and reach for inline `style` only when classes can't either.
+
+### Priority order (strict)
+
+When you need to alter the look or layout of a MudBlazor component, work down this list in order. Move to the next step only when the current one cannot produce the required result.
+
+1. **MudBlazor component parameters.** Try to achieve the design solely using MudBlazor components and their available parameters (`Variant`, `Color`, `Size`, `Dense`, `Outlined`, `Elevation`, `Spacing`, `Justify`, `Align`, etc.). This is the cleanest path and the most resilient to MudBlazor upgrades.
+
+2. **MudBlazor's auto-generated CSS classes.** If parameters can't express it, inspect MudBlazor's emitted CSS for an existing utility class that fits — the color families covered in §Colors, plus spacing/alignment utilities (`pa-*`, `ma-*`, `gap-*`, `d-flex`, `align-center`, …). Use those before writing anything new.
+
+3. **Project SCSS-generated classes.** If MudBlazor doesn't have a class that fits, use one of the project's own SCSS-generated utility classes from `src/TheShop.Web/Styles/`. If a suitable class doesn't exist yet but the styling would be reusable, **generate a new SCSS class** (see §SCSS Stylesheets for rules — folder, naming, when to generate). **Never write component-scoped CSS in a `<style>` block inside the `.razor` file.**
+
+4. **Inline `Style` (last resort).** Only when the styling is genuinely one-off, won't be reused elsewhere, has no foreseeable future reuse, and a class would be more overhead than benefit. Even here, build the style via `StyleBuilder` rather than concatenating strings.
+
+```razor
+@* ✅ Step 1 — parameters alone *@
+<MudPaper Elevation="2" Outlined="true" Class="pa-4">…</MudPaper>
+
+@* ✅ Step 2 — Mud utility class fills a small gap *@
+<MudStack Class="gap-2 align-center">…</MudStack>
+
+@* ✅ Step 3 — project SCSS utility class for a reusable pattern *@
+<MudText Typo="Typo.h4" Class="fs-22 fw-600">Off-spec heading</MudText>
+
+@* ✅ Step 4 — truly one-off, last-resort inline style via StyleBuilder *@
+<MudPaper Style="@CardStyle">…</MudPaper>
+```
+
+### Composing classes — always use `CssBuilder`
+
+When a component (or page) needs to conditionally compose multiple CSS classes, use MudBlazor's `CssBuilder`. Never concatenate class strings with `+`, `string.Format`, interpolation, or ternary expressions.
+
+```csharp
+// ✅ In *.razor.cs
+protected string Classname => new CssBuilder("mud-alert")
+    .AddClass("mud-dense", Dense)
+    .AddClass("mud-square", Square)
+    .AddClass(Class)             // forward consumer's Class (per Component Rule 3)
+    .Build();
+
+protected string SomeClassname => new CssBuilder("mud-toolbar-appbar")
+    .AddClass(SomeClass)
+    .Build();
+```
+
+```razor
+@* ✅ In *.razor *@
+<MudGrid Class="@Classname">
+    <SomeComponent Class="@SomeClassname" />
+</MudGrid>
+
+@* ❌ Bad — string concatenation *@
+<MudGrid Class="@($"mud-alert {(Dense ? "mud-dense" : "")} {Class}")">…</MudGrid>
+```
+
+`CssBuilder.AddClass(condition: bool)` only emits the class when the predicate is true — that's the entire point of using it.
+
+### Composing inline styles — always use `StyleBuilder`
+
+When inline styles are truly necessary (step 4 above), build them with `StyleBuilder` and expose the result as a property. Never concatenate style strings by hand.
+
+```csharp
+// ✅ In *.razor.cs
+private string Stylename => new StyleBuilder()
+    .AddStyle("margin-top", "4px")
+    .AddStyle("max-width", $"{_maxWidth}px", when: _maxWidth > 0)
+    .AddStyle(Style)             // forward consumer's Style (per Component Rule 3)
+    .Build();
+```
+
+```razor
+@* ✅ In *.razor *@
+<MudGrid Style="@Stylename">…</MudGrid>
+
+@* ❌ Bad — string concatenation *@
+<MudGrid Style="@($"margin-top: 4px; max-width: {_maxWidth}px;")">…</MudGrid>
+```
+
+### What never to do
+
+- ❌ `<style>` block inside a `.razor` file for ad-hoc page styling. If reusable, it belongs in SCSS. If truly one-off, use inline `style` via `StyleBuilder`. Never both.
+- ❌ A new global CSS file (`*.css`) just to hold one page's overrides. Use SCSS in `src/TheShop.Web/Styles/` with the right folder and naming.
+- ❌ Inline `style` strings concatenated with `+` or string interpolation. Use `StyleBuilder`.
+- ❌ Forgetting `.AddClass(Class)` / `.AddStyle(Style)` at the end of a reusable component's builder chain — that silently drops consumer customization.
+
+---
+
+## SCSS Stylesheets
+
+When MudBlazor can't express the design via parameters or its own classes, SCSS — not inline `<style>` blocks, not page-scoped CSS files — is the next step. The rules below govern where SCSS lives, what it should contain, and when to write it at all.
+
+### Location
+
+All SCSS lives under `src/TheShop.Web/Styles/`. There is no other allowed location for project stylesheets.
+
+### Folder structure
+
+```
+src/TheShop.Web/Styles/
+├── TheShop.scss               // root entry point — imports the partials below
+├── abstracts/                 // tokens, theme variables, type/color utilities
+│   ├── _colors.scss
+│   ├── _typography.scss
+│   └── _variables.scss
+├── components/                // component-level styles
+│   ├── _button.scss
+│   ├── _field.scss
+│   └── _picker.scss
+├── layouts/                   // layout-level styles (MainLayout, AuthLayout, …)
+│   └── _main.scss
+└── utilities/                 // utility-class collections
+    ├── borders/
+    ├── flexbox/
+    └── spacing/
+```
+
+- `abstracts/` — design tokens and theme variables that aren't components themselves (colors, typography utilities, shared SCSS variables, mixins). The typography `fs-*` / `fw-*` utilities live here.
+- `components/` — styles scoped to a specific component family (`_button.scss`, `_field.scss`). One file per component family.
+- `layouts/` — page-shell styles (e.g. `_main.scss` for `MainLayout`).
+- `utilities/` — broad utility-class collections (borders, flexbox helpers, spacing — split into subfolders as the collection grows).
+
+### Naming conventions
+
+- All SCSS partials start with an underscore and use lowercase, e.g. `_typography.scss`, `_button.scss`. **Never** `Typography.scss` or `typography.scss`.
+- Generated utility classes follow short, descriptive prefixes by concern: `fs-*` (font-size), `fw-*` (font-weight), `pa-*` / `ma-*` (already in MudBlazor for padding/margin if applicable), etc.
+- Prefer generating classes from a SCSS list + `@each` loop rather than hand-writing every variant — that's how `_typography.scss` produces `fs-10`, `fs-12`, … from a single `$font-sizes` collection. To add a new size or weight, add it to the list — don't hand-write a new selector.
+
+### When to write SCSS
+
+Generate SCSS only if **all** of the following are true:
+
+1. **MudBlazor doesn't already provide it.** Check MudBlazor's emitted classes (color, spacing, flexbox, typography utilities) before writing anything. If MudBlazor has it, use that.
+2. **It will be reused.** Style that is genuinely shared across multiple places, future-proof, and belongs to a reusable concept. If you can only think of one call site and no plausible future one, don't generate a class — use an inline `style` instead (step 4 of the priority order).
+3. **It fits an existing partial or warrants a new one.** Don't sprinkle one-off rules into `_button.scss` if they belong in `_field.scss`. If a new family of styles emerges (e.g. shadow utilities), create a new partial under the right folder rather than expanding an unrelated one.
+
+If a class already exists for what you need — **use it directly**. Don't duplicate.
+
+### When to fall back to inline `style`
+
+Inline `style` (always via `StyleBuilder`) is the right choice when:
+
+- The styling does not repeat anywhere else in the codebase.
+- There is no realistic future reuse — it's a one-off layout tweak on a single page.
+- Producing a class would be more code than the inline value (e.g. `Style="max-width: 480px"` for one container).
+
+Even in this case, the styling lives on the call site as an inline `Style` — not in a `<style>` block, not in a new CSS file.
+
+### Anti-patterns
+
+```razor
+@* ❌ Bad — <style> block inside a .razor file *@
+<style>
+    .product-page-header { font-size: 22px; }
+</style>
+
+@* ❌ Bad — a new CSS file just for one page *@
+@* wwwroot/css/product-page.css *@
+
+@* ❌ Bad — SCSS partial named without leading underscore or with capital letters *@
+@* Styles/components/Button.scss *@
+
+@* ❌ Bad — hand-writing every .fs-* class instead of using @each *@
+.fs-22 { font-size: 22px !important; }
+.fs-23 { font-size: 23px !important; }
+.fs-24 { font-size: 24px !important; }
+```
+
+```scss
+// ✅ Good — generate the family from a list
+$font-sizes: (10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 34, 48, 60, 96);
+
+@each $size in $font-sizes {
+    .fs-#{$size} {
+        font-size: #{$size}px !important;
+    }
+}
+```
 
 ---
 
@@ -892,7 +1238,7 @@ The only legitimate use of `Localizer[...]` is when the key is determined at run
 <div style="background: #101010">...</div>
 <MudButton Style="color: #d4a55c">...</MudButton>
 ```
-**Fix:** Use `Color="Color.Primary"` first; if not possible, `Class="mud-theme-primary"`; last resort, Ask User with a detailed explaination why and proceed with user choice.
+**Fix:** Use `Color="Color.Primary"` first; if not possible, one of MudBlazor's auto-generated color classes (`mud-theme-*`, `mud-{name}-text`, `mud-{name}-bg`, `mud-border-{name}`, …); last resort, Ask User with a detailed explanation why and proceed with user choice.
 
 ### ❌ Native HTML text elements
 ```razor
@@ -906,7 +1252,7 @@ The only legitimate use of `Localizer[...]` is when the key is determined at run
 ```razor
 <MudText Style="font-size: 36px; font-weight: 500;">Title</MudText>
 ```
-**Fix:** Use the appropriate `Typo` parameter — those values are defined in `ShopTypography` and applied automatically.
+**Fix:** Use the closest `Typo` parameter. For off-spec sizes/weights, compose with the project's SCSS utility classes (`fs-*`, `fw-*`) — e.g. `<MudText Typo="Typo.h4" Class="fs-22 fw-600">`. Never inline-style font properties.
 
 ### ❌ Custom UI components when MudBlazor exists
 ```razor
@@ -920,12 +1266,49 @@ The only legitimate use of `Localizer[...]` is when the key is determined at run
 ```
 **Fix:** Use `ShopIcons.Cart` (project uses custom SVG icons only).
 
-### ❌ Custom CSS classes for one-off styling
-```css
-/* product-page.css */
-.special-button { background: #d4a55c; }
+### ❌ Page-scoped CSS / `<style>` blocks in `.razor`
+```razor
+@* product-detail.razor *@
+<style>
+    .product-page-header { font-size: 22px; font-weight: 600; }
+</style>
 ```
-**Fix:** Use MudBlazor + `Color`/`Typo` parameters. If truly impossible, ask the user.
+**Fix:** If reusable, define a class in the appropriate SCSS partial under `src/TheShop.Web/Styles/` (per §SCSS Stylesheets). If truly one-off, use inline `Style` composed via `StyleBuilder`. Never both.
+
+### ❌ One-off page CSS files
+```css
+/* wwwroot/css/product-page.css */
+.special-button { background: var(--mud-palette-primary); }
+```
+**Fix:** Use MudBlazor parameters and auto-generated classes first; project SCSS only for genuinely reusable styles; inline `Style` via `StyleBuilder` for one-offs.
+
+### ❌ Concatenated class / style strings
+```razor
+<MudGrid Class="@($"mud-alert {(Dense ? "mud-dense" : "")} {Class}")"
+         Style="@($"margin-top: 4px; max-width: {_maxWidth}px;")">…</MudGrid>
+```
+**Fix:** Use `CssBuilder` for classes and `StyleBuilder` for styles — see §CSS Classes & Inline Styles.
+
+### ❌ Reusable component drops consumer `Class` / `Style`
+```razor
+@* ShopCard.razor — root is hard-coded, consumer's Class/Style is ignored *@
+<MudPaper Class="mud-card">
+    @ChildContent
+</MudPaper>
+```
+**Fix:** Forward `Class` and `Style` to the root element. Use Pattern A (direct passthrough) or Pattern B (`CssBuilder`/`StyleBuilder` ending in `.AddClass(Class)` / `.AddStyle(Style)`) — see Component Design Rules §3.
+
+### ❌ Reusable component not derived from `MudComponentBase`
+```csharp
+public partial class ShopProductCard : ComponentBase { }
+```
+**Fix:** Inherit from `MudComponentBase` (directly or transitively) so `Class`, `Style`, and `UserAttributes` are available without re-declaring — see Component Design Rules §2.
+
+### ❌ `MudTextField` with `Label`
+```razor
+<MudTextField Label="@Strings.Email_Label" @bind-Value="_email" />
+```
+**Fix:** Use `Placeholder` instead. If a visible label-above-input is genuinely required, render a separate `<MudText Typo="Typo.caption">` above the field.
 
 ### ❌ Missing alt text or hardcoded alt text
 ```razor
@@ -939,68 +1322,6 @@ public static class AppColors { }
 public static class IconLibrary { }
 ```
 **Fix:** Rename to `ShopColors`, `ShopIcons`.
-
----
-
-## Design Checklist
-
-Before writing or accepting any UI code, verify. If any item fails, **stop and fix it** before proceeding.
-
-### Strings
-- [ ] All user-facing text comes from `Strings.resx` (no hardcoded English in `.razor` files)?
-- [ ] Static keys accessed via `Strings.{KeyName}` directly — NOT via `Localizer["{KeyName}"]`?
-- [ ] `Localizer[...]` only used for runtime keys (e.g. `Localizer[result.Error]`)?
-- [ ] Resource keys follow the `{Context}_{Purpose}` naming convention?
-- [ ] Resource keys are valid C# identifiers (no hyphens, spaces, leading digits)?
-- [ ] `Strings.resx` configured with `PublicResXFileCodeGenerator` custom tool?
-- [ ] French resource file (`Strings.fr.resx`) updated alongside English?
-- [ ] Application layer returns resource KEYS via `nameof(Strings.{Key})` (not magic strings)?
-
-### Components
-- [ ] Only MudBlazor components used (no custom buttons, inputs, or raw HTML primitives)?
-- [ ] If MudBlazor cannot meet the requirement, was the user asked before introducing an alternative?
-- [ ] All interactive states handled (hover, focus, disabled)?
-- [ ] Component variants follow MudBlazor patterns?
-
-### Colors
-- [ ] First preference: `Color="Color.Primary"` (or other `Color` enum) used?
-- [ ] Second preference: `Class="mud-theme-primary"` used when the `Color` enum is not viable?
-- [ ] Last resort: `ShopColors.*` only with a comment explaining why?
-- [ ] No hardcoded hex values anywhere in `.razor` files?
-
-### Icons
-- [ ] All icons come from `ShopIcons`?
-- [ ] No direct `Icons.Material.*` references in pages/components?
-- [ ] Icon names are semantic (`Cart`) not visual (`ShoppingCart`)?
-- [ ] When adding a new icon, the semantic naming convention is followed?
-
-### Typography
-- [ ] All text uses `<MudText>` with the `Typo` parameter?
-- [ ] No `<span>`, `<p>`, `<h1>`–`<h6>`, or other native text elements for content?
-- [ ] No inline `font-size`, `font-weight`, or `line-height` styles?
-- [ ] Need a new typography variant? — User asked first?
-
-### Brand
-- [ ] All theme classes use the `Shop` prefix (`ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`)?
-
-### Loaders & routes
-- [ ] No `_isBusy` field in the page — busy state goes through `await BusyState.RunAsync(BusyKeys.X, ...)`?
-- [ ] Spinner is inside `<BusyFor Key="@BusyKeys.X" Context="busy">`, never hand-rolled?
-- [ ] No hardcoded route strings — `Href`, `NavigateTo`, redirect targets all use `Routes.X`?
-- [ ] Page declares its route via `[Route(Routes.X)]` on the code-behind, not `@page "/..."` in markup?
-
-### Code-behind
-- [ ] Page has a sibling `.razor.cs` partial class for any `@code` logic beyond ~5 lines?
-- [ ] Markup file has no `@code` block (only directives + render tree)?
-- [ ] Feature-specific `@using` directives live in the `.razor` file, not in `_Imports.razor`?
-
-### Images
-- [ ] WebP format used for raster images?
-- [ ] `width`, `height`, and `loading="lazy"` attributes set?
-- [ ] Alt text comes from resources?
-- [ ] `MudImage` used where appropriate?
-
-If any answer above is "no", stop and refactor before declaring the task complete.
 
 ---
 
@@ -1118,17 +1439,104 @@ public partial class SignIn : ComponentBase
 
 4. **MudBlazor is the only UI library.** If MudBlazor cannot meet a requirement, **stop and ask the user first** — propose alternatives, wait for confirmation, then proceed.
 
-5. **Color preference order is strict:** `Color` enum → `mud-theme-*` class → Ask user (last resort with comment).
+5. **Color preference order is strict:** `Color` enum → any of MudBlazor's auto-generated color CSS classes (pick the **most specific** one — `mud-{name}-text`, `mud-theme-{name}`, `mud-border-{name}`, …) → Ask user (last resort).
 
-6. **Always `MudText` with `Typo`.** Never use `<span>`, `<p>`, `<h1>`, etc. for displaying content.
+6. **Always `MudText` with `Typo`.** Never use `<span>`, `<p>`, `<h1>`, etc. for displaying content. For off-spec sizes/weights, compose with `fs-*` / `fw-*` utility classes from `_typography.scss` — never inline `font-size` / `font-weight`.
 
-7. **Generate the resource keys alongside the page.** When you create `ProductDetail.razor`, also add the necessary keys to `Strings.resx` (and `Strings.fr.resx` with the same keys, French translations or `[TODO]` placeholders). Use `Strings.{KeyName}` everywhere in the Razor file — the auto-generated `Strings.Designer.cs` provides the typed properties.
+7. **Styling priority is strict:** Mud parameters → Mud auto-generated classes → project SCSS class (only if reusable) → inline `Style` via `StyleBuilder` (last resort). Compose classes with `CssBuilder`, styles with `StyleBuilder` — never string concatenation. No `<style>` blocks in `.razor`, no page-scoped CSS files.
 
-8. **Reference both files.** When making decisions, cite the specific principle from `ARCHITECTURE.md` (architecture) or this `DESIGN.md` (visual/strings).
+8. **Reusable components must inherit from `MudComponentBase` and forward `Class`/`Style` to their root element.** Otherwise consumer-side customization is silently lost.
+
+9. **`MudTextField`: `Placeholder` only — never `Label`.**
+
+10. **Generate the resource keys alongside the page.** When you create `ProductDetail.razor`, also add the necessary keys to `Strings.resx` (and `Strings.fr.resx` with the same keys, French translations or `[TODO]` placeholders). Use `Strings.{KeyName}` everywhere in the Razor file — the auto-generated `Strings.Designer.cs` provides the typed properties.
+
+11. **Reference both files.** When making decisions, cite the specific principle from `ARCHITECTURE.md` (architecture) or this `DESIGN.md` (visual/strings).
+
+---
+
+## Design Checklist
+
+Before writing or accepting any UI code, verify. If any item fails, **stop and fix it** before proceeding.
+
+### Strings
+- [ ] All user-facing text comes from `Strings.resx` (no hardcoded English in `.razor` files)?
+- [ ] Static keys accessed via `Strings.{KeyName}` directly — NOT via `Localizer["{KeyName}"]`?
+- [ ] `Localizer[...]` only used for runtime keys (e.g. `Localizer[result.Error]`)?
+- [ ] Resource keys follow the `{Context}_{Purpose}` naming convention?
+- [ ] Resource keys are valid C# identifiers (no hyphens, spaces, leading digits)?
+- [ ] `Strings.resx` configured with `PublicResXFileCodeGenerator` custom tool?
+- [ ] French resource file (`Strings.fr.resx`) updated alongside English?
+- [ ] Application layer returns resource KEYS via `nameof(Strings.{Key})` (not magic strings)?
+
+### Colors
+- [ ] First preference: `Color="Color.Primary"` (or other `Color` enum) used?
+- [ ] Second preference: the **most specific** MudBlazor auto-generated color class used (e.g. `mud-error-text` for text-only, `mud-theme-secondary` for bg + text together, `mud-border-primary` for border-only)?
+- [ ] Last resort: user was asked with an explanation before reaching for anything else?
+- [ ] No hardcoded hex values anywhere in `.razor` files?
+
+### Icons
+- [ ] All icons come from `ShopIcons`?
+- [ ] No direct `Icons.Material.*` references in pages/components?
+- [ ] Icon names are semantic (`Cart`) not visual (`ShoppingCart`)?
+- [ ] When adding a new icon, the semantic naming convention is followed?
+
+### Typography
+- [ ] All text uses `<MudText>` with the `Typo` parameter?
+- [ ] No `<span>`, `<p>`, `<h1>`–`<h6>`, or other native text elements for content?
+- [ ] No inline `font-size`, `font-weight`, or `line-height` styles?
+- [ ] Off-spec sizes/weights composed with `fs-*` / `fw-*` utility classes from `_typography.scss` (not inline styles, not bespoke classes)?
+- [ ] New size/weight added to `$font-sizes` / `$font-weights` lists rather than hand-writing a `.fs-{n}` selector?
+- [ ] Need a structural new typography variant (font family, line-height)? — User asked first?
+
+### Components
+- [ ] Only MudBlazor components used (no custom buttons, inputs, or raw HTML primitives)?
+- [ ] If MudBlazor cannot meet the requirement, was the user asked before introducing an alternative?
+- [ ] Every reusable component inherits from `MudComponentBase` (directly or transitively)?
+- [ ] Every reusable component forwards `Class` and `Style` to its root element (Pattern A — direct passthrough, or Pattern B — builder chain ending in `.AddClass(Class)` / `.AddStyle(Style)`)?
+- [ ] All interactive states handled (hover, focus, disabled)?
+- [ ] Component variants follow MudBlazor patterns?
+- [ ] `MudTextField` uses `Placeholder` — never `Label`?
+
+### CSS Classes & Styles
+- [ ] Did the design land on the lowest step of the priority order it could? (1: Mud parameters → 2: Mud classes → 3: project SCSS class → 4: inline `Style`)
+- [ ] Conditional classes composed with `CssBuilder` — not string concatenation/interpolation?
+- [ ] Inline styles composed with `StyleBuilder` — not string concatenation/interpolation?
+- [ ] No `<style>` blocks inside `.razor` files?
+- [ ] No new page-scoped `*.css` files in `wwwroot/`?
+
+### SCSS
+- [ ] SCSS lives under `src/TheShop.Web/Styles/` in the right folder (`abstracts/`, `components/`, `layouts/`, `utilities/`)?
+- [ ] Partial filenames start with `_` and are lowercase (`_field.scss`, not `Field.scss`)?
+- [ ] New utility families generated via `$list` + `@each` loop rather than hand-writing every selector?
+- [ ] An existing SCSS class is reused before generating a new one?
+- [ ] New class is genuinely reusable (multiple call sites / plausible future reuse) — not a one-off that should have been inline `Style`?
+
+### Brand
+- [ ] All theme classes use the `Shop` prefix (`ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`)?
+
+### Loaders & routes
+- [ ] No `_isBusy` field in the page — busy state goes through `await BusyState.RunAsync(BusyKeys.X, ...)`?
+- [ ] Spinner is inside `<BusyFor Key="@BusyKeys.X" Context="busy">`, never hand-rolled?
+- [ ] No hardcoded route strings — `Href`, `NavigateTo`, redirect targets all use `Routes.X`?
+- [ ] Page declares its route via `[Route(Routes.X)]` on the code-behind, not `@page "/..."` in markup?
+
+### Code-behind
+- [ ] Page has a sibling `.razor.cs` partial class for any `@code` logic beyond ~5 lines?
+- [ ] Markup file has no `@code` block (only directives + render tree)?
+- [ ] Feature-specific `@using` directives live in the `.razor` file, not in `_Imports.razor`?
+
+### Images
+- [ ] WebP format used for raster images?
+- [ ] `width`, `height`, and `loading="lazy"` attributes set?
+- [ ] Alt text comes from resources?
+- [ ] `MudImage` used where appropriate?
+
+If any answer above is "no", stop and refactor before declaring the task complete.
 
 ---
 
 **End of Design System Instructions**
 
-*Last updated: May 2026 · Version 1.1*
+*Last updated: May 2026 · Version 1.2*
 *See `ARCHITECTURE.md` for architecture, layer rules, and code structure.*
