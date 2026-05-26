@@ -1,0 +1,20 @@
+
+// ─── Font Size Utilities ─────────────────────────────────────────────────────
+
+$font-sizes: (10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 34, 48, 60, 96);
+
+@each $size in $font-sizes {
+    .fs-#{$size} {
+        font-size: #{$size}px !important;
+    }
+}
+
+// ─── Font Weight Utilities ────────────────────────────────────────────────────
+
+$font-weights: (400, 500, 600, 700);
+
+@each $weight in $font-weights {
+    .fw-#{$weight} {
+        font-weight: #{$weight} !important;
+    }
+}
