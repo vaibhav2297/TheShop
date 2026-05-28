@@ -46,25 +46,8 @@
                              SuppressImplicitSubmission="true">
                         <MudStack Spacing="3">
 
-                            @* Six individual digit boxes *@
-                            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
-                                @for (var i = 0; i < 6; i++)
-                                {
-                                    var idx = i;
-                                    <MudTextField T="string"
-                                                  id="@($"otp-{idx}")"
-                                                  Value="@_digits[idx]"
-                                                  ValueChanged="@((v) => OnDigitChanged(idx, v))"
-                                                  Variant="Variant.Filled"
-                                                  Typo="Typo.h6"
-                                                  InputType="InputType.Number"
-                                                  MaxLength="1"
-                                                  Style="width:79px;text-align:center;"
-                                                  autocomplete="one-time-code"
-                                                  Class="otp-digit-field" />
-                                }
-                            </MudStack>
-                            <MudText Typo="Typo.caption" Color="Color.Secondary">@Strings.Verify_CodeHint</MudText>
+                            <OtpInput @bind-Value="_otp"
+                                      Length="@OtpLength" />
 
                             <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                                 <BusyFor Key="@BusyKeys.Auth.SignUpVerify" Context="busy">

@@ -18,3 +18,53 @@ $font-weights: (400, 500, 600, 700);
         font-weight: #{$weight} !important;
     }
 }
+
+// ─── Text Alignment ───────────────────────────────────────────────────────────
+
+$text-aligns: (left, center, right, justify);
+
+@each $align in $text-aligns {
+    .text-align-#{$align} {
+        text-align: #{$align} !important;
+    }
+}
+
+// ─── Text Transform ───────────────────────────────────────────────────────────
+
+$text-transforms: (uppercase, lowercase, capitalize, none);
+
+@each $transform in $text-transforms {
+    .text-transform-#{$transform} {
+        text-transform: #{$transform} !important;
+    }
+}
+
+// ─── Text Decoration ──────────────────────────────────────────────────────────
+
+$text-decorations: (underline, line-through, none);
+
+@each $decoration in $text-decorations {
+    .text-decoration-#{$decoration} {
+        text-decoration: #{$decoration} !important;
+    }
+}
+
+// ─── Text Overflow & Wrapping ─────────────────────────────────────────────────
+
+// Single-line truncation with ellipsis
+.text-truncate {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis !important;
+}
+
+// Prevent wrapping (e.g. labels, badges, nav items)
+.text-nowrap {
+    white-space: nowrap !important;
+}
+
+// Force long words / URLs to break rather than overflow
+.text-break {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+}

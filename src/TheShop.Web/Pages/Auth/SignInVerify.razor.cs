@@ -37,15 +37,17 @@ public partial class SignInVerify : ComponentBase, IDisposable
     /// </summary>
     [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
 
+    private const int OtpLength = 6;
+
     private MudForm _form = default!;
-    private readonly string[] _digits = ["", "", "", "", "", ""];
+    private string _otp = string.Empty;
     private bool _isFormValid;
     private int _resendCooldown;
     private Timer? _cooldownTimer;
 
     private string _email => Email ?? string.Empty;
-    private bool _isCodeComplete => _digits.All(d => d.Length == 1 && char.IsDigit(d[0]));
-    private string _otpCode => string.Concat(_digits);
+    private bool _isCodeComplete => _otp.Length == OtpLength;
+    private string _otpCode => _otp;
 
     protected override void OnInitialized()
     {
@@ -56,15 +58,6 @@ public partial class SignInVerify : ComponentBase, IDisposable
         }
 
         StartCooldown(60);
-    }
-
-    private void OnDigitChanged(int index, string value)
-    {
-        if (value.Length > 1)
-            value = value[^1..];
-
-        _digits[index] = value;
-        StateHasChanged();
     }
 
     private async Task OnVerifyAsync()
@@ -101,7 +94,7 @@ public partial class SignInVerify : ComponentBase, IDisposable
                 Snackbar.Add(Localizer[key], Severity.Error);
 
                 // Clear the digits on failure so the user types fresh
-                for (var i = 0; i < _digits.Length; i++) _digits[i] = "";
+                _otp = string.Empty;
                 await InvokeAsync(StateHasChanged);
             }
         });

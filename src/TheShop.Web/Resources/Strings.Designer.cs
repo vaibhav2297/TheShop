@@ -961,6 +961,15 @@ namespace TheShop.Web.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Digit {0} of {1}.
+        /// </summary>
+        public static string OtpInput_DigitAriaLabel {
+            get {
+                return ResourceManager.GetString("OtpInput_DigitAriaLabel", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to You are signing up as.
         /// </summary>
         public static string Verify_SigningUpAs {

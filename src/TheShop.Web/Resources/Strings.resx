@@ -326,6 +326,9 @@
   <data name="Verify_ResendIn" xml:space="preserve">
     <value>Resend in {0}s</value>
   </data>
+  <data name="OtpInput_DigitAriaLabel" xml:space="preserve">
+    <value>Digit {0} of {1}</value>
+  </data>
   <data name="Auth_SendCode" xml:space="preserve">
     <value>Send code</value>
   </data>

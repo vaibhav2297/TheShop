@@ -82,6 +82,65 @@
   font-weight: 700 !important;
 }
 
+.text-align-left {
+  text-align: left !important;
+}
+
+.text-align-center {
+  text-align: center !important;
+}
+
+.text-align-right {
+  text-align: right !important;
+}
+
+.text-align-justify {
+  text-align: justify !important;
+}
+
+.text-transform-uppercase {
+  text-transform: uppercase !important;
+}
+
+.text-transform-lowercase {
+  text-transform: lowercase !important;
+}
+
+.text-transform-capitalize {
+  text-transform: capitalize !important;
+}
+
+.text-transform-none {
+  text-transform: none !important;
+}
+
+.text-decoration-underline {
+  text-decoration: underline !important;
+}
+
+.text-decoration-line-through {
+  text-decoration: line-through !important;
+}
+
+.text-decoration-none {
+  text-decoration: none !important;
+}
+
+.text-truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis !important;
+}
+
+.text-nowrap {
+  white-space: nowrap !important;
+}
+
+.text-break {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
 .mud-input.mud-input-filled:not(.mud-input-filled-with-label) > input,
 .mud-input.mud-input-filled:not(.mud-input-filled-with-label) > textarea {
   padding-top: 18.5px;
@@ -102,6 +161,22 @@
 .mud-picker .mud-input > input {
   font-size: 0.875rem;
   font-weight: 400;
+}
+
+.shop-otp-digit {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.shop-otp-digit input {
+  text-align: center !important;
+}
+.shop-otp-digit input[type=number] {
+  -moz-appearance: textfield;
+}
+.shop-otp-digit input[type=number]::-webkit-inner-spin-button,
+.shop-otp-digit input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /*# sourceMappingURL=TheShop.css.map */
