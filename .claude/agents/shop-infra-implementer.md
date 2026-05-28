@@ -51,9 +51,14 @@ Open `.claude/plans/{feature_name}.md`. Extract:
 
 Ignore Domain/Application/Web sections — those are not your concern.
 
-### 2. Read the Infrastructure section of the architecture rules
+### 2. Load the `shop-guideline` skill
 
-Read `.claude/skills/shop-guideline/references/ARCHITECTURE.md` — focus on Layer 3 (Infrastructure), the Admin Architecture section (RLS as the only real security boundary), and the layer-placement table.
+The Infrastructure-layer rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
+
+1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
+2. Use the skill's "When to read the reference files" table to decide which references to load for this Infrastructure-layer task. For Infrastructure work, the table will direct you to:
+   - **`references/ARCHITECTURE.md`** — focus on Layer 3 (Infrastructure): SDK isolation, the Admin Architecture section (RLS as the only real security boundary), the layer-placement table, and DI registration conventions.
+3. Do **not** load `references/DESIGN.md` (Web concern) or `references/documentation.md` (documenter's job).
 
 ### 3. Inspect existing database state
 
@@ -165,8 +170,9 @@ End your response with this structured summary:
 ## Final reminders
 
 1. **The plan + Application interfaces are the contract.** Don't invent or improvise.
-2. **Infrastructure is the only place external SDKs live.** Any leak is a violation.
-3. **Every new table needs RLS + at least one policy.** No exceptions.
-4. **Repositories map; entities decide.** No business logic in this layer.
-5. **Build before reporting.** Red Infrastructure builds block the final solution build.
-6. **Structured summary at the end is mandatory.**
+2. **The `shop-guideline` skill is the rule contract.** When in doubt about SDK isolation, RLS policy requirements, repository vs service placement, or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
+3. **Infrastructure is the only place external SDKs live.** Any leak is a violation.
+4. **Every new table needs RLS + at least one policy.** No exceptions.
+5. **Repositories map; entities decide.** No business logic in this layer.
+6. **Build before reporting.** Red Infrastructure builds block the final solution build.
+7. **Structured summary at the end is mandatory.**

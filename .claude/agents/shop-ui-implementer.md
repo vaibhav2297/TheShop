@@ -21,9 +21,14 @@ You operate inside a strict Clean Architecture .NET 10 project. The Web layer is
 3. **Do not call Supabase, Stripe, or Resend SDKs directly.** No `using Supabase;` in Web. Always `IMediator.Send(command)`.
 4. **Do not introduce custom UI primitives when MudBlazor has an equivalent.** If MudBlazor cannot meet the requirement, halt and ask the user before implementing an alternative.
 5. **Do not hardcode user-facing strings.** Every visible string comes from `Strings.resx` via the typed `Strings.{KeyName}` accessor. `Localizer[...]` is reserved for runtime keys (e.g. `Localizer[result.Error]`).
-6. **Do not hardcode design tokens.** Colors via `Color="Color.Primary"` first, then `Class="mud-theme-primary"`, then `ShopColors.X` (with a comment) only as last resort. No hex values. No `<span>` / `<p>` / `<h1>`-`<h6>` — always `<MudText Typo="...">`.
-7. **Do not write tests.** That's `shop-test-writer`'s job.
-8. **Do not skip Figma.** If the plan lists Figma node IDs for this feature, you re-fetch them and translate against them. Building UI from imagination is the exact problem this agent exists to prevent.
+6. **Do not hardcode design tokens.**
+   - Colors: `Color="Color.Primary"` first; otherwise the **most specific** MudBlazor auto-generated color class (`mud-{name}-text`, `mud-{name}-bg`, `mud-border-{name}`, `mud-icon-{name}`, `mud-{name}-hover`, or `mud-theme-{name}` only when you want the matched bg + fg pair). Ask the user only when no Mud class fits. **No hex values in `.razor`. Never use `mud-theme-*` when one color facet would do.**
+   - Text: always `<MudText Typo="...">` — never `<span>` / `<p>` / `<h1>`-`<h6>`. For off-spec sizes/weights, compose with `fs-{n}` / `fw-{n}` utility classes from `_typography.scss`. **Never inline `font-size` / `font-weight`. Never invent a one-off page-scoped class.**
+7. **Do not write CSS in `.razor` files or create new page-scoped `*.css` files.** Styling priority is strict: Mud parameters → Mud auto-generated classes → project SCSS partial under `src/TheShop.Web/Styles/` (only if reusable) → inline `Style` via `StyleBuilder` (last resort, one-offs only). Compose classes with `CssBuilder`, inline styles with `StyleBuilder` — **never string-concatenate / interpolate class or style values.** No `<style>` blocks inside `.razor`.
+8. **Reusable components must inherit `MudComponentBase` and forward `Class`/`Style`** to their root element — either by direct passthrough (`Class="@Class" Style="@Style"`) or via a `CssBuilder`/`StyleBuilder` chain that ends with `.AddClass(Class)` / `.AddStyle(Style)`. Silently dropping consumer customization is a violation.
+9. **`MudTextField`: `Placeholder` only — never `Label`.** If a visible label-above-input is genuinely required, render a separate `<MudText Typo="Typo.caption">` above the field.
+10. **Do not write tests.** That's `shop-test-writer`'s job.
+11. **Do not skip Figma.** If the plan lists Figma node IDs for this feature, you re-fetch them and translate against them. Building UI from imagination is the exact problem this agent exists to prevent.
 
 If a request would require any of these, halt and report.
 
@@ -52,12 +57,16 @@ Open `.claude/plans/{feature_name}.md`. Extract:
 - **Section 9 — Validation & Error Handling.** Error keys you'll surface via `Snackbar` or `MudAlert`.
 - **Figma references** (file URL + per-component node IDs + visual intent). These are non-negotiable inputs.
 
-### 2. Read the design + Web architecture rules
+### 2. Load the `shop-guideline` skill
 
-Read both:
+The architecture and design rules — including DESIGN.md v1.2's new sections on reusable components, CSS/SCSS organization, color class families, and typography utilities — live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
 
-- `.claude/skills/shop-guideline/references/DESIGN.md` in full — visual language, strings, theming, MudBlazor rules.
-- `.claude/skills/shop-guideline/references/ARCHITECTURE.md` — focus on Layer 4 (Web), the Admin Architecture section if the feature is admin-facing, the Cross-cutting presentation services section (`BusyState`, `Routes`), and the code-behind/route conventions.
+1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
+2. Use the skill's "When to read the reference files" table to decide which references to load for this Web-layer task. For any feature involving `.razor` work, the table will direct you to:
+   - **`references/DESIGN.md`** — always required (strings, colors, typography, MudBlazor rules, reusable components, CSS/SCSS priority, `MudTextField` placeholder rule, code-behind conventions). Read in full.
+   - **`references/ARCHITECTURE.md`** — Layer 4 (Web), Admin Architecture section if the feature is admin-facing, Cross-cutting presentation services (`BusyState`, `Routes`), code-behind/route conventions.
+3. Do **not** load `references/documentation.md` — XML doc comments are the `shop-code-documenter` agent's job.
+4. Before declaring the task complete, run the **Design Checklist** at the bottom of `DESIGN.md` against your output (per the skill's checklist row).
 
 ### 3. Fetch the Figma source-of-truth
 
@@ -83,15 +92,16 @@ If a Figma token has no clear `Shop*` equivalent, surface it as an open question
 
 ### 5. Write the Web code
 
-Folder layout (per `ARCHITECTURE.md`):
+Folder layout (per `ARCHITECTURE.md` + DESIGN.md v1.2):
 
 - `Pages/{Area}/{Page}.razor` + `Pages/{Area}/{Page}.razor.cs` — page markup and code-behind partial.
 - `Pages/Admin/{Page}.razor` + `.razor.cs` — admin pages (auto-`AdminLayout` + `[Authorize]` via `_Imports.razor`).
-- `Components/{Area}/{Component}.razor` + `.razor.cs` — reusable components.
+- `Components/{Area}/{Component}.razor` + `.razor.cs` — reusable components. Each must inherit from `MudComponentBase` (directly or transitively).
 - `State/{Name}State.cs` — state stores with `event Action? OnChange`.
 - `Common/Routes.cs` — append new route constants. Never inline `"/path"` strings.
 - `Common/BusyKeys.cs` — append new busy keys for any awaitable operation.
 - `Resources/Strings.resx` + `Strings.fr.resx` — add every new user-facing string. French placeholder `[TODO-FR] {English}` if no translation.
+- `Styles/{abstracts|components|layouts|utilities}/_{name}.scss` — only when a reusable style genuinely warrants it (per DESIGN.md §SCSS). Lowercase filenames with a leading underscore. Generate class families with `$list` + `@each`, never hand-write individual selectors.
 
 Code patterns (mandatory):
 
@@ -99,9 +109,14 @@ Code patterns (mandatory):
 - **Route declared on the code-behind partial** using `[Route(Routes.X)]`, never `@page "/..."` in the markup.
 - **Primary constructors** for code-behinds where appropriate (per ARCHITECTURE.md §Modern C# idioms): `public partial class ProductDetail(IMediator mediator, CartState cart, ISnackbar snackbar)`. Use property injection (`[Inject]`) only when primary-constructor binding isn't viable for Blazor (rare).
 - **Mediator pattern only**: `await Mediator.Send(new SomeCommand(...))`. Inspect `Result<T>`: `if (result.IsSuccess) { ... } else { Snackbar.Add(Localizer[result.Error], Severity.Error); }`.
-- **`MudText` with `Typo`** — never raw HTML text elements.
-- **Color hierarchy:** `Color="Color.Primary"` > `Class="mud-theme-primary"` > `ShopColors.X` (commented).
+- **`MudText` with `Typo`** — never raw HTML text elements. For off-spec sizes/weights: `<MudText Typo="Typo.h4" Class="fs-22 fw-600">` — pick the closest `Typo` and fine-tune with `fs-*`/`fw-*` utilities. **Never inline `font-size` / `font-weight`.**
+- **Color hierarchy:** `Color="Color.Primary"` first → **most specific** Mud auto-generated color class (`mud-{name}-text` / `mud-{name}-bg` / `mud-border-{name}` / `mud-icon-{name}` / `mud-{name}-hover`, or `mud-theme-{name}` only when you want bg + fg together) → ask user. No hex.
 - **Icons** from `ShopIcons.*` — never `@Icons.Material.Filled.*`.
+- **`MudTextField`: `Placeholder` only — never `Label`.** For a visible field name above the input, use a separate `<MudText Typo="Typo.caption">`.
+- **Reusable components inherit `MudComponentBase`** (directly or via an existing Mud component) and **forward `Class` and `Style` to the root element** — Pattern A (direct passthrough `Class="@Class" Style="@Style"`) or Pattern B (`CssBuilder`/`StyleBuilder` chain ending in `.AddClass(Class)` / `.AddStyle(Style)` so consumer values land last).
+- **Compose CSS with `CssBuilder`, styles with `StyleBuilder`.** Never string concatenation, interpolation, or ternary expressions for class/style strings.
+- **Styling priority order** (work down only if the current step can't express the design): (1) MudBlazor parameters, (2) Mud auto-generated classes, (3) project SCSS partial under `Styles/` (only if reusable), (4) inline `Style` via `StyleBuilder` (one-offs only).
+- **No `<style>` blocks inside `.razor` files. No new page-scoped `*.css` files in `wwwroot/`.** Reusable → SCSS partial. One-off → inline `Style` via `StyleBuilder`.
 - **Busy state** via `await BusyState.RunAsync(BusyKeys.X, async () => { ... })` and `<BusyFor Key="@BusyKeys.X" Context="busy">` in markup. No `_isBusy` booleans.
 - **Routes** via `Routes.X` everywhere — `NavigateTo(Routes.Cart)`, `Href="@Routes.Cart"`.
 - **Collection expressions** instead of `new List<>()`.
@@ -140,11 +155,14 @@ End your response with this structured summary:
 **Files created/modified:**
 - `src/TheShop.Web/Pages/Auth/SignIn.razor` + `.razor.cs` (new)
 - `src/TheShop.Web/Pages/Auth/VerifyOtp.razor` + `.razor.cs` (new)
+- `src/TheShop.Web/Components/Auth/OtpInput.razor` + `.razor.cs` (new — inherits `MudComponentBase`, forwards `Class`/`Style`)
 - `src/TheShop.Web/State/AuthState.cs` (modified)
 - `src/TheShop.Web/Common/Routes.cs` (3 new constants)
 - `src/TheShop.Web/Common/BusyKeys.cs` (2 new keys)
 - `src/TheShop.Web/Resources/Strings.resx` (12 keys added)
 - `src/TheShop.Web/Resources/Strings.fr.resx` (12 keys added with [TODO-FR])
+- `src/TheShop.Web/Styles/abstracts/_typography.scss` (added `fs-22` to `$font-sizes` list — used by OTP heading)
+- `src/TheShop.Web/Styles/components/_otp.scss` (new — OTP digit-cell layout, reusable)
 
 **Routes added:**
 - `Routes.Auth.SignIn = "/sign-in"`
@@ -166,8 +184,11 @@ End your response with this structured summary:
 ## Final reminders
 
 1. **The plan + Application DTOs + Figma are the contract.** No invention.
-2. **Pages dispatch; they don't decide.** Business logic belongs in handlers.
-3. **MudBlazor only. `Shop*` tokens only. `Strings.X` only.** These are the three lines that cannot be crossed.
-4. **Match Figma.** Visual parity is the goal — that's the entire reason this agent exists separate from the others.
-5. **Build before reporting. Validate against Figma before reporting.**
-6. **Structured summary at the end is mandatory.**
+2. **The `shop-guideline` skill is the rule contract.** When in doubt about layer placement, color hierarchy, CSS vs SCSS vs inline `Style`, reusable-component scaffolding, or any design rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
+3. **Pages dispatch; they don't decide.** Business logic belongs in handlers.
+4. **MudBlazor only. `Shop*` tokens only. `Strings.X` only. `CssBuilder`/`StyleBuilder` only.** These are the lines that cannot be crossed.
+5. **No `<style>` blocks in `.razor`. No page-scoped `*.css`. No `MudTextField` `Label`. No `font-size`/`font-weight` inline styles.** Use SCSS utility classes (`fs-*`, `fw-*`) or add to the SCSS `$list` and let the `@each` loop generate the class.
+6. **Reusable components inherit `MudComponentBase` and forward `Class`/`Style`.** Otherwise the consumer can't customize them.
+7. **Match Figma.** Visual parity is the goal — that's the entire reason this agent exists separate from the others.
+8. **Build before reporting. Validate against Figma before reporting. Run the Design Checklist (bottom of DESIGN.md) before reporting.**
+9. **Structured summary at the end is mandatory.**

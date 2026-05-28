@@ -879,6 +879,35 @@ public static IServiceCollection AddPresentation(this IServiceCollection service
 
 ## Component Design Rules
 
+### Deciding when to extract a reusable component
+
+Before writing a new component, decide whether a component is actually the right unit. The rules in this section (`MudComponentBase`, `Class`/`Style` forwarding, builders) only matter once you've decided extraction is justified. Default to **inline markup** until one of the *extract* triggers fires — and even then, stop if any *avoid* signal is also true.
+
+**Extract a reusable component when:**
+
+- The same UI **and** behavior repeats in two or more places today, and the duplication is non-trivial.
+- Design consistency across pages depends on it (e.g. product card, OTP input, page header).
+- Logic and markup belong together — extracting just one would split a tight coupling.
+- The component has a **single, clearly named** responsibility (`ShopProductCard`, `ShopOtpInput` — not `ShopProductOrCartWidget`).
+- The pattern is stable and unlikely to need restructuring in the next handful of changes.
+- Reuse demonstrably improves maintenance or readability at the call sites.
+- You can give it a clear, specific name without resorting to `Generic*`, `Common*`, `Shared*`, or numeric suffixes.
+
+**Avoid extracting a reusable component when:**
+
+- It's used **only once** today, and you cannot point at a concrete (not hypothetical) second use.
+- The only motivation is to reduce lines of code in the page that would have inlined it.
+- The abstraction feels forced — you struggle to name it or explain its responsibility in one sentence.
+- It would need many parameters / configuration knobs / boolean flags to satisfy its callers (a sign the extraction is hiding two components, not one).
+- It handles multiple unrelated responsibilities (mixing presentation, business logic, and side effects).
+- Only the **logic** repeats — not the markup. In that case, extract a service, helper method, or `*State` store, not a component.
+- The markup is tiny (one or two MudBlazor components in a `MudStack`) and the abstraction adds no meaningful semantics.
+- You're future-proofing for a hypothetical need ("we might reuse this on the checkout page someday"). Wait for the second real call site to appear, then extract.
+
+**Rule of thumb:** when in doubt, **inline first, extract on the second real call site.** Per `CLAUDE.md`: *three similar lines is better than a premature abstraction.* This applies double for Razor markup, where the cost of an awkward component (parameter explosion, slot juggling, render-tree churn) is high.
+
+When you do extract a reusable component, the rules below (`MudComponentBase`, `Class`/`Style` forwarding, naming, variants, states) all apply.
+
 ### General — applies to every component
 
 #### 1. MudBlazor only
@@ -1304,6 +1333,15 @@ public partial class ShopProductCard : ComponentBase { }
 ```
 **Fix:** Inherit from `MudComponentBase` (directly or transitively) so `Class`, `Style`, and `UserAttributes` are available without re-declaring — see Component Design Rules §2.
 
+### ❌ Premature or single-use component extraction
+```razor
+@* ShopSignInButton.razor — used in exactly one place (SignIn.razor) and just wraps a MudButton *@
+<MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OnClick">
+    @ChildContent
+</MudButton>
+```
+**Fix:** Inline the markup at the single call site. Extract on the **second** real call site, not the first. See Component Design Rules §Deciding when to extract a reusable component. Also avoid: components with many boolean configuration flags (a sign you're hiding two components in one), components named `Generic*`/`Common*`/`Shared*`, and components extracted only to reduce line count in the parent page.
+
 ### ❌ `MudTextField` with `Label`
 ```razor
 <MudTextField Label="@Strings.Email_Label" @bind-Value="_email" />
@@ -1445,13 +1483,15 @@ public partial class SignIn : ComponentBase
 
 7. **Styling priority is strict:** Mud parameters → Mud auto-generated classes → project SCSS class (only if reusable) → inline `Style` via `StyleBuilder` (last resort). Compose classes with `CssBuilder`, styles with `StyleBuilder` — never string concatenation. No `<style>` blocks in `.razor`, no page-scoped CSS files.
 
-8. **Reusable components must inherit from `MudComponentBase` and forward `Class`/`Style` to their root element.** Otherwise consumer-side customization is silently lost.
+8. **Inline first, extract on the second real call site.** Don't create a reusable component for a single use, to shorten a parent page, or to "future-proof" for a hypothetical caller. Extract when the same UI + behavior actually repeats today, has a clearly nameable single responsibility, and the markup is non-trivial. Per `CLAUDE.md`: *three similar lines is better than a premature abstraction.*
 
-9. **`MudTextField`: `Placeholder` only — never `Label`.**
+9. **Reusable components must inherit from `MudComponentBase` and forward `Class`/`Style` to their root element.** Otherwise consumer-side customization is silently lost.
 
-10. **Generate the resource keys alongside the page.** When you create `ProductDetail.razor`, also add the necessary keys to `Strings.resx` (and `Strings.fr.resx` with the same keys, French translations or `[TODO]` placeholders). Use `Strings.{KeyName}` everywhere in the Razor file — the auto-generated `Strings.Designer.cs` provides the typed properties.
+10. **`MudTextField`: `Placeholder` only — never `Label`.**
 
-11. **Reference both files.** When making decisions, cite the specific principle from `ARCHITECTURE.md` (architecture) or this `DESIGN.md` (visual/strings).
+11. **Generate the resource keys alongside the page.** When you create `ProductDetail.razor`, also add the necessary keys to `Strings.resx` (and `Strings.fr.resx` with the same keys, French translations or `[TODO]` placeholders). Use `Strings.{KeyName}` everywhere in the Razor file — the auto-generated `Strings.Designer.cs` provides the typed properties.
+
+12. **Reference both files.** When making decisions, cite the specific principle from `ARCHITECTURE.md` (architecture) or this `DESIGN.md` (visual/strings).
 
 ---
 
@@ -1492,6 +1532,7 @@ Before writing or accepting any UI code, verify. If any item fails, **stop and f
 ### Components
 - [ ] Only MudBlazor components used (no custom buttons, inputs, or raw HTML primitives)?
 - [ ] If MudBlazor cannot meet the requirement, was the user asked before introducing an alternative?
+- [ ] **Did you decide to extract vs inline correctly?** Each new reusable component satisfies at least one *extract* trigger (repeats today, consistency-critical pattern, clearly nameable single responsibility) AND no *avoid* signal (single use, future-proofing, many flag parameters, only logic repeats, tiny markup) — see §Deciding when to extract a reusable component.
 - [ ] Every reusable component inherits from `MudComponentBase` (directly or transitively)?
 - [ ] Every reusable component forwards `Class` and `Style` to its root element (Pattern A — direct passthrough, or Pattern B — builder chain ending in `.AddClass(Class)` / `.AddStyle(Style)`)?
 - [ ] All interactive states handled (hover, focus, disabled)?

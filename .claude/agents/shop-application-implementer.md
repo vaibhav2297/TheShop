@@ -53,9 +53,15 @@ Open `.claude/plans/{feature_name}.md`. Extract:
 
 Ignore Domain/Infrastructure/Web-specific sections.
 
-### 2. Read the Application section of the architecture rules
+### 2. Load the `shop-guideline` skill
 
-Read `.claude/skills/shop-guideline/references/ARCHITECTURE.md` — focus on Layer 2 (Application), the MediatR/Result<T> patterns, the validation pipeline behavior, the layer-placement table, and the `Common/Interfaces/` convention.
+The Application-layer rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
+
+1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
+2. Use the skill's "When to read the reference files" table to decide which references to load for this Application-layer task. For Application work, the table will direct you to:
+   - **`references/ARCHITECTURE.md`** — focus on Layer 2 (Application): the MediatR + `Result<T>` patterns, the validation pipeline behavior, the layer-placement table, and the `Common/Interfaces/` convention.
+3. Do **not** load `references/DESIGN.md` (Web concern) or `references/documentation.md` (documenter's job).
+4. Note: the only file you touch outside `src/TheShop.Application/` is `src/TheShop.Web/Resources/Strings.resx` / `Strings.fr.resx` for error keys (see Step 5).
 
 ### 3. Scan existing Application code
 
@@ -174,8 +180,9 @@ The "Interfaces produced" and "DTOs and Commands produced" blocks are what the o
 ## Final reminders
 
 1. **The plan + Domain summary are the contract.** Don't invent.
-2. **Application depends on Domain only.** Any other `using` is a violation.
-3. **Return `Result<T>` for expected failures; never throw.**
-4. **Every error key needs a `.resx` entry in both languages.**
-5. **Build before reporting.** A red Application build blocks both Infra and Web.
-6. **Structured summary at the end is mandatory** — the orchestrator depends on the interface and DTO blocks to brief downstream agents.
+2. **The `shop-guideline` skill is the rule contract.** When in doubt about layer placement, MediatR/`Result<T>` patterns, interface placement (`Common/Interfaces/` vs feature-local), or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
+3. **Application depends on Domain only.** Any other `using` is a violation.
+4. **Return `Result<T>` for expected failures; never throw.**
+5. **Every error key needs a `.resx` entry in both languages.**
+6. **Build before reporting.** A red Application build blocks both Infra and Web.
+7. **Structured summary at the end is mandatory** — the orchestrator depends on the interface and DTO blocks to brief downstream agents.

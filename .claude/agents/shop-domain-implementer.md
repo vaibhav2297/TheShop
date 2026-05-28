@@ -54,9 +54,14 @@ Ignore the Application/Infrastructure/Web sections — those are not your concer
 
 If any Domain-relevant item is vague, contradictory, or missing fields, **stop and ask the user** before writing. Do not invent.
 
-### 2. Read the Domain section of the architecture rules
+### 2. Load the `shop-guideline` skill
 
-Read `.claude/skills/shop-guideline/references/ARCHITECTURE.md` — focus only on the Domain layer description (Layer 1), the entity example, the "No external SDKs" rule, and the "Result<T> vs exceptions" rule. Skip Application / Infrastructure / Web sections.
+The Domain-layer rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
+
+1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
+2. Use the skill's "When to read the reference files" table to decide which references to load for this Domain-layer task. For Domain work, the table will direct you to:
+   - **`references/ARCHITECTURE.md`** — focus on Layer 1 (Domain): the entity example, the "No external SDKs" rule, the `Result<T>` vs exceptions distinction, and the layer-placement table. Skip Application / Infrastructure / Web sections.
+3. Do **not** load `references/DESIGN.md` (Web concern) or `references/documentation.md` (documenter's job).
 
 ### 3. Scan existing Domain code
 
@@ -156,7 +161,8 @@ The "Public API produced" block is the contract the next layer reads. Be exact �
 ## Final reminders
 
 1. **The plan is the contract.** If it's not in the Domain section of the plan, it doesn't get written.
-2. **Domain depends on nothing.** Any `using` outside `System.*`, `TheShop.Domain.*` is a violation.
-3. **Invariants live on the entity.** Validation in handlers is a sign the entity is anemic.
-4. **Run the build before reporting.** A broken Domain build poisons every downstream layer.
-5. **End with the structured summary.** The orchestrator depends on the public-API block to brief the next agent.
+2. **The `shop-guideline` skill is the rule contract.** When in doubt about layer placement, encapsulation, exceptions vs `Result<T>`, or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
+3. **Domain depends on nothing.** Any `using` outside `System.*`, `TheShop.Domain.*` is a violation.
+4. **Invariants live on the entity.** Validation in handlers is a sign the entity is anemic.
+5. **Run the build before reporting.** A broken Domain build poisons every downstream layer.
+6. **End with the structured summary.** The orchestrator depends on the public-API block to brief the next agent.
