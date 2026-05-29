@@ -10,7 +10,7 @@ namespace TheShop.Infrastructure.Persistence.Records;
 [Table("customers")]
 public sealed class CustomerRecord : BaseModel
 {
-    [PrimaryKey("id", false)]
+    [PrimaryKey("id", true)]
     public Guid Id { get; set; }
 
     [Column("first_name")]

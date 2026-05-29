@@ -33,40 +33,42 @@ public sealed class VerifySignUpOtpHandler(IAuthService auth, ICustomerRepositor
 
         var session = verifyResult.Value;
 
-        Customer customer;
         try
         {
             var email = Email.Create(request.Email);
             var dob = DateOfBirth.Create(request.DateOfBirth);
 
-            customer = Customer.Register(
+            var customer = Customer.Register(
                 session.UserId,
                 request.FirstName,
                 request.LastName,
                 email,
                 dob);
+
+            await customers.AddAsync(customer, cancellationToken);
+
+            return Result.Ok(new SessionDto(
+                session.UserId,
+                session.Email,
+                session.AccessToken,
+                session.RefreshToken,
+                session.ExpiresAt,
+                new CustomerProfileDto(
+                    customer.Id,
+                    customer.FirstName,
+                    customer.LastName,
+                    customer.Email.Value,
+                    customer.DateOfBirth.Value)));
         }
         catch (DomainException ex)
         {
             await auth.SignOutAsync(cancellationToken);
             return Result.Fail<SessionDto>(ex.MessageKey);
         }
-
-        await customers.AddAsync(customer, cancellationToken);
-
-        var sessionDto = new SessionDto(
-            session.UserId,
-            session.Email,
-            session.AccessToken,
-            session.RefreshToken,
-            session.ExpiresAt,
-            new CustomerProfileDto(
-                customer.Id,
-                customer.FirstName,
-                customer.LastName,
-                customer.Email.Value,
-                customer.DateOfBirth.Value));
-
-        return Result.Ok(sessionDto);
+        catch
+        {
+            await auth.SignOutAsync(cancellationToken);
+            return Result.Fail<SessionDto>(AuthErrorKeys.Unexpected);
+        }
     }
 }
