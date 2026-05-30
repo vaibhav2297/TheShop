@@ -25,7 +25,7 @@ public partial class ShopAppBar : ComponentBase
 
     private async Task OnSignOutAsync()
     {
-        await BusyState.RunAsync(BusyKeys.Auth.SignOut, async () =>
+        await BusyState.RunAsync(BusyKeys.Global, async () =>
         {
             await Mediator.Send(new SignOutCommand());
             AuthState.Clear();

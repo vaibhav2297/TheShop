@@ -16,6 +16,5 @@ public static class BusyKeys
         public const string SignInVerify = "auth.sign-in.verify";
         public const string SignUpVerify = "auth.sign-up.verify";
         public const string ResendOtp = "auth.resend-otp";
-        public const string SignOut = "auth.sign-out";
     }
 }

@@ -46,11 +46,14 @@
                              SuppressImplicitSubmission="true">
                         <MudStack Spacing="3">
 
-                            <OtpInput @bind-Value="_otp"
-                                      Length="@OtpLength" />
+                            @* BusyFor wraps the OTP boxes and the verify button so the code being
+                               submitted freezes while in flight — see DESIGN.md §Loading & Busy States *@
+                            <BusyFor Key="@BusyKeys.Auth.SignInVerify" Context="busy">
+                                <OtpInput @bind-Value="_otp"
+                                          Length="@OtpLength"
+                                          Disabled="@busy" />
 
-                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                                <BusyFor Key="@BusyKeys.Auth.SignInVerify" Context="busy">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                                     <MudButton Variant="Variant.Filled"
                                                Color="Color.Primary"
                                                Size="Size.Large"
@@ -63,24 +66,24 @@
                                         }
                                         @Strings.Verify_Submit
                                     </MudButton>
-                                </BusyFor>
 
-                                <BusyFor Key="@BusyKeys.Auth.ResendOtp" Context="resending">
-                                    <MudButton Variant="Variant.Text"
-                                               Color="Color.Primary"
-                                               Disabled="@(_resendCooldown > 0 || resending)"
-                                               OnClick="OnResendAsync">
-                                        @if (_resendCooldown > 0)
-                                        {
-                                            @string.Format(Strings.Verify_ResendIn, _resendCooldown)
-                                        }
-                                        else
-                                        {
-                                            @Strings.Verify_Resend
-                                        }
-                                    </MudButton>
-                                </BusyFor>
-                            </MudStack>
+                                    <BusyFor Key="@BusyKeys.Auth.ResendOtp" Context="resending">
+                                        <MudButton Variant="Variant.Text"
+                                                   Color="Color.Primary"
+                                                   Disabled="@(_resendCooldown > 0 || resending)"
+                                                   OnClick="OnResendAsync">
+                                            @if (_resendCooldown > 0)
+                                            {
+                                                @string.Format(Strings.Verify_ResendIn, _resendCooldown)
+                                            }
+                                            else
+                                            {
+                                                @Strings.Verify_Resend
+                                            }
+                                        </MudButton>
+                                    </BusyFor>
+                                </MudStack>
+                            </BusyFor>
 
                         </MudStack>
                     </MudForm>

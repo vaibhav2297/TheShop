@@ -35,26 +35,29 @@
                     <MudForm @ref="_form"
                              @bind-IsValid="_isFormValid"
                              SuppressImplicitSubmission="true">
-                        <MudStack Spacing="3">
-                            <MudTextField T="string"
-                                          @bind-Value="_email"
-                                          Placeholder="@Strings.Email_Placeholder"
-                                          InputType="InputType.Email"
-                                          Variant="Variant.Filled"
-                                          FullWidth="true"
-                                          Typo="Typo.body2"
-                                          Required="true"
-                                          Adornment="Adornment.Start"
-                                          AdornmentColor="Color.Primary"
-                                          AdornmentIcon="@ShopIcons.Edit.Mention"
-                                          RequiredError="@Strings.Email_Required"
-                                          Validation="@_emailValidation"
-                                          Immediate="true"
-                                          autocomplete="email" />
+                        @* BusyFor wraps the field and the button so the email input freezes
+                           while its captured value is in flight — see DESIGN.md §Loading & Busy States *@
+                        <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
+                            <MudStack Spacing="3">
+                                <MudTextField T="string"
+                                              @bind-Value="_email"
+                                              Placeholder="@Strings.Email_Placeholder"
+                                              InputType="InputType.Email"
+                                              Variant="Variant.Filled"
+                                              FullWidth="true"
+                                              Typo="Typo.body2"
+                                              Required="true"
+                                              Disabled="@busy"
+                                              Adornment="Adornment.Start"
+                                              AdornmentColor="Color.Primary"
+                                              AdornmentIcon="@ShopIcons.Edit.Mention"
+                                              RequiredError="@Strings.Email_Required"
+                                              Validation="@_emailValidation"
+                                              Immediate="true"
+                                              autocomplete="email" />
 
-                            @* Row wrapper prevents MudStack stretch from expanding the button to full width *@
-                            <MudStack Row="true">
-                                <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
+                                @* Row wrapper prevents MudStack stretch from expanding the button to full width *@
+                                <MudStack Row="true">
                                     <MudButton Variant="Variant.Filled"
                                                Color="Color.Primary"
                                                Size="Size.Large"
@@ -67,9 +70,9 @@
                                         }
                                         @Strings.Auth_Login_Submit
                                     </MudButton>
-                                </BusyFor>
+                                </MudStack>
                             </MudStack>
-                        </MudStack>
+                        </BusyFor>
                     </MudForm>
                 </MudStack>
 
