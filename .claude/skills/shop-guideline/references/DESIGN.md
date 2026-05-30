@@ -138,6 +138,57 @@ Still always pick the closest `Typo` first — utility classes are a fine-tune, 
 
 ---
 
+## Loading & Busy States
+
+Loading is **not one global decision** — it is chosen **per operation** by asking one question:
+
+> **"What is the user allowed to do while this operation runs?"**
+
+### Decision rule
+
+| Use **component-level** loading | Use the **full-screen overlay** |
+|---|---|
+| `BusyFor` + inline button spinner + disabled fields | `BusyKeys.Global` → `ShopLoadingOverlay` |
+| The action is scoped to one button; the user stays on / briefly transitions from the screen; re-running is safe | The operation blocks all meaningful interaction anyway, **or** a double-submit is dangerous |
+| Sign in, send OTP, verify, resend | Checkout finalize, payment, sign-out, hard navigation transitions |
+
+**Initial data load** → prefer `MudSkeleton`, not a spinner.
+
+Do not "play it safe" by reaching for the full-screen overlay on a short, scoped action — a dark overlay for a sub-second request is jarring and hides context the user may want.
+
+### Building blocks
+
+- **`BusyState`** (`src/TheShop.Web/Common/BusyState.cs`) — scoped, reference-counted service. Wrap every async UI op in `BusyState.RunAsync(key, …)`; it sets/clears the key (even on exception) and fires `Changed`.
+- **`BusyKeys`** (`src/TheShop.Web/Common/BusyKeys.cs`) — named key constants. `BusyKeys.Global` drives the overlay; per-operation keys drive component-level UI.
+- **`BusyFor`** (`src/TheShop.Web/Components/Common/BusyFor.razor`) — render-prop wrapper exposing one key's busy flag: `<BusyFor Key="…" Context="busy"> … @busy … </BusyFor>`. Emits no wrapping DOM element, so it can wrap a region inside a `MudStack` without breaking its `Spacing` gap.
+- **`ShopLoadingOverlay`** (`src/TheShop.Web/Components/Common/ShopLoadingOverlay.razor`) — mounted in every layout; renders when `BusyKeys.Global` is busy.
+
+### Rule — freeze the inputs that feed the in-flight submit
+
+When the user submits a form, the request has already **captured a snapshot** of the field values. Leaving those fields editable while the request is in flight is misleading — the user can type a value that isn't what's being submitted, which causes confusion on failure/retry.
+
+So: **wrap the submitting input(s) _and_ the submit button in one `BusyFor`, and bind `Disabled="@busy"` on each input.** Disabling the relevant fields _is_ the restriction — you do **not** need a full-screen overlay to achieve it.
+
+```razor
+@* ✅ Good — input and button share one BusyFor; the input freezes while the request runs *@
+<BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
+    <MudStack Spacing="3">
+        <MudTextField @bind-Value="_email" Disabled="@busy" ... />
+        <MudButton Disabled="@(!_isFormValid || busy)" OnClick="OnSendCodeAsync">@Strings.Auth_Login_Submit</MudButton>
+    </MudStack>
+</BusyFor>
+
+@* ❌ Bad — only the button is wrapped; the email field stays editable mid-request *@
+<MudTextField @bind-Value="_email" ... />
+<BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
+    <MudButton Disabled="@(!_isFormValid || busy)" ...>@Strings.Auth_Login_Submit</MudButton>
+</BusyFor>
+```
+
+**Do not disable the escape hatches.** Cross-navigation links (Back, "Change email", "Sign up instead") must stay clickable so the user can always abandon a stuck request. Only the fields that feed *this* submit are frozen.
+
+---
+
 ## Naming Convention — The `Shop` Prefix
 
 ### Rules
