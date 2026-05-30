@@ -23,7 +23,6 @@ public partial class SignInVerify : ComponentBase, IDisposable
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
-    [Inject] private AuthState AuthState { get; set; } = default!;
 
     /// <summary>
     /// The email address the OTP was sent to. Supplied by <see cref="SignIn"/> via query string.
@@ -70,8 +69,6 @@ public partial class SignInVerify : ComponentBase, IDisposable
 
             if (result.IsSuccess)
             {
-                var session = result.Value;
-                AuthState.SetUser(session.UserId.ToString(), session.Email);
                 Snackbar.Add(Strings.Auth_SignedIn, Severity.Success);
 
                 var destination = !string.IsNullOrWhiteSpace(ReturnUrl)

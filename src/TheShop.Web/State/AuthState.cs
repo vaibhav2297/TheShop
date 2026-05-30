@@ -1,38 +1,36 @@
+using TheShop.Application.Common.Interfaces;
+
 namespace TheShop.Web.State;
 
 /// <summary>
-/// Client-side state store for the authenticated user session.
-/// Populated after a successful Supabase auth flow.
+/// Client-side mirror of the active auth session. Reads live from
+/// <see cref="IAuthService.CurrentSession"/> so it is always accurate —
+/// including after a page reload when the session is rehydrated from local storage
+/// before the first render.
 /// </summary>
-public class AuthState
+public sealed class AuthState : IDisposable
 {
-    public bool IsAuthenticated { get; private set; }
-    public string? UserId { get; private set; }
-    public string? Email { get; private set; }
+    private readonly IAuthService _auth;
 
+    public AuthState(IAuthService auth)
+    {
+        _auth = auth;
+        _auth.AuthStateChanged += OnAuthChanged;
+    }
+
+    public bool IsAuthenticated => _auth.CurrentSession is not null;
+
+    public string? UserId => _auth.CurrentSession?.UserId.ToString();
+
+    public string? Email => _auth.CurrentSession?.Email;
+
+    /// <summary>
+    /// Fires on every auth state transition: sign-in, sign-out, token refresh, or
+    /// session rehydration. Subscribe to re-render components that read this store directly.
+    /// </summary>
     public event Action? OnChange;
 
-    /// <summary>
-    /// Records a successfully authenticated user and fires <see cref="OnChange"/>.
-    /// </summary>
-    public void SetUser(string userId, string email)
-    {
-        UserId = userId;
-        Email = email;
-        IsAuthenticated = true;
-        NotifyStateChanged();
-    }
+    private void OnAuthChanged() => OnChange?.Invoke();
 
-    /// <summary>
-    /// Clears the user identity after sign-out and fires <see cref="OnChange"/>.
-    /// </summary>
-    public void Clear()
-    {
-        UserId = null;
-        Email = null;
-        IsAuthenticated = false;
-        NotifyStateChanged();
-    }
-
-    private void NotifyStateChanged() => OnChange?.Invoke();
+    public void Dispose() => _auth.AuthStateChanged -= OnAuthChanged;
 }

@@ -24,7 +24,6 @@ public partial class SignUpVerify : ComponentBase, IDisposable
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
-    [Inject] private AuthState AuthState { get; set; } = default!;
     [Inject] private PendingSignUpState PendingSignUp { get; set; } = default!;
 
     private const int OtpLength = 6;
@@ -65,9 +64,7 @@ public partial class SignUpVerify : ComponentBase, IDisposable
 
             if (result.IsSuccess)
             {
-                var session = result.Value;
                 PendingSignUp.Clear();
-                AuthState.SetUser(session.UserId.ToString(), session.Email);
                 Snackbar.Add(Strings.Auth_SignedIn, Severity.Success);
                 Nav.NavigateTo(Routes.Home, forceLoad: false);
             }

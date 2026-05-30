@@ -30,13 +30,16 @@ public static class DependencyInjection
     }
 
     /// <summary>
-    /// Initializes the Supabase client so the persisted session is restored
-    /// before the first render. Call this once at app start from
-    /// <c>Program.cs</c> after <c>host.Build()</c>.
+    /// Restores the persisted auth session before the first render.
+    /// Per gotrue-csharp docs, session restoration requires two explicit steps:
+    /// LoadSession (sync, reads from localStorage) then RetrieveSessionAsync
+    /// (async, validates the token and refreshes it if it has expired).
+    /// Call this once at app start from <c>Program.cs</c> after <c>host.Build()</c>.
     /// </summary>
     public static async Task InitializeInfrastructureAsync(this IServiceProvider services)
     {
         var supabase = services.GetRequiredService<Supabase.Client>();
-        await supabase.InitializeAsync();
+        supabase.Auth.LoadSession();
+        await supabase.Auth.RetrieveSessionAsync();
     }
 }
