@@ -15,7 +15,7 @@ public sealed class RequestSignUpOtpCommandValidator
 
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage(AuthErrorKeys.EmailRequired)
-            .EmailAddress().WithMessage(AuthErrorKeys.EmailInvalid);
+            .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").WithMessage(AuthErrorKeys.EmailInvalid);
 
         RuleFor(x => x.DateOfBirth)
             .Must(BeInThePast).WithMessage(AuthErrorKeys.DobInPast)

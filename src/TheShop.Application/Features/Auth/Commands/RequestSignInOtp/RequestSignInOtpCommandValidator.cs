@@ -9,6 +9,6 @@ public sealed class RequestSignInOtpCommandValidator
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage(AuthErrorKeys.EmailRequired)
-            .EmailAddress().WithMessage(AuthErrorKeys.EmailInvalid);
+            .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").WithMessage(AuthErrorKeys.EmailInvalid);
     }
 }
