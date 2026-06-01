@@ -58,9 +58,11 @@ Ignore Domain/Infrastructure/Web-specific sections.
 The Application-layer rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
 
 1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
-2. Use the skill's "When to read the reference files" table to decide which references to load for this Application-layer task. For Application work, the table will direct you to:
-   - **`references/ARCHITECTURE.md`** — focus on Layer 2 (Application): the MediatR + `Result<T>` patterns, the validation pipeline behavior, the layer-placement table, and the `Common/Interfaces/` convention.
-3. Do **not** load `references/DESIGN.md` (Web concern) or `references/documentation.md` (documenter's job).
+2. Load these references directly — they are pre-targeted for Application work:
+   - **`.claude/skills/shop-guideline/references/rules/architecture-core.md`** — layer definitions, dependency rule, folder structure, coding standards (primary constructors, collection expressions, CancellationToken).
+   - **`.claude/skills/shop-guideline/references/rules/architecture-patterns.md`** — MediatR Commands/Queries/Handlers, `Result<T>`, FluentValidation + pipeline behaviors, AutoMapper, Application interfaces, state stores.
+   - **`.claude/skills/shop-guideline/references/examples/application-handler.md`** — the canonical Command + Validator + Handler trio.
+3. Do **not** load any `design-*` references (Web concern), `architecture-admin.md` (admin routing — handlers are usually shared), or `rules/documentation.md` (documenter's job).
 4. Note: the only file you touch outside `src/TheShop.Application/` is `src/TheShop.Web/Resources/Strings.resx` / `Strings.fr.resx` for error keys (see Step 5).
 
 ### 3. Scan existing Application code
@@ -88,7 +90,7 @@ Follow these rules:
   - `Features/{Area}/Mapping/{Area}MappingProfile.cs` — AutoMapper profile, if needed.
   - `Common/Interfaces/I{Name}.cs` — only if the interface is cross-cutting (used by multiple features). Feature-specific interfaces stay in the feature folder.
 - **Commands and Queries** are `record` types (immutable) — `public record AddToCartCommand(Guid ProductId, int Quantity) : IRequest<Result<CartDto>>;`.
-- **Handlers** use **primary constructors** (per ARCHITECTURE.md §Modern C# idioms) — `public sealed class AddToCartHandler(IProductRepository products, ICartRepository carts) : IRequestHandler<...>`.
+- **Handlers** use **primary constructors** (per `rules/architecture-core.md` §Coding standards) — `public sealed class AddToCartHandler(IProductRepository products, ICartRepository carts) : IRequestHandler<...>`.
 - **`Result<T>` returns only** from handlers — never throw for expected failures. Use `Result.Fail<T>(nameof(Strings.SomeKey))` for the error key, never magic strings.
 - **Error keys** use `nameof(Strings.{Key})` so they're compile-time safe.
 - **DTOs are `record`s** with positional or init-only properties.

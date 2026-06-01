@@ -56,9 +56,12 @@ Ignore Domain/Application/Web sections — those are not your concern.
 The Infrastructure-layer rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
 
 1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
-2. Use the skill's "When to read the reference files" table to decide which references to load for this Infrastructure-layer task. For Infrastructure work, the table will direct you to:
-   - **`references/ARCHITECTURE.md`** — focus on Layer 3 (Infrastructure): SDK isolation, the Admin Architecture section (RLS as the only real security boundary), the layer-placement table, and DI registration conventions.
-3. Do **not** load `references/DESIGN.md` (Web concern) or `references/documentation.md` (documenter's job).
+2. Load these references directly — they are pre-targeted for Infrastructure work:
+   - **`.claude/skills/shop-guideline/references/rules/architecture-core.md`** — layer definitions, dependency rule, folder structure, coding standards.
+   - **`.claude/skills/shop-guideline/references/rules/architecture-patterns.md`** — Application interface declaration, repository pattern, Stripe/Resend adapter pattern, DI registration conventions.
+   - **`.claude/skills/shop-guideline/references/rules/architecture-admin.md`** — RLS as the only real security boundary, RLS policy examples, role-based access. Mandatory if the feature touches admin tables.
+   - **`.claude/skills/shop-guideline/references/examples/infrastructure-repository.md`** — canonical Record + Mapper + Repository trio.
+3. Do **not** load any `design-*` references (Web concern) or `rules/documentation.md` (documenter's job).
 
 ### 3. Inspect existing database state
 
@@ -88,7 +91,7 @@ Use `mcp__claude_ai_Supabase__apply_migration` for schema changes. Pass:
   - `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` on every new table,
   - Every `CREATE POLICY` from the plan.
 
-**Every new table must have RLS enabled and at least one policy.** Per `ARCHITECTURE.md`, RLS is the only real security boundary — a table without policies is a vulnerability. If the plan omitted policies for a table you're creating, halt and surface this gap.
+**Every new table must have RLS enabled and at least one policy.** Per `rules/architecture-admin.md`, RLS is the only real security boundary — a table without policies is a vulnerability. If the plan omitted policies for a table you're creating, halt and surface this gap.
 
 After applying, call `mcp__claude_ai_Supabase__get_advisors` (lint type) and report any new warnings.
 
@@ -103,7 +106,7 @@ Folder layout:
 
 Rules:
 
-- **Primary constructors** for repositories and services (per ARCHITECTURE.md §Modern C# idioms): `public sealed class SupabaseCartRepository(Supabase.Client client) : ICartRepository`.
+- **Primary constructors** for repositories and services (per `rules/architecture-core.md` §Coding standards): `public sealed class SupabaseCartRepository(Supabase.Client client) : ICartRepository`.
 - **Records are mapping-only**. No business logic, no validation. Map data; nothing else.
 - **Mappers are pure functions.** Static extension methods, no state.
 - **Repositories return Domain types**, never `SomeRecord` or `Supabase.ModeledResponse<>`.

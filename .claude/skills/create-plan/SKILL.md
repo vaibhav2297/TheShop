@@ -90,12 +90,15 @@ If any spec section is empty, vague, or contradicts another, **stop and ask the 
 
 ### 3. Load the governing documents via the `shop-guideline` skill
 
-The architecture and design rules live inside the `shop-guideline` skill, which bundles `ARCHITECTURE.md` and `DESIGN.md` as its references. **Invoke the `shop-guideline` skill** — it will read the architecture and design guidelines for you. Do **not** try to read `ARCHITECTURE.md` or `DESIGN.md` as bare filenames, and do **not** Glob-search the project for them; let the `shop-guideline` skill surface them. This is what prevents the slow project-wide file search.
+The architecture and design rules live inside the `shop-guideline` skill. **Invoke the `shop-guideline` skill** — it will surface the rule list in `SKILL.md` and the modular references under `references/rules/`. Do **not** try to read individual reference files as bare filenames, and do **not** Glob-search the project for them; let the `shop-guideline` skill direct you. This is what prevents the slow project-wide file search.
 
-The rules these documents define are what your plan must satisfy:
+The rules the skill defines are what your plan must satisfy:
 
-- `ARCHITECTURE.md` — Clean Architecture layers, MediatR/Result<T> patterns, admin auth model, RLS rules, testing strategy, naming conventions.
-- `DESIGN.md` — String resources, `Shop*` theme classes, MudBlazor-only rule, color hierarchy, typography rules.
+- **`SKILL.md`** — canonical numbered rule list (Rules 1–30): four-layer Clean Architecture, MediatR/`Result<T>` patterns, `Shop*` theme classes, MudBlazor-only rule, color hierarchy, typography, busy state, routes, component forwarding, SCSS organisation, tests, docs.
+- **`references/rules/architecture-core.md`** — layer-placement table, folder structure, coding standards. Always relevant.
+- **`references/rules/architecture-patterns.md`** — MediatR, `Result<T>`, validators, AutoMapper, repositories. Relevant when planning Application + Infrastructure.
+- **`references/rules/architecture-admin.md`** — admin routing, RLS as the only real security boundary, RLS examples. Relevant when planning admin features.
+- **`references/rules/design-*.md`** — strings, theme, components, styles. Relevant when planning UI.
 
 If `CLAUDE.md` is present, it's already in context (loaded automatically by Claude Code).
 
@@ -228,7 +231,7 @@ Result<CartDto> returned to ProductDetail.razor → CartState updated → UI re-
 
 ## 5. Core Design Decisions
 
-{Numbered list. Each decision has: what we chose, why we chose it, and what alternatives we rejected. Tie back to spec constraints and ARCHITECTURE.md rules where relevant.}
+{Numbered list. Each decision has: what we chose, why we chose it, and what alternatives we rejected. Tie back to spec constraints and `shop-guideline` rule numbers where relevant (e.g. "Rule 5 — `Result<T>` for expected failures").}
 
 1. **Decision:** Cart is server-persisted (not browser-local).
    - **Why:** Spec constraint that cart persists across devices for signed-in users. Also enables RLS-based security.
@@ -355,7 +358,7 @@ CREATE TABLE cart_items (
 CREATE INDEX idx_cart_items_cart_id ON cart_items(cart_id);
 ```
 
-### RLS policies (these are the only real security boundary — per `ARCHITECTURE.md`)
+### RLS policies (these are the only real security boundary — per `rules/architecture-admin.md`)
 ```sql
 ALTER TABLE carts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cart_items ENABLE ROW LEVEL SECURITY;
@@ -412,7 +415,7 @@ CREATE POLICY "carts_admin_select" ON carts
 
 > User: invokes `create-plan` with feature name `add-to-cart`
 >
-> Skill: reads `.claude/specs/add-to-cart.md` → reads ARCHITECTURE.md + DESIGN.md → optionally consults MCPs → plans deliberately → writes `.claude/plans/add-to-cart.md` → "Saved to `.claude/plans/add-to-cart.md`. One open question surfaced in Section 11."
+> Skill: reads `.claude/specs/add-to-cart.md` → invokes `shop-guideline` skill (loads `SKILL.md` + relevant `references/rules/*.md`) → optionally consults MCPs → plans deliberately → writes `.claude/plans/add-to-cart.md` → "Saved to `.claude/plans/add-to-cart.md`. One open question surfaced in Section 11."
 
 **Example 2 — No name provided:**
 

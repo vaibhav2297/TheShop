@@ -1,0 +1,246 @@
+{
+  "feature": "authentication",
+  "trait": "authentication",
+  "writtenAt": "2026-06-01",
+  "totalTests": 194,
+  "classes": [
+    {
+      "fqn": "TheShop.Domain.Tests.ValueObjects.EmailValueObjectTests",
+      "file": "tests/TheShop.Domain.Tests/ValueObjects/EmailValueObjectTests.cs",
+      "tests": 14
+    },
+    {
+      "fqn": "TheShop.Domain.Tests.ValueObjects.DateOfBirthValueObjectTests",
+      "file": "tests/TheShop.Domain.Tests/ValueObjects/DateOfBirthValueObjectTests.cs",
+      "tests": 7
+    },
+    {
+      "fqn": "TheShop.Domain.Tests.Entities.CustomerTests",
+      "file": "tests/TheShop.Domain.Tests/Entities/CustomerTests.cs",
+      "tests": 13
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpHandlerTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/RequestSignUpOtpHandlerTests.cs",
+      "tests": 5
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.RequestSignInOtpHandlerTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/RequestSignInOtpHandlerTests.cs",
+      "tests": 5
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.VerifySignUpOtpHandlerTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/VerifySignUpOtpHandlerTests.cs",
+      "tests": 11
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.VerifySignInOtpHandlerTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/VerifySignInOtpHandlerTests.cs",
+      "tests": 7
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.ResendOtpHandlerTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/ResendOtpHandlerTests.cs",
+      "tests": 8
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.SignOutHandlerTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/SignOutHandlerTests.cs",
+      "tests": 3
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpValidatorTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/RequestSignUpOtpValidatorTests.cs",
+      "tests": 15
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.RequestSignInOtpValidatorTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/RequestSignInOtpValidatorTests.cs",
+      "tests": 5
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.VerifySignUpOtpValidatorTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/VerifyOtpValidatorTests.cs",
+      "tests": 12
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.VerifySignInOtpValidatorTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/VerifyOtpValidatorTests.cs",
+      "tests": 9
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Auth.ResendOtpValidatorTests",
+      "file": "tests/TheShop.Application.Tests/Features/Auth/ResendOtpValidatorTests.cs",
+      "tests": 6
+    },
+    {
+      "fqn": "TheShop.Infrastructure.Tests.Persistence.CustomerMapperTests",
+      "file": "tests/TheShop.Infrastructure.Tests/Persistence/CustomerMapperTests.cs",
+      "tests": 13
+    },
+    {
+      "fqn": "TheShop.Infrastructure.Tests.Persistence.SupabaseCustomerRepositoryTests",
+      "file": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseCustomerRepositoryTests.cs",
+      "tests": 11
+    },
+    {
+      "fqn": "TheShop.Infrastructure.Tests.Auth.LocalStorageSessionPersistenceTests",
+      "file": "tests/TheShop.Infrastructure.Tests/Auth/LocalStorageSessionPersistenceTests.cs",
+      "tests": 8
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Pages.Auth.SignUpTests",
+      "file": "tests/TheShop.Web.Tests/Pages/Auth/SignUpTests.cs",
+      "tests": 13
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Pages.Auth.SignUpVerifyTests",
+      "file": "tests/TheShop.Web.Tests/Pages/Auth/SignUpVerifyTests.cs",
+      "tests": 12
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Pages.Auth.SignInTests",
+      "file": "tests/TheShop.Web.Tests/Pages/Auth/SignInTests.cs",
+      "tests": 4
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Pages.Auth.SignInVerifyTests",
+      "file": "tests/TheShop.Web.Tests/Pages/Auth/SignInVerifyTests.cs",
+      "tests": 5
+    },
+    {
+      "fqn": "TheShop.Web.Tests.State.AuthStateTests",
+      "file": "tests/TheShop.Web.Tests/State/AuthStateTests.cs",
+      "tests": 8
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.CustomerTests.Register_WithAllValidInputs_ReturnsCustomerWithExpectedProperties",
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpHandlerTests.Handle_WithNewEmail_ReturnsSuccessResultWithEmailAndCooldown",
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpHandlerTests.Handle_WithNewEmail_SendsSignUpOtpToAuthService",
+        "TheShop.Application.Tests.Features.Auth.VerifySignUpOtpHandlerTests.Handle_WithValidOtpAndProfile_ReturnsSuccessSessionDto",
+        "TheShop.Application.Tests.Features.Auth.VerifySignUpOtpHandlerTests.Handle_WithValidOtpAndProfile_PersistsNewCustomer",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseCustomerRepositoryTests.Insert_WithValidData_RowCanBeSelectedBack",
+        "TheShop.Infrastructure.Tests.Persistence.CustomerMapperTests.RoundTrip_ToRecord_ThenToDomain_PreservesAllFields",
+        "TheShop.Web.Tests.Pages.Auth.SignUpTests.OnSendCodeAsync_WhenMediatorReturnsSuccess_StoresPendingDataAndNavigatesToVerify",
+        "TheShop.Web.Tests.Pages.Auth.SignUpTests.OnSendCodeAsync_WhenMediatorReturnsSuccess_PopulatesPendingSignUpState",
+        "TheShop.Web.Tests.Pages.Auth.SignUpVerifyTests.PendingSignUpState_AfterSet_HasData"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Application.Tests.Features.Auth.RequestSignInOtpHandlerTests.Handle_WithExistingEmail_ReturnsSuccessResultWithEmailAndCooldown",
+        "TheShop.Application.Tests.Features.Auth.RequestSignInOtpHandlerTests.Handle_WithExistingEmail_SendsSignInOtpToAuthService",
+        "TheShop.Application.Tests.Features.Auth.VerifySignInOtpHandlerTests.Handle_WithValidOtp_ReturnsSuccessSessionDtoWithCustomerProfile",
+        "TheShop.Web.Tests.Pages.Auth.SignInTests.OnSendCodeAsync_WhenMediatorReturnsSuccess_ShowsSuccessSnackbarAndNavigates",
+        "TheShop.Web.Tests.Pages.Auth.SignInVerifyTests.Render_WithEmailParameter_DoesNotRedirectToSignIn"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.CustomerTests.Register_WhenCustomerIsUnder19_ThrowsUnderageException",
+        "TheShop.Domain.Tests.Entities.CustomerTests.Register_WhenCustomerIsBornOneYearBeforeMinimumAge_ThrowsUnderageException",
+        "TheShop.Domain.Tests.Entities.CustomerTests.Register_WhenCustomerIsExactly19_Succeeds",
+        "TheShop.Domain.Tests.ValueObjects.DateOfBirthValueObjectTests.RequireAtLeast_WhenAgeIsBelowMinimum_ThrowsUnderageException",
+        "TheShop.Domain.Tests.ValueObjects.DateOfBirthValueObjectTests.RequireAtLeast_WhenAgeIsAtMinimum_DoesNotThrow",
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpValidatorTests.Validate_WhenDobMakesUserUnder19_HasUnderageError",
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpValidatorTests.Validate_WhenDobMakesUserExactly19_HasNoDobError",
+        "TheShop.Application.Tests.Features.Auth.VerifySignUpOtpHandlerTests.Handle_WhenCustomerIsUnder19AfterOtpVerified_ReturnsUnderageFailure",
+        "TheShop.Application.Tests.Features.Auth.VerifySignUpOtpHandlerTests.Handle_WhenCustomerIsUnder19AfterOtpVerified_RevokesSession"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpHandlerTests.Handle_WhenEmailAlreadyRegistered_ReturnsAccountAlreadyExistsFailure",
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpHandlerTests.Handle_WhenEmailAlreadyRegistered_DoesNotSendOtp",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseCustomerRepositoryTests.Insert_WhenEmailAlreadyExistsCaseSensitive_ThrowsUniqueViolation",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseCustomerRepositoryTests.Insert_WhenEmailAlreadyExistsDifferentCase_ThrowsUniqueViolation",
+        "TheShop.Web.Tests.Pages.Auth.SignUpTests.OnSendCodeAsync_WhenAccountAlreadyExists_ShowsErrorSnackbar",
+        "TheShop.Web.Tests.Pages.Auth.SignUpTests.OnSendCodeAsync_WhenAccountAlreadyExists_DoesNotNavigateToVerify"
+      ]
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Application.Tests.Features.Auth.RequestSignInOtpHandlerTests.Handle_WhenEmailHasNoAccount_ReturnsAccountNotFoundFailure",
+        "TheShop.Application.Tests.Features.Auth.RequestSignInOtpHandlerTests.Handle_WhenEmailHasNoAccount_DoesNotSendOtp",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseCustomerRepositoryTests.CustomerExists_WhenEmailIsNotRegistered_ReturnsFalse",
+        "TheShop.Web.Tests.Pages.Auth.SignInTests.OnSendCodeAsync_WhenAccountNotFound_ShowsErrorSnackbar"
+      ]
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Application.Tests.Features.Auth.VerifySignUpOtpHandlerTests.Handle_WhenOtpIsExpired_ReturnsCodeExpiredFailure",
+        "TheShop.Application.Tests.Features.Auth.VerifySignInOtpHandlerTests.Handle_WhenOtpIsExpired_ReturnsCodeExpiredFailure"
+      ]
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Application.Tests.Features.Auth.VerifySignUpOtpHandlerTests.Handle_WhenTooManyFailedAttempts_ReturnsTooManyAttemptsFailure",
+        "TheShop.Application.Tests.Features.Auth.VerifySignInOtpHandlerTests.Handle_WhenTooManyFailedAttempts_ReturnsTooManyAttemptsFailure",
+        "TheShop.Web.Tests.Pages.Auth.SignUpVerifyTests.OnVerifyAsync_WhenTooManyAttempts_ClearsPendingStateAndRedirectsToSignUp"
+      ]
+    },
+    {
+      "id": "AC-8",
+      "tests": [
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpHandlerTests.Handle_WithNewEmail_ReturnsSuccessResultWithEmailAndCooldown",
+        "TheShop.Application.Tests.Features.Auth.RequestSignInOtpHandlerTests.Handle_WithExistingEmail_ReturnsSuccessResultWithEmailAndCooldown",
+        "TheShop.Application.Tests.Features.Auth.ResendOtpHandlerTests.Handle_SignUpResend_WhenEmailNotRegistered_ReturnsSuccessWithCooldown",
+        "TheShop.Application.Tests.Features.Auth.ResendOtpHandlerTests.Handle_WhenAuthServiceReturnsResendTooSoon_PropagatesResendTooSoonError",
+        "TheShop.Web.Tests.Pages.Auth.SignInVerifyTests.Render_WithValidEmail_ResendButtonIsDisabledDuringInitialCooldown"
+      ]
+    },
+    {
+      "id": "AC-9",
+      "tests": [
+        "TheShop.Application.Tests.Features.Auth.ResendOtpHandlerTests.Handle_SignUpResend_WhenEmailNotRegistered_SendsSignUpOtp",
+        "TheShop.Application.Tests.Features.Auth.ResendOtpHandlerTests.Handle_SignInResend_WhenEmailIsRegistered_SendsSignInOtp",
+        "TheShop.Application.Tests.Features.Auth.ResendOtpHandlerTests.Handle_SignUpResend_WhenAccountConflict_DoesNotCallAuthService"
+      ]
+    },
+    {
+      "id": "AC-10",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Auth.LocalStorageSessionPersistenceTests.SaveSession_Always_CallsSetItemWithCorrectKey",
+        "TheShop.Infrastructure.Tests.Auth.LocalStorageSessionPersistenceTests.LoadSession_WhenKeyExists_ReturnsDeserializedSession",
+        "TheShop.Infrastructure.Tests.Auth.LocalStorageSessionPersistenceTests.LoadSession_WhenKeyDoesNotExist_ReturnsNull",
+        "TheShop.Web.Tests.State.AuthStateTests.IsAuthenticated_WhenCurrentSessionIsPresent_ReturnsTrue",
+        "TheShop.Web.Tests.State.AuthStateTests.OnChange_WhenAuthServiceFiresAuthStateChanged_IsRaised"
+      ]
+    },
+    {
+      "id": "AC-11",
+      "tests": [
+        "TheShop.Application.Tests.Features.Auth.SignOutHandlerTests.Handle_Always_CallsSignOutOnAuthService",
+        "TheShop.Application.Tests.Features.Auth.SignOutHandlerTests.Handle_Always_ReturnsSuccessResult",
+        "TheShop.Infrastructure.Tests.Auth.LocalStorageSessionPersistenceTests.DestroySession_Always_CallsRemoveItemWithCorrectKey",
+        "TheShop.Web.Tests.State.AuthStateTests.Dispose_WhenCalled_UnsubscribesFromAuthStateChanged"
+      ]
+    },
+    {
+      "id": "AC-12",
+      "tests": [
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpValidatorTests.Validate_WhenFirstNameIsBlank_HasFirstNameRequiredError",
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpValidatorTests.Validate_WhenLastNameIsBlank_HasLastNameRequiredError",
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpValidatorTests.Validate_WhenEmailIsEmpty_HasEmailRequiredError",
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpValidatorTests.Validate_WhenEmailIsMalformed_HasEmailInvalidError",
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpValidatorTests.Validate_WhenDobIsToday_HasDobInPastError",
+        "TheShop.Application.Tests.Features.Auth.RequestSignUpOtpValidatorTests.Validate_WhenDobMakesUserUnder19_HasUnderageError",
+        "TheShop.Application.Tests.Features.Auth.RequestSignInOtpValidatorTests.Validate_WhenEmailIsEmpty_HasEmailRequiredError",
+        "TheShop.Application.Tests.Features.Auth.RequestSignInOtpValidatorTests.Validate_WhenEmailIsMalformed_HasEmailInvalidError",
+        "TheShop.Application.Tests.Features.Auth.VerifySignUpOtpValidatorTests.Validate_WhenCodeIsNotExactlySixDigits_HasCodeInvalidError",
+        "TheShop.Application.Tests.Features.Auth.VerifySignInOtpValidatorTests.Validate_WhenCodeIsNotExactlySixDigits_HasCodeInvalidError"
+      ]
+    }
+  ]
+}

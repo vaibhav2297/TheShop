@@ -59,9 +59,10 @@ If any Domain-relevant item is vague, contradictory, or missing fields, **stop a
 The Domain-layer rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
 
 1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
-2. Use the skill's "When to read the reference files" table to decide which references to load for this Domain-layer task. For Domain work, the table will direct you to:
-   - **`references/ARCHITECTURE.md`** — focus on Layer 1 (Domain): the entity example, the "No external SDKs" rule, the `Result<T>` vs exceptions distinction, and the layer-placement table. Skip Application / Infrastructure / Web sections.
-3. Do **not** load `references/DESIGN.md` (Web concern) or `references/documentation.md` (documenter's job).
+2. Load these references directly — they are pre-targeted for Domain work:
+   - **`.claude/skills/shop-guideline/references/rules/architecture-core.md`** — layer definitions, dependency rule, folder structure, Domain "what NOT to put here" guidance, coding standards.
+   - **`.claude/skills/shop-guideline/references/examples/domain-entity.md`** — the canonical validate → mutate → expose-readonly entity pattern.
+3. Do **not** load any `design-*` references (Web concern), `architecture-patterns.md` (Application/Infrastructure concern), `architecture-admin.md` (admin routing), or `rules/documentation.md` (documenter's job).
 
 ### 3. Scan existing Domain code
 
@@ -87,7 +88,7 @@ Follow these rules:
 - **Encapsulation:** properties have `private set` (or `init`) unless the plan explicitly requires mutability. Collections expose `IReadOnlyList<T>` publicly with a private backing `List<T>`.
 - **Invariants enforced in constructors / factory methods.** Entities should not be constructible in an invalid state.
 - **Domain exceptions** carry `public string MessageKey { get; }` — a resource key from `Strings.resx`. Never a translated English message.
-- **Primary constructors** for trivial DI-style classes only. Do **not** use primary constructors on value objects with validation, entities with factories, or anything with constructor-side effects (per ARCHITECTURE.md §Modern C# idioms).
+- **Primary constructors** for trivial DI-style classes only. Do **not** use primary constructors on value objects with validation, entities with factories, or anything with constructor-side effects (per `rules/architecture-core.md` §Coding standards).
 - **Collection expressions** (`[]`, `[a, b]`, `[..src]`) instead of `new List<>()`, `new[] { ... }`, `Array.Empty<>()`.
 
 ### 5. Verify the build

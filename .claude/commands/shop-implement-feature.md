@@ -95,7 +95,7 @@ Capture **Interfaces produced** (the Infrastructure handoff) and **DTOs and Comm
 
 ## Phase 3 — Infrastructure ‖ Web (parallel)
 
-These two layers are siblings — both depend on Application, neither depends on the other (per `ARCHITECTURE.md` §Dependency Rule). Launch both in a **single response** with two Task tool calls — that is the parallelism trigger. Do NOT call one, wait, then call the other.
+These two layers are siblings — both depend on Application, neither depends on the other (per `shop-guideline` SKILL.md Rule 1 — dependency rule). Launch both in a **single response** with two Task tool calls — that is the parallelism trigger. Do NOT call one, wait, then call the other.
 
 ### Call 1 — `shop-infra-implementer`
 
@@ -141,7 +141,7 @@ If the solution build fails despite both layer builds passing, you have a cross-
 
 Invoke `shop-code-documenter` via the Task tool, `subagent_type: shop-code-documenter`. Prompt:
 
-> "Add XML doc comments to the recently changed code from this `/shop-implement-feature $ARGUMENTS` run. Use the current `git diff` (uncommitted + staged) as your scope. Follow your standard protocol per `references/documentation.md`."
+> "Add XML doc comments to the recently changed code from this `/shop-implement-feature $ARGUMENTS` run. Use the current `git diff` (uncommitted + staged) as your scope. Follow your standard protocol per `references/rules/documentation.md`."
 
 Wait for completion.
 

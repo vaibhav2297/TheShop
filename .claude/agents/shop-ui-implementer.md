@@ -59,14 +59,20 @@ Open `.claude/plans/{feature_name}.md`. Extract:
 
 ### 2. Load the `shop-guideline` skill
 
-The architecture and design rules — including DESIGN.md v1.2's new sections on reusable components, CSS/SCSS organization, color class families, and typography utilities — live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
+The architecture and design rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
 
 1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
-2. Use the skill's "When to read the reference files" table to decide which references to load for this Web-layer task. For any feature involving `.razor` work, the table will direct you to:
-   - **`references/DESIGN.md`** — always required (strings, colors, typography, MudBlazor rules, reusable components, CSS/SCSS priority, `MudTextField` placeholder rule, code-behind conventions). Read in full.
-   - **`references/ARCHITECTURE.md`** — Layer 4 (Web), Admin Architecture section if the feature is admin-facing, Cross-cutting presentation services (`BusyState`, `Routes`), code-behind/route conventions.
-3. Do **not** load `references/documentation.md` — XML doc comments are the `shop-code-documenter` agent's job.
-4. Before declaring the task complete, run the **Design Checklist** at the bottom of `DESIGN.md` against your output (per the skill's checklist row).
+2. Load these references directly — they are pre-targeted for Web work:
+   - **`.claude/skills/shop-guideline/references/rules/design-theme.md`** — colour priority, `ShopColors` / `ShopIcons` / `ShopTypography` / `ShopTheme` structure, `fs-*` / `fw-*` typography utilities, imagery rules. Always required.
+   - **`.claude/skills/shop-guideline/references/rules/design-components.md`** — extract vs inline decision rules, `MudComponentBase` + `Class`/`Style` forwarding (Pattern A / Pattern B), per-MudBlazor-component rules, busy-state surface, code-behind separation. Always required.
+   - **`.claude/skills/shop-guideline/references/rules/design-strings.md`** — `Strings.{Key}` typed accessor, `Localizer[runtime]` indexer, resource key naming. Always required for user-facing text.
+   - **`.claude/skills/shop-guideline/references/rules/design-styles.md`** — CSS class vs inline `Style` priority, `CssBuilder` / `StyleBuilder`, SCSS folder layout. Required if the feature touches CSS/SCSS.
+   - **`.claude/skills/shop-guideline/references/rules/architecture-core.md`** — Layer 4 (Web) folder structure, cross-cutting Web-only primitives (`BusyState`, `Routes`).
+   - **`.claude/skills/shop-guideline/references/rules/architecture-admin.md`** — only if the feature is admin-facing (`_Imports.razor`, `AdminLayout`, `AuthorizeView`).
+   - **`.claude/skills/shop-guideline/references/examples/web-page.md`** — canonical `.razor` + `.razor.cs` page pattern.
+   - **`.claude/skills/shop-guideline/references/examples/web-component.md`** — canonical reusable component using `MudComponentBase` + Pattern B builders.
+3. Do **not** load `.claude/skills/shop-guideline/references/rules/documentation.md` — XML doc comments are the `shop-code-documenter` agent's job. Do **not** load `.claude/skills/shop-guideline/references/rules/architecture-patterns.md` — that's an Application/Infrastructure concern.
+4. Before declaring the task complete, run **`.claude/skills/shop-guideline/references/checklists/design.md`** against your output.
 
 ### 3. Fetch the Figma source-of-truth
 
@@ -79,7 +85,7 @@ For each Figma node ID listed in the plan:
    - Figma spacing → MudBlazor utility classes (`pa-4`, `gap-2`, etc.).
 3. If the design references a MudBlazor component you haven't used recently, call `mcp__mudblazor__get_component_detail` to confirm parameters.
 
-If a Figma token has no clear `Shop*` equivalent, surface it as an open question — do not invent a new token under your scope (theme classes are governed by DESIGN.md).
+If a Figma token has no clear `Shop*` equivalent, surface it as an open question — do not invent a new token under your scope (theme classes are governed by `rules/design-theme.md`).
 
 ### 4. Scan existing Web code
 
@@ -92,7 +98,7 @@ If a Figma token has no clear `Shop*` equivalent, surface it as an open question
 
 ### 5. Write the Web code
 
-Folder layout (per `ARCHITECTURE.md` + DESIGN.md v1.2):
+Folder layout (per `rules/architecture-core.md` + `rules/design-*`):
 
 - `Pages/{Area}/{Page}.razor` + `Pages/{Area}/{Page}.razor.cs` — page markup and code-behind partial.
 - `Pages/Admin/{Page}.razor` + `.razor.cs` — admin pages (auto-`AdminLayout` + `[Authorize]` via `_Imports.razor`).
@@ -101,13 +107,13 @@ Folder layout (per `ARCHITECTURE.md` + DESIGN.md v1.2):
 - `Common/Routes.cs` — append new route constants. Never inline `"/path"` strings.
 - `Common/BusyKeys.cs` — append new busy keys for any awaitable operation.
 - `Resources/Strings.resx` + `Strings.fr.resx` — add every new user-facing string. French placeholder `[TODO-FR] {English}` if no translation.
-- `Styles/{abstracts|components|layouts|utilities}/_{name}.scss` — only when a reusable style genuinely warrants it (per DESIGN.md §SCSS). Lowercase filenames with a leading underscore. Generate class families with `$list` + `@each`, never hand-write individual selectors.
+- `Styles/{abstracts|components|layouts|utilities}/_{name}.scss` — only when a reusable style genuinely warrants it (per `rules/design-styles.md`). Lowercase filenames with a leading underscore. Generate class families with `$list` + `@each`, never hand-write individual selectors.
 
 Code patterns (mandatory):
 
 - **Code-behind required** for any page with more than ~5 lines of `@code`. Markup-only `.razor` is fine for purely visual components.
 - **Route declared on the code-behind partial** using `[Route(Routes.X)]`, never `@page "/..."` in the markup.
-- **Primary constructors** for code-behinds where appropriate (per ARCHITECTURE.md §Modern C# idioms): `public partial class ProductDetail(IMediator mediator, CartState cart, ISnackbar snackbar)`. Use property injection (`[Inject]`) only when primary-constructor binding isn't viable for Blazor (rare).
+- **Primary constructors** for code-behinds where appropriate (per `rules/architecture-core.md` §Coding standards): `public partial class ProductDetail(IMediator mediator, CartState cart, ISnackbar snackbar)`. Use property injection (`[Inject]`) only when primary-constructor binding isn't viable for Blazor (rare).
 - **Mediator pattern only**: `await Mediator.Send(new SomeCommand(...))`. Inspect `Result<T>`: `if (result.IsSuccess) { ... } else { Snackbar.Add(Localizer[result.Error], Severity.Error); }`.
 - **`MudText` with `Typo`** — never raw HTML text elements. For off-spec sizes/weights: `<MudText Typo="Typo.h4" Class="fs-22 fw-600">` — pick the closest `Typo` and fine-tune with `fs-*`/`fw-*` utilities. **Never inline `font-size` / `font-weight`.**
 - **Color hierarchy:** `Color="Color.Primary"` first → **most specific** Mud auto-generated color class (`mud-{name}-text` / `mud-{name}-bg` / `mud-border-{name}` / `mud-icon-{name}` / `mud-{name}-hover`, or `mud-theme-{name}` only when you want bg + fg together) → ask user. No hex.
@@ -190,5 +196,5 @@ End your response with this structured summary:
 5. **No `<style>` blocks in `.razor`. No page-scoped `*.css`. No `MudTextField` `Label`. No `font-size`/`font-weight` inline styles.** Use SCSS utility classes (`fs-*`, `fw-*`) or add to the SCSS `$list` and let the `@each` loop generate the class.
 6. **Reusable components inherit `MudComponentBase` and forward `Class`/`Style`.** Otherwise the consumer can't customize them.
 7. **Match Figma.** Visual parity is the goal — that's the entire reason this agent exists separate from the others.
-8. **Build before reporting. Validate against Figma before reporting. Run the Design Checklist (bottom of DESIGN.md) before reporting.**
+8. **Build before reporting. Validate against Figma before reporting. Run `.claude/skills/shop-guideline/references/checklists/design.md` before reporting.**
 9. **Structured summary at the end is mandatory.**

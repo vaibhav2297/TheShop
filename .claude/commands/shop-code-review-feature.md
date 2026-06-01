@@ -65,7 +65,7 @@ Wait for **both** to complete before doing anything else.
 
 Inspect the two returned reports.
 
-- If **either** agent returned an empty result, errored out, halted on its own pre-flight (e.g., couldn't read `ARCHITECTURE.md`), or produced a report missing any of its required sections (`🎓 / 💡 / 🌱 / ✅`), **stop**. Do not present a unified report.
+- If **either** agent returned an empty result, errored out, halted on its own pre-flight (e.g., couldn't read the `shop-guideline` skill files), or produced a report missing any of its required sections (`🎓 / 💡 / 🌱 / ✅`), **stop**. Do not present a unified report.
 
   Tell the user:
 
@@ -226,4 +226,4 @@ When implementation is finished, produce a short summary:
 3. **Do not skip the pre-flight checks.** No spec → halt. No diff → halt. Both pre-flights run before any reviewer is invoked.
 4. **Do not proceed if the spec file doesn't exist.** Report and stop. The spec gate is intentional.
 5. **Do not present a partial review as complete.** If either reviewer fails, no unified report is produced — just an error report and stop.
-6. **Do not edit `ARCHITECTURE.md`, `DESIGN.md`, or `.claude/specs/*` files in the implementation phase.** Those are governing documents — changes to them belong in a separate, deliberate flow, not in a quick fix loop.
+6. **Do not edit any file under `.claude/skills/shop-guideline/` or `.claude/specs/*` in the implementation phase.** The skill's rules, references, examples, and checklists are governing documents — changes to them belong in a separate, deliberate flow, not in a quick fix loop.

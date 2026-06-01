@@ -1,180 +1,111 @@
 ---
 name: shop-guideline
-description: Architecture and design rules for "The Shop" — a .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend e-commerce project. USE WHEN — (a) generating, modifying, or reviewing any file under `src/TheShop.*/` or `tests/TheShop.*.Tests/`; (b) editing any `.razor` / `.razor.cs` file in this repo; (c) writing MediatR Commands/Queries/Handlers, Supabase repositories, Stripe/Resend adapters, AutoMapper profiles, FluentValidation validators, or `Result<T>` returns; (d) touching `Strings.resx`/`Strings.fr.resx`, `IStringLocalizer<Strings>`, or any `Shop`-prefixed theme class (`ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`); (e) making decisions about Clean Architecture layer placement, MudBlazor color hierarchy, `MudText`/`Typo` usage, CSS/SCSS organization, reusable component patterns (`MudComponentBase`, `CssBuilder`, `StyleBuilder`), or Supabase RLS policies. TRIGGER PHRASES — `TheShop`, any `TheShop.*` namespace, `Shop`-prefixed theme class names, the Cart/Order/Product/Checkout feature areas in this repo. SKIP for — general .NET/Blazor/MudBlazor/Supabase questions not tied to this repo's files, DNS/Azure portal/CI-CD setup.
+description: Architecture and design rules for "The Shop" — .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend. USE WHEN editing files under `src/TheShop.*/` or `tests/TheShop.*.Tests/`, editing any `.razor` / `.razor.cs`, writing MediatR Commands/Queries/Handlers, Supabase repositories, Stripe/Resend adapters, AutoMapper profiles, FluentValidation validators, `Result<T>` returns, touching `Strings.resx` / `IStringLocalizer<Strings>`, or any `Shop`-prefixed theme class (`ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`). Triggers: `TheShop`, any `TheShop.*` namespace, `Shop`-prefixed theme class, Cart / Order / Product / Checkout features. SKIP for: general .NET/Blazor/MudBlazor/Supabase questions not tied to this repo, DNS/Azure portal/CI-CD setup.
 ---
 
-# The Shop — Project Rules
+# The Shop — Governance
 
-You are working on **The Shop**, a premium e-commerce platform.
-
+You are working on **The Shop**, a premium Canadian e-commerce platform.
 **Stack:** .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend, hosted on Azure Static Web Apps.
 
-This skill is the source of truth for the project's architecture and design rules. Treat its contents as a contract that overrides any conflicting instructions given in conversation.
+The rules below tell you **what** to do. They are non-negotiable and override any conflicting conversational instruction. For **how** to implement each rule, load the reference(s) the routing table points to — never preload references you don't need.
 
 ---
 
-## When to read the reference files
+## The Rules
 
-Three reference files are bundled with this skill. **Do not read them automatically** — load only the one(s) actually relevant to the current task to keep context lean.
+Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*) and must not restate them.
 
-| Reading needed | Read this file |
+### Architecture
+
+1. [arch] Four layers — `Domain` → `Application` → `Infrastructure` ‖ `Web`. Source-code dependencies point inward only. Composition root (`Program.cs`) is the only place that knows about every layer.
+2. [arch] Domain is pure C#: no Supabase, Stripe, MudBlazor, HTTP, JSON, persistence, or `[JsonProperty]` attributes. Domain references nothing.
+3. [arch] External SDKs (Supabase, Stripe, Resend) live **only** in `TheShop.Infrastructure`. `using Supabase;` anywhere else is a violation.
+4. [arch] Use cases dispatch through MediatR. Pages call `IMediator.Send(...)`; never inject or call repositories directly.
+5. [arch] Return `Result<T>` for expected business failures ("product not found", "insufficient stock"). Throw exceptions only for unexpected technical failures.
+6. [arch] Domain entities own business behavior. `cart.AddItem(...)` lives on the entity — not on a service, handler, or page.
+7. [arch] DTOs (immutable `record` types) cross layer boundaries. Entities never leak into UI.
+8. [arch] Every async method that crosses a layer boundary accepts `CancellationToken`.
+9. [arch] Group Application features by business capability (`Features/Cart/`, `Features/Checkout/`) — vertical slices, not horizontal layers.
+10. [arch] Pages are dumb. A `.razor` `@code` block over 30 lines or containing conditional business logic must move to the Application layer.
+
+### Design — text
+
+11. [design] No hardcoded user-facing strings, no magic-string resource keys. Compile-time-known keys: `@Strings.{Key}` typed accessor. Runtime keys (e.g. `result.Error`): `@Localizer[key]`. `Localizer["AddToCart"]` is forbidden.
+12. [design] Application layer returns resource keys via `nameof(Strings.{Key})`, never string literals.
+
+### Design — theme
+
+13. [design] `Shop` prefix on every theme class: `ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`. No alternatives.
+14. [design] MudBlazor components only. If MudBlazor cannot meet a requirement — **stop and ask**, propose alternatives, wait for confirmation. Never silently introduce a custom UI primitive.
+15. [design] Color priority — `Color="Color.{Enum}"` first → otherwise the **most specific** MudBlazor auto-generated class for the facet you need (`mud-{name}-text`, `mud-{name}-bg`, `mud-border-{name}`, `mud-icon-{name}`, `mud-{name}-hover`, `mud-theme-{name}` only when you want bg + text together) → ask user as last resort. No hex values in `.razor`.
+16. [design] All text uses `<MudText Typo="...">`. Never `<span>`, `<p>`, `<h1>`–`<h6>` for content.
+17. [design] `MudTextField` uses `Placeholder` — never `Label`. If a label-above-input is required, render a sibling `<MudText Typo="Typo.caption">`.
+18. [design] Off-spec sizes/weights compose `MudText` with `fs-*` / `fw-*` from `Styles/abstracts/_typography.scss`. Extend the SCSS `$font-sizes` / `$font-weights` list — never hand-write `.fs-{n}`, never inline `font-size` / `font-weight`, never invent a one-off page-scoped class.
+19. [design] All icons come from `ShopIcons` (custom SVG only — Material Icons not used). Name icons by **semantics** (`Cart`), not visuals (`ShoppingBag`).
+
+### Web — pages and routes
+
+20. [web] Code-behind separation. Any `.razor` with logic >~5 lines gets a sibling `.razor.cs` partial class. `[Route(Routes.X)]` lives on the partial — `@page "/..."` in markup is forbidden.
+21. [web] Centralised routes. Every `NavigateTo`, `Href`, redirect target uses `Routes.X` from `TheShop.Web/Common/Routes.cs`. Application and Domain never know URLs exist.
+22. [web] Busy state centralised. Pages drive work via `await BusyState.RunAsync(BusyKeys.X, ...)`. Spinners only inside `<BusyFor Key="@BusyKeys.X" Context="busy">` or `<ShopLoadingOverlay />` (mounted once in `MainLayout`, keyed to `BusyKeys.Global`). `_isBusy` fields are banned. `BusyKeys` constants only — no magic strings. `BusyState`, `BusyKeys`, `BusyFor`, `ShopLoadingOverlay` stay in Web — never leak into Application.
+
+### Web — reusable components
+
+23. [components] Every reusable component inherits from `MudBlazor.MudComponentBase` (directly or transitively) so `Class`, `Style`, `UserAttributes` are available without re-declaration.
+24. [components] Every reusable component forwards `Class` and `Style` to its root element — Pattern A (direct passthrough) or Pattern B (`CssBuilder`/`StyleBuilder` chain ending with `.AddClass(Class)` / `.AddStyle(Style)` so consumer values land last). Silently dropping consumer `Class`/`Style` is a violation.
+25. [components] Inline first; extract on the second real call site. Don't extract for single use, to shorten a parent page, with many flag parameters, or to future-proof.
+
+### Web — styling
+
+26. [styles] Styling priority — (1) MudBlazor parameters → (2) MudBlazor auto-generated classes (color families + spacing/flex utilities `pa-*`, `ma-*`, `gap-*`, `d-flex`, `align-center`, …) → (3) project SCSS class (only if genuinely reusable) → (4) inline `Style` (last resort, one-off only).
+27. [styles] Compose classes with `CssBuilder`, inline styles with `StyleBuilder`. Never string-concatenate, interpolate, or ternary-build class/style strings.
+28. [styles] No `<style>` blocks in `.razor` files. No page-scoped `.css` files in `wwwroot/`. SCSS lives under `src/TheShop.Web/Styles/` only — `abstracts/`, `components/`, `layouts/`, `utilities/`. Partials are lowercase with a leading underscore. Generate utility families with `$list` + `@each` — never hand-write each selector.
+
+### Tests and documentation
+
+29. [tests] Every new handler, repository, value object, or domain method gets at least one test in the matching `tests/TheShop.{Layer}.Tests/` project.
+30. [docs] Public types and members get XML `<summary>` per `references/rules/documentation.md`. Document the contract, not the implementation. Private / internal / test code: no doc comments.
+
+---
+
+## Folder structure (quick reference)
+
+```
+src/
+├── TheShop.Domain/         (Entities, ValueObjects, Enums, Exceptions)
+├── TheShop.Application/    (Common/Interfaces, Features/{Cart,Products,...})
+├── TheShop.Infrastructure/ (Persistence, Auth, Payments, Email)
+└── TheShop.Web/            (Pages, Components, State, Theme/, Resources/, Styles/, Auth/, Common/)
+tests/                      (one test project per layer)
+```
+
+Project references (compiler-enforced): `Domain` → none · `Application` → Domain · `Infrastructure` → Application + Domain · `Web` → Application + Domain + Infrastructure (composition only).
+
+---
+
+## Routing — load references on demand
+
+| If you are… | Load |
 |---|---|
-| Writing or modifying code that produces files in TheShop.Domain, TheShop.Application, TheShop.Infrastructure, or TheShop.Web | **references/ARCHITECTURE.md** |
-| Folder structure, layer placement, dependency rules, MediatR/Result patterns, testing strategy, NuGet package selection | **references/ARCHITECTURE.md** |
-| Admin panel routing, /admin/* layout, role-based authorization, RLS policies | **references/ARCHITECTURE.md** |
-| Writing or modifying any `.razor` file (pages, components, layouts) | **references/DESIGN.md** |
-| Strings, localization, resource keys, IStringLocalizer usage, .resx setup | **references/DESIGN.md** |
-| Colors, icons, typography, MudBlazor theme, Shop-prefixed token classes | **references/DESIGN.md** |
-| MudBlazor component patterns, when alternatives are allowed, `MudTextField` placeholder rule | **references/DESIGN.md** |
-| Deciding whether to extract a reusable component vs inline the markup (extract / avoid triggers, "inline first, extract on second call site" rule) | **references/DESIGN.md** |
-| Reusable component scaffolding — `MudComponentBase`, `Class`/`Style` forwarding, `CssBuilder`/`StyleBuilder` patterns | **references/DESIGN.md** |
-| CSS class vs inline style priority, SCSS folder structure & naming, `fs-*`/`fw-*` utility classes | **references/DESIGN.md** |
-| Writing XML doc comments on public types/members | **references/documentation.md** |
-| Both architecture + design layers involved (e.g., scaffolding a full feature with backend + UI) | ARCHITECTURE.md + DESIGN.md |
-| About to declare any code task complete (final verification) | Run the **Design Checklist** at the bottom of **DESIGN.md** |
-| Quick conceptual question that fits in the rules below | Neither — answer from this SKILL.md |
+| Writing a Domain entity, value object, enum, or exception | `references/rules/architecture-core.md` |
+| Writing a MediatR Command, Query, Handler, validator, or Application interface | `references/rules/architecture-core.md` + `references/rules/architecture-patterns.md` |
+| Writing a Supabase repository, Stripe service, or Resend adapter | `references/rules/architecture-core.md` + `references/rules/architecture-patterns.md` |
+| Working on an admin feature (routing, RLS, role wiring) | + `references/rules/architecture-admin.md` |
+| Writing a `.razor` page or reusable component | `references/rules/design-components.md` + `references/rules/design-theme.md` |
+| Adding any user-facing text to UI or Application | + `references/rules/design-strings.md` |
+| Authoring or extending CSS / SCSS | + `references/rules/design-styles.md` |
+| Writing XML doc comments | `references/rules/documentation.md` |
+| Writing tests | `references/rules/architecture-core.md` (§Testing) |
+| Need a working code template for a layer | matching file in `references/examples/` |
+| Final review or self-verification | `references/checklists/code-generation.md` and/or `references/checklists/design.md` |
 
-If a question fits within the rules summarized below and doesn't require detailed lookup, answer directly without reading the references. Reach for them only when generating substantive code or when the user explicitly asks about a detailed rule.
+**Do not preload references.** Load only the row(s) that match the current task.
 
 ---
 
-## The non-negotiable rules
+## When in doubt
 
-These are the rules you must enforce on every code generation. The detailed reasoning and examples live in the reference files.
+If layer placement, design choice, or a MudBlazor alternative is ambiguous — **stop and ask**, cite the rule by number (e.g. *"Rule 14 — MudBlazor only"*). Never guess and never silently introduce a custom primitive.
 
-### Architecture rules (full detail in ARCHITECTURE.md)
-
-1. **Clean Architecture, four layers.** Domain (pure C#) → Application (use cases, interfaces, DTOs) → Infrastructure (Supabase/Stripe/Resend implementations) → Presentation (Blazor + MudBlazor). Dependency rule: source code dependencies always point inward.
-
-2. **Domain has zero external dependencies.** No Supabase, Stripe, MudBlazor, JSON attributes, HTTP — pure C# only.
-
-3. **Infrastructure isolates external SDKs.** Supabase SDK, Stripe SDK, and Resend SDK appear ONLY in `TheShop.Infrastructure`. If `using Supabase;` appears anywhere else, it's a violation.
-
-4. **MediatR for use cases.** Every action becomes a `Command` or `Query` handled by MediatR. Pages dispatch via `IMediator`, never call repositories directly.
-
-5. **`Result<T>` for expected failures.** "Product not found" or "Insufficient stock" are normal business outcomes — return `Result.Fail()`. Throw exceptions only for unexpected technical failures.
-
-6. **DTOs cross layer boundaries — entities don't.** Application returns `ProductDto` to UI, never the raw `Product` entity. Use `record` types for DTOs and Commands/Queries.
-
-7. **Pages are dumb.** A `.razor` file's job is to render and dispatch. If `@code { }` exceeds 30 lines or contains business logic, refactor to the Application layer.
-
-### Design rules (full detail in DESIGN.md)
-
-8. **No hardcoded user-facing strings — and no magic-string keys.** Access static keys via the strongly-typed `Strings.AddToCart` accessor. Never `Localizer["AddToCart"]`. The indexer form is reserved for runtime keys only (e.g., `Localizer[result.Error]` where the key comes from the Application layer).
-
-9. **`Shop` prefix on all theme classes.** `ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`. No exceptions, no alternatives.
-
-10. **MudBlazor components only.** If a UI requirement cannot be met by MudBlazor, STOP and ask the user. Propose alternatives, wait for confirmation, then proceed. Never silently introduce custom UI primitives.
-
-11. **Color hierarchy is strict.** Apply colors in this priority order:
-    1. `Color="Color.Primary"` (or other `Color` enum) first.
-    2. Otherwise, the **most specific** MudBlazor auto-generated color class — pick the one that matches the facet you need:
-       - `mud-{name}-text` for text only (`mud-error-text`, `mud-primary-text`, …)
-       - `mud-{name}-bg` / `mud-bg-{name}` for background only
-       - `mud-border-{name}` for borders
-       - `mud-icon-{name}` for icon palette colors
-       - `mud-{name}-hover` for hover state
-       - `mud-theme-{name}` only when you want the matched background + foreground pair
-    3. Ask the user with an explanation only when no Mud class can produce the required result.
-
-    Never hardcode hex values in `.razor` files. Never use `mud-theme-*` when you only needed one color facet.
-
-12. **Always `MudText` with `Typo`.** Never use `<span>`, `<p>`, `<h1>` through `<h6>`, or any other native HTML text element to display content.
-
-    For off-spec sizes/weights that no `Typo` value cleanly produces, compose with the project's SCSS utility classes — `fs-{n}` (font-size) and `fw-{n}` (font-weight) from `src/TheShop.Web/Styles/abstracts/_typography.scss`. Add new sizes/weights to the `$font-sizes` / `$font-weights` SCSS list — never hand-write a `.fs-{n}` selector, never inline `font-size`/`font-weight`, never invent a one-off page-scoped class.
-
-13. **Code-behind separation.** Every `.razor` with more than markup needs a sibling `.razor.cs` partial class. Markup-only files may stay single-file. No inline `@code` blocks larger than ~5 lines. Pages declare their route via `[Route(Routes.X)]` on the code-behind, never `@page "/..."` in markup.
-
-14. **Centralised routes — no hardcoded URLs.** Every route lives in `TheShop.Web/Common/Routes.cs`. References in `NavigateTo`, `Href`, and redirects must use `Routes.X`. The `Routes` class lives in the Web layer — Application/Domain must not know URLs exist.
-
-15. **Busy state is centralised — `_isBusy` is banned.** Pages wrap awaitable work in `await BusyState.RunAsync(BusyKeys.X, ...)`. UI surfaces busy state via `<BusyFor Key="@BusyKeys.X" Context="busy">` for per-operation indicators, or `<ShopLoadingOverlay />` (mounted once in `MainLayout`) keyed to `BusyKeys.Global` for app-blocking loads. `BusyState`, `BusyKeys`, `BusyFor`, `ShopLoadingOverlay` all live in `TheShop.Web` — busy state is a presentation concern and must not leak into Application.
-
-16. **Reusable components inherit from `MudComponentBase` and forward `Class`/`Style`.** Every reusable Blazor component must have `MudBlazor.MudComponentBase` somewhere in its inheritance chain (direct or transitive) so `Class`, `Style`, and `UserAttributes` are available without re-declaring them. The component must explicitly forward `Class`/`Style` to its root element using one of two patterns:
-    - **Pattern A** — root has no internal classes/styles: pass through directly with `Class="@Class" Style="@Style"`.
-    - **Pattern B** — root has its own internal classes/styles: compose with `CssBuilder` / `StyleBuilder` and end the chain with `.AddClass(Class)` / `.AddStyle(Style)` so consumer values land last.
-
-    A consumer must always be able to write `<ShopProductCard Class="my-spacing" Style="..." />` and have it work. Silently dropping consumer `Class`/`Style` is a violation.
-
-17. **Styling priority is strict.** When you need to alter a component's appearance, work down this list in order — move to the next step only when the current one cannot express the design:
-    1. **MudBlazor component parameters** (`Variant`, `Color`, `Dense`, `Spacing`, `Justify`, …).
-    2. **MudBlazor's auto-generated CSS classes** (color families above, spacing/flex utilities `pa-*`, `ma-*`, `gap-*`, `d-flex`, `align-center`, …).
-    3. **Project SCSS-generated classes** in `src/TheShop.Web/Styles/`. Generate a new SCSS class only if the styling is genuinely reusable.
-    4. **Inline `Style`** — only when one-off with no plausible future reuse.
-
-    Compose conditional classes with `CssBuilder` and inline styles with `StyleBuilder`. Never string-concatenate / interpolate / ternary-build class or style strings. **No `<style>` blocks inside `.razor` files. No new page-scoped `*.css` files in `wwwroot/`.**
-
-18. **SCSS lives under `src/TheShop.Web/Styles/`.** Folder layout: `abstracts/` (tokens, typography/color utilities, shared variables), `components/` (per-component-family styles), `layouts/` (page-shell styles), `utilities/` (broad utility-class collections). Partial filenames are lowercase with a leading underscore (`_typography.scss`, not `Typography.scss`). Generate class families with `$list` + `@each` loop — never hand-write each selector. Reuse an existing class before creating a new one.
-
----
-
-## Quick reference — folder structure
-
-```
-TheShop.sln
-└── src/
-    ├── TheShop.Domain/         (Entities, ValueObjects, Enums, Exceptions)
-    ├── TheShop.Application/    (Common/Interfaces, Features/{Products,Cart,...})
-    ├── TheShop.Infrastructure/ (Persistence, Auth, Payments, Email)
-    └── TheShop.Web/            (Pages, Components, State, Theme/, Resources/, Styles/, Auth/)
-└── tests/                      (one test project per layer)
-```
-
-Project references (compiler-enforced):
-- `TheShop.Domain` → references nothing
-- `TheShop.Application` → references Domain
-- `TheShop.Infrastructure` → references Application + Domain
-- `TheShop.Web` → references Application + Domain + Infrastructure (composition only)
-
-SCSS layout under `src/TheShop.Web/Styles/`:
-```
-Styles/
-├── TheShop.scss               (root entry point)
-├── abstracts/                 (_colors.scss, _typography.scss, _variables.scss)
-├── components/                (_button.scss, _field.scss, _picker.scss)
-├── layouts/                   (_main.scss)
-└── utilities/                 (borders/, flexbox/, spacing/)
-```
-
----
-
-## Quick decision shortcuts (no reference read needed)
-
-These decisions are answerable from this SKILL.md alone:
-
-- **"Where does X go?"** Use the layer table:
-  - Pure data + business rules → Domain
-  - Use cases, interfaces, DTOs → Application
-  - Supabase/Stripe/Resend implementations → Infrastructure
-  - Pages, components, state stores → Web
-- **"How do I show a string?"** `@Strings.{KeyName}` — typed access. If the key is dynamic (from `result.Error`), use `@Localizer[result.Error]`.
-- **"How do I color this MudButton?"** `<MudButton Color="Color.Primary">` — first preference.
-- **"How do I color just the text in this MudText?"** `<MudText Class="mud-error-text">` — pick the most specific Mud color class, not `mud-theme-*`.
-- **"Should this be a `<span>`?"** No. Use `<MudText Typo="Typo.body2">`.
-- **"Design needs `font-size: 22px; font-weight: 600`?"** `<MudText Typo="Typo.h4" Class="fs-22 fw-600">`. Don't inline-style font properties.
-- **"Where does business logic go?"** Domain entity method (e.g., `cart.AddItem(...)`), not a service or page.
-- **"Need a route?"** `@Routes.Auth.SignIn` (or the right nested constant). Never inline `"/sign-in"`.
-- **"Need a loader?"** Wrap the affected control in `<BusyFor Key="@BusyKeys.X" Context="busy">` and drive the underlying call with `await BusyState.RunAsync(BusyKeys.X, ...)`.
-- **"Page has @code with logic?"** Move it to a sibling `.razor.cs` partial class. Declare the route with `[Route(Routes.X)]` on the partial class.
-- **"Should I extract this into a reusable component?"** Default to **inline** until the same UI + behavior actually repeats today and you can name a single responsibility clearly. Don't extract for single use, to shorten a parent page, with many flag parameters, or to "future-proof" — wait for the second real call site. See DESIGN.md §Deciding when to extract a reusable component.
-- **"Building a reusable component?"** Inherit from `MudComponentBase` (directly or via a Mud component) and forward `Class`/`Style` to the root — direct passthrough, or `CssBuilder`/`StyleBuilder` ending with `.AddClass(Class)` / `.AddStyle(Style)`.
-- **"Need to compose CSS classes conditionally?"** `new CssBuilder("base").AddClass("modifier", condition).AddClass(Class).Build()`. Never string interpolation.
-- **"Need an inline style for a one-off?"** `new StyleBuilder().AddStyle("margin-top", "4px").AddStyle(Style).Build()` — and only when no Mud class / SCSS class fits.
-- **"Want a `<style>` block in the .razor?"** No — never. Reusable → SCSS partial under `Styles/`. One-off → inline `Style` via `StyleBuilder`.
-
----
-
-## When the user asks ambiguous things
-
-If a request is unclear about layer placement, design choice, or whether a MudBlazor alternative is acceptable — **ask before generating code**, don't guess. Cite the specific rule from this skill or the reference files when explaining decisions.
-
-If asked to "just put it in the page for now" or "hardcode it temporarily" — refuse and explain why. Short-term shortcuts compound quickly in a Clean Architecture project.
-
----
-
-## After major reference updates
-
-When `references/ARCHITECTURE.md` or `references/DESIGN.md` is updated, your next read of those files will reflect the changes. The rules summary above should be regenerated to match if any rule changes.
-
----
-
-**For the full architecture and design rules, code examples, anti-patterns, and code-generation checklist, read the appropriate reference file in `references/`.**
+If asked to "just put it in the page for now" or "hardcode it temporarily" — refuse and explain the cost. Short-term shortcuts compound quickly in a Clean Architecture project.

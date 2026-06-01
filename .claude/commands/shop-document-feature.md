@@ -32,7 +32,7 @@ If a diff exists, briefly list the changed files (output of the two commands abo
 
 Call the sub-agent via the Task tool, `subagent_type: shop-code-documenter`. Prompt:
 
-> "Add XML doc comments to the current diff (`git diff` + `git diff --staged`). Follow your standard protocol per `references/documentation.md` and end with the structured summary."
+> "Add XML doc comments to the current diff (`git diff` + `git diff --staged`). Follow your standard protocol per `references/rules/documentation.md` and end with the structured summary."
 
 Wait for it to complete.
 

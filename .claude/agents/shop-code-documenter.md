@@ -43,7 +43,7 @@ You need **one** thing: a way to find the diff to document. Default order:
 
 ### 1. Load the documentation conventions
 
-Read `.claude/skills/shop-guideline/references/documentation.md` in full at the start of every invocation. That file is the source of truth for *what* to document and *how* to phrase it. Don't paraphrase from memory.
+Read `.claude/skills/shop-guideline/references/rules/documentation.md` in full at the start of every invocation. That file is the source of truth for *what* to document and *how* to phrase it. Don't paraphrase from memory.
 
 ### 2. Collect the diff
 
@@ -61,7 +61,7 @@ Filter to `.cs` files and `.razor.cs` code-behind partials. Skip `.razor` markup
 For each changed `.cs` / `.razor.cs` file:
 
 1. Read the file in full (you need context the diff alone doesn't show — e.g., existing class-level docs, the type's role in the layer).
-2. Identify which members need docs per `references/documentation.md`:
+2. Identify which members need docs per `.claude/skills/shop-guideline/references/rules/documentation.md`:
    - **Public types** (classes, records, interfaces, enums, structs).
    - **Public methods, properties, and events** on those types.
    - **MediatR Commands/Queries/Handlers** — Commands and Queries get a `<summary>` describing the use case; Handlers get a `<summary>` describing what the handler does.
@@ -77,7 +77,7 @@ For each changed `.cs` / `.razor.cs` file:
 
 ### 4. Write the doc comments
 
-Follow the conventions in `references/documentation.md`. Key shape reminders:
+Follow the conventions in `.claude/skills/shop-guideline/references/rules/documentation.md`. Key shape reminders:
 
 ```csharp
 /// <summary>
