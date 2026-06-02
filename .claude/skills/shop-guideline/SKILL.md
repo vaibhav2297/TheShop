@@ -1,6 +1,6 @@
 ---
 name: shop-guideline
-description: Architecture and design rules for "The Shop" — .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend. USE WHEN editing files under `src/TheShop.*/` or `tests/TheShop.*.Tests/`, editing any `.razor` / `.razor.cs`, writing MediatR Commands/Queries/Handlers, Supabase repositories, Stripe/Resend adapters, AutoMapper profiles, FluentValidation validators, `Result<T>` returns, touching `Strings.resx` / `IStringLocalizer<Strings>`, or any `Shop`-prefixed theme class (`ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`). Triggers: `TheShop`, any `TheShop.*` namespace, `Shop`-prefixed theme class, Cart / Order / Product / Checkout features. SKIP for: general .NET/Blazor/MudBlazor/Supabase questions not tied to this repo, DNS/Azure portal/CI-CD setup.
+description: Architecture and design rules for "The Shop" — .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend. USE WHEN editing files under `src/TheShop.*/` or `tests/TheShop.*.Tests/`; editing any `.razor` / `.razor.cs`; writing MediatR Commands/Queries/Handlers, Supabase repositories, Stripe/Resend adapters, AutoMapper profiles, FluentValidation validators, `Result<T>` returns, or `*State` stores; touching `Strings.resx` / `IStringLocalizer<Strings>`, `Routes` / `BusyKeys` / `BusyState`, SCSS under `Styles/`, layer DI in `Program.cs` / `DependencyInjection.cs`, or any `Shop`-prefixed theme class (`ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`). Triggers: `TheShop`, any `TheShop.*` namespace, `Shop`-prefixed theme class, Cart / Order / Product / Checkout features. SKIP for: general .NET/Blazor/MudBlazor/Supabase questions not tied to this repo, DNS/Azure portal/CI-CD setup.
 ---
 
 # The Shop — Governance
@@ -88,19 +88,75 @@ Project references (compiler-enforced): `Domain` → none · `Application` → D
 
 ## Routing — load references on demand
 
-| If you are… | Load |
+**How to read this:** find every row that matches your task — in **Table A** (by the file/artifact you're
+touching) or **Table B** (by what you're doing). **Union** the Load column across all matching rows,
+**dedupe**, and load nothing else. A `§Name` means read only that section of the file. Reference files
+already inline a minimal example; pull an `examples/` file only when you want a full-file template.
+
+**Legend (the only place file paths live):**
+
+| Token | File |
 |---|---|
-| Writing a Domain entity, value object, enum, or exception | `references/rules/architecture-core.md` |
-| Writing a MediatR Command, Query, Handler, validator, or Application interface | `references/rules/architecture-core.md` + `references/rules/architecture-patterns.md` |
-| Writing a Supabase repository, Stripe service, or Resend adapter | `references/rules/architecture-core.md` + `references/rules/architecture-patterns.md` |
-| Working on an admin feature (routing, RLS, role wiring) | + `references/rules/architecture-admin.md` |
-| Writing a `.razor` page or reusable component | `references/rules/design-components.md` + `references/rules/design-theme.md` |
-| Adding any user-facing text to UI or Application | + `references/rules/design-strings.md` |
-| Authoring or extending CSS / SCSS | + `references/rules/design-styles.md` |
-| Writing XML doc comments | `references/rules/documentation.md` |
-| Writing tests | `references/rules/architecture-core.md` (§Testing) |
-| Need a working code template for a layer | matching file in `references/examples/` |
-| Final review or self-verification | `references/checklists/code-generation.md` and/or `references/checklists/design.md` |
+| **core** | `references/rules/architecture-core.md` |
+| **patterns** | `references/rules/architecture-patterns.md` |
+| **admin** | `references/rules/architecture-admin.md` |
+| **components** | `references/rules/design-components.md` |
+| **theme** | `references/rules/design-theme.md` (applying color / typography / icons / imagery) |
+| **theme-setup** | `references/rules/design-theme-setup.md` (building `ShopColors`/`ShopIcons`/`ShopTypography`/`ShopTheme`) |
+| **strings** | `references/rules/design-strings.md` |
+| **styles** | `references/rules/design-styles.md` |
+| **docs** | `references/rules/documentation.md` |
+| **check:code** / **check:design** | `references/checklists/code-generation.md` / `design.md` |
+| **ex:{name}** | `references/examples/{name}.md` (`domain-entity`, `application-handler`, `infrastructure-repository`, `web-page`, `web-component`) |
+
+### Table A — by file / artifact you're editing
+
+| Path / artifact | Load (complete set) |
+|---|---|
+| `src/TheShop.Domain/**` (entity, value object, enum, exception) | **core** · ex:domain-entity |
+| `Application/Features/**` Command, Query, Handler, validator | **core** + **patterns** · ex:application-handler |
+| `Application/Common/Interfaces/**` (repo/service interface) | **core** + **patterns** |
+| `Application/Mapping/*Profile.cs` or `Features/**/DTOs/**` only | **patterns** §AutoMapper |
+| `Infrastructure/Persistence/{Repositories,Mappers,Records}/**` | **core** + **patterns** · ex:infrastructure-repository |
+| `Infrastructure/{Auth,Payments,Email,Storage}/**` adapter | **core** + **patterns** |
+| `Web/**/*.razor` + `*.razor.cs` — **page** | **components** + **theme** + **strings** · ex:web-page (+ **styles** if styling) |
+| `Web/Components/**` — **reusable component** | **components** + **theme** · ex:web-component (+ **strings** if it has text) |
+| `Web/Theme/Shop*.cs` (`ShopColors`/`ShopIcons`/`ShopTypography`/`ShopTheme`) | **theme-setup** |
+| `Web/Resources/Strings.resx` / resource keys | **strings** |
+| `Web/Styles/**/*.scss` | **styles** + **theme** §Applying color |
+| `Web/Common/{Routes,BusyKeys}.cs`, `BusyState` wiring | **core** §Cross-cutting Web-only primitives + **components** §Busy state |
+| `Web/State/*State.cs` | **patterns** §State stores |
+| `Program.cs` / `**/DependencyInjection.cs` (DI wiring) | **core** §Enforcing the dependency rule (+ **patterns** §registration when wiring validators/behaviors) |
+| `Pages/Admin/**`, `Web/Auth/**`, RLS / role wiring | **admin** (+ the matching row above for the artifact) |
+| `tests/TheShop.*.Tests/**` | **check:code** §Tests — `shop-test-writer` is the authority for *writing* tests |
+
+### Table B — by activity
+
+| If you are… | Load (complete set) |
+|---|---|
+| Writing a Domain entity / value object / enum / exception | **core** · ex:domain-entity |
+| Writing a MediatR Command / Query / Handler / validator / Application interface | **core** + **patterns** · ex:application-handler |
+| Writing a Supabase repository / Stripe / Resend adapter | **core** + **patterns** · ex:infrastructure-repository |
+| Writing only an AutoMapper profile, DTO, or `*State` store | **patterns** |
+| Building / editing a `.razor` **page** | **components** + **theme** + **strings** · ex:web-page (+ **styles** if styling) |
+| Building / editing a **reusable component** | **components** + **theme** · ex:web-component (+ **strings** if it has text) |
+| Applying color / typography / icons / imagery in markup | **theme** |
+| Editing a `Shop*` theme class (registry or `ShopTheme` wiring) | **theme-setup** |
+| Adding/editing user-facing text — **UI or Application** error keys (Rule 12) | **strings** |
+| Authoring or extending CSS / SCSS | **styles** + **theme** §Applying color |
+| Adding a route, busy key, or wiring busy state | **core** §Cross-cutting Web-only primitives + **components** §Busy state |
+| Wiring DI / editing `Program.cs` | **core** §Enforcing the dependency rule (+ **patterns** §registration) |
+| Working on an admin feature (routing, RLS, role wiring) | **admin** + the row for whatever artifact you're writing |
+| Writing XML doc comments | **docs** |
+| Writing tests | **check:code** §Tests (authoring authority: `shop-test-writer`) |
+| Final review / self-verification | **check:code** (architecture/tests/docs) and/or **check:design** (UI) |
+
+**Worked example — "implement add-to-cart end to end" (union across layers, deduped):**
+Domain entity → **core** + ex:domain-entity. Handler + validator + DTO → add **patterns** +
+ex:application-handler. Supabase repository → add ex:infrastructure-repository (core+patterns already
+loaded). Page → add **components** + **theme** + **strings** + ex:web-page. Then **docs** on the diff,
+and **check:code** + **check:design** to verify. You never load **admin** or **styles** unless the
+feature actually touches them.
 
 **Do not preload references.** Load only the row(s) that match the current task.
 
