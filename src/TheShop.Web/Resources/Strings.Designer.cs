@@ -205,6 +205,15 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change.
+        /// </summary>
+        public static string Auth_Change {
+            get {
+                return ResourceManager.GetString("Auth_Change", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Incorrect code. Please try again..
         /// </summary>
         public static string Auth_Code_Incorrect {
@@ -214,20 +223,11 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please enter the 6-digit code from your email..
+        ///   Looks up a localized string similar to The verification code is invalid or has expired..
         /// </summary>
-        public static string Auth_Code_Invalid {
+        public static string Auth_Code_InvalidOrExpired {
             get {
-                return ResourceManager.GetString("Auth_Code_Invalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This code has expired. Please request a new one..
-        /// </summary>
-        public static string Auth_CodeExpired {
-            get {
-                return ResourceManager.GetString("Auth_CodeExpired", resourceCulture);
+                return ResourceManager.GetString("Auth_Code_InvalidOrExpired", resourceCulture);
             }
         }
         
@@ -239,16 +239,7 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Auth_CodeSent", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Change.
-        /// </summary>
-        public static string Auth_Change {
-            get {
-                return ResourceManager.GetString("Auth_Change", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Create.
         /// </summary>
@@ -257,7 +248,7 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Auth_Create_Submit", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Please enter a valid date of birth..
         /// </summary>
@@ -284,7 +275,7 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Auth_LastName_Required", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Login.
         /// </summary>
@@ -293,16 +284,16 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Auth_Login_Submit", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Can't reach the server. Please check your connection and try again..
+        ///   Looks up a localized string similar to Can&apos;t reach the server. Please check your connection and try again..
         /// </summary>
         public static string Auth_Network {
             get {
                 return ResourceManager.GetString("Auth_Network", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Please wait before requesting a new code..
         /// </summary>
@@ -556,7 +547,7 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign In.
+        ///   Looks up a localized string similar to Login.
         /// </summary>
         public static string Login {
             get {
@@ -574,7 +565,7 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign In — The Vape Shop Sarnia.
+        ///   Looks up a localized string similar to Login — The Vape Shop Sarnia.
         /// </summary>
         public static string Login_PageTitle {
             get {
@@ -718,6 +709,15 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Digit {0} of {1}.
+        /// </summary>
+        public static string OtpInput_DigitAriaLabel {
+            get {
+                return ResourceManager.GetString("OtpInput_DigitAriaLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Minimum 8 characters..
         /// </summary>
         public static string Password_Hint {
@@ -799,7 +799,7 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign in to your account.
+        ///   Looks up a localized string similar to Login.
         /// </summary>
         public static string SignIn_Heading {
             get {
@@ -817,7 +817,7 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign In — The Vape Shop Sarnia.
+        ///   Looks up a localized string similar to Login — The Vape Shop Sarnia.
         /// </summary>
         public static string SignIn_PageTitle {
             get {
@@ -835,7 +835,7 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign Up.
+        ///   Looks up a localized string similar to Create Account.
         /// </summary>
         public static string SignUp {
             get {
@@ -862,7 +862,7 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create your account.
+        ///   Looks up a localized string similar to Create.
         /// </summary>
         public static string SignUp_Heading {
             get {
@@ -880,7 +880,7 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign Up — The Vape Shop Sarnia.
+        ///   Looks up a localized string similar to Create — The Vape Shop Sarnia.
         /// </summary>
         public static string SignUp_PageTitle {
             get {
@@ -907,7 +907,7 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Verification code.
+        ///   Looks up a localized string similar to Enter the six-digit code sent to your email address.
         /// </summary>
         public static string Verify_CodeLabel {
             get {
@@ -916,14 +916,14 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter your verification code.
+        ///   Looks up a localized string similar to Verify.
         /// </summary>
         public static string Verify_Heading {
             get {
                 return ResourceManager.GetString("Verify_Heading", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to You are logged in as.
         /// </summary>
@@ -932,9 +932,9 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Verify_LoggedInAs", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Verify Code — The Vape Shop Sarnia.
+        ///   Looks up a localized string similar to Verify — The Vape Shop Sarnia.
         /// </summary>
         public static string Verify_PageTitle {
             get {
@@ -959,16 +959,7 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Verify_ResendIn", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Digit {0} of {1}.
-        /// </summary>
-        public static string OtpInput_DigitAriaLabel {
-            get {
-                return ResourceManager.GetString("OtpInput_DigitAriaLabel", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to You are signing up as.
         /// </summary>
@@ -977,7 +968,7 @@ namespace TheShop.Web.Resources {
                 return ResourceManager.GetString("Verify_SigningUpAs", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to We sent a 6-digit code to {0}. Check your inbox (and spam folder)..
         /// </summary>

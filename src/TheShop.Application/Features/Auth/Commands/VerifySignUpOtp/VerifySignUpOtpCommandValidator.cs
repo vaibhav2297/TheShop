@@ -12,8 +12,8 @@ public sealed class VerifySignUpOtpCommandValidator
             .EmailAddress().WithMessage(AuthErrorKeys.EmailInvalid);
 
         RuleFor(x => x.Code)
-            .NotEmpty().WithMessage(AuthErrorKeys.CodeInvalid)
-            .Matches(@"^\d{6}$").WithMessage(AuthErrorKeys.CodeInvalid);
+            .NotEmpty().WithMessage(AuthErrorKeys.CodeInvalidOrExpired)
+            .Matches(@"^\d{6}$").WithMessage(AuthErrorKeys.CodeInvalidOrExpired);
 
         RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage(AuthErrorKeys.FirstNameRequired);

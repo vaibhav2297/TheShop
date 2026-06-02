@@ -141,9 +141,9 @@ public sealed class SupabaseAuthService : IAuthService
         {
             FailureHint.Reason.UserBadLogin => AuthErrorKeys.CodeIncorrect,
             FailureHint.Reason.UserMissingInformation => AuthErrorKeys.CodeIncorrect,
-            FailureHint.Reason.ExpiredRefreshToken => AuthErrorKeys.CodeExpired,
-            FailureHint.Reason.InvalidRefreshToken => AuthErrorKeys.CodeExpired,
-            _ when LooksLikeExpiredOtp(ex) => AuthErrorKeys.CodeExpired,
+            FailureHint.Reason.ExpiredRefreshToken => AuthErrorKeys.CodeInvalidOrExpired,
+            FailureHint.Reason.InvalidRefreshToken => AuthErrorKeys.CodeInvalidOrExpired,
+            _ when LooksLikeExpiredOtp(ex) => AuthErrorKeys.CodeInvalidOrExpired,
             _ when LooksLikeRateLimited(ex) => AuthErrorKeys.TooManyAttempts,
             _ => AuthErrorKeys.CodeIncorrect,
         };

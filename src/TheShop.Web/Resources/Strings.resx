@@ -165,10 +165,6 @@
   <data name="AnnouncementBar_Message" xml:space="preserve">
     <value>Free shipping on orders $75+ or promo codes.</value>
   </data>
-
-  <!-- ============================================================ -->
-  <!-- Home page                                                    -->
-  <!-- ============================================================ -->
   <data name="Home_PageTitle" xml:space="preserve">
     <value>Home — The Vape Shop Sarnia</value>
   </data>
@@ -262,10 +258,6 @@
   <data name="Password_TooShort" xml:space="preserve">
     <value>Password must be at least 8 characters.</value>
   </data>
-
-  <!-- ============================================================ -->
-  <!-- Authentication — OTP flow                                    -->
-  <!-- ============================================================ -->
   <data name="SignUp_PageTitle" xml:space="preserve">
     <value>Create — The Vape Shop Sarnia</value>
   </data>
@@ -374,14 +366,11 @@
   <data name="Auth_Code_Incorrect" xml:space="preserve">
     <value>Incorrect code. Please try again.</value>
   </data>
-  <data name="Auth_CodeExpired" xml:space="preserve">
-    <value>This code has expired. Please request a new one.</value>
+  <data name="Auth_Code_InvalidOrExpired" xml:space="preserve">
+    <value>The verification code is invalid or has expired.</value>
   </data>
   <data name="Auth_TooManyAttempts" xml:space="preserve">
     <value>Too many incorrect attempts. Please start again.</value>
-  </data>
-  <data name="Auth_Code_Invalid" xml:space="preserve">
-    <value>Please enter the 6-digit code from your email.</value>
   </data>
   <data name="Auth_ResendTooSoon" xml:space="preserve">
     <value>Please wait before requesting a new code.</value>
@@ -422,10 +411,6 @@
   <data name="Account_SignedInAs" xml:space="preserve">
     <value>Signed in as {0}</value>
   </data>
-
-  <!-- ============================================================ -->
-  <!-- Admin                                                        -->
-  <!-- ============================================================ -->
   <data name="AdminDashboard_PageTitle" xml:space="preserve">
     <value>Dashboard — Admin — The Vape Shop Sarnia</value>
   </data>

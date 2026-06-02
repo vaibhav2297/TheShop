@@ -12,9 +12,8 @@ public static class AuthErrorKeys
     public const string AccountNotFound = "Auth_AccountNotFound";
     public const string Underage = "Auth_Underage";
     public const string CodeIncorrect = "Auth_Code_Incorrect";
-    public const string CodeExpired = "Auth_CodeExpired";
+    public const string CodeInvalidOrExpired = "Auth_Code_InvalidOrExpired";
     public const string TooManyAttempts = "Auth_TooManyAttempts";
-    public const string CodeInvalid = "Auth_Code_Invalid";
     public const string ResendTooSoon = "Auth_ResendTooSoon";
     public const string FirstNameRequired = "Auth_FirstName_Required";
     public const string LastNameRequired = "Auth_LastName_Required";
