@@ -75,12 +75,14 @@ Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*)
 src/
 ├── TheShop.Domain/         (Entities, ValueObjects, Enums, Exceptions)
 ├── TheShop.Application/    (Common/Interfaces, Features/{Cart,Products,...})
-├── TheShop.Infrastructure/ (Persistence, Auth, Payments, Email)
+├── TheShop.Infrastructure/ (Persistence, Auth, Payments, Email, Storage)
 └── TheShop.Web/            (Pages, Components, State, Theme/, Resources/, Styles/, Auth/, Common/)
 tests/                      (one test project per layer)
 ```
 
 Project references (compiler-enforced): `Domain` → none · `Application` → Domain · `Infrastructure` → Application + Domain · `Web` → Application + Domain + Infrastructure (composition only).
+
+**Organising principle differs by layer.** `Application` is grouped by **business feature** (vertical slices — `Features/Cart/`, `Features/Checkout/`; Rule 9). `Infrastructure` is grouped by **technical concern / external system** — `Persistence/` (the database), `Auth/`, `Payments/`, `Email/`, `Storage/`. There is **no** `Infrastructure/{Feature}/`: a feature's infra is scattered into the concern folders (e.g. Cart → `Persistence/Records/CartRecord.cs`, `Persistence/Mappers/CartMapper.cs`, `Persistence/Repositories/SupabaseCartRepository.cs`). The `Records/Mappers/Repositories` trio lives **only** under `Persistence/`; `Auth/Payments/Email/Storage/` are flat adapter folders.
 
 ---
 

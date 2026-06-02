@@ -27,12 +27,12 @@ public sealed class SupabaseCustomerRepository(Supabase.Client client) : ICustom
             .Where(c => c.Id == id)
             .Single(ct);
 
-        return response is null ? null : CustomerMapper.ToDomain(response);
+        return response?.ToDomain();
     }
 
     public async Task AddAsync(Customer customer, CancellationToken ct)
     {
-        var record = CustomerMapper.ToRecord(customer);
+        var record = customer.ToRecord();
         await client.From<CustomerRecord>().Insert(record, cancellationToken: ct);
     }
 }

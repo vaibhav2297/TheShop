@@ -8,7 +8,7 @@ namespace TheShop.Infrastructure.Persistence.Records;
 /// <see cref="Repositories.SupabaseCustomerRepository"/> and <see cref="Mappers.CustomerMapper"/>.
 /// </summary>
 [Table("customers")]
-public sealed class CustomerRecord : BaseModel
+internal sealed class CustomerRecord : BaseModel
 {
     [PrimaryKey("id", true)]
     public Guid Id { get; set; }

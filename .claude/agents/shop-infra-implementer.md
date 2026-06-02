@@ -99,8 +99,8 @@ After applying, call `mcp__claude_ai_Supabase__get_advisors` (lint type) and rep
 
 Folder layout:
 
-- `Persistence/Records/{Name}Record.cs` — Supabase model classes. Tagged with `[Table("...")]` and `[Column("...")]` attributes from the Supabase SDK. **Keep these `internal` if possible** — they should not leak out of Infrastructure.
-- `Persistence/Mappers/{Name}Mapper.cs` — static extension methods mapping records ↔ Domain entities (`ToDomain()`, `ToRecord()`).
+- `Persistence/Records/{Name}Record.cs` — Supabase model classes. Tagged with `[Table("...")]` and `[Column("...")]` attributes from the Supabase SDK. **Declare them `internal sealed`** — they must not leak out of Infrastructure. `From<{Name}Record>()` still compiles because the generic is instantiated inside this assembly.
+- `Persistence/Mappers/{Name}Mapper.cs` — `internal static` class of **static extension methods** mapping records ↔ Domain entities (`this {Name}Record.ToDomain()`, `this {Domain}.ToRecord()`), called at the repository as `record?.ToDomain()` / `entity.ToRecord()`.
 - `Persistence/Repositories/{Name}Repository.cs` — concrete `Supabase*Repository : I*Repository`.
 - `Auth/`, `Payments/`, `Email/`, `Storage/` — adapters for non-database external services.
 

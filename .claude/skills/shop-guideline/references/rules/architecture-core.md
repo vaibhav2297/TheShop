@@ -43,7 +43,7 @@ src/
 │   └── DependencyInjection.cs
 ├── TheShop.Infrastructure/
 │   ├── Persistence/
-│   │   ├── SupabaseClient.cs
+│   │   ├── SupabaseClientFactory.cs
 │   │   ├── Records/
 │   │   ├── Mappers/
 │   │   └── Repositories/
@@ -64,8 +64,7 @@ src/
     ├── Components/
     │   ├── Layout/
     │   ├── Products/
-    │   ├── Common/
-    │   └── Shared/
+    │   └── Common/          ← generic, business-agnostic UI primitives
     ├── Auth/
     │   └── SupabaseAuthStateProvider.cs
     ├── State/
@@ -96,6 +95,23 @@ tests/
 ├── TheShop.Infrastructure.Tests/ (Testcontainers + real PostgreSQL)
 └── TheShop.Web.Tests/            (bUnit + mocked services)
 ```
+
+### Organising principle — concern, not feature (Infrastructure)
+
+`Application` is sliced **vertically by business feature** (`Features/Cart/`, `Features/Checkout/` — Rule 9). `Infrastructure` is the mirror opposite: it is sliced **horizontally by technical concern / external system**. Do **not** create `Infrastructure/{Feature}/` folders.
+
+- `Persistence/` owns the **database** concern and is the **only** place holding the `Records/` + `Mappers/` + `Repositories/` trio.
+- `Auth/`, `Payments/`, `Email/`, `Storage/` are **flat adapter folders** — one adapter class implementing one Application interface (`SupabaseAuthService : IAuthService`, etc.). They have no `Records/`/`Mappers/` sub-folders, because they wrap an SDK, not a set of DB rows.
+
+A single feature's Infrastructure code therefore **scatters** across these folders. Cart, for example:
+
+```
+Persistence/Records/CartRecord.cs
+Persistence/Mappers/CartMapper.cs
+Persistence/Repositories/SupabaseCartRepository.cs
+```
+
+Rationale: SDK-shaped concerns (Stripe, Resend, Postgrest row models) are shared across many features and don't belong to any one of them — grouping by concern keeps SDK config, DI wiring, and SDK upgrades localized, and makes Rule 3 (SDK isolation) visible at the folder level.
 
 ---
 

@@ -177,7 +177,7 @@ public sealed class SupabaseProductRepository(Supabase.Client client) : IProduct
         var response = await client
             .From<ProductRecord>()
             .Where(x => x.Id == id)
-            .Single();
+            .Single(ct);
 
         return response?.ToDomain();
     }

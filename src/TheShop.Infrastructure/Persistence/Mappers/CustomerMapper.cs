@@ -6,7 +6,7 @@ namespace TheShop.Infrastructure.Persistence.Mappers;
 
 internal static class CustomerMapper
 {
-    public static CustomerRecord ToRecord(Customer customer) => new()
+    public static CustomerRecord ToRecord(this Customer customer) => new()
     {
         Id = customer.Id,
         FirstName = customer.FirstName,
@@ -16,7 +16,7 @@ internal static class CustomerMapper
         CreatedAt = customer.CreatedAt.UtcDateTime,
     };
 
-    public static Customer ToDomain(CustomerRecord record)
+    public static Customer ToDomain(this CustomerRecord record)
     {
         var email = Email.Create(record.Email);
         var dob = DateOfBirth.Create(DateOnly.FromDateTime(record.DateOfBirth));

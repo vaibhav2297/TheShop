@@ -6,7 +6,7 @@ Canonical Supabase repository. Shows the **implement Application interface → q
 namespace TheShop.Infrastructure.Persistence.Records;
 
 [Table("carts")]
-public sealed class CartRecord : BaseModel
+internal sealed class CartRecord : BaseModel
 {
     [PrimaryKey("id", false)] public Guid Id { get; set; }
     [Column("customer_id")] public Guid CustomerId { get; set; }
@@ -44,7 +44,7 @@ public sealed class SupabaseCartRepository(Supabase.Client client) : ICartReposi
         var response = await client
             .From<CartRecord>()
             .Where(x => x.CustomerId == customerId)
-            .Single();
+            .Single(ct);
 
         return response?.ToDomain();
     }
@@ -52,13 +52,13 @@ public sealed class SupabaseCartRepository(Supabase.Client client) : ICartReposi
     public async Task SaveAsync(Cart cart, CancellationToken ct)
     {
         var record = cart.ToRecord();
-        await client.From<CartRecord>().Upsert(record);
+        await client.From<CartRecord>().Upsert(record, cancellationToken: ct);
     }
 }
 ```
 
 Highlights:
-- `CartRecord` lives in **Infrastructure** — Supabase attributes (`[Table]`, `[PrimaryKey]`, `[Column]`) never appear in Domain (Rule 2).
+- `CartRecord` is **`internal sealed`** and lives in **Infrastructure** — Supabase attributes (`[Table]`, `[PrimaryKey]`, `[Column]`) never appear in Domain (Rule 2). Records stay `internal` so they cannot leak out of the layer; `From<CartRecord>()` still compiles because the generic is instantiated inside the Infrastructure assembly.
 - Mapper extension methods translate between the record (provider shape) and the entity (domain shape). Domain never sees the record.
 - Repository is `sealed`, primary constructor takes the SDK client via DI.
 - Concrete repository name embeds the provider (`SupabaseCartRepository`); the Application interface (`ICartRepository`) is provider-neutral.
