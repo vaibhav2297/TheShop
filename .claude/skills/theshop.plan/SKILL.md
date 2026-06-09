@@ -165,9 +165,11 @@ Use the exact 11-section structure. Stay technical, stay concrete. Replace place
 - If a plan at that path already exists, ask the user whether to overwrite, save with a version suffix (e.g., `add-to-cart-v2.md`), or cancel.
 ### 8. Confirm
 
-Report the saved path in one short sentence and call out anything that needs human judgment before implementation can start. Example:
+Report the saved path in one short sentence and call out anything that needs human judgment before implementation can start. If Section 11 carries any `❓ Open question` (or unratified `📌 Assumption`), point the user at `/theshop.resolve` — that's the step that turns those into settled decisions and flips the plan's Status to `Resolved`. Examples:
 
-> "Saved to `.claude/plans/add-to-cart.md`. Two open questions surfaced in Section 11 — please review those before implementation."
+> "Saved to `.claude/plans/add-to-cart.md` — 2 open questions in Section 11. Run `/theshop.resolve add-to-cart` to resolve them before implementing."
+
+> "Saved to `.claude/plans/add-to-cart.md` — no open questions. You can resolve any logged assumptions with `/theshop.resolve add-to-cart`, or proceed straight to `/theshop.implement add-to-cart`."
 
 ---
 
@@ -309,7 +311,9 @@ Result<CartDto> returned to ProductDetail.razor → CartState updated → UI re-
 
 ### Phase 5 — End-to-end & polish
 - Run `/theshop.test add-to-cart` to verify the full test suite.
+- Run `/theshop.verify add-to-cart` to smoke-test the feature against the running app (user-facing features).
 - Run `/theshop.review add-to-cart` for quality + security review.
+- Run `/theshop.document` to add XML doc comments once the code is final.
 
 ## 8. Acceptance Criteria → Task Mapping
 
@@ -399,6 +403,8 @@ CREATE POLICY "carts_admin_select" ON carts
 
 ---
 **Status:** Draft · **Spec:** `.claude/specs/{file_name}.md` · **Created:** {YYYY-MM-DD}
+
+<!-- Status lifecycle: "Draft" → "Resolved" once /theshop.resolve settles every ❓ open question and ratifies every 📌 assumption in Section 11 (accepted ⚠️ risks may remain, labeled). /theshop.implement warns while the plan is still Draft. -->
 ```
 
 ---

@@ -42,6 +42,25 @@ Do not invoke the reviewers on an empty diff.
 
 If a diff exists, briefly note what files are changing (output of `git diff --name-only` and `git diff --staged --name-only`) so the user can confirm scope before the reviewers start. One line each, no commentary.
 
+### Pre-flight — French localization completeness (gate)
+
+The Shop is a bilingual Canadian product: every user-facing string added in English must have a real French translation. The plan stage seeds French keys as `[TODO]` placeholders on the first pass — this gate is what stops those placeholders from silently shipping.
+
+Run the check (do **not** halt — record the result and carry it into the report):
+
+1. From the diff, collect every resource key **added or modified** in `src/TheShop.Web/Resources/Strings.resx` (the `name="..."` of each changed `<data>` entry).
+2. For each such key, inspect the same key in `src/TheShop.Web/Resources/Strings.fr.resx`. A key **fails** the gate if its French entry is **missing**, **empty**, or still contains the literal placeholder `[TODO]`.
+
+   ```bash
+   git diff -- src/TheShop.Web/Resources/Strings.fr.resx
+   ```
+   (Also scan the current `Strings.fr.resx` for `[TODO]` among the feature's keys, in case the placeholder predates this diff.)
+3. **Result handling:**
+   - **No untranslated keys** → record "Localization: ✅ all feature keys translated" and proceed normally.
+   - **One or more untranslated keys** → this is a **blocking** finding. Record each failing key. It becomes a mandatory item in the Combined Action Plan under **Must fix before committing**, and it forces the overall verdict to 🔴 **CHANGES REQUESTED** regardless of what the two reviewers find. Untranslated user-facing strings are a ship-blocker, not a suggestion.
+
+This gate is independent of the two reviewers — it runs whether or not they surface anything.
+
 ---
 
 ## Step 1 — Parallel review
@@ -104,6 +123,7 @@ Produce the report in **exactly** this structure. No prose around it.
 - Files changed: {N} ({list from `git diff --name-only`})
 - Spec: `.claude/specs/$ARGUMENTS.md` ✅
 - Reviewers run: `shop-code-security-reviewer`, `shop-code-quality-review` (parallel)
+- Localization (French): {✅ all feature keys translated / 🔴 {N} key(s) untranslated — see action plan}
 
 ---
 
@@ -125,7 +145,12 @@ Produce the report in **exactly** this structure. No prose around it.
 
 ### Must fix before committing
 
-1. **🚨 [Security – Critical]** `{file:line}` — {one-line title}
+1. **🌐 [Localization – Blocking]** `Strings.fr.resx` — {N} feature key(s) untranslated: {list keys}
+   - Why: bilingual (FR) coverage is a product/legal requirement; `[TODO]`/empty French strings would ship to users.
+   - Action: add real French translations for the listed keys in `src/TheShop.Web/Resources/Strings.fr.resx`.
+   *(Include this item only when the localization pre-flight failed. It always sits at the top of "Must fix".)*
+
+2. **🚨 [Security – Critical]** `{file:line}` — {one-line title}
    - Why: {one sentence}
    - Action: {one sentence}
 
@@ -166,11 +191,11 @@ Pick the verdict using only these rules — no judgment calls:
 
 | Condition | Verdict |
 |---|---|
-| Any 🚨 Critical security finding, OR any ⚠️ Important security finding, OR any 💡 Quality "Worth improving" finding | 🔴 **CHANGES REQUESTED** |
+| Any untranslated French feature key (localization pre-flight failed), OR any 🚨 Critical security finding, OR any ⚠️ Important security finding, OR any 💡 Quality "Worth improving" finding | 🔴 **CHANGES REQUESTED** |
 | No items above, BUT at least one unmarked security finding, OR at least one 🌱 Quality "Polish" item | 🟡 **APPROVED WITH SUGGESTIONS** |
 | Nothing in any "must fix" or "worth addressing" bucket — only ✅ Doing well | ✅ **APPROVED** |
 
-Critically: even one critical security finding overrides everything else and forces 🔴 — regardless of how many ✅ items the reviewers found.
+Critically: even one critical security finding — or a single untranslated French feature key — overrides everything else and forces 🔴, regardless of how many ✅ items the reviewers found.
 
 ---
 

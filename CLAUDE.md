@@ -35,17 +35,19 @@ Architecture and design rules live in the `theshop.constitution` skill. Load it 
 
 ## Spec-Driven Development pipeline
 
-The end-to-end flow for a new feature. Each step is one slash command:
+The end-to-end flow for a new feature. Each step is one slash command, run in this order:
 
 | Step | Command | What it does |
 |---|---|---|
 | 1. Spec | `/theshop.spec <feature>` | Non-technical product spec (WHAT/WHY) → `.claude/specs/{feature}.md` |
-| 1b. Clarify | `/theshop.clarify <feature>` | Resolves open assumptions in the spec, one decision at a time |
-| 2. Plan | `/theshop.plan <feature>` | Technical implementation plan (HOW), Figma-aware → `.claude/plans/{feature}.md` |
-| 3. Implement | `/theshop.implement <feature>` | Orchestrates four layer-scoped sub-agents (Domain → Application → Infra ‖ Web → documenter) with build gates and API handoff between phases |
-| 4. Document (standalone) | `/theshop.document` | Adds XML doc comments to the current diff. Auto-runs as Phase 4 of `/theshop.implement`; use standalone for manual changes |
-| 5. Test | `/theshop.test <feature>` | `shop-test-writer` generates tests from spec → `shop-test-runner` executes them |
-| 6. Review | `/theshop.review <feature>` | Parallel security + quality review with approval-gated fix-up |
+| 2. Clarify | `/theshop.clarify <feature>` | Resolves open assumptions in the **spec**, one decision at a time → flips spec Status to `Confirmed` |
+| 3. Plan | `/theshop.plan <feature>` | Technical implementation plan (HOW), Figma-aware → `.claude/plans/{feature}.md` |
+| 4. Resolve | `/theshop.resolve <feature>` | Resolves the **plan's** open questions / risks / assumptions (Section 11), one decision at a time → flips plan Status to `Resolved` |
+| 5. Implement | `/theshop.implement <feature>` | Orchestrates four layer-scoped sub-agents (Domain → Application → Infra ‖ Web) with build gates and API handoff between phases |
+| 6. Test | `/theshop.test <feature>` | `shop-test-writer` generates tests from spec → `shop-test-runner` executes them |
+| 7. Verify (E2E) | `/theshop.verify <feature>` | Builds and runs the app, then smoke-checks each acceptance criterion against the running feature. **User-facing features only** — skipped for backend-only work. |
+| 8. Review | `/theshop.review <feature>` | Parallel security + quality review (includes a French-localization completeness gate) with approval-gated fix-up |
+| 9. Document | `/theshop.document` | Adds XML doc comments to the current diff. **Run manually** when you're ready to document the finished code — it does not auto-run. |
 
 Formatting is automatic: a `Stop` hook in `.claude/settings.json` runs `dotnet format` whenever a turn ended with `.cs` or `.razor` changes in the diff. No manual step.
 

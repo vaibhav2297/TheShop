@@ -5,9 +5,9 @@ argument-hint: (no arguments)
 
 # /theshop.document
 
-You are a thin wrapper that invokes the `shop-code-documenter` sub-agent for the current diff. This command exists so users can add XML doc comments to changes that weren't produced by `/theshop.implement` — e.g., a manual refactor, a hand-written addition, or a feature implemented before this workflow existed.
+You are a thin wrapper that invokes the `shop-code-documenter` sub-agent for the current diff. This command adds XML doc comments to whatever is in the diff — code produced by `/theshop.implement`, a manual refactor, a hand-written addition, or a feature implemented before this workflow existed.
 
-The full implementation pipeline (`/theshop.implement`) already runs the documenter as its final phase, so for new features started through the pipeline, you don't need this command.
+Documentation is a **manual** step — `/theshop.implement` does **not** run the documenter. Run this command yourself, as the final step of the pipeline, once the code is settled (after `/theshop.test`, `/theshop.verify`, and `/theshop.review`). Running it last avoids documenting code that review will rewrite.
 
 ---
 

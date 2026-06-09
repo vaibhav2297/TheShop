@@ -1,5 +1,5 @@
 ---
-description: Implement a feature across all four layers using a sequence of layer-scoped sub-agents (Domain → Application → Infrastructure ‖ Web → documenter), with build gates between layers and produced-API handoff so each layer builds on the literal output of the previous one.
+description: Implement a feature across all four layers using a sequence of layer-scoped sub-agents (Domain → Application → Infrastructure ‖ Web), with build gates between layers and produced-API handoff so each layer builds on the literal output of the previous one.
 argument-hint: <feature-name>
 ---
 
@@ -7,9 +7,9 @@ argument-hint: <feature-name>
 
 **Feature requested:** `$ARGUMENTS`
 
-You are the orchestrator for the layered implementation workflow on **The Shop** project. You do not write production code, run database migrations, or fetch Figma nodes yourself — you delegate to five specialist sub-agents in a specific order, you enforce build gates between them, and you pass each layer's produced API to the next layer as a literal handoff.
+You are the orchestrator for the layered implementation workflow on **The Shop** project. You do not write production code, run database migrations, or fetch Figma nodes yourself — you delegate to four specialist sub-agents in a specific order, you enforce build gates between them, and you pass each layer's produced API to the next layer as a literal handoff.
 
-This command produces working code across Domain, Application, Infrastructure, and Web; applies the database migration; and finishes with XML doc comments. A Stop hook (configured separately in `.claude/settings.json`) runs `dotnet format` after your turn ends.
+This command produces working code across Domain, Application, Infrastructure, and Web, and applies the database migration. It does **not** add XML doc comments — documentation is a separate, manually-run step (`/theshop.document`). A Stop hook (configured separately in `.claude/settings.json`) runs `dotnet format` after your turn ends.
 
 ---
 
@@ -31,7 +31,17 @@ Run these in order. A failure halts the whole flow.
 
 Check `.claude/plans/$ARGUMENTS.md` exists. If not, halt:
 
-> "I couldn't find a plan at `.claude/plans/$ARGUMENTS.md`. Implementation works from a plan — please run `/create-plan $ARGUMENTS` first."
+> "I couldn't find a plan at `.claude/plans/$ARGUMENTS.md`. Implementation works from a plan — please run `/theshop.plan $ARGUMENTS` first."
+
+### Pre-flight 1b — Plan should be resolved (warn, not a hard gate)
+
+Read the plan's **Status** footer and its **Section 11 (Open Questions, Risks & Assumptions)**. The plan is ready to build when its Status reads `Resolved` and Section 11 has no unresolved `❓ Open question` items. (A documented `⚠️ Risk` marked `✅ Accepted` or carrying a mitigation is fine — accepted risks do not block.)
+
+If the Status still reads `Draft`, **or** Section 11 still contains an unresolved `❓ Open question`, warn the user — do not silently build on unconfirmed decisions:
+
+> "Heads up: the plan for `$ARGUMENTS` isn't resolved yet (Status: Draft / {N} open question(s) in Section 11). Building on unresolved questions risks rework. Run `/theshop.resolve $ARGUMENTS` first, or reply `proceed` to build on the logged assumptions as-is."
+
+Proceed only on the user's explicit go-ahead. This mirrors how `/theshop.plan` warns when a spec is still `Draft` — it's a soft gate, not a halt.
 
 ### Pre-flight 2 — Solution must build clean before we start
 
@@ -137,23 +147,11 @@ If the solution build fails despite both layer builds passing, you have a cross-
 
 ---
 
-## Phase 4 — Documentation (sequential)
-
-Invoke `shop-code-documenter` via the Task tool, `subagent_type: shop-code-documenter`. Prompt:
-
-> "Add XML doc comments to the recently changed code from this `/theshop.implement $ARGUMENTS` run. Use the current `git diff` (uncommitted + staged) as your scope. Follow your standard protocol per `references/rules/documentation.md`."
-
-Wait for completion.
-
-### Phase 4 build gate
-
-Doc edits shouldn't break a build, but a typo in `<see cref="..."/>` can. Verify the documenter's summary reports a clean build. If not, re-invoke once with errors quoted; halt on second failure (template C).
-
----
-
-## Phase 5 — Format (runs automatically after your turn)
+## Phase 4 — Format (runs automatically after your turn)
 
 You do not run `dotnet format` yourself. A `Stop` hook configured in `.claude/settings.json` runs `dotnet format` once your turn ends. Mention this in the final output so the user understands why a formatting commit may appear.
+
+> **XML documentation is not part of this command.** Documenting the code is a separate, manually-run step. Do **not** invoke `shop-code-documenter` from here — point the user at `/theshop.document` in the Next steps instead.
 
 ---
 
@@ -185,8 +183,7 @@ Always produce one of these three templates verbatim. No extra prose.
 | 2. Application | shop-application-implementer | ✅ |
 | 3a. Infrastructure | shop-infra-implementer | ✅ |
 | 3b. Web | shop-ui-implementer | ✅ |
-| 4. Documentation | shop-code-documenter | ✅ |
-| 5. Format (Stop hook) | `dotnet format` | will run when this turn ends |
+| 4. Format (Stop hook) | `dotnet format` | will run when this turn ends |
 
 ## Files changed
 
@@ -196,7 +193,6 @@ Always produce one of these three templates verbatim. No extra prose.
 - **Application:** `src/TheShop.Application/Features/Cart/...`, `src/TheShop.Web/Resources/Strings.resx` (keys added)
 - **Infrastructure:** `src/TheShop.Infrastructure/Persistence/...`
 - **Web:** `src/TheShop.Web/Pages/Cart/...`, `src/TheShop.Web/Common/Routes.cs`, …
-- **Docs:** XML comments added to {N} files across all layers.
 
 ## Migrations applied
 
@@ -218,7 +214,9 @@ Always produce one of these three templates verbatim. No extra prose.
 
 1. `dotnet format` will run automatically when this turn ends (Stop hook).
 2. Run `/theshop.test $ARGUMENTS` to generate and execute tests.
-3. Run `/theshop.review $ARGUMENTS` for parallel quality + security review.
+3. Run `/theshop.verify $ARGUMENTS` to smoke-test the feature against the running app (user-facing features).
+4. Run `/theshop.review $ARGUMENTS` for parallel quality + security review.
+5. Run `/theshop.document` manually to add XML doc comments once the code is final.
 ```
 
 ### Template B — Halted on open question
