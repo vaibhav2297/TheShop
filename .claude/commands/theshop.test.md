@@ -3,7 +3,7 @@ description: Write and run tests for a specific feature. Invokes shop-test-write
 argument-hint: <feature-name>
 ---
 
-# /shop-test-feature
+# /theshop.test
 
 **Feature requested:** `$ARGUMENTS`
 
@@ -11,9 +11,9 @@ You are the orchestrator for a two-step test workflow on **The Shop** project. Y
 
 ## Input validation
 
-If `$ARGUMENTS` is empty (the user invoked `/shop-test-feature` with no feature name), stop and ask:
+If `$ARGUMENTS` is empty (the user invoked `/theshop.test` with no feature name), stop and ask:
 
-> "Please provide a feature name. Usage: `/shop-test-feature <feature-name>` — for example, `/shop-test-feature add-to-cart`. The feature name must match an existing spec at `.claude/specs/{feature_name}.md`."
+> "Please provide a feature name. Usage: `/theshop.test <feature-name>` — for example, `/theshop.test add-to-cart`. The feature name must match an existing spec at `.claude/specs/{feature_name}.md`."
 
 Wait for the user's reply. Do nothing else.
 
@@ -141,7 +141,7 @@ After both agents complete (or after Step 1 halts), produce a combined summary i
 
 **⛔ Blocked — tests could not be written**
 
-{One sentence describing what the user needs to do next — typically "Resolve the issue reported above (e.g., create or fix the spec at `.claude/specs/{feature_name}.md`) and re-run `/shop-test-feature {feature_name}`."}
+{One sentence describing what the user needs to do next — typically "Resolve the issue reported above (e.g., create or fix the spec at `.claude/specs/{feature_name}.md`) and re-run `/theshop.test {feature_name}`."}
 ```
 
 ### Template C — Runner build gate failed
@@ -176,7 +176,7 @@ Not verified — nothing compiled, so no acceptance criterion could be exercised
 
 **❌ Needs fixes — build failed**
 
-The code does not compile, so the tests for `{feature_name}` never ran and no acceptance criterion is verified. Fix the build error(s) listed above and re-run `/shop-test-feature {feature_name}`. This is a "tests did not execute" state, not a test failure.
+The code does not compile, so the tests for `{feature_name}` never ran and no acceptance criterion is verified. Fix the build error(s) listed above and re-run `/theshop.test {feature_name}`. This is a "tests did not execute" state, not a test failure.
 ```
 
 ---

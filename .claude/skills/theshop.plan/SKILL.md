@@ -308,8 +308,8 @@ Result<CartDto> returned to ProductDetail.razor → CartState updated → UI re-
 - Write bUnit component tests.
 
 ### Phase 5 — End-to-end & polish
-- Run `/shop-test-feature add-to-cart` to verify the full test suite.
-- Run `/shop-code-review-feature add-to-cart` for quality + security review.
+- Run `/theshop.test add-to-cart` to verify the full test suite.
+- Run `/theshop.review add-to-cart` for quality + security review.
 
 ## 8. Acceptance Criteria → Task Mapping
 

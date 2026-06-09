@@ -269,7 +269,7 @@ Result<SessionDto> → page updates AuthState, persists session via LocalStorage
 
 - Manual happy-path verification using a Supabase dev project: sign-up → email arrives in both languages → enter code → land on `/account`; sign-out → sign-in → land on `/account`.
 - Manual verification of every spec Edge Case (existing email, no-account email, under-19, wrong code, expired code, lockout, premature resend).
-- `/shop-test-feature authentication` then `/shop-code-review-feature authentication`.
+- `/theshop.test authentication` then `/theshop.review authentication`.
 - Wire the FR translations in `Strings.fr.resx` (or hand off to translator with key list).
 
 ## 8. Acceptance Criteria → Task Mapping

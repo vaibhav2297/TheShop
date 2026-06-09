@@ -42,10 +42,10 @@ The end-to-end flow for a new feature. Each step is one slash command:
 | 1. Spec | `/theshop.spec <feature>` | Non-technical product spec (WHAT/WHY) → `.claude/specs/{feature}.md` |
 | 1b. Clarify | `/theshop.clarify <feature>` | Resolves open assumptions in the spec, one decision at a time |
 | 2. Plan | `/theshop.plan <feature>` | Technical implementation plan (HOW), Figma-aware → `.claude/plans/{feature}.md` |
-| 3. Implement | `/shop-implement-feature <feature>` | Orchestrates four layer-scoped sub-agents (Domain → Application → Infra ‖ Web → documenter) with build gates and API handoff between phases |
-| 4. Document (standalone) | `/shop-document-feature` | Adds XML doc comments to the current diff. Auto-runs as Phase 4 of `/shop-implement-feature`; use standalone for manual changes |
-| 5. Test | `/shop-test-feature <feature>` | `shop-test-writer` generates tests from spec → `shop-test-runner` executes them |
-| 6. Review | `/shop-code-review-feature <feature>` | Parallel security + quality review with approval-gated fix-up |
+| 3. Implement | `/theshop.implement <feature>` | Orchestrates four layer-scoped sub-agents (Domain → Application → Infra ‖ Web → documenter) with build gates and API handoff between phases |
+| 4. Document (standalone) | `/theshop.document` | Adds XML doc comments to the current diff. Auto-runs as Phase 4 of `/theshop.implement`; use standalone for manual changes |
+| 5. Test | `/theshop.test <feature>` | `shop-test-writer` generates tests from spec → `shop-test-runner` executes them |
+| 6. Review | `/theshop.review <feature>` | Parallel security + quality review with approval-gated fix-up |
 
 Formatting is automatic: a `Stop` hook in `.claude/settings.json` runs `dotnet format` whenever a turn ended with `.cs` or `.razor` changes in the diff. No manual step.
 

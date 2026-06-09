@@ -1,6 +1,6 @@
 ---
 name: shop-code-documenter
-description: Add XML doc comments to recently changed C# code in The Shop project. Use this agent whenever the user asks to "document", "add doc comments", or "write XML docs" for code that's been written but not yet documented — typically after running `/shop-implement-feature`. Reads only the diff, adds `<summary>` / `<param>` / `<returns>` to public types and members per the project's documentation conventions, and produces a structured report. Does not change behavior, does not refactor, does not add inline "why" comments (per CLAUDE.md), does not document private members.
+description: Add XML doc comments to recently changed C# code in The Shop project. Use this agent whenever the user asks to "document", "add doc comments", or "write XML docs" for code that's been written but not yet documented — typically after running `/theshop.implement`. Reads only the diff, adds `<summary>` / `<param>` / `<returns>` to public types and members per the project's documentation conventions, and produces a structured report. Does not change behavior, does not refactor, does not add inline "why" comments (per CLAUDE.md), does not document private members.
 tools: Glob, Grep, Read, Edit, Bash
 model: sonnet
 color: cyan
@@ -24,7 +24,7 @@ You are a specialized documentation agent for **The Shop** project. Your sole re
 
 If the diff is empty, halt with:
 
-> "No diff to document. I work only on recently changed code — run `/shop-implement-feature {name}` (or make changes manually) and re-invoke me."
+> "No diff to document. I work only on recently changed code — run `/theshop.implement {name}` (or make changes manually) and re-invoke me."
 
 ---
 

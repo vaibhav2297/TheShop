@@ -3,7 +3,7 @@ description: Implement a feature across all four layers using a sequence of laye
 argument-hint: <feature-name>
 ---
 
-# /shop-implement-feature
+# /theshop.implement
 
 **Feature requested:** `$ARGUMENTS`
 
@@ -17,7 +17,7 @@ This command produces working code across Domain, Application, Infrastructure, a
 
 If `$ARGUMENTS` is empty, stop and ask:
 
-> "Please provide a feature name. Usage: `/shop-implement-feature <feature-name>` — for example, `/shop-implement-feature add-to-cart`. The feature name must match an existing plan at `.claude/plans/{feature_name}.md`."
+> "Please provide a feature name. Usage: `/theshop.implement <feature-name>` — for example, `/theshop.implement add-to-cart`. The feature name must match an existing plan at `.claude/plans/{feature_name}.md`."
 
 Wait for the reply. Do nothing else.
 
@@ -141,7 +141,7 @@ If the solution build fails despite both layer builds passing, you have a cross-
 
 Invoke `shop-code-documenter` via the Task tool, `subagent_type: shop-code-documenter`. Prompt:
 
-> "Add XML doc comments to the recently changed code from this `/shop-implement-feature $ARGUMENTS` run. Use the current `git diff` (uncommitted + staged) as your scope. Follow your standard protocol per `references/rules/documentation.md`."
+> "Add XML doc comments to the recently changed code from this `/theshop.implement $ARGUMENTS` run. Use the current `git diff` (uncommitted + staged) as your scope. Follow your standard protocol per `references/rules/documentation.md`."
 
 Wait for completion.
 
@@ -217,8 +217,8 @@ Always produce one of these three templates verbatim. No extra prose.
 ## Next steps
 
 1. `dotnet format` will run automatically when this turn ends (Stop hook).
-2. Run `/shop-test-feature $ARGUMENTS` to generate and execute tests.
-3. Run `/shop-code-review-feature $ARGUMENTS` for parallel quality + security review.
+2. Run `/theshop.test $ARGUMENTS` to generate and execute tests.
+3. Run `/theshop.review $ARGUMENTS` for parallel quality + security review.
 ```
 
 ### Template B — Halted on open question
@@ -243,7 +243,7 @@ Always produce one of these three templates verbatim. No extra prose.
 
 ## Next step
 
-Answer the question, then re-invoke `/shop-implement-feature $ARGUMENTS`. The completed phases' output is preserved — the next run continues from where this one stopped.
+Answer the question, then re-invoke `/theshop.implement $ARGUMENTS`. The completed phases' output is preserved — the next run continues from where this one stopped.
 ```
 
 ### Template C — Halted on hard failure
@@ -275,5 +275,5 @@ Answer the question, then re-invoke `/shop-implement-feature $ARGUMENTS`. The co
 
 ## Next step
 
-Resolve the failure manually (read the agent's full output above for context), then re-invoke `/shop-implement-feature $ARGUMENTS` to continue from the failing phase, or run the specific layer agent directly if you only need to re-do one step.
+Resolve the failure manually (read the agent's full output above for context), then re-invoke `/theshop.implement $ARGUMENTS` to continue from the failing phase, or run the specific layer agent directly if you only need to re-do one step.
 ```

@@ -3,7 +3,7 @@ description: Run security and quality review on the current diff in parallel for
 argument-hint: <feature-name>
 ---
 
-# /shop-code-review-feature
+# /theshop.review
 
 **Feature requested:** `$ARGUMENTS`
 
@@ -13,9 +13,9 @@ You are orchestrating a parallel two-agent code review on **The Shop** project. 
 
 ## Input validation
 
-If `$ARGUMENTS` is empty (the user invoked `/shop-code-review-feature` with no feature name), stop and ask:
+If `$ARGUMENTS` is empty (the user invoked `/theshop.review` with no feature name), stop and ask:
 
-> "Please provide a feature name. Usage: `/shop-code-review-feature <feature-name>` — for example, `/shop-code-review-feature add-to-cart`."
+> "Please provide a feature name. Usage: `/theshop.review <feature-name>` — for example, `/theshop.review add-to-cart`."
 
 Wait for the reply. Do nothing else.
 
@@ -214,7 +214,7 @@ When implementation is finished, produce a short summary:
 **Skipped (needs your input):**
 - ⏭️ Action #N: `{file:line}` — {why I stopped: design decision, ambiguous scope, etc.}
 
-**Next step:** Re-run `/shop-code-review-feature $ARGUMENTS` to verify the fixes, or `/shop-test-feature $ARGUMENTS` to make sure nothing broke.
+**Next step:** Re-run `/theshop.review $ARGUMENTS` to verify the fixes, or `/theshop.test $ARGUMENTS` to make sure nothing broke.
 ```
 
 ---

@@ -1,13 +1,13 @@
 ---
-description: Add XML doc comments to the current diff using the shop-code-documenter sub-agent. Standalone wrapper for users who want to document existing changes without running the full /shop-implement-feature flow.
+description: Add XML doc comments to the current diff using the shop-code-documenter sub-agent. Standalone wrapper for users who want to document existing changes without running the full /theshop.implement flow.
 argument-hint: (no arguments)
 ---
 
-# /shop-document-feature
+# /theshop.document
 
-You are a thin wrapper that invokes the `shop-code-documenter` sub-agent for the current diff. This command exists so users can add XML doc comments to changes that weren't produced by `/shop-implement-feature` — e.g., a manual refactor, a hand-written addition, or a feature implemented before this workflow existed.
+You are a thin wrapper that invokes the `shop-code-documenter` sub-agent for the current diff. This command exists so users can add XML doc comments to changes that weren't produced by `/theshop.implement` — e.g., a manual refactor, a hand-written addition, or a feature implemented before this workflow existed.
 
-The full implementation pipeline (`/shop-implement-feature`) already runs the documenter as its final phase, so for new features started through the pipeline, you don't need this command.
+The full implementation pipeline (`/theshop.implement`) already runs the documenter as its final phase, so for new features started through the pipeline, you don't need this command.
 
 ---
 
