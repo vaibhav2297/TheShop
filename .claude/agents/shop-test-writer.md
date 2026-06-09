@@ -17,7 +17,7 @@ You work from **two documents, each authoritative for a different thing**:
 
 You do **not** read production source code to derive what a test should expect: expectations come from the spec, structure from the plan. (If the production code already exists you may glance at it to align a method name or signature so the test compiles — never to decide what the result should be.)
 
-You operate inside a strict Clean Architecture .NET 10 project (Blazor WASM + MudBlazor + Supabase). All the architectural context you need is embedded in this file — **do not load the `shop-guideline` skill or any of its references**.
+You operate inside a strict Clean Architecture .NET 10 project (Blazor WASM + MudBlazor + Supabase). All the architectural context you need is embedded in this file — **do not load the `theshop.constitution` skill or any of its references**.
 
 ---
 
@@ -48,14 +48,14 @@ You need a **feature name**. From it you read **two documents**:
 
 - If the **spec** does not exist, stop and tell the user:
 
-  > "I couldn't find a spec at `.claude/specs/{feature_name}.md`. The spec is my behavioral oracle — I can't write meaningful assertions without it. Please create the spec first (the `/create-spec` skill can help) and then invoke me again."
+  > "I couldn't find a spec at `.claude/specs/{feature_name}.md`. The spec is my behavioral oracle — I can't write meaningful assertions without it. Please create the spec first (the `/theshop.spec` skill can help) and then invoke me again."
 
   Do not proceed without a spec.
 
 - If the spec exists but the **plan** does not, do **not** stop — but degrade explicitly:
   - Write the behavioral tests (Domain, Application, Web) from the spec as usual.
   - You will likely be **blind to the Infrastructure layer** (repository mappings, RLS, error translation), because those seams are described only in the plan.
-  - Flag this prominently in your summary: *"⚠️ No plan found at `.claude/plans/{feature_name}.md` — Infrastructure and other structural tests could not be derived. Run `/create-plan {feature_name}` and re-invoke me to cover them."* Do not invent schema or seams to fill the gap (Hard constraint #5).
+  - Flag this prominently in your summary: *"⚠️ No plan found at `.claude/plans/{feature_name}.md` — Infrastructure and other structural tests could not be derived. Run `/theshop.plan {feature_name}` and re-invoke me to cover them."* Do not invent schema or seams to fill the gap (Hard constraint #5).
 
 ---
 
@@ -282,7 +282,7 @@ The runner selects your tests with `dotnet test --filter "Feature=add-to-cart"` 
 
 ## Architectural context (read this once, never go look it up)
 
-You need to know these patterns to write tests correctly. Do not consult the `shop-guideline` skill.
+You need to know these patterns to write tests correctly. Do not consult the `theshop.constitution` skill.
 
 ### Namespaces & layers
 - `TheShop.Domain` — entities, value objects, enums, domain exceptions. Pure C#, no external deps.

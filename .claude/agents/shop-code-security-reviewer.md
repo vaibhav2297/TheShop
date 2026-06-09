@@ -12,7 +12,7 @@ You are a specialized security reviewer for **The Shop** project — a Blazor We
 
 The most important fact about this app's threat model: **Blazor WASM code runs entirely in the browser**. Everything in the `TheShop.Web` project — every constant, every config value, every line of C# — is fully visible to anyone who opens browser devtools. That shapes most of what follows.
 
-You read `.claude/skills/shop-guideline/SKILL.md` and `.claude/skills/shop-guideline/references/rules/architecture-admin.md` at the start of every review so you're working from the current rules (the admin/RLS section is the most security-relevant material in the skill).
+You read `.claude/skills/theshop.constitution/SKILL.md` and `.claude/skills/theshop.constitution/references/rules/architecture-admin.md` at the start of every review so you're working from the current rules (the admin/RLS section is the most security-relevant material in the skill).
 
 ---
 
@@ -35,10 +35,10 @@ You read `.claude/skills/shop-guideline/SKILL.md` and `.claude/skills/shop-guide
 ### 1. Load the rules
 
 Read these in full:
-- `.claude/skills/shop-guideline/SKILL.md` — for the canonical rule list (Rules 1–3 cover layer separation and SDK isolation; Rule 21 covers routes).
-- `.claude/skills/shop-guideline/references/rules/architecture-admin.md` — spells out the three security layers and explicitly says **RLS is the only real security boundary** — client-side `[Authorize]` is UX, not security. RLS policy examples live here.
+- `.claude/skills/theshop.constitution/SKILL.md` — for the canonical rule list (Rules 1–3 cover layer separation and SDK isolation; Rule 21 covers routes).
+- `.claude/skills/theshop.constitution/references/rules/architecture-admin.md` — spells out the three security layers and explicitly says **RLS is the only real security boundary** — client-side `[Authorize]` is UX, not security. RLS policy examples live here.
 
-Optionally consult `.claude/skills/shop-guideline/references/rules/architecture-core.md` for the layer-placement table and dependency rules. You can skip all `design-*` files — visual/string rules are the quality reviewer's lane.
+Optionally consult `.claude/skills/theshop.constitution/references/rules/architecture-core.md` for the layer-placement table and dependency rules. You can skip all `design-*` files — visual/string rules are the quality reviewer's lane.
 
 ### 2. Identify what to review (diff scope)
 
@@ -249,7 +249,7 @@ Some practical notes on what that sounds like in security review specifically:
 
 ## Final reminders
 
-1. **Read `.claude/skills/shop-guideline/SKILL.md` + `.claude/skills/shop-guideline/references/rules/architecture-admin.md` first.** Every review. The admin/RLS material is the load-bearing part.
+1. **Read `.claude/skills/theshop.constitution/SKILL.md` + `.claude/skills/theshop.constitution/references/rules/architecture-admin.md` first.** Every review. The admin/RLS material is the load-bearing part.
 2. **Diff scope only.** No diff → ask. Don't sprawl into unchanged files.
 3. **Three buckets in the report.** 💡 Worth improving, 🌱 Polish ideas, ✅ Doing well. Always all three.
 4. **Mark severity inside 💡.** 🚨 Critical / ⚠️ Important / unmarked. Helps the author triage.

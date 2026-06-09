@@ -57,22 +57,22 @@ Open `.claude/plans/{feature_name}.md`. Extract:
 - **Section 9 — Validation & Error Handling.** Error keys you'll surface via `Snackbar` or `MudAlert`.
 - **Figma references** (file URL + per-component node IDs + visual intent). These are non-negotiable inputs.
 
-### 2. Load the `shop-guideline` skill
+### 2. Load the `theshop.constitution` skill
 
-The architecture and design rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
+The architecture and design rules live behind the `theshop.constitution` skill. **Delegate to the skill instead of memorizing the rules here.**
 
-1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
+1. Read `.claude/skills/theshop.constitution/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
 2. Load these references directly — they are pre-targeted for Web work:
-   - **`.claude/skills/shop-guideline/references/rules/design-theme.md`** — colour priority, `ShopColors` / `ShopIcons` / `ShopTypography` / `ShopTheme` structure, `fs-*` / `fw-*` typography utilities, imagery rules. Always required.
-   - **`.claude/skills/shop-guideline/references/rules/design-components.md`** — extract vs inline decision rules, `MudComponentBase` + `Class`/`Style` forwarding (Pattern A / Pattern B), per-MudBlazor-component rules, busy-state surface, code-behind separation. Always required.
-   - **`.claude/skills/shop-guideline/references/rules/design-strings.md`** — `Strings.{Key}` typed accessor, `Localizer[runtime]` indexer, resource key naming. Always required for user-facing text.
-   - **`.claude/skills/shop-guideline/references/rules/design-styles.md`** — CSS class vs inline `Style` priority, `CssBuilder` / `StyleBuilder`, SCSS folder layout. Required if the feature touches CSS/SCSS.
-   - **`.claude/skills/shop-guideline/references/rules/architecture-core.md`** — Layer 4 (Web) folder structure, cross-cutting Web-only primitives (`BusyState`, `Routes`).
-   - **`.claude/skills/shop-guideline/references/rules/architecture-admin.md`** — only if the feature is admin-facing (`_Imports.razor`, `AdminLayout`, `AuthorizeView`).
-   - **`.claude/skills/shop-guideline/references/examples/web-page.md`** — canonical `.razor` + `.razor.cs` page pattern.
-   - **`.claude/skills/shop-guideline/references/examples/web-component.md`** — canonical reusable component using `MudComponentBase` + Pattern B builders.
-3. Do **not** load `.claude/skills/shop-guideline/references/rules/documentation.md` — XML doc comments are the `shop-code-documenter` agent's job. Do **not** load `.claude/skills/shop-guideline/references/rules/architecture-patterns.md` — that's an Application/Infrastructure concern.
-4. Before declaring the task complete, run **`.claude/skills/shop-guideline/references/checklists/design.md`** against your output.
+   - **`.claude/skills/theshop.constitution/references/rules/design-theme.md`** — colour priority, `ShopColors` / `ShopIcons` / `ShopTypography` / `ShopTheme` structure, `fs-*` / `fw-*` typography utilities, imagery rules. Always required.
+   - **`.claude/skills/theshop.constitution/references/rules/design-components.md`** — extract vs inline decision rules, `MudComponentBase` + `Class`/`Style` forwarding (Pattern A / Pattern B), per-MudBlazor-component rules, busy-state surface, code-behind separation. Always required.
+   - **`.claude/skills/theshop.constitution/references/rules/design-strings.md`** — `Strings.{Key}` typed accessor, `Localizer[runtime]` indexer, resource key naming. Always required for user-facing text.
+   - **`.claude/skills/theshop.constitution/references/rules/design-styles.md`** — CSS class vs inline `Style` priority, `CssBuilder` / `StyleBuilder`, SCSS folder layout. Required if the feature touches CSS/SCSS.
+   - **`.claude/skills/theshop.constitution/references/rules/architecture-core.md`** — Layer 4 (Web) folder structure, cross-cutting Web-only primitives (`BusyState`, `Routes`).
+   - **`.claude/skills/theshop.constitution/references/rules/architecture-admin.md`** — only if the feature is admin-facing (`_Imports.razor`, `AdminLayout`, `AuthorizeView`).
+   - **`.claude/skills/theshop.constitution/references/examples/web-page.md`** — canonical `.razor` + `.razor.cs` page pattern.
+   - **`.claude/skills/theshop.constitution/references/examples/web-component.md`** — canonical reusable component using `MudComponentBase` + Pattern B builders.
+3. Do **not** load `.claude/skills/theshop.constitution/references/rules/documentation.md` — XML doc comments are the `shop-code-documenter` agent's job. Do **not** load `.claude/skills/theshop.constitution/references/rules/architecture-patterns.md` — that's an Application/Infrastructure concern.
+4. Before declaring the task complete, run **`.claude/skills/theshop.constitution/references/checklists/design.md`** against your output.
 
 ### 3. Fetch the Figma source-of-truth
 
@@ -190,11 +190,11 @@ End your response with this structured summary:
 ## Final reminders
 
 1. **The plan + Application DTOs + Figma are the contract.** No invention.
-2. **The `shop-guideline` skill is the rule contract.** When in doubt about layer placement, color hierarchy, CSS vs SCSS vs inline `Style`, reusable-component scaffolding, or any design rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
+2. **The `theshop.constitution` skill is the rule contract.** When in doubt about layer placement, color hierarchy, CSS vs SCSS vs inline `Style`, reusable-component scaffolding, or any design rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
 3. **Pages dispatch; they don't decide.** Business logic belongs in handlers.
 4. **MudBlazor only. `Shop*` tokens only. `Strings.X` only. `CssBuilder`/`StyleBuilder` only.** These are the lines that cannot be crossed.
 5. **No `<style>` blocks in `.razor`. No page-scoped `*.css`. No `MudTextField` `Label`. No `font-size`/`font-weight` inline styles.** Use SCSS utility classes (`fs-*`, `fw-*`) or add to the SCSS `$list` and let the `@each` loop generate the class.
 6. **Reusable components inherit `MudComponentBase` and forward `Class`/`Style`.** Otherwise the consumer can't customize them.
 7. **Match Figma.** Visual parity is the goal — that's the entire reason this agent exists separate from the others.
-8. **Build before reporting. Validate against Figma before reporting. Run `.claude/skills/shop-guideline/references/checklists/design.md` before reporting.**
+8. **Build before reporting. Validate against Figma before reporting. Run `.claude/skills/theshop.constitution/references/checklists/design.md` before reporting.**
 9. **Structured summary at the end is mandatory.**

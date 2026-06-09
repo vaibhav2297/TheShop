@@ -1,6 +1,6 @@
 ---
-name: create-spec
-description: Generate a non-technical specification document for a single feature and save it to `.claude/specs/{feature_name}.md`. The spec is product-level only — focused on WHAT the feature does and WHY it matters, never on HOW it's built. It contains six fixed sections: problem statement, functional requirements, functional behaviors, constraints, edge cases and error handling, and acceptance criteria. This skill is manually invoked only (typically via slash command) and requires a feature name from the user.
+name: theshop.spec
+description: Generate a non-technical specification document for a single feature and save it to `.claude/specs/{feature_name}.md`. The spec is product-level only — focused on WHAT the feature does and WHY it matters, never on HOW it's built. It contains six fixed numbered sections (problem statement, functional requirements, functional behaviors, constraints, edge cases and error handling, acceptance criteria), an In/Out of Scope block inside Section 1, and an Assumptions & Open Questions appendix that the `/theshop.clarify` skill later resolves. Blocking, load-bearing questions are asked up front; only cheap-to-change defaults are assumed and logged. This skill is manually invoked only (typically via slash command) and requires a feature name from the user.
 disable-model-invocation: true
 ---
 
@@ -58,11 +58,21 @@ Before writing, take a quick pass for context — but don't turn this into a lon
   - ✅ "Does this apply to logged-out users too, or only signed-in?"
   - ✅ "Should the cart persist across sessions?"
   - ❌ "Should we use localStorage or a backend session?" (that's HOW)
-- DO NOT make reasonable assumptions, stop, ask user and clarify.
+- **Classify every uncertainty before you resolve it — this is what decides whether you ask or assume:**
+  - **Blocking / load-bearing** — the answer changes the feature's identity or scope, or guessing wrong would be expensive to reverse (e.g., "guests vs. signed-in only?", "does this touch the admin panel?", "is age-gating in scope?"). **Stop and ask up front, before writing.** These are *never* allowed to become assumptions.
+  - **Resolvable default** — a sensible default exists and a wrong guess is cheap to change later (e.g., "cart persists 30 days for guests"). **Assume it, mark it inline with `(Assumption: …)`, and log it in the Assumptions & Open Questions appendix** so the user can ratify or override it. The `/theshop.clarify` skill walks that list.
+  - The test: *if getting it wrong would invalidate the spec, ask; if it would change one line later, assume-and-mark.* When genuinely in doubt, ask — the appendix is for cheap defaults, not for dodging hard questions.
+
+**Applicability checklist — consider each dimension; add a line only when it actually applies (don't force empty sections):**
+
+- **Roles / actors** — does behavior differ for guest vs. registered customer vs. admin? If so, name who can do what. (The Shop has a full admin panel — *who is allowed* is product-level, not just implementation.)
+- **Localization** — which languages must the UI support? For a premium Canadian shop, English **and** French is typically a product/legal requirement, not a detail. Note any locale-specific behavior (currency, tax wording, date/number formats).
+- **Accessibility** — are there WCAG-level expectations a tester could check by hand (keyboard-reachable, screen reader announces cart/checkout changes, visible focus)? Keep it user-observable, not technical.
+- **Scope boundaries** — what is explicitly **not** part of this feature? Capture it in the In Scope / Out of Scope block in Section 1. Undefined scope is the single biggest source of rework.
 
 ### 3. Write the spec using the template below
 
-Use the exact six-section structure. Do not add extra sections.
+Use the exact six numbered sections — don't add or drop a numbered section. The **In Scope / Out of Scope** block (inside Section 1) and the **Assumptions & Open Questions** appendix (below the status line) are part of the fixed template, not extra sections.
 
 ### 4. Save the file
 
@@ -72,9 +82,11 @@ Use the exact six-section structure. Do not add extra sections.
 
 ### 5. Confirm
 
-Report the saved path in one short sentence and offer to refine any section. Example:
+Report the saved path in one short sentence. If the spec has open assumptions, point the user at `/theshop.clarify`; otherwise just offer to refine. Examples:
 
-> "Saved to `.claude/specs/add-to-cart.md`. Want me to tighten any section?"
+> "Saved to `.claude/specs/add-to-cart.md` — 2 open assumptions logged. Run `/theshop.clarify add-to-cart` to resolve them, or tell me to tighten any section."
+
+> "Saved to `.claude/specs/add-to-cart.md` — no open assumptions. Want me to tighten any section?"
 
 ## Spec template
 
@@ -88,6 +100,9 @@ Use this exact structure. Replace placeholders in `{curly braces}`. Every sectio
 {2–4 sentences in plain language: who has the problem, when it occurs, and why it matters. Frame it from the user's or business's perspective — not the system's. Name the user, the scenario, and the cost of leaving it unsolved.}
 
 **Solution (one line):** {A single sentence describing what the feature will do for the user. No mention of how it's built.}
+
+**In scope:** {1–3 bullets naming what this feature explicitly includes.}
+**Out of scope:** {1–3 bullets naming what it explicitly does **not** cover — the boundary that stops scope creep. Write "None" only if there is genuinely nothing to exclude.}
 
 ## 2. Functional Requirements
 
@@ -154,8 +169,20 @@ Examples of the right level:
 - [ ] **AC-3:** ...
 
 ---
-**Status:** Draft
-**Created:** {YYYY-MM-DD}
+
+## Assumptions & Open Questions
+
+{A working appendix — *not* a product section. It aggregates every inline `(Assumption: …)` marker from the body, plus any question a reviewer should answer, so `/theshop.clarify` has one list to walk. As each item is resolved, fold the decision into the relevant section above and delete it from here. When the list is empty, write "None — all assumptions confirmed."}
+
+- **📌 Assumption:** {A default you chose to fill a non-blocking gap — e.g., "Cart persists 30 days for guests."} → *Resolve via `/theshop.clarify`.*
+- **❓ Open question:** {Something genuinely undecided that a reviewer should answer before the plan stage.}
+
+> ⚠️ Blocking, load-bearing uncertainties do **not** belong here — those are asked before the spec is written. This list holds only cheap-to-change defaults.
+
+---
+**Status:** Draft — {N} open assumption(s)   ·   **Created:** {YYYY-MM-DD}
+
+<!-- Status lifecycle: "Draft — N open assumption(s)" → "Confirmed" once /theshop.clarify resolves them all (N = 0). -->
 ```
 
 ## Quality guidelines
@@ -164,26 +191,26 @@ Examples of the right level:
 - **Be specific in user/business terms.** "The cart is fast" is vague. "Items appear in the cart immediately after being added, before the user takes another action" is specific without being technical.
 - **Make every requirement and acceptance criterion observable from the outside.** If you couldn't check it by clicking through the product, it's at the wrong level.
 - **Cross-reference IDs when helpful.** Each acceptance criterion should map back to one or more functional requirements when the link isn't obvious (e.g., "AC-2 verifies FR-1 and FR-3").
-- **Match the section count exactly.** Six sections, no more, no less. No "Future Work", no "Out of Scope" as top-level sections — fold these into Constraints or inline notes if needed.
+- **Match the numbered-section count exactly.** Six numbered product sections, no more, no less. Scope lives in the In/Out block inside Section 1; assumptions live in the appendix below the status line. Neither is a numbered section, and neither counts against the six. Don't invent other top-level sections like "Future Work."
 - **Keep it tight.** A useful spec is usually 1–3 pages. If it's growing past that, the "feature" is probably two features — flag this instead of writing a sprawling doc.
-- **Surface assumptions inline.** Anywhere you made a judgment call instead of asking, mark it: `(Assumption: cart persists for 30 days for logged-out users.)`
+- **Surface assumptions inline _and_ in the appendix.** Anywhere you made a non-blocking judgment call instead of asking, mark it in place — `(Assumption: cart persists for 30 days for logged-out users.)` — and also list it in the Assumptions & Open Questions appendix so it's reviewable in one place. The inline marker is the flag; the appendix is the index `/theshop.clarify` walks. Load-bearing decisions are asked, never marked.
 
 ## Example invocations
 
 **Example 1 — Feature name provided:**
 
-> User: `/create-spec add-to-cart`
+> User: `/theshop.spec add-to-cart`
 >
 > Claude: [optionally asks one product-level question, e.g., "Does this need to support logged-out users, or only signed-in?"] → writes `.claude/specs/add-to-cart.md` → "Saved to `.claude/specs/add-to-cart.md`. Want me to tighten any section?"
 
 **Example 2 — No feature name provided:**
 
-> User: `/create-spec`
+> User: `/theshop.spec`
 >
 > Claude: "Which feature should I create the spec for? Please give me a short feature name (e.g., `add-to-cart`, `user-authentication`)."
 
 **Example 3 — File already exists:**
 
-> User: `/create-spec add-to-cart`
+> User: `/theshop.spec add-to-cart`
 >
 > Claude: "A spec at `.claude/specs/add-to-cart.md` already exists. Should I overwrite it, save as `add-to-cart-v2.md`, or cancel?"

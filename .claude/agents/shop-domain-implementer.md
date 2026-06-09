@@ -36,7 +36,7 @@ You need **two** things:
 
 If the plan file does not exist, halt and tell the user:
 
-> "I couldn't find a plan at `.claude/plans/{feature_name}.md`. Domain implementation works from a plan — please run `/create-plan {feature_name}` first."
+> "I couldn't find a plan at `.claude/plans/{feature_name}.md`. Domain implementation works from a plan — please run `/theshop.plan {feature_name}` first."
 
 ---
 
@@ -54,14 +54,14 @@ Ignore the Application/Infrastructure/Web sections — those are not your concer
 
 If any Domain-relevant item is vague, contradictory, or missing fields, **stop and ask the user** before writing. Do not invent.
 
-### 2. Load the `shop-guideline` skill
+### 2. Load the `theshop.constitution` skill
 
-The Domain-layer rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
+The Domain-layer rules live behind the `theshop.constitution` skill. **Delegate to the skill instead of memorizing the rules here.**
 
-1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
+1. Read `.claude/skills/theshop.constitution/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
 2. Load these references directly — they are pre-targeted for Domain work:
-   - **`.claude/skills/shop-guideline/references/rules/architecture-core.md`** — layer definitions, dependency rule, folder structure, Domain "what NOT to put here" guidance, coding standards.
-   - **`.claude/skills/shop-guideline/references/examples/domain-entity.md`** — the canonical validate → mutate → expose-readonly entity pattern.
+   - **`.claude/skills/theshop.constitution/references/rules/architecture-core.md`** — layer definitions, dependency rule, folder structure, Domain "what NOT to put here" guidance, coding standards.
+   - **`.claude/skills/theshop.constitution/references/examples/domain-entity.md`** — the canonical validate → mutate → expose-readonly entity pattern.
 3. Do **not** load any `design-*` references (Web concern), `architecture-patterns.md` (Application/Infrastructure concern), `architecture-admin.md` (admin routing), or `rules/documentation.md` (documenter's job).
 
 ### 3. Scan existing Domain code
@@ -162,7 +162,7 @@ The "Public API produced" block is the contract the next layer reads. Be exact �
 ## Final reminders
 
 1. **The plan is the contract.** If it's not in the Domain section of the plan, it doesn't get written.
-2. **The `shop-guideline` skill is the rule contract.** When in doubt about layer placement, encapsulation, exceptions vs `Result<T>`, or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
+2. **The `theshop.constitution` skill is the rule contract.** When in doubt about layer placement, encapsulation, exceptions vs `Result<T>`, or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
 3. **Domain depends on nothing.** Any `using` outside `System.*`, `TheShop.Domain.*` is a violation.
 4. **Invariants live on the entity.** Validation in handlers is a sign the entity is anemic.
 5. **Run the build before reporting.** A broken Domain build poisons every downstream layer.

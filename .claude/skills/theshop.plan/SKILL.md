@@ -1,5 +1,5 @@
 ---
-name: create-plan
+name: theshop.plan
 description: Read a feature spec from `.claude/specs/{feature_name}.md` and generate a technical implementation plan (design doc) saved to `.claude/plans/{feature_name}.md`. The plan covers architecture, data model, design decisions, validators, error handling, RLS policies, and a phased development plan — focused on HOW the feature will be built. The companion spec stays non-technical (WHAT/WHY); this plan is fully technical. Manually invoked only.
 disable-model-invocation: true
 ---
@@ -45,7 +45,7 @@ Must match `.claude/specs/{file_name}.md`.
 
 - If the named spec file does not exist, stop and tell the user:
 
-  > "I couldn't find a spec at `.claude/specs/{name}.md`. I generate implementation plans from specs — please create the spec first (the `/create-spec` skill helps) and re-invoke me."
+  > "I couldn't find a spec at `.claude/specs/{name}.md`. I generate implementation plans from specs — please create the spec first (the `/theshop.spec` skill helps) and re-invoke me."
 
   Do not proceed without a spec.
 
@@ -54,9 +54,9 @@ Must match `.claude/specs/{file_name}.md`.
 The user may supply a Figma URL or node ID alongside the feature name, in any of these forms:
 
 ```
-/create-plan add-to-cart --figma https://www.figma.com/file/XXXXX/TheShop?node-id=123-456
-/create-plan add-to-cart --figma 123:456
-/create-plan add-to-cart --figma 123:456,789:012
+/theshop.plan add-to-cart --figma https://www.figma.com/file/XXXXX/TheShop?node-id=123-456
+/theshop.plan add-to-cart --figma 123:456
+/theshop.plan add-to-cart --figma 123:456,789:012
 ```
 
 - **Full URL** — extract the file key and any `node-id` query parameter from the URL. Use the file key to open the correct Figma file; use the node ID as the starting frame.
@@ -86,11 +86,17 @@ Open `.claude/specs/{file_name}.md` and read every section. Extract:
 - **Edge Cases & Error Handling** → each item must have an implementation strategy (which validator catches it, which `Result.Fail(...)` key it produces, which exception is thrown).
 - **Acceptance Criteria** → every AC must map to at least one task in the development plan. No AC is allowed to be unaddressed — flag it if you can't see how it will be met.
 
+**Check the spec's Status before planning.** If the footer still reads `Draft — N open assumption(s)` — i.e., the Assumptions & Open Questions appendix has unresolved `📌` / `❓` items — warn the user rather than silently building on unconfirmed defaults:
+
+> "Heads up: `add-to-cart` still has {N} unresolved assumption(s). Planning on top of unconfirmed defaults risks rework. Want to run `/theshop.clarify add-to-cart` first, or should I proceed and treat the logged assumptions as accepted?"
+
+Proceed only on the user's go-ahead. If they say proceed, carry each still-open assumption forward into Section 11 (as a `📌 Assumption`) so it stays visible in the plan.
+
 If any spec section is empty, vague, or contradicts another, **stop and ask the user** before planning. Do not paper over gaps with invented behavior.
 
-### 3. Load the governing documents via the `shop-guideline` skill
+### 3. Load the governing documents via the `theshop.constitution` skill
 
-The architecture and design rules live inside the `shop-guideline` skill. **Invoke the `shop-guideline` skill** — it will surface the rule list in `SKILL.md` and the modular references under `references/rules/`. Do **not** try to read individual reference files as bare filenames, and do **not** Glob-search the project for them; let the `shop-guideline` skill direct you. This is what prevents the slow project-wide file search.
+The architecture and design rules live inside the `theshop.constitution` skill. **Invoke the `theshop.constitution` skill** — it will surface the rule list in `SKILL.md` and the modular references under `references/rules/`. Do **not** try to read individual reference files as bare filenames, and do **not** Glob-search the project for them; let the `theshop.constitution` skill direct you. This is what prevents the slow project-wide file search.
 
 The rules the skill defines are what your plan must satisfy:
 
@@ -231,7 +237,7 @@ Result<CartDto> returned to ProductDetail.razor → CartState updated → UI re-
 
 ## 5. Core Design Decisions
 
-{Numbered list. Each decision has: what we chose, why we chose it, and what alternatives we rejected. Tie back to spec constraints and `shop-guideline` rule numbers where relevant (e.g. "Rule 5 — `Result<T>` for expected failures").}
+{Numbered list. Each decision has: what we chose, why we chose it, and what alternatives we rejected. Tie back to spec constraints and `theshop.constitution` rule numbers where relevant (e.g. "Rule 5 — `Result<T>` for expected failures").}
 
 1. **Decision:** Cart is server-persisted (not browser-local).
    - **Why:** Spec constraint that cart persists across devices for signed-in users. Also enables RLS-based security.
@@ -413,37 +419,37 @@ CREATE POLICY "carts_admin_select" ON carts
 
 **Example 1 — Spec exists, name provided:**
 
-> User: invokes `create-plan` with feature name `add-to-cart`
+> User: invokes `theshop.plan` with feature name `add-to-cart`
 >
-> Skill: reads `.claude/specs/add-to-cart.md` → invokes `shop-guideline` skill (loads `SKILL.md` + relevant `references/rules/*.md`) → optionally consults MCPs → plans deliberately → writes `.claude/plans/add-to-cart.md` → "Saved to `.claude/plans/add-to-cart.md`. One open question surfaced in Section 11."
+> Skill: reads `.claude/specs/add-to-cart.md` → invokes `theshop.constitution` skill (loads `SKILL.md` + relevant `references/rules/*.md`) → optionally consults MCPs → plans deliberately → writes `.claude/plans/add-to-cart.md` → "Saved to `.claude/plans/add-to-cart.md`. One open question surfaced in Section 11."
 
 **Example 2 — No name provided:**
 
-> User: invokes `create-plan`
+> User: invokes `theshop.plan`
 >
 > Skill: "Which spec should I generate an implementation plan for? Please give me the spec file name (e.g., `add-to-cart`)."
 
 **Example 3 — Spec doesn't exist:**
 
-> User: invokes `create-plan` with feature name `nonexistent-feature`
+> User: invokes `theshop.plan` with feature name `nonexistent-feature`
 >
-> Skill: "I couldn't find a spec at `.claude/specs/nonexistent-feature.md`. I generate implementation plans from specs — please create the spec first (the `/create-spec` skill helps) and re-invoke me."
+> Skill: "I couldn't find a spec at `.claude/specs/nonexistent-feature.md`. I generate implementation plans from specs — please create the spec first (the `/theshop.spec` skill helps) and re-invoke me."
 
 **Example 4 — Plan already exists:**
 
-> User: invokes `create-plan` with feature name `add-to-cart`
+> User: invokes `theshop.plan` with feature name `add-to-cart`
 >
 > Skill: "A plan at `.claude/plans/add-to-cart.md` already exists. Should I overwrite, save as `add-to-cart-v2.md`, or cancel?"
 
 **Example 5 — Figma URL provided via `--figma`:**
 
-> User: `/create-plan user-authentication --figma https://www.figma.com/file/XXXXX/TheShop?node-id=42-100`
+> User: `/theshop.plan user-authentication --figma https://www.figma.com/file/XXXXX/TheShop?node-id=42-100`
 >
 > Skill: extracts file key `XXXXX` and node ID `42:100` from the URL → calls `figma_get_component_for_development` on node `42:100` → records child node IDs and visual intent in Phase 4 → no prompting needed.
 
 **Example 6 — No `--figma` supplied, spec implies UI:**
 
-> User: `/create-plan user-authentication`
+> User: `/theshop.plan user-authentication`
 >
 > Skill: detects Phase 4 (UI) in the plan → asks: "This feature has a UI phase. Do you have a Figma link or node ID for it?" → user replies with URL or node ID → skill fetches and records IDs → continues.
 >

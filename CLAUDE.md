@@ -2,7 +2,7 @@
 
 **What this project is:** A premium Canadian e-commerce web app where customers browse products, manage a cart, and checkout — with a full admin panel for managing inventory and orders. Built with .NET 10 Blazor WebAssembly + MudBlazor on the frontend, Supabase for auth and database, Stripe for payments, Resend for transactional email, hosted on Azure Static Web Apps.
 
-Architecture and design rules live in the `shop-guideline` skill. Load it (or its references) when generating code. The rules below are enforced on every change — violations are rejected, not committed.
+Architecture and design rules live in the `theshop.constitution` skill. Load it (or its references) when generating code. The rules below are enforced on every change — violations are rejected, not committed.
 
 ---
 
@@ -39,8 +39,9 @@ The end-to-end flow for a new feature. Each step is one slash command:
 
 | Step | Command | What it does |
 |---|---|---|
-| 1. Spec | `/create-spec <feature>` | Non-technical product spec (WHAT/WHY) → `.claude/specs/{feature}.md` |
-| 2. Plan | `/create-plan <feature>` | Technical implementation plan (HOW), Figma-aware → `.claude/plans/{feature}.md` |
+| 1. Spec | `/theshop.spec <feature>` | Non-technical product spec (WHAT/WHY) → `.claude/specs/{feature}.md` |
+| 1b. Clarify | `/theshop.clarify <feature>` | Resolves open assumptions in the spec, one decision at a time |
+| 2. Plan | `/theshop.plan <feature>` | Technical implementation plan (HOW), Figma-aware → `.claude/plans/{feature}.md` |
 | 3. Implement | `/shop-implement-feature <feature>` | Orchestrates four layer-scoped sub-agents (Domain → Application → Infra ‖ Web → documenter) with build gates and API handoff between phases |
 | 4. Document (standalone) | `/shop-document-feature` | Adds XML doc comments to the current diff. Auto-runs as Phase 4 of `/shop-implement-feature`; use standalone for manual changes |
 | 5. Test | `/shop-test-feature <feature>` | `shop-test-writer` generates tests from spec → `shop-test-runner` executes them |

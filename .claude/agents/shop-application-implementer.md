@@ -53,15 +53,15 @@ Open `.claude/plans/{feature_name}.md`. Extract:
 
 Ignore Domain/Infrastructure/Web-specific sections.
 
-### 2. Load the `shop-guideline` skill
+### 2. Load the `theshop.constitution` skill
 
-The Application-layer rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
+The Application-layer rules live behind the `theshop.constitution` skill. **Delegate to the skill instead of memorizing the rules here.**
 
-1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
+1. Read `.claude/skills/theshop.constitution/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
 2. Load these references directly — they are pre-targeted for Application work:
-   - **`.claude/skills/shop-guideline/references/rules/architecture-core.md`** — layer definitions, dependency rule, folder structure, coding standards (primary constructors, collection expressions, CancellationToken).
-   - **`.claude/skills/shop-guideline/references/rules/architecture-patterns.md`** — MediatR Commands/Queries/Handlers, `Result<T>`, FluentValidation + pipeline behaviors, AutoMapper, Application interfaces, state stores.
-   - **`.claude/skills/shop-guideline/references/examples/application-handler.md`** — the canonical Command + Validator + Handler trio.
+   - **`.claude/skills/theshop.constitution/references/rules/architecture-core.md`** — layer definitions, dependency rule, folder structure, coding standards (primary constructors, collection expressions, CancellationToken).
+   - **`.claude/skills/theshop.constitution/references/rules/architecture-patterns.md`** — MediatR Commands/Queries/Handlers, `Result<T>`, FluentValidation + pipeline behaviors, AutoMapper, Application interfaces, state stores.
+   - **`.claude/skills/theshop.constitution/references/examples/application-handler.md`** — the canonical Command + Validator + Handler trio.
 3. Do **not** load any `design-*` references (Web concern), `architecture-admin.md` (admin routing — handlers are usually shared), or `rules/documentation.md` (documenter's job).
 4. Note: the only file you touch outside `src/TheShop.Application/` is `src/TheShop.Web/Resources/Strings.resx` / `Strings.fr.resx` for error keys (see Step 5).
 
@@ -182,7 +182,7 @@ The "Interfaces produced" and "DTOs and Commands produced" blocks are what the o
 ## Final reminders
 
 1. **The plan + Domain summary are the contract.** Don't invent.
-2. **The `shop-guideline` skill is the rule contract.** When in doubt about layer placement, MediatR/`Result<T>` patterns, interface placement (`Common/Interfaces/` vs feature-local), or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
+2. **The `theshop.constitution` skill is the rule contract.** When in doubt about layer placement, MediatR/`Result<T>` patterns, interface placement (`Common/Interfaces/` vs feature-local), or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
 3. **Application depends on Domain only.** Any other `using` is a violation.
 4. **Return `Result<T>` for expected failures; never throw.**
 5. **Every error key needs a `.resx` entry in both languages.**

@@ -51,16 +51,16 @@ Open `.claude/plans/{feature_name}.md`. Extract:
 
 Ignore Domain/Application/Web sections — those are not your concern.
 
-### 2. Load the `shop-guideline` skill
+### 2. Load the `theshop.constitution` skill
 
-The Infrastructure-layer rules live behind the `shop-guideline` skill. **Delegate to the skill instead of memorizing the rules here.**
+The Infrastructure-layer rules live behind the `theshop.constitution` skill. **Delegate to the skill instead of memorizing the rules here.**
 
-1. Read `.claude/skills/shop-guideline/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
+1. Read `.claude/skills/theshop.constitution/SKILL.md` first. Treat it as the contract: if anything in this agent file conflicts with the skill, **the skill wins**.
 2. Load these references directly — they are pre-targeted for Infrastructure work:
-   - **`.claude/skills/shop-guideline/references/rules/architecture-core.md`** — layer definitions, dependency rule, folder structure, coding standards.
-   - **`.claude/skills/shop-guideline/references/rules/architecture-patterns.md`** — Application interface declaration, repository pattern, Stripe/Resend adapter pattern, DI registration conventions.
-   - **`.claude/skills/shop-guideline/references/rules/architecture-admin.md`** — RLS as the only real security boundary, RLS policy examples, role-based access. Mandatory if the feature touches admin tables.
-   - **`.claude/skills/shop-guideline/references/examples/infrastructure-repository.md`** — canonical Record + Mapper + Repository trio.
+   - **`.claude/skills/theshop.constitution/references/rules/architecture-core.md`** — layer definitions, dependency rule, folder structure, coding standards.
+   - **`.claude/skills/theshop.constitution/references/rules/architecture-patterns.md`** — Application interface declaration, repository pattern, Stripe/Resend adapter pattern, DI registration conventions.
+   - **`.claude/skills/theshop.constitution/references/rules/architecture-admin.md`** — RLS as the only real security boundary, RLS policy examples, role-based access. Mandatory if the feature touches admin tables.
+   - **`.claude/skills/theshop.constitution/references/examples/infrastructure-repository.md`** — canonical Record + Mapper + Repository trio.
 3. Do **not** load any `design-*` references (Web concern) or `rules/documentation.md` (documenter's job).
 
 ### 3. Inspect existing database state
@@ -173,7 +173,7 @@ End your response with this structured summary:
 ## Final reminders
 
 1. **The plan + Application interfaces are the contract.** Don't invent or improvise.
-2. **The `shop-guideline` skill is the rule contract.** When in doubt about SDK isolation, RLS policy requirements, repository vs service placement, or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
+2. **The `theshop.constitution` skill is the rule contract.** When in doubt about SDK isolation, RLS policy requirements, repository vs service placement, or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
 3. **Infrastructure is the only place external SDKs live.** Any leak is a violation.
 4. **Every new table needs RLS + at least one policy.** No exceptions.
 5. **Repositories map; entities decide.** No business logic in this layer.
