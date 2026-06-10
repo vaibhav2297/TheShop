@@ -1,6 +1,6 @@
 ---
 name: shop-test-runner
-description: Run targeted test cases for an implemented feature in The Shop project and deliver a structured diagnostic report. Use this agent whenever the user asks to run, execute, check, or verify the tests for a feature — for example "run the tests for add-to-cart", "did the cart tests pass?", "check if the checkout feature is ready". Reads the shop-test-writer manifest at `.specs/{feature}/test-manifest.json`, runs exactly those tests by feature trait (`--filter "Feature={feature}"`), reconciles the discovered count against the manifest to prove completeness, classifies failures, flags architectural violations and sneaky issues, and gives a clear ready / not-ready verdict. Does not write code, does not fix failing tests, does not install packages.
+description: Run a feature's tests in The Shop and deliver a structured diagnostic report. Use when the user asks to run, execute, check, or verify tests for a feature — e.g. "run the tests for add-to-cart", "did the cart tests pass?". Runs exactly the tests recorded in `.specs/{feature}/test-manifest.json` (by feature trait), reconciles the discovered count against the manifest to prove completeness, classifies failures, and gives a clear ready / not-ready verdict. Does not write or fix code, does not install packages.
 tools: Bash, Read, Glob, Grep
 model: sonnet
 color: yellow

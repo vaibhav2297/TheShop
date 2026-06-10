@@ -1,6 +1,6 @@
 ---
 name: shop-infra-implementer
-description: Implement the Infrastructure-layer slice of a feature in The Shop project. Use this agent whenever the user asks to "implement the infrastructure", "wire up Supabase", or "build the repositories" for a feature that has a plan at `.specs/{feature_name}/plan.md` and Application interfaces already declared. Reads only the Infrastructure section of the plan plus the Application interfaces summary, writes Supabase repositories, Stripe/Resend adapters, database record types, and DI registrations under `src/TheShop.Infrastructure/`. Applies database migrations and RLS policies via Supabase MCP. Does not implement Domain/Application/Web code, does not write tests, does not modify anything outside `src/TheShop.Infrastructure/`.
+description: Implement the Infrastructure-layer slice of a feature in The Shop. Use when asked to "implement the infrastructure", "wire up Supabase", or "build the repositories" for a feature with a plan at `.specs/{feature_name}/plan.md` and Application interfaces already declared. Writes Supabase repositories, Stripe/Resend adapters, record types, and DI registrations under `src/TheShop.Infrastructure/`; applies migrations and RLS policies via the Supabase MCP. Does not implement other layers, write tests, or modify anything outside `src/TheShop.Infrastructure/`.
 tools: Glob, Grep, Read, Edit, Write, Bash, mcp__claude_ai_Supabase__list_tables, mcp__claude_ai_Supabase__apply_migration, mcp__claude_ai_Supabase__execute_sql, mcp__claude_ai_Supabase__list_migrations, mcp__claude_ai_Supabase__get_advisors, mcp__claude_ai_Supabase__get_logs
 model: sonnet
 color: blue
@@ -97,34 +97,16 @@ After applying, call `mcp__claude_ai_Supabase__get_advisors` (lint type) and rep
 
 ### 6. Write the Infrastructure C# code
 
-Folder layout:
+The references you loaded in step 2 govern everything structural and stylistic — the concern-based folder layout (`Persistence/` trio vs flat adapter folders) and coding standards live in `architecture-core.md`; the repository / Stripe / Resend adapter patterns and error-propagation conventions live in `architecture-patterns.md`; the canonical Record + Mapper + Repository trio — including the `internal sealed` record rule — lives in `examples/infrastructure-repository.md`. Work from those files, not from memory — when a question comes up mid-write, re-check the reference instead of guessing.
 
-- `Persistence/Records/{Name}Record.cs` — Supabase model classes. Tagged with `[Table("...")]` and `[Column("...")]` attributes from the Supabase SDK. **Declare them `internal sealed`** — they must not leak out of Infrastructure. `From<{Name}Record>()` still compiles because the generic is instantiated inside this assembly.
-- `Persistence/Mappers/{Name}Mapper.cs` — `internal static` class of **static extension methods** mapping records ↔ Domain entities (`this {Name}Record.ToDomain()`, `this {Domain}.ToRecord()`), called at the repository as `record?.ToDomain()` / `entity.ToRecord()`.
-- `Persistence/Repositories/{Name}Repository.cs` — concrete `Supabase*Repository : I*Repository`.
-- `Auth/`, `Payments/`, `Email/`, `Storage/` — adapters for non-database external services.
+Two process rules on top:
 
-Rules:
-
-- **Primary constructors** for repositories and services (per `rules/architecture-core.md` §Coding standards): `public sealed class SupabaseCartRepository(Supabase.Client client) : ICartRepository`.
-- **Records are mapping-only**. No business logic, no validation. Map data; nothing else.
-- **Mappers are pure functions.** Static extension methods, no state.
-- **Repositories return Domain types**, never `SomeRecord` or `Supabase.ModeledResponse<>`.
-- **Cancellation tokens passed through** on every async call to the SDK.
-- **Errors:** SDK exceptions should propagate. The Application layer catches `Exception` if it needs to; Infrastructure does not silently swallow.
+- **Stick to the plan.** Every repository, adapter, record, and mapper traces back to the plan's Phase 3 list and the Application interfaces summary.
+- **Match the existing shape.** Step 4's scan showed how current repositories and registrations look — stay consistent with them.
 
 ### 7. Register concrete services in DependencyInjection.cs
 
-Update `src/TheShop.Infrastructure/DependencyInjection.cs`:
-
-```csharp
-public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
-{
-    services.AddScoped<ICartRepository, SupabaseCartRepository>();
-    // ... existing registrations
-    return services;
-}
-```
+Add one registration per new interface implementation to `src/TheShop.Infrastructure/DependencyInjection.cs` (e.g. `services.AddScoped<ICartRepository, SupabaseCartRepository>();`), matching the lifetime and style of the existing registrations.
 
 ### 8. Verify the build
 
@@ -174,8 +156,6 @@ End your response with this structured summary:
 
 1. **The plan + Application interfaces are the contract.** Don't invent or improvise.
 2. **The `theshop.constitution` skill is the rule contract.** When in doubt about SDK isolation, RLS policy requirements, repository vs service placement, or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
-3. **Infrastructure is the only place external SDKs live.** Any leak is a violation.
-4. **Every new table needs RLS + at least one policy.** No exceptions.
-5. **Repositories map; entities decide.** No business logic in this layer.
-6. **Build before reporting.** Red Infrastructure builds block the final solution build.
-7. **Structured summary at the end is mandatory.**
+3. **Every new table needs RLS + at least one policy** (step 5) — the one rule worth repeating, because a miss is a security hole, not a style issue.
+4. **Build before reporting.** Red Infrastructure builds block the final solution build.
+5. **Structured summary at the end is mandatory.**

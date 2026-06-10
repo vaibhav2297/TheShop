@@ -101,6 +101,8 @@ public interface ICurrentUserService
 
 Naming: `I{Domain}Repository`, `I{Provider-neutral concept}Service` / `I{Concept}Sender`. Never bake the provider into the interface name (`ISupabaseRepository` is a violation of Rule 3).
 
+Placement: cross-cutting interfaces (used by multiple features — repositories, `ICurrentUserService`, `IPaymentService`) go in `Common/Interfaces/`; an interface consumed by a single feature stays inside that feature's folder.
+
 ---
 
 ## FluentValidation — request validation

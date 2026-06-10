@@ -1,6 +1,6 @@
 ---
 name: theshop.constitution
-description: Architecture and design rules for "The Shop" — .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend. USE WHEN editing files under `src/TheShop.*/` or `tests/TheShop.*.Tests/`; editing any `.razor` / `.razor.cs`; writing MediatR Commands/Queries/Handlers, Supabase repositories, Stripe/Resend adapters, AutoMapper profiles, FluentValidation validators, `Result<T>` returns, or `*State` stores; touching `Strings.resx` / `IStringLocalizer<Strings>`, `Routes` / `BusyKeys` / `BusyState`, SCSS under `Styles/`, layer DI in `Program.cs` / `DependencyInjection.cs`, or any `Shop`-prefixed theme class (`ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`). Triggers: `TheShop`, any `TheShop.*` namespace, `Shop`-prefixed theme class, Cart / Order / Product / Checkout features. SKIP for: general .NET/Blazor/MudBlazor/Supabase questions not tied to this repo, DNS/Azure portal/CI-CD setup.
+description: Architecture and design rules for "The Shop" — a .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend e-commerce app. USE WHEN writing, editing, or reviewing any code in this repo (`src/TheShop.*`, `tests/`, any `.razor` / SCSS / resource strings / `Shop*` theme class) or making any layer-placement or design decision for it. SKIP for general .NET/Blazor/MudBlazor/Supabase questions not tied to this repo, and for DNS/Azure portal/CI-CD setup.
 ---
 
 # The Shop — Governance

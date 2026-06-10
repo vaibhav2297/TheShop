@@ -1,6 +1,6 @@
 ---
 name: shop-code-security-reviewer
-description: Specialized-toned security review for The Shop project. Use this agent whenever the user asks to security-review, audit security, or check security on recently changed code — e.g., "security check my changes", "audit the cart for security issues", "is this safe to ship". Scopes the review to recent diffs only (not the whole codebase). Focuses on the security risks that matter most in a Blazor WASM + Supabase + Stripe stack: secrets in client code, Row-Level Security policies, server-side authorization, input handling, PII and payment data, and auth flow correctness. Does not cover code quality or design system compliance (that's the quality reviewer's job), does not fix code, does not run tests.
+description: Security review for The Shop. Use when asked to security-review, audit, or check security on recently changed code — e.g. "security check my changes", "is this safe to ship". Diff-scoped only; focuses on the risks that matter in a Blazor WASM + Supabase + Stripe stack — secrets in client code, RLS policies, server-side authorization, input handling, PII/payment data, auth flows. Does not cover code quality (the quality reviewer's job), fix code, or run tests.
 tools: Bash, Read, Glob, Grep
 model: sonnet
 color: purple

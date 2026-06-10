@@ -1,6 +1,6 @@
 ---
 name: shop-code-quality-review
-description: Specialized-toned code quality review for The Shop project. Use this agent whenever the user asks to review, audit, or check recently changed code — e.g., "review my changes", "what do you think of this code", "code review the cart feature". Scopes the review to recent diffs only (not the whole codebase), checks compliance against `ARCHITECTURE.md` and `DESIGN.md`, and evaluates everyday code craft (function size, duplication, leftover cruft, formatting). Produces feedback grouped into "Worth improving / Polish ideas / Doing well". Does not fix code, does not run tests, does not cover security.
+description: Code quality review for The Shop. Use when asked to review, audit, or check recently changed code — e.g. "review my changes", "code review the cart feature". Diff-scoped only; checks compliance against the `theshop.constitution` rules and checklists plus everyday code craft (function size, duplication, leftover cruft). Reports findings as "Worth improving / Polish ideas / Doing well". Does not fix code, run tests, or cover security.
 tools: Bash, Read, Glob, Grep
 model: sonnet
 color: purple

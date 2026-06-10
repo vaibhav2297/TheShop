@@ -61,6 +61,19 @@ Run the check (do **not** halt — record the result and carry it into the repor
 
 This gate is independent of the two reviewers — it runs whether or not they surface anything.
 
+### Pre-flight — Deterministic design-rule lint (gate)
+
+The mechanically-checkable constitution rules are enforced by a script — the same one the PostToolUse hook runs on every edit. Run it over the changed source files (do **not** halt — record the result and carry it into the report):
+
+```bash
+pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-design-rules.ps1 -Path {each changed file under src/ from the diff}
+```
+
+- **Exit 0** → record "Design-rule lint: ✅ clean" and proceed.
+- **Exit 1** → every reported violation is a **blocking** finding. Each cites its constitution rule number (e.g. `Rule 16`). They go into the Combined Action Plan under **Must fix before committing** and force the overall verdict to 🔴 **CHANGES REQUESTED**, same as the localization gate. Do not re-litigate them — the script is the authority for these rules; the only escape hatch is a justified `design-rules: ignore` line comment, which a human must approve.
+
+This keeps the reviewers focused on judgment-based findings; the regex-able rules are settled before they start.
+
 ---
 
 ## Step 1 — Parallel review
@@ -84,7 +97,7 @@ Wait for **both** to complete before doing anything else.
 
 Inspect the two returned reports.
 
-- If **either** agent returned an empty result, errored out, halted on its own pre-flight (e.g., couldn't read the `shop-guideline` skill files), or produced a report missing any of its required sections (`🎓 / 💡 / 🌱 / ✅`), **stop**. Do not present a unified report.
+- If **either** agent returned an empty result, errored out, halted on its own pre-flight (e.g., couldn't read the `theshop.constitution` skill files), or produced a report missing any of its required sections (`🎓 / 💡 / 🌱 / ✅`), **stop**. Do not present a unified report.
 
   Tell the user:
 
@@ -124,6 +137,7 @@ Produce the report in **exactly** this structure. No prose around it.
 - Spec: `.specs/$ARGUMENTS/spec.md` ✅
 - Reviewers run: `shop-code-security-reviewer`, `shop-code-quality-review` (parallel)
 - Localization (French): {✅ all feature keys translated / 🔴 {N} key(s) untranslated — see action plan}
+- Design-rule lint: {✅ clean / 🔴 {N} violation(s) — see action plan}
 
 ---
 
@@ -191,7 +205,7 @@ Pick the verdict using only these rules — no judgment calls:
 
 | Condition | Verdict |
 |---|---|
-| Any untranslated French feature key (localization pre-flight failed), OR any 🚨 Critical security finding, OR any ⚠️ Important security finding, OR any 💡 Quality "Worth improving" finding | 🔴 **CHANGES REQUESTED** |
+| Any untranslated French feature key (localization pre-flight failed), OR any design-rule lint violation (lint pre-flight failed), OR any 🚨 Critical security finding, OR any ⚠️ Important security finding, OR any 💡 Quality "Worth improving" finding | 🔴 **CHANGES REQUESTED** |
 | No items above, BUT at least one unmarked security finding, OR at least one 🌱 Quality "Polish" item | 🟡 **APPROVED WITH SUGGESTIONS** |
 | Nothing in any "must fix" or "worth addressing" bucket — only ✅ Doing well | ✅ **APPROVED** |
 
@@ -255,4 +269,4 @@ When implementation is finished, produce a short summary:
 3. **Do not skip the pre-flight checks.** No spec → halt. No diff → halt. Both pre-flights run before any reviewer is invoked.
 4. **Do not proceed if the spec file doesn't exist.** Report and stop. The spec gate is intentional.
 5. **Do not present a partial review as complete.** If either reviewer fails, no unified report is produced — just an error report and stop.
-6. **Do not edit any file under `.claude/skills/shop-guideline/` or `.specs/*` in the implementation phase.** The skill's rules, references, examples, and checklists are governing documents, and a feature's `.specs/{feature}/` artifacts (spec, plan, manifest) are its ratified record — changes to them belong in a separate, deliberate flow, not in a quick fix loop. (Updating `.specs/$ARGUMENTS/status.md` to record the review outcome is the one allowed exception — see below.)
+6. **Do not edit any file under `.claude/skills/theshop.constitution/` or `.specs/*` in the implementation phase.** The skill's rules, references, examples, and checklists are governing documents, and a feature's `.specs/{feature}/` artifacts (spec, plan, manifest) are its ratified record — changes to them belong in a separate, deliberate flow, not in a quick fix loop. (Updating `.specs/$ARGUMENTS/status.md` to record the review outcome is the one allowed exception — see below.)

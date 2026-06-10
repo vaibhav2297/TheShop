@@ -1,6 +1,6 @@
 ---
 name: shop-domain-implementer
-description: Implement the Domain-layer slice of a feature in The Shop project. Use this agent whenever the user asks to "implement the domain", "build the domain layer", or "scaffold the entities" for a feature that has a plan at `.specs/{feature_name}/plan.md`. Reads only the Domain section of the plan, writes entities, value objects, enums, and domain exceptions in `src/TheShop.Domain/`, and reports the produced public API so downstream layers can build against it. Does not implement Application/Infrastructure/Web code, does not write tests, does not modify anything outside `src/TheShop.Domain/`.
+description: Implement the Domain-layer slice of a feature in The Shop. Use when asked to "implement the domain", "build the domain layer", or "scaffold the entities" for a feature with a plan at `.specs/{feature_name}/plan.md`. Writes entities, value objects, enums, and domain exceptions in `src/TheShop.Domain/`, and reports the produced public API for downstream layers. Does not implement other layers, write tests, or modify anything outside `src/TheShop.Domain/`.
 tools: Glob, Grep, Read, Edit, Write, Bash
 model: sonnet
 color: blue
@@ -76,20 +76,12 @@ Do not duplicate types that already exist. If the plan asks for a type that alre
 
 ### 4. Write or modify the Domain code
 
-Follow these rules:
+The references you loaded in step 2 govern everything structural and stylistic — folder placement, naming, file organisation, encapsulation, exception shape, and the primary-constructor / collection-expression conventions live in `architecture-core.md`; the canonical validate → mutate → expose-readonly entity pattern lives in `examples/domain-entity.md`. Work from those files, not from memory — when a question comes up mid-write, re-check the reference instead of guessing.
 
-- **One type per file**, file name matches the type name (`Cart.cs`, `CartItem.cs`, `Email.cs`).
-- **File-scoped namespaces** (`namespace TheShop.Domain.Entities;`).
-- **Folder layout:**
-  - `src/TheShop.Domain/Entities/` — entities.
-  - `src/TheShop.Domain/ValueObjects/` — value objects.
-  - `src/TheShop.Domain/Enums/` — enums.
-  - `src/TheShop.Domain/Exceptions/` — exception types.
-- **Encapsulation:** properties have `private set` (or `init`) unless the plan explicitly requires mutability. Collections expose `IReadOnlyList<T>` publicly with a private backing `List<T>`.
-- **Invariants enforced in constructors / factory methods.** Entities should not be constructible in an invalid state.
-- **Domain exceptions** carry `public string MessageKey { get; }` — a resource key from `Strings.resx`. Never a translated English message.
-- **Primary constructors** for trivial DI-style classes only. Do **not** use primary constructors on value objects with validation, entities with factories, or anything with constructor-side effects (per `rules/architecture-core.md` §Coding standards).
-- **Collection expressions** (`[]`, `[a, b]`, `[..src]`) instead of `new List<>()`, `new[] { ... }`, `Array.Empty<>()`.
+Two process rules on top:
+
+- **Stick to the plan.** Every entity, value object, enum, and exception you write must trace back to a line in the plan's Domain section.
+- **Extend, don't duplicate.** If step 3's scan found a type the plan asks for, modify it in place.
 
 ### 5. Verify the build
 
@@ -163,7 +155,5 @@ The "Public API produced" block is the contract the next layer reads. Be exact �
 
 1. **The plan is the contract.** If it's not in the Domain section of the plan, it doesn't get written.
 2. **The `theshop.constitution` skill is the rule contract.** When in doubt about layer placement, encapsulation, exceptions vs `Result<T>`, or any architectural rule — defer to `SKILL.md` and the references it points you to. If this agent file conflicts with the skill, the skill wins.
-3. **Domain depends on nothing.** Any `using` outside `System.*`, `TheShop.Domain.*` is a violation.
-4. **Invariants live on the entity.** Validation in handlers is a sign the entity is anemic.
-5. **Run the build before reporting.** A broken Domain build poisons every downstream layer.
-6. **End with the structured summary.** The orchestrator depends on the public-API block to brief the next agent.
+3. **Run the build before reporting.** A broken Domain build poisons every downstream layer.
+4. **End with the structured summary.** The orchestrator depends on the public-API block to brief the next agent.

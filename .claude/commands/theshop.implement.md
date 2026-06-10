@@ -105,7 +105,7 @@ Capture **Interfaces produced** (the Infrastructure handoff) and **DTOs and Comm
 
 ## Phase 3 — Infrastructure ‖ Web (parallel)
 
-These two layers are siblings — both depend on Application, neither depends on the other (per `shop-guideline` SKILL.md Rule 1 — dependency rule). Launch both in a **single response** with two Task tool calls — that is the parallelism trigger. Do NOT call one, wait, then call the other.
+These two layers are siblings — both depend on Application, neither depends on the other (per `theshop.constitution` SKILL.md Rule 1 — dependency rule). Launch both in a **single response** with two Task tool calls — that is the parallelism trigger. Do NOT call one, wait, then call the other.
 
 ### Call 1 — `shop-infra-implementer`
 

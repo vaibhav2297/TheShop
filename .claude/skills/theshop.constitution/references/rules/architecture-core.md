@@ -31,9 +31,10 @@ src/
 │   ├── Features/
 │   │   ├── Cart/
 │   │   │   ├── Commands/
+│   │   │   │   └── {CommandName}/   ← Command + Handler + Validator live together per command
 │   │   │   ├── Queries/
-│   │   │   ├── DTOs/
-│   │   │   └── Validators/
+│   │   │   │   └── {QueryName}/     ← same per-query grouping
+│   │   │   └── DTOs/                ← shared across the feature's commands/queries
 │   │   ├── Products/      (same sub-structure)
 │   │   ├── Checkout/      (same sub-structure)
 │   │   ├── Orders/        (same sub-structure)

@@ -1,6 +1,6 @@
 ---
 name: shop-code-documenter
-description: Add XML doc comments to recently changed C# code in The Shop project. Use this agent whenever the user asks to "document", "add doc comments", or "write XML docs" for code that's been written but not yet documented — typically after running `/theshop.implement`. Reads only the diff, adds `<summary>` / `<param>` / `<returns>` to public types and members per the project's documentation conventions, and produces a structured report. Does not change behavior, does not refactor, does not add inline "why" comments (per CLAUDE.md), does not document private members.
+description: Add XML doc comments to recently changed C# code in The Shop. Use when asked to "document", "add doc comments", or "write XML docs" — typically after `/theshop.implement`. Diff-scoped only; adds `<summary>` / `<param>` / `<returns>` to public types and members per the project's documentation conventions. Does not change behavior, refactor, add inline comments, or document private members.
 tools: Glob, Grep, Read, Edit, Bash
 model: sonnet
 color: cyan
@@ -77,27 +77,7 @@ For each changed `.cs` / `.razor.cs` file:
 
 ### 4. Write the doc comments
 
-Follow the conventions in `.claude/skills/theshop.constitution/references/rules/documentation.md`. Key shape reminders:
-
-```csharp
-/// <summary>
-/// Adds an item to the cart, enforcing the 20-distinct-item invariant.
-/// </summary>
-/// <param name="product">The product being added.</param>
-/// <param name="quantity">How many units to add (must be positive).</param>
-/// <exception cref="CartCapacityExceededException">
-/// Thrown when adding the item would exceed 20 distinct items in the cart.
-/// </exception>
-public void AddItem(Product product, int quantity) { ... }
-```
-
-Rules of thumb:
-
-- **One sentence in `<summary>` if you can.** Two short ones max.
-- **Describe the *contract*, not the implementation.** "Returns the cart for the current user, or null if none exists" — not "Calls Supabase and maps the result."
-- **`<param>` adds information beyond the name.** If the param is `Guid productId`, `<param name="productId">The product being added.</param>` is fine; `<param name="productId">The product ID.</param>` is noise — skip it.
-- **`<exception>` for documented throw cases only.** If the method explicitly throws a domain exception, document it. Don't list every theoretical `InvalidOperationException`.
-- **Resource keys aren't UI copy.** Don't translate. `<summary>Thrown when the cart is full.</summary>` — not the English version of the user-facing message.
+Follow the conventions in `.claude/skills/theshop.constitution/references/rules/documentation.md` — you read it in full in step 1. It defines the tag shapes (`<summary>` / `<param>` / `<returns>` / `<exception>` / `<see>`), the phrasing rules (one-sentence summaries, document the contract not the implementation, the anti-restatement test), and what counts as noise. Don't paraphrase it from memory — when unsure mid-write, re-check that file.
 
 ### 5. Verify the build
 
