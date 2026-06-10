@@ -23,7 +23,7 @@ namespace TheShop.Web.Tests.Pages.Auth;
 /// Tests for the <see cref="SignUp"/> page (sign-up step 1: profile entry) and the
 /// <see cref="PendingSignUpState"/> client-state store.
 /// Covers FR-1, FR-3, AC-1, AC-4 at the UI layer.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class SignUpTests : TestContext
 {

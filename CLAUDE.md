@@ -35,13 +35,15 @@ Architecture and design rules live in the `theshop.constitution` skill. Load it 
 
 ## Spec-Driven Development pipeline
 
-The end-to-end flow for a new feature. Each step is one slash command, run in this order:
+The end-to-end flow for a new feature. Each step is one slash command, run in this order.
+
+**Artifact layout.** Every feature owns one project-level folder, `.specs/{feature}/`, that groups all of its SDD artifacts: `spec.md`, `plan.md`, `test-manifest.json`, and a `status.md` pipeline tracker. The folder lives at the repo root (not under `.claude/`) so any AI agent or tool — not just Claude Code — can discover a feature's full record in one place. `status.md` shows where the feature sits in the pipeline at a glance; each step below updates its own row.
 
 | Step | Command | What it does |
 |---|---|---|
-| 1. Spec | `/theshop.spec <feature>` | Non-technical product spec (WHAT/WHY) → `.claude/specs/{feature}.md` |
+| 1. Spec | `/theshop.spec <feature>` | Non-technical product spec (WHAT/WHY) → `.specs/{feature}/spec.md`; also creates `.specs/{feature}/status.md` |
 | 2. Clarify | `/theshop.clarify <feature>` | Resolves open assumptions in the **spec**, one decision at a time → flips spec Status to `Confirmed` |
-| 3. Plan | `/theshop.plan <feature>` | Technical implementation plan (HOW), Figma-aware → `.claude/plans/{feature}.md` |
+| 3. Plan | `/theshop.plan <feature>` | Technical implementation plan (HOW), Figma-aware → `.specs/{feature}/plan.md` |
 | 4. Resolve | `/theshop.resolve <feature>` | Resolves the **plan's** open questions / risks / assumptions (Section 11), one decision at a time → flips plan Status to `Resolved` |
 | 5. Implement | `/theshop.implement <feature>` | Orchestrates four layer-scoped sub-agents (Domain → Application → Infra ‖ Web) with build gates and API handoff between phases |
 | 6. Test | `/theshop.test <feature>` | `shop-test-writer` generates tests from spec → `shop-test-runner` executes them |

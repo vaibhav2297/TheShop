@@ -1,12 +1,12 @@
 ---
 name: theshop.plan
-description: Read a feature spec from `.claude/specs/{feature_name}.md` and generate a technical implementation plan (design doc) saved to `.claude/plans/{feature_name}.md`. The plan covers architecture, data model, design decisions, validators, error handling, RLS policies, and a phased development plan — focused on HOW the feature will be built. The companion spec stays non-technical (WHAT/WHY); this plan is fully technical. Manually invoked only.
+description: Read a feature spec from `.specs/{feature_name}/spec.md` and generate a technical implementation plan (design doc) saved to `.specs/{feature_name}/plan.md`. The plan covers architecture, data model, design decisions, validators, error handling, RLS policies, and a phased development plan — focused on HOW the feature will be built. The companion spec stays non-technical (WHAT/WHY); this plan is fully technical. Manually invoked only.
 disable-model-invocation: true
 ---
 
 # Create Plan
 
-Read a feature specification and produce a thorough technical implementation plan (a design doc) at `.claude/plans/{feature_name}.md`.
+Read a feature specification and produce a thorough technical implementation plan (a design doc) at `.specs/{feature_name}/plan.md`.
 
 This skill is **manually invoked only** — it does not auto-trigger.
 
@@ -34,18 +34,18 @@ The skill takes one required input and one optional input:
 
 ### Required — spec file name
 
-Must match `.claude/specs/{file_name}.md`.
+Must match `.specs/{file_name}/spec.md`.
 
 - If the user provided a name, use it. Strip the `.md` extension if they included it.
 - If the user did **not** provide a name, stop and ask:
 
-  > "Which spec should I generate an implementation plan for? Please give me the spec file name (e.g., `add-to-cart`). It must match an existing file at `.claude/specs/{name}.md`."
+  > "Which spec should I generate an implementation plan for? Please give me the spec file name (e.g., `add-to-cart`). It must match an existing file at `.specs/{name}/spec.md`."
 
   Wait for the reply before doing anything else.
 
 - If the named spec file does not exist, stop and tell the user:
 
-  > "I couldn't find a spec at `.claude/specs/{name}.md`. I generate implementation plans from specs — please create the spec first (the `/theshop.spec` skill helps) and re-invoke me."
+  > "I couldn't find a spec at `.specs/{name}/spec.md`. I generate implementation plans from specs — please create the spec first (the `/theshop.spec` skill helps) and re-invoke me."
 
   Do not proceed without a spec.
 
@@ -77,7 +77,7 @@ If the user has selected the highest-capability model (Opus) and enabled extende
 
 ### 2. Read the spec thoroughly
 
-Open `.claude/specs/{file_name}.md` and read every section. Extract:
+Open `.specs/{file_name}/spec.md` and read every section. Extract:
 
 - **Problem Statement** → informs the "Objective" section of the plan.
 - **Functional Requirements** → each FR maps to one or more concrete development tasks.
@@ -160,16 +160,21 @@ Use the exact 11-section structure. Stay technical, stay concrete. Replace place
 
 ### 7. Save the file
 
-- Path: `.claude/plans/{file_name}.md` — same `{file_name}` as the input spec.
-- Create the `.claude/plans/` directory if it doesn't exist.
-- If a plan at that path already exists, ask the user whether to overwrite, save with a version suffix (e.g., `add-to-cart-v2.md`), or cancel.
-### 8. Confirm
+- Path: `.specs/{file_name}/plan.md` — same `{file_name}` as the input spec; the plan lives in the spec's own feature folder.
+- The `.specs/{file_name}/` directory already exists (the spec created it); create it if somehow missing.
+- If a `plan.md` already exists in that folder, ask the user whether to overwrite, save with a version suffix (e.g., `plan-v2.md`), or cancel.
+
+### 8. Update the status tracker
+
+In `.specs/{file_name}/status.md`, set the **Plan** row to `Draft` with today's date, refresh **Last updated**, and point **Next step** at `/theshop.resolve {file_name}` (or `/theshop.implement {file_name}` if Section 11 has no open questions). If `status.md` is missing — a pre-tracker feature — create it from the template in `theshop.spec` first.
+
+### 9. Confirm
 
 Report the saved path in one short sentence and call out anything that needs human judgment before implementation can start. If Section 11 carries any `❓ Open question` (or unratified `📌 Assumption`), point the user at `/theshop.resolve` — that's the step that turns those into settled decisions and flips the plan's Status to `Resolved`. Examples:
 
-> "Saved to `.claude/plans/add-to-cart.md` — 2 open questions in Section 11. Run `/theshop.resolve add-to-cart` to resolve them before implementing."
+> "Saved to `.specs/add-to-cart/plan.md` — 2 open questions in Section 11. Run `/theshop.resolve add-to-cart` to resolve them before implementing."
 
-> "Saved to `.claude/plans/add-to-cart.md` — no open questions. You can resolve any logged assumptions with `/theshop.resolve add-to-cart`, or proceed straight to `/theshop.implement add-to-cart`."
+> "Saved to `.specs/add-to-cart/plan.md` — no open questions. You can resolve any logged assumptions with `/theshop.resolve add-to-cart`, or proceed straight to `/theshop.implement add-to-cart`."
 
 ---
 
@@ -180,7 +185,7 @@ Use this structure exactly. Replace placeholders. Sections 1–7 are the ones th
 ```markdown
 # Implementation Plan — {Feature Title}
 
-> Companion to `.claude/specs/{file_name}.md`. This plan is technical (HOW); the spec is non-technical (WHAT/WHY). Read the spec first.
+> Companion to `.specs/{file_name}/spec.md`. This plan is technical (HOW); the spec is non-technical (WHAT/WHY). Read the spec first.
 
 ## 1. Objective
 
@@ -402,7 +407,7 @@ CREATE POLICY "carts_admin_select" ON carts
 - **📌 Assumption:** Cart capacity of 20 distinct items is exactly that — not 20 units. A single product with quantity 50 counts as one item.
 
 ---
-**Status:** Draft · **Spec:** `.claude/specs/{file_name}.md` · **Created:** {YYYY-MM-DD}
+**Status:** Draft · **Spec:** `.specs/{file_name}/spec.md` · **Created:** {YYYY-MM-DD}
 
 <!-- Status lifecycle: "Draft" → "Resolved" once /theshop.resolve settles every ❓ open question and ratifies every 📌 assumption in Section 11 (accepted ⚠️ risks may remain, labeled). /theshop.implement warns while the plan is still Draft. -->
 ```
@@ -427,7 +432,7 @@ CREATE POLICY "carts_admin_select" ON carts
 
 > User: invokes `theshop.plan` with feature name `add-to-cart`
 >
-> Skill: reads `.claude/specs/add-to-cart.md` → invokes `theshop.constitution` skill (loads `SKILL.md` + relevant `references/rules/*.md`) → optionally consults MCPs → plans deliberately → writes `.claude/plans/add-to-cart.md` → "Saved to `.claude/plans/add-to-cart.md`. One open question surfaced in Section 11."
+> Skill: reads `.specs/add-to-cart/spec.md` → invokes `theshop.constitution` skill (loads `SKILL.md` + relevant `references/rules/*.md`) → optionally consults MCPs → plans deliberately → writes `.specs/add-to-cart/plan.md`, updates `.specs/add-to-cart/status.md` → "Saved to `.specs/add-to-cart/plan.md`. One open question surfaced in Section 11."
 
 **Example 2 — No name provided:**
 
@@ -439,13 +444,13 @@ CREATE POLICY "carts_admin_select" ON carts
 
 > User: invokes `theshop.plan` with feature name `nonexistent-feature`
 >
-> Skill: "I couldn't find a spec at `.claude/specs/nonexistent-feature.md`. I generate implementation plans from specs — please create the spec first (the `/theshop.spec` skill helps) and re-invoke me."
+> Skill: "I couldn't find a spec at `.specs/nonexistent-feature/spec.md`. I generate implementation plans from specs — please create the spec first (the `/theshop.spec` skill helps) and re-invoke me."
 
 **Example 4 — Plan already exists:**
 
 > User: invokes `theshop.plan` with feature name `add-to-cart`
 >
-> Skill: "A plan at `.claude/plans/add-to-cart.md` already exists. Should I overwrite, save as `add-to-cart-v2.md`, or cancel?"
+> Skill: "A plan at `.specs/add-to-cart/plan.md` already exists. Should I overwrite, save as `add-to-cart-v2.md`, or cancel?"
 
 **Example 5 — Figma URL provided via `--figma`:**
 

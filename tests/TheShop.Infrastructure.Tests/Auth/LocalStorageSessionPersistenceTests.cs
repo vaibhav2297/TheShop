@@ -12,7 +12,7 @@ namespace TheShop.Infrastructure.Tests.Auth;
 /// Verifies the session-persistence adapter that backs AC-10 (session survives browser
 /// restart): the correct storage key is written, read, and deleted via
 /// <see cref="ISyncLocalStorageService"/>.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class LocalStorageSessionPersistenceTests
 {

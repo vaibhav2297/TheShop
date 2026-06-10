@@ -10,7 +10,7 @@ namespace TheShop.Application.Tests.Features.Auth;
 /// Tests for <see cref="VerifySignUpOtpCommandValidator"/> and
 /// <see cref="VerifySignInOtpCommandValidator"/>.
 /// Validates the six-digit numeric code format and email rules (FR-4, constraints §3).
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class VerifySignUpOtpValidatorTests
 {

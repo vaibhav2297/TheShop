@@ -13,7 +13,7 @@ You are the orchestrator for a two-step test workflow on **The Shop** project. Y
 
 If `$ARGUMENTS` is empty (the user invoked `/theshop.test` with no feature name), stop and ask:
 
-> "Please provide a feature name. Usage: `/theshop.test <feature-name>` — for example, `/theshop.test add-to-cart`. The feature name must match an existing spec at `.claude/specs/{feature_name}.md`."
+> "Please provide a feature name. Usage: `/theshop.test <feature-name>` — for example, `/theshop.test add-to-cart`. The feature name must match an existing spec at `.specs/{feature_name}/spec.md`."
 
 Wait for the user's reply. Do nothing else.
 
@@ -25,7 +25,7 @@ If a feature name is present, proceed.
 
 Call the `shop-test-writer` sub-agent via the Task tool, with `subagent_type: shop-test-writer`. The prompt to that agent should be:
 
-> "Write test cases for the feature `$ARGUMENTS`. Read the spec at `.claude/specs/$ARGUMENTS.md` (your behavioral oracle) and the plan at `.claude/plans/$ARGUMENTS.md` (your structural map — it reveals the Infrastructure seams the spec hides) and produce runnable test files in the appropriate `tests/TheShop.*.Tests/` projects. Follow your standard protocol and end with the structured summary."
+> "Write test cases for the feature `$ARGUMENTS`. Read the spec at `.specs/$ARGUMENTS/spec.md` (your behavioral oracle) and the plan at `.specs/$ARGUMENTS/plan.md` (your structural map — it reveals the Infrastructure seams the spec hides) and produce runnable test files in the appropriate `tests/TheShop.*.Tests/` projects. Follow your standard protocol and end with the structured summary."
 
 Wait for the sub-agent to fully complete its turn. Do not begin Step 2 in parallel, and do not pre-empt the sub-agent's output.
 
@@ -42,7 +42,7 @@ Only reachable if Step 1 produced test files.
 
 Call the `shop-test-runner` sub-agent via the Task tool, with `subagent_type: shop-test-runner`. The prompt to that agent should be:
 
-> "Run the test cases for the feature `$ARGUMENTS`. Follow your standard protocol: read the manifest at `.claude/test-manifests/$ARGUMENTS.json`, run targeted by feature trait (`--filter \"Feature=$ARGUMENTS\"`), reconcile the discovered test count against the manifest's `totalTests`, evaluate each acceptance criterion against the manifest's `acceptanceCriteria` mapping, analyze across the five layers, and deliver the six-section structured report (including the Acceptance criteria table) with a final verdict. Treat any reconciliation mismatch, any failing acceptance criterion, or any uncovered acceptance criterion as 🔴 NOT READY."
+> "Run the test cases for the feature `$ARGUMENTS`. Follow your standard protocol: read the manifest at `.specs/$ARGUMENTS/test-manifest.json`, run targeted by feature trait (`--filter \"Feature=$ARGUMENTS\"`), reconcile the discovered test count against the manifest's `totalTests`, evaluate each acceptance criterion against the manifest's `acceptanceCriteria` mapping, analyze across the five layers, and deliver the six-section structured report (including the Acceptance criteria table) with a final verdict. Treat any reconciliation mismatch, any failing acceptance criterion, or any uncovered acceptance criterion as 🔴 NOT READY."
 
 Wait for it to fully complete.
 
@@ -51,11 +51,15 @@ Wait for it to fully complete.
 ## Handoff rules (enforce strictly)
 
 1. **Do not start Step 2 until Step 1 is fully complete.** If the writer is still working, wait. No parallel invocation.
-2. **Do not fix any code regardless of what the test results show.** Your job ends at delivering the combined summary. The user is the one who acts on it. If they ask you to fix something inside this command run, tell them the slash command is orchestration-only and they can request fixes in a follow-up message.
+2. **Do not fix any code regardless of what the test results show.** Your job ends at delivering the combined summary — plus updating the feature's tracking artifact `.specs/$ARGUMENTS/status.md` (see below), which is not code. The user is the one who acts on it. If they ask you to fix something inside this command run, tell them the slash command is orchestration-only and they can request fixes in a follow-up message.
 3. **Do not run anything outside `tests/`.** The runner agent handles all execution; you don't invoke `dotnet`, `bash`, or any other command yourself.
 4. **If `shop-test-writer` could not write the test files, stop and report the reason.** Do not proceed to Step 2 under any circumstance — not even "to see what's already there".
 
 ---
+
+## Update the status tracker
+
+After you settle the verdict (Template A only), update `.specs/$ARGUMENTS/status.md`: set the **Test** row to `Passing` when the verdict is ✅ Ready, or `Failing` when it is ❌ Needs fixes, with today's date; refresh **Last updated**; point **Next step** at `/theshop.verify $ARGUMENTS` (Passing) or back at the fix the runner named (Failing). On Template B (writer halted) leave the tracker untouched; on Template C (build failed) set **Test** to `Failing`. Create `status.md` from the `theshop.spec` template first if it's missing.
 
 ## Final output
 
@@ -131,7 +135,7 @@ After both agents complete (or after Step 1 halts), produce a combined summary i
 
 **Reason given by shop-test-writer:**
 
-> {Verbatim quote of the writer's stop reason — e.g., "No spec found at .claude/specs/{feature_name}.md", or "Spec section 'Acceptance Criteria' is empty", or "Open questions remain — agent asked the user for clarification before writing tests".}
+> {Verbatim quote of the writer's stop reason — e.g., "No spec found at .specs/{feature_name}/spec.md", or "Spec section 'Acceptance Criteria' is empty", or "Open questions remain — agent asked the user for clarification before writing tests".}
 
 ## Tests run (shop-test-runner)
 
@@ -141,7 +145,7 @@ After both agents complete (or after Step 1 halts), produce a combined summary i
 
 **⛔ Blocked — tests could not be written**
 
-{One sentence describing what the user needs to do next — typically "Resolve the issue reported above (e.g., create or fix the spec at `.claude/specs/{feature_name}.md`) and re-run `/theshop.test {feature_name}`."}
+{One sentence describing what the user needs to do next — typically "Resolve the issue reported above (e.g., create or fix the spec at `.specs/{feature_name}/spec.md`) and re-run `/theshop.test {feature_name}`."}
 ```
 
 ### Template C — Runner build gate failed

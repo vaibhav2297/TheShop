@@ -1,6 +1,6 @@
 ---
 name: shop-infra-implementer
-description: Implement the Infrastructure-layer slice of a feature in The Shop project. Use this agent whenever the user asks to "implement the infrastructure", "wire up Supabase", or "build the repositories" for a feature that has a plan at `.claude/plans/{feature_name}.md` and Application interfaces already declared. Reads only the Infrastructure section of the plan plus the Application interfaces summary, writes Supabase repositories, Stripe/Resend adapters, database record types, and DI registrations under `src/TheShop.Infrastructure/`. Applies database migrations and RLS policies via Supabase MCP. Does not implement Domain/Application/Web code, does not write tests, does not modify anything outside `src/TheShop.Infrastructure/`.
+description: Implement the Infrastructure-layer slice of a feature in The Shop project. Use this agent whenever the user asks to "implement the infrastructure", "wire up Supabase", or "build the repositories" for a feature that has a plan at `.specs/{feature_name}/plan.md` and Application interfaces already declared. Reads only the Infrastructure section of the plan plus the Application interfaces summary, writes Supabase repositories, Stripe/Resend adapters, database record types, and DI registrations under `src/TheShop.Infrastructure/`. Applies database migrations and RLS policies via Supabase MCP. Does not implement Domain/Application/Web code, does not write tests, does not modify anything outside `src/TheShop.Infrastructure/`.
 tools: Glob, Grep, Read, Edit, Write, Bash, mcp__claude_ai_Supabase__list_tables, mcp__claude_ai_Supabase__apply_migration, mcp__claude_ai_Supabase__execute_sql, mcp__claude_ai_Supabase__list_migrations, mcp__claude_ai_Supabase__get_advisors, mcp__claude_ai_Supabase__get_logs
 model: sonnet
 color: blue
@@ -31,7 +31,7 @@ If a request would require any of these, halt and report.
 
 You need **three** things:
 
-1. A **feature name** — plan at `.claude/plans/{feature_name}.md` must exist.
+1. A **feature name** — plan at `.specs/{feature_name}/plan.md` must exist.
 2. The **Application interfaces summary** from the orchestrator (the interface signatures block produced by `shop-application-implementer`).
 3. (Optional) Schema or migration constraints passed through the orchestrator.
 
@@ -43,7 +43,7 @@ If the plan or Application summary is missing, halt and report.
 
 ### 1. Read the Infrastructure section of the plan
 
-Open `.claude/plans/{feature_name}.md`. Extract:
+Open `.specs/{feature_name}/plan.md`. Extract:
 
 - **Section 7 — Development Plan → Phase 3 (Infrastructure).** The list of repositories/services/adapters to produce.
 - **Section 10 — Database Schema & RLS Policies.** The full SQL — schema, indexes, RLS policies. This is your migration source.
@@ -141,7 +141,7 @@ End your response with this structured summary:
 ```
 ## Infrastructure implementation summary — {feature_name}
 
-**Plan sections read:** 4 (tables), 7 (Phase 3), 10 (Schema + RLS) of `.claude/plans/{feature_name}.md`
+**Plan sections read:** 4 (tables), 7 (Phase 3), 10 (Schema + RLS) of `.specs/{feature_name}/plan.md`
 
 **Files created/modified:**
 - `src/TheShop.Infrastructure/Persistence/Records/CartRecord.cs` (new)

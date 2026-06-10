@@ -21,7 +21,7 @@ namespace TheShop.Web.Tests.Pages.Auth;
 /// <summary>
 /// Tests for the <see cref="SignUpVerify"/> page (sign-up step 2: code entry).
 /// Covers FR-4, FR-5, AC-1, AC-3, AC-6, AC-7 at the UI layer.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class SignUpVerifyTests : TestContext
 {

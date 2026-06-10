@@ -20,7 +20,7 @@ namespace TheShop.Web.Tests.Pages.Auth;
 /// <summary>
 /// Tests for the <see cref="SignIn"/> page (sign-in step 1: email entry).
 /// Covers FR-2, FR-3, AC-2, AC-5 at the UI layer.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class SignInTests : TestContext
 {

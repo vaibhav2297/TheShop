@@ -11,7 +11,7 @@ namespace TheShop.Application.Tests.Features.Auth;
 /// <summary>
 /// Tests for <see cref="RequestSignInOtpHandler"/>.
 /// Covers FR-2, FR-3 and the no-account edge case (AC-5).
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class RequestSignInOtpHandlerTests
 {

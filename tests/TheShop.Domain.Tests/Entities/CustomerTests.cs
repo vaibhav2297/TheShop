@@ -9,7 +9,7 @@ namespace TheShop.Domain.Tests.Entities;
 /// <summary>
 /// Tests for <see cref="Customer"/> entity and the <see cref="Email"/> / <see cref="DateOfBirth"/>
 /// value objects. Covers all registration invariants described in the authentication spec.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class CustomerTests
 {

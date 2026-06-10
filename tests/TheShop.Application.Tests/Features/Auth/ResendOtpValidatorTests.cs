@@ -8,7 +8,7 @@ namespace TheShop.Application.Tests.Features.Auth;
 /// <summary>
 /// Tests for <see cref="ResendOtpCommandValidator"/>.
 /// Covers email validation and enum guard for the resend flow (FR-7, AC-8).
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class ResendOtpValidatorTests
 {

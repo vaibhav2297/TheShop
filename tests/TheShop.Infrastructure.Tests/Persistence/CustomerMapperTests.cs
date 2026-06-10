@@ -12,7 +12,7 @@ namespace TheShop.Infrastructure.Tests.Persistence;
 /// Verifies the mapping contract between <see cref="CustomerRecord"/> (the Supabase row model)
 /// and the <see cref="Customer"/> domain entity, sourced from the plan Data Model (§4) and the
 /// schema (§10).
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class CustomerMapperTests
 {

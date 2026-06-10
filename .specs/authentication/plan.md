@@ -1,6 +1,6 @@
 # Implementation Plan — Authentication
 
-> Companion to `.claude/specs/authentication.md`. This plan is technical (HOW); the spec is non-technical (WHAT/WHY). Read the spec first.
+> Companion to `.specs/authentication/spec.md`. This plan is technical (HOW); the spec is non-technical (WHAT/WHY). Read the spec first.
 
 ## 1. Objective
 
@@ -400,4 +400,4 @@ GRANT EXECUTE ON FUNCTION public.customer_exists(TEXT) TO anon, authenticated;
 - **📌 Assumption — A site-wide culture switcher will be built outside this feature.** Until it exists, the app uses the browser-default culture, and the bilingual email template means OTP delivery still satisfies AC-12.
 
 ---
-**Status:** Draft · **Spec:** `.claude/specs/authentication.md` · **Created:** 2026-05-20
+**Status:** Draft · **Spec:** `.specs/authentication/spec.md` · **Created:** 2026-05-20

@@ -13,7 +13,7 @@ namespace TheShop.Application.Tests.Features.Auth;
 /// <summary>
 /// Tests for <see cref="VerifySignUpOtpHandler"/>.
 /// Covers FR-4, FR-5, AC-1, AC-3, AC-6, AC-7.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class VerifySignUpOtpHandlerTests
 {

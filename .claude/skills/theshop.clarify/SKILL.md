@@ -1,12 +1,12 @@
 ---
 name: theshop.clarify
-description: Resolve the open assumptions and questions in a feature spec. Reads `.claude/specs/{feature_name}.md`, walks each 📌 Assumption and ❓ Open question (plus any inline `(Assumption: …)` markers), asks the user one product-level question at a time with the logged default offered as the recommended answer, folds every confirmed decision back into the relevant spec section, empties the Assumptions & Open Questions appendix, and flips the Status footer from `Draft — N open assumption(s)` to `Confirmed`. Stays strictly product-level (WHAT/WHY) — never introduces HOW. This is the second step of the spec pipeline, between `/theshop.spec` and `/theshop.plan`. Manually invoked only; requires a feature name.
+description: Resolve the open assumptions and questions in a feature spec. Reads `.specs/{feature_name}/spec.md`, walks each 📌 Assumption and ❓ Open question (plus any inline `(Assumption: …)` markers), asks the user one product-level question at a time with the logged default offered as the recommended answer, folds every confirmed decision back into the relevant spec section, empties the Assumptions & Open Questions appendix, and flips the Status footer from `Draft — N open assumption(s)` to `Confirmed`. Stays strictly product-level (WHAT/WHY) — never introduces HOW. This is the second step of the spec pipeline, between `/theshop.spec` and `/theshop.plan`. Manually invoked only; requires a feature name.
 disable-model-invocation: true
 ---
 
 # Clarify Spec
 
-Turn a draft spec's open assumptions into ratified decisions. You read `.claude/specs/{feature_name}.md`, resolve every item in its **Assumptions & Open Questions** appendix with the user, write each decision into the body of the spec, and mark the spec `Confirmed`.
+Turn a draft spec's open assumptions into ratified decisions. You read `.specs/{feature_name}/spec.md`, resolve every item in its **Assumptions & Open Questions** appendix with the user, write each decision into the body of the spec, and mark the spec `Confirmed`.
 
 This skill is **manually invoked only** — it does not auto-trigger. The user explicitly calls it (e.g., `/theshop.clarify add-to-cart`).
 
@@ -21,18 +21,18 @@ Two rules define the job:
 
 ## Inputs
 
-One required input: a **feature name** (matching `.claude/specs/{feature_name}.md`).
+One required input: a **feature name** (matching `.specs/{feature_name}/spec.md`).
 
 - If the user provided a name, use it. Strip a trailing `.md` if they included it, and normalize to the lowercase-hyphenated form (same rules as `theshop.spec`).
 - If the user did **not** provide a name, stop and ask:
 
-  > "Which spec should I clarify? Please give me the feature name (e.g., `add-to-cart`). It must match an existing file at `.claude/specs/{name}.md`."
+  > "Which spec should I clarify? Please give me the feature name (e.g., `add-to-cart`). It must match an existing file at `.specs/{name}/spec.md`."
 
   Wait for the reply. Do not guess from recent context.
 
 - If the named spec does not exist, stop and tell the user:
 
-  > "I couldn't find a spec at `.claude/specs/{name}.md`. I clarify existing specs — create one first with `/theshop.spec {name}`, then re-invoke me."
+  > "I couldn't find a spec at `.specs/{name}/spec.md`. I clarify existing specs — create one first with `/theshop.spec {name}`, then re-invoke me."
 
   Do not proceed without a spec.
 
@@ -40,7 +40,7 @@ One required input: a **feature name** (matching `.claude/specs/{feature_name}.m
 
 ### 1. Read the spec and collect every open item
 
-Open `.claude/specs/{feature_name}.md` and read it in full. Build the worklist from two sources:
+Open `.specs/{feature_name}/spec.md` and read it in full. Build the worklist from two sources:
 
 - The **Assumptions & Open Questions** appendix — each `📌 Assumption` and `❓ Open question`.
 - Any inline `(Assumption: …)` markers in the body that are **not** already represented in the appendix. (A well-formed spec keeps these in sync, but reconcile if they've drifted — the body is authoritative for *where* a decision lives; the appendix is the index.)
@@ -95,7 +95,7 @@ Preserve the original **Created** date; only add/update **Clarified**.
 
 ### 6. Save and confirm
 
-Save the spec back to the same path. Then report, in a couple of sentences: how many items were resolved, anything notable that changed (especially scope), the new Status, and — when fully confirmed — that the plan stage is unblocked. Example:
+Save the spec back to the same path. **Update the status tracker:** in `.specs/{feature_name}/status.md`, set the **Spec** row to `Confirmed` (only when `N = 0`; otherwise leave it `Draft`) with today's date, refresh **Last updated**, and point **Next step** at `/theshop.plan {feature_name}`. (If `status.md` is missing — a pre-tracker feature — create it from the template in `theshop.spec` first.) Then report, in a couple of sentences: how many items were resolved, anything notable that changed (especially scope), the new Status, and — when fully confirmed — that the plan stage is unblocked. Example:
 
 > "Resolved 3 assumptions in `add-to-cart` — confirmed the 30-day guest cart, narrowed scope to exclude saved-for-later, and set the max-items rule to 20 distinct products. Status is now `Confirmed`; you're clear to run `/theshop.plan add-to-cart`."
 
@@ -119,13 +119,13 @@ If items remain open:
 
 > User: `/theshop.clarify add-to-cart`
 >
-> Claude: reads `.claude/specs/add-to-cart.md` → finds 3 open items → asks one product-level question per item (assumed value marked *Recommended*) → folds each answer into the body → empties the appendix → sets Status `Confirmed` → "Resolved 3 assumptions… you're clear to run `/theshop.plan add-to-cart`."
+> Claude: reads `.specs/add-to-cart/spec.md` → finds 3 open items → asks one product-level question per item (assumed value marked *Recommended*) → folds each answer into the body → empties the appendix → sets Status `Confirmed` → "Resolved 3 assumptions… you're clear to run `/theshop.plan add-to-cart`."
 
 **Example 2 — no feature name provided:**
 
 > User: `/theshop.clarify`
 >
-> Claude: "Which spec should I clarify? Please give me the feature name (e.g., `add-to-cart`). It must match an existing file at `.claude/specs/{name}.md`."
+> Claude: "Which spec should I clarify? Please give me the feature name (e.g., `add-to-cart`). It must match an existing file at `.specs/{name}/spec.md`."
 
 **Example 3 — nothing to clarify:**
 
@@ -137,4 +137,4 @@ If items remain open:
 
 > User: `/theshop.clarify wishlist`
 >
-> Claude: "I couldn't find a spec at `.claude/specs/wishlist.md`. I clarify existing specs — create one first with `/theshop.spec wishlist`, then re-invoke me."
+> Claude: "I couldn't find a spec at `.specs/wishlist/spec.md`. I clarify existing specs — create one first with `/theshop.spec wishlist`, then re-invoke me."

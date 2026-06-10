@@ -8,7 +8,7 @@ namespace TheShop.Application.Tests.Features.Auth;
 /// <summary>
 /// Tests for <see cref="RequestSignUpOtpCommandValidator"/>.
 /// Covers validation rules for sign-up input fields (FR-1, AC-12 inline messages).
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class RequestSignUpOtpValidatorTests
 {

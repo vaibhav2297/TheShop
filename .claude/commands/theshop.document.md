@@ -1,6 +1,6 @@
 ---
 description: Add XML doc comments to the current diff using the shop-code-documenter sub-agent. Standalone wrapper for users who want to document existing changes without running the full /theshop.implement flow.
-argument-hint: (no arguments)
+argument-hint: [feature-name (optional, for status tracking)]
 ---
 
 # /theshop.document
@@ -43,6 +43,10 @@ Pass the documenter's structured summary back to the user verbatim. Do not add c
 If the documenter reported a build failure or halted on a question, surface that prominently above the summary:
 
 > "⚠️ Documenter halted — see report below for the reason."
+
+### 4. Update the status tracker (only if a feature name was given)
+
+If `$ARGUMENTS` named a feature **and** the documenter completed successfully, update `.specs/$ARGUMENTS/status.md`: set the **Document** row to `Done` with today's date, refresh **Last updated**, and set **Next step** to `— (pipeline complete)`. Create `status.md` from the template in the `theshop.spec` skill first if it's missing. If no feature name was given (the common standalone case), skip this step — the command stays diff-scoped and touches no tracker.
 
 ---
 

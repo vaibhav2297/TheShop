@@ -9,7 +9,7 @@ namespace TheShop.Web.Tests.State;
 /// <summary>
 /// Tests for <see cref="AuthState"/> client-side store.
 /// Covers AC-10 (session persistence awareness) and AC-11 (sign-out state change).
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class AuthStateTests
 {

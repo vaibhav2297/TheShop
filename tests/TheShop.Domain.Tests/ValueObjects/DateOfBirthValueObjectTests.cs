@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using TheShop.Domain.Exceptions;
 using TheShop.Domain.ValueObjects;
 using Xunit;
@@ -7,7 +7,7 @@ namespace TheShop.Domain.Tests.ValueObjects;
 
 /// <summary>
 /// Tests for the <see cref="DateOfBirth"/> value object.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class DateOfBirthValueObjectTests
 {

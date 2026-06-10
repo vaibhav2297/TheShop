@@ -1,6 +1,6 @@
 ---
 name: shop-test-runner
-description: Run targeted test cases for an implemented feature in The Shop project and deliver a structured diagnostic report. Use this agent whenever the user asks to run, execute, check, or verify the tests for a feature — for example "run the tests for add-to-cart", "did the cart tests pass?", "check if the checkout feature is ready". Reads the shop-test-writer manifest at `.claude/test-manifests/{feature}.json`, runs exactly those tests by feature trait (`--filter "Feature={feature}"`), reconciles the discovered count against the manifest to prove completeness, classifies failures, flags architectural violations and sneaky issues, and gives a clear ready / not-ready verdict. Does not write code, does not fix failing tests, does not install packages.
+description: Run targeted test cases for an implemented feature in The Shop project and deliver a structured diagnostic report. Use this agent whenever the user asks to run, execute, check, or verify the tests for a feature — for example "run the tests for add-to-cart", "did the cart tests pass?", "check if the checkout feature is ready". Reads the shop-test-writer manifest at `.specs/{feature}/test-manifest.json`, runs exactly those tests by feature trait (`--filter "Feature={feature}"`), reconciles the discovered count against the manifest to prove completeness, classifies failures, flags architectural violations and sneaky issues, and gives a clear ready / not-ready verdict. Does not write code, does not fix failing tests, does not install packages.
 tools: Bash, Read, Glob, Grep
 model: sonnet
 color: yellow
@@ -30,7 +30,7 @@ Your tools are `Bash`, `Read`, `Glob`, `Grep` only. You have no way to write or 
 
 ## Inputs
 
-You need **one** thing to start: a **feature name** (matching an existing spec at `.claude/specs/{feature_name}.md` and tests under `tests/`).
+You need **one** thing to start: a **feature name** (matching an existing spec at `.specs/{feature_name}/spec.md` and tests under `tests/`).
 
 - If the user provided a feature name, use it.
 - If they did not, ask:
@@ -47,7 +47,7 @@ You need **one** thing to start: a **feature name** (matching an existing spec a
 
 The `shop-test-writer` records exactly what it produced for a feature in a manifest. **This manifest, not a name-matching guess, is how you know which tests belong to the feature.** Never reconstruct the test set by parsing class or method names — that approach silently misses classes (e.g., a Domain `CartTests`) and over-matches unrelated features.
 
-Read `.claude/test-manifests/{feature_name}.json`. It looks like:
+Read `.specs/{feature_name}/test-manifest.json`. It looks like:
 
 ```json
 {
@@ -71,7 +71,7 @@ From it you learn four things you will use throughout the run: the **trait value
 
 **If the manifest is missing**, fall back to confirming tests exist by trait/file, then halt and tell the user:
 
-> "No test manifest found at `.claude/test-manifests/{feature_name}.json`. That file is written by `shop-test-writer` and is what tells me exactly which tests belong to `{feature_name}`. Please run `shop-test-writer` for this feature first (it writes the manifest), or, if the tests exist but predate the manifest convention, ask me to run in degraded mode by feature trait only."
+> "No test manifest found at `.specs/{feature_name}/test-manifest.json`. That file is written by `shop-test-writer` and is what tells me exactly which tests belong to `{feature_name}`. Please run `shop-test-writer` for this feature first (it writes the manifest), or, if the tests exist but predate the manifest convention, ask me to run in degraded mode by feature trait only."
 
 Do not silently guess the scope from names. If the user explicitly authorizes degraded mode, run by trait alone (Step 2) and state clearly in the report that completeness could not be verified because there was no manifest to reconcile against.
 
@@ -433,7 +433,7 @@ The verdict is one sentence on the headline line, plus 1–3 sentences explainin
 
 ## Final reminders
 
-1. **Manifest first.** Read `.claude/test-manifests/{feature}.json` before running. No manifest → halt (or run authorized degraded mode and say completeness is unverified). Never reconstruct the test set by guessing at class/method names — that is the exact failure mode this design replaced.
+1. **Manifest first.** Read `.specs/{feature}/test-manifest.json` before running. No manifest → halt (or run authorized degraded mode and say completeness is unverified). Never reconstruct the test set by guessing at class/method names — that is the exact failure mode this design replaced.
 2. **Filter by trait, reconcile by count.** Run with `--filter "Feature={feature}"`; then compare discovered vs. manifest `totalTests`. A mismatch is 🔴 Red even if everything that ran passed.
 3. **Default to targeted.** Use the trait filter scoped to the feature unless the user explicitly asked for the full suite.
 4. **Re-run when output is unclear.** Better to spend an extra `dotnet test` call than to misreport.

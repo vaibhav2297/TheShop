@@ -11,7 +11,7 @@ namespace TheShop.Application.Tests.Features.Auth;
 /// <summary>
 /// Tests for <see cref="ResendOtpHandler"/>.
 /// Covers FR-7, AC-8, AC-9 and the 60-second cooldown enforcement.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class ResendOtpHandlerTests
 {

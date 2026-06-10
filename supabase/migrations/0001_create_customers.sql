@@ -5,7 +5,7 @@
 -- first name / last name / DOB / email captured at sign-up. RLS is the only
 -- real security boundary, per ARCHITECTURE.md §Security.
 --
--- Companion plan: .claude/plans/authentication.md §10
+-- Companion plan: .specs/authentication/plan.md §10
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS customers (

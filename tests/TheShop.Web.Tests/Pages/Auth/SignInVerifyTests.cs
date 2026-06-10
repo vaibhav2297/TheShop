@@ -18,7 +18,7 @@ namespace TheShop.Web.Tests.Pages.Auth;
 /// <summary>
 /// Tests for the <see cref="SignInVerify"/> page (sign-in step 2: code entry).
 /// Covers FR-4, FR-7, AC-2, AC-6, AC-7, AC-8.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class SignInVerifyTests : TestContext
 {

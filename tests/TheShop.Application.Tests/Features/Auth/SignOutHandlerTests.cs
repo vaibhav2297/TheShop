@@ -9,7 +9,7 @@ namespace TheShop.Application.Tests.Features.Auth;
 /// <summary>
 /// Tests for <see cref="SignOutHandler"/>.
 /// Covers FR-9, AC-11.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class SignOutHandlerTests
 {

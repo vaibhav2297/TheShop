@@ -17,7 +17,7 @@ This gate sits between `/theshop.test` (steps run against compiled code) and `/t
 
 If `$ARGUMENTS` is empty, stop and ask:
 
-> "Please provide a feature name. Usage: `/theshop.verify <feature-name>` — for example, `/theshop.verify add-to-cart`. The feature must have a spec at `.claude/specs/{feature_name}.md`."
+> "Please provide a feature name. Usage: `/theshop.verify <feature-name>` — for example, `/theshop.verify add-to-cart`. The feature must have a spec at `.specs/{feature_name}/spec.md`."
 
 Wait for the reply. Do nothing else.
 
@@ -29,11 +29,11 @@ Run in order. A failure halts the gate.
 
 ### Pre-flight 1 — Spec and plan must exist
 
-- `.claude/specs/$ARGUMENTS.md` must exist — it holds the **Acceptance Criteria** that are this gate's pass/fail oracle. If missing, halt:
+- `.specs/$ARGUMENTS/spec.md` must exist — it holds the **Acceptance Criteria** that are this gate's pass/fail oracle. If missing, halt:
 
-  > "I couldn't find a spec at `.claude/specs/$ARGUMENTS.md`. Verification checks the spec's acceptance criteria against the running app — create the spec first (`/theshop.spec $ARGUMENTS`)."
+  > "I couldn't find a spec at `.specs/$ARGUMENTS/spec.md`. Verification checks the spec's acceptance criteria against the running app — create the spec first (`/theshop.spec $ARGUMENTS`)."
 
-- `.claude/plans/$ARGUMENTS.md` should exist — it tells you whether the feature is user-facing and which routes/Figma nodes it introduces. If missing, warn but continue (you can still verify ACs by exploring the app).
+- `.specs/$ARGUMENTS/plan.md` should exist — it tells you whether the feature is user-facing and which routes/Figma nodes it introduces. If missing, warn but continue (you can still verify ACs by exploring the app).
 
 ### Pre-flight 2 — Is this feature user-facing? (the gate's applicability test)
 
@@ -60,11 +60,11 @@ If the build is red, halt — there's nothing to run:
 
 ## Step 1 — Assemble the smoke checklist from the spec
 
-You verify against the spec, because its acceptance criteria are written to be *observable from the outside* — exactly what an E2E check needs. From `.claude/specs/$ARGUMENTS.md` extract:
+You verify against the spec, because its acceptance criteria are written to be *observable from the outside* — exactly what an E2E check needs. From `.specs/$ARGUMENTS/spec.md` extract:
 
 - **Section 6 — Acceptance Criteria** → the pass/fail checklist. Each AC is one row in your verdict.
 - **Section 3 — Functional Behaviors** ("User does / User sees") → the concrete click-path for exercising each AC.
-- From `.claude/plans/$ARGUMENTS.md`: the **route(s)** the feature adds (Section 6/7) and the **Figma node intent notes** (Phase 4) → where in the app to look and what it should resemble.
+- From `.specs/$ARGUMENTS/plan.md`: the **route(s)** the feature adds (Section 6/7) and the **Figma node intent notes** (Phase 4) → where in the app to look and what it should resemble.
 
 Present this checklist to the user before launching, so scope is clear.
 
@@ -106,6 +106,10 @@ Always stop the background app when verification ends (success, failure, or halt
 
 ---
 
+## Update the status tracker
+
+Updating the feature's tracking artifact is not a source edit, so it's allowed here. After the verdict settles, update `.specs/$ARGUMENTS/status.md`: set the **Verify** row to `Verified` (Template A, ✅ VERIFIED), `Pending` (Template A, 🔴 NOT VERIFIED — leave it open for a re-run), or `Skipped` (Template B, backend-only) with today's date; refresh **Last updated**; point **Next step** at `/theshop.review $ARGUMENTS`. Leave the tracker untouched on Template C (halted before driving). Create `status.md` from the `theshop.spec` template first if it's missing.
+
 ## Verdict
 
 Emit exactly one template. No extra prose.
@@ -116,7 +120,7 @@ Emit exactly one template. No extra prose.
 # E2E Verification — $ARGUMENTS
 
 ## Scope
-- Spec: `.claude/specs/$ARGUMENTS.md` ✅
+- Spec: `.specs/$ARGUMENTS/spec.md` ✅
 - Surface: user-facing ({route(s) checked})
 - Driver tier: {Tier 1 — automated / Tier 2 — guided manual}
 

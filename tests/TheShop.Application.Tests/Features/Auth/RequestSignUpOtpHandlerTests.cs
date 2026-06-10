@@ -11,7 +11,7 @@ namespace TheShop.Application.Tests.Features.Auth;
 /// <summary>
 /// Tests for <see cref="RequestSignUpOtpHandler"/>.
 /// Covers FR-1, FR-3, FR-6 and the duplicate-email edge case.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public class RequestSignUpOtpHandlerTests
 {

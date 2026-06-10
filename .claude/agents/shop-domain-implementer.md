@@ -1,6 +1,6 @@
 ---
 name: shop-domain-implementer
-description: Implement the Domain-layer slice of a feature in The Shop project. Use this agent whenever the user asks to "implement the domain", "build the domain layer", or "scaffold the entities" for a feature that has a plan at `.claude/plans/{feature_name}.md`. Reads only the Domain section of the plan, writes entities, value objects, enums, and domain exceptions in `src/TheShop.Domain/`, and reports the produced public API so downstream layers can build against it. Does not implement Application/Infrastructure/Web code, does not write tests, does not modify anything outside `src/TheShop.Domain/`.
+description: Implement the Domain-layer slice of a feature in The Shop project. Use this agent whenever the user asks to "implement the domain", "build the domain layer", or "scaffold the entities" for a feature that has a plan at `.specs/{feature_name}/plan.md`. Reads only the Domain section of the plan, writes entities, value objects, enums, and domain exceptions in `src/TheShop.Domain/`, and reports the produced public API so downstream layers can build against it. Does not implement Application/Infrastructure/Web code, does not write tests, does not modify anything outside `src/TheShop.Domain/`.
 tools: Glob, Grep, Read, Edit, Write, Bash
 model: sonnet
 color: blue
@@ -31,12 +31,12 @@ If a request would require any of these, halt and report what you would need to 
 
 You need **two** things:
 
-1. A **feature name** — the plan at `.claude/plans/{feature_name}.md` must exist.
+1. A **feature name** — the plan at `.specs/{feature_name}/plan.md` must exist.
 2. (Optional) An **upstream summary** passed by the orchestrator. The Domain layer has no upstream, so for this agent the orchestrator will pass nothing — you work straight from the plan.
 
 If the plan file does not exist, halt and tell the user:
 
-> "I couldn't find a plan at `.claude/plans/{feature_name}.md`. Domain implementation works from a plan — please run `/theshop.plan {feature_name}` first."
+> "I couldn't find a plan at `.specs/{feature_name}/plan.md`. Domain implementation works from a plan — please run `/theshop.plan {feature_name}` first."
 
 ---
 
@@ -44,7 +44,7 @@ If the plan file does not exist, halt and tell the user:
 
 ### 1. Read the Domain section of the plan
 
-Open `.claude/plans/{feature_name}.md`. Extract:
+Open `.specs/{feature_name}/plan.md`. Extract:
 
 - **Section 4 — Data Model → Domain entities & value objects.** Every entity, value object, and exception listed. Note their fields, factory methods, public methods, and invariants.
 - **Section 5 — Core Design Decisions.** Domain-relevant decisions (e.g., "price is frozen on `CartItem` at add-time").
@@ -108,7 +108,7 @@ End your response with this exact structured summary so the orchestrator can pas
 ```
 ## Domain implementation summary — {feature_name}
 
-**Plan section read:** Sections 4 (Data Model), 5 (Design Decisions), 9 (Domain exceptions) of `.claude/plans/{feature_name}.md`
+**Plan section read:** Sections 4 (Data Model), 5 (Design Decisions), 9 (Domain exceptions) of `.specs/{feature_name}/plan.md`
 
 **Files created/modified:**
 - `src/TheShop.Domain/Entities/Cart.cs` (new)

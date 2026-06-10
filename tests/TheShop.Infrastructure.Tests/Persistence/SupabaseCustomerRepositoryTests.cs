@@ -20,7 +20,7 @@ namespace TheShop.Infrastructure.Tests.Persistence;
 ///   PostgREST, so we exercise the SQL contracts — unique index, not-null
 ///   constraints, <c>customer_exists</c> function — directly via Npgsql.
 ///   Mapper logic is covered separately in <see cref="CustomerMapperTests"/>.
-/// <see href=".claude/specs/authentication.md"/>
+/// <see href=".specs/authentication/spec.md"/>
 /// </summary>
 public sealed class SupabaseCustomerRepositoryTests : IAsyncLifetime
 {

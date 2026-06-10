@@ -1,12 +1,12 @@
 ---
 name: theshop.spec
-description: Generate a non-technical specification document for a single feature and save it to `.claude/specs/{feature_name}.md`. The spec is product-level only — focused on WHAT the feature does and WHY it matters, never on HOW it's built. It contains six fixed numbered sections (problem statement, functional requirements, functional behaviors, constraints, edge cases and error handling, acceptance criteria), an In/Out of Scope block inside Section 1, and an Assumptions & Open Questions appendix that the `/theshop.clarify` skill later resolves. Blocking, load-bearing questions are asked up front; only cheap-to-change defaults are assumed and logged. This skill is manually invoked only (typically via slash command) and requires a feature name from the user.
+description: Generate a non-technical specification document for a single feature and save it to `.specs/{feature_name}/spec.md`. The spec is product-level only — focused on WHAT the feature does and WHY it matters, never on HOW it's built. It contains six fixed numbered sections (problem statement, functional requirements, functional behaviors, constraints, edge cases and error handling, acceptance criteria), an In/Out of Scope block inside Section 1, and an Assumptions & Open Questions appendix that the `/theshop.clarify` skill later resolves. Blocking, load-bearing questions are asked up front; only cheap-to-change defaults are assumed and logged. This skill is manually invoked only (typically via slash command) and requires a feature name from the user.
 disable-model-invocation: true
 ---
 
 # Create Spec
 
-Generate a non-technical feature specification and save it to `.claude/specs/{feature_name}.md`.
+Generate a non-technical feature specification and save it to `.specs/{feature_name}/spec.md`.
 
 This skill is **manually invoked only**. It does not auto-trigger from conversational cues — the user must explicitly call it (e.g., via a slash command).
 
@@ -53,7 +53,7 @@ The skill takes one required input: a **feature name**.
 
 Before writing, take a quick pass for context — but don't turn this into a long interview.
 
-- Glance at related files in the workspace if obviously relevant (existing specs in `.claude/specs/`, project README, product docs).
+- Glance at related files in the workspace if obviously relevant (existing specs in `.specs/`, project README, product docs).
 - If one or two product-level details would meaningfully change the spec, ask focused questions. Keep questions in WHAT/WHY territory:
   - ✅ "Does this apply to logged-out users too, or only signed-in?"
   - ✅ "Should the cart persist across sessions?"
@@ -76,17 +76,21 @@ Use the exact six numbered sections — don't add or drop a numbered section. Th
 
 ### 4. Save the file
 
-- Path: `.claude/specs/{feature_name}.md` (lowercase hyphenated form)
-- Create the `.claude/specs/` directory if it does not already exist.
-- If a file at that path already exists, ask the user whether to overwrite, save with a version suffix (e.g., `add-to-cart-v2.md`), or cancel.
+- Path: `.specs/{feature_name}/spec.md` (lowercase hyphenated folder, generic `spec.md` file name)
+- Create the `.specs/{feature_name}/` directory if it does not already exist. This is the feature's home folder — its plan, test manifest, and status tracker all live here too.
+- If a `spec.md` already exists in that folder, ask the user whether to overwrite, save with a version suffix (e.g., `spec-v2.md`), or cancel.
 
-### 5. Confirm
+### 5. Initialize the status tracker
+
+Write `.specs/{feature_name}/status.md` — the feature's at-a-glance SDD pipeline tracker — using the **Status tracker template** at the end of this file. Set the **Spec** row to `Draft` with today's date, leave every later stage as `—`, and point **Next step** at `/theshop.clarify {feature_name}`. If a `status.md` already exists (e.g., the spec is being regenerated), update the Spec row rather than overwriting the whole file.
+
+### 6. Confirm
 
 Report the saved path in one short sentence. If the spec has open assumptions, point the user at `/theshop.clarify`; otherwise just offer to refine. Examples:
 
-> "Saved to `.claude/specs/add-to-cart.md` — 2 open assumptions logged. Run `/theshop.clarify add-to-cart` to resolve them, or tell me to tighten any section."
+> "Saved to `.specs/add-to-cart/spec.md` — 2 open assumptions logged. Run `/theshop.clarify add-to-cart` to resolve them, or tell me to tighten any section."
 
-> "Saved to `.claude/specs/add-to-cart.md` — no open assumptions. Want me to tighten any section?"
+> "Saved to `.specs/add-to-cart/spec.md` — no open assumptions. Want me to tighten any section?"
 
 ## Spec template
 
@@ -201,7 +205,7 @@ Examples of the right level:
 
 > User: `/theshop.spec add-to-cart`
 >
-> Claude: [optionally asks one product-level question, e.g., "Does this need to support logged-out users, or only signed-in?"] → writes `.claude/specs/add-to-cart.md` → "Saved to `.claude/specs/add-to-cart.md`. Want me to tighten any section?"
+> Claude: [optionally asks one product-level question, e.g., "Does this need to support logged-out users, or only signed-in?"] → writes `.specs/add-to-cart/spec.md` and `.specs/add-to-cart/status.md` → "Saved to `.specs/add-to-cart/spec.md`. Want me to tighten any section?"
 
 **Example 2 — No feature name provided:**
 
@@ -213,4 +217,41 @@ Examples of the right level:
 
 > User: `/theshop.spec add-to-cart`
 >
-> Claude: "A spec at `.claude/specs/add-to-cart.md` already exists. Should I overwrite it, save as `add-to-cart-v2.md`, or cancel?"
+> Claude: "A spec at `.specs/add-to-cart/spec.md` already exists. Should I overwrite it, save as `spec-v2.md`, or cancel?"
+
+## Status tracker template
+
+Every feature carries a `.specs/{feature_name}/status.md` — a one-glance view of where it sits in the SDD pipeline. This skill **creates** it; each later step (`/theshop.clarify`, `/theshop.plan`, `/theshop.resolve`, `/theshop.implement`, `/theshop.test`, `/theshop.verify`, `/theshop.review`, `/theshop.document`) **updates its own row** plus the **Last updated** and **Next step** lines. Use this exact structure:
+
+```markdown
+# {Feature Title} — SDD Status
+
+**Feature:** `{feature_name}`
+**Last updated:** {YYYY-MM-DD}
+
+| Stage | State | Date |
+|---|---|---|
+| 1. Spec       | Draft | {YYYY-MM-DD} |
+| 2. Plan       | —     | — |
+| 3. Implement  | —     | — |
+| 4. Test       | —     | — |
+| 5. Verify     | —     | — |
+| 6. Review     | —     | — |
+| 7. Document   | —     | — |
+
+**Next step:** `/theshop.clarify {feature_name}`
+```
+
+Stage state vocabulary (a step only ever writes its own row):
+
+| Stage | Set by | State transition |
+|---|---|---|
+| 1. Spec | `/theshop.spec` → `/theshop.clarify` | `Draft` → `Confirmed` |
+| 2. Plan | `/theshop.plan` → `/theshop.resolve` | `Draft` → `Resolved` |
+| 3. Implement | `/theshop.implement` | `Pending` → `Done` |
+| 4. Test | `/theshop.test` | `Pending` → `Passing` / `Failing` |
+| 5. Verify | `/theshop.verify` | `Pending` → `Verified` / `Skipped` |
+| 6. Review | `/theshop.review` | `Pending` → `Approved` / `Changes requested` |
+| 7. Document | `/theshop.document` | `Pending` → `Done` |
+
+A step that runs against a feature created before this tracker existed should create `status.md` from the template first (back-filling earlier rows as best it can from the spec/plan status footers), then set its own row.

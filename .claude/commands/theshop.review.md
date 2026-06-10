@@ -121,7 +121,7 @@ Produce the report in **exactly** this structure. No prose around it.
 ## Scope
 
 - Files changed: {N} ({list from `git diff --name-only`})
-- Spec: `.claude/specs/$ARGUMENTS.md` ✅
+- Spec: `.specs/$ARGUMENTS/spec.md` ✅
 - Reviewers run: `shop-code-security-reviewer`, `shop-code-quality-review` (parallel)
 - Localization (French): {✅ all feature keys translated / 🔴 {N} key(s) untranslated — see action plan}
 
@@ -197,6 +197,10 @@ Pick the verdict using only these rules — no judgment calls:
 
 Critically: even one critical security finding — or a single untranslated French feature key — overrides everything else and forces 🔴, regardless of how many ✅ items the reviewers found.
 
+### Update the status tracker
+
+Once the verdict is set, update the feature's tracking artifact `.specs/$ARGUMENTS/status.md` (this is the one `.specs/*` write this command permits): set the **Review** row to `Approved` (✅ APPROVED or 🟡 APPROVED WITH SUGGESTIONS) or `Changes requested` (🔴 CHANGES REQUESTED) with today's date, refresh **Last updated**, and point **Next step** at `/theshop.document` (approved) or back at the action plan (changes requested). Create `status.md` from the `theshop.spec` template first if it's missing.
+
 ---
 
 ## Step 5 — Ask for approval
@@ -251,4 +255,4 @@ When implementation is finished, produce a short summary:
 3. **Do not skip the pre-flight checks.** No spec → halt. No diff → halt. Both pre-flights run before any reviewer is invoked.
 4. **Do not proceed if the spec file doesn't exist.** Report and stop. The spec gate is intentional.
 5. **Do not present a partial review as complete.** If either reviewer fails, no unified report is produced — just an error report and stop.
-6. **Do not edit any file under `.claude/skills/shop-guideline/` or `.claude/specs/*` in the implementation phase.** The skill's rules, references, examples, and checklists are governing documents — changes to them belong in a separate, deliberate flow, not in a quick fix loop.
+6. **Do not edit any file under `.claude/skills/shop-guideline/` or `.specs/*` in the implementation phase.** The skill's rules, references, examples, and checklists are governing documents, and a feature's `.specs/{feature}/` artifacts (spec, plan, manifest) are its ratified record — changes to them belong in a separate, deliberate flow, not in a quick fix loop. (Updating `.specs/$ARGUMENTS/status.md` to record the review outcome is the one allowed exception — see below.)

@@ -1,12 +1,12 @@
 ---
 name: theshop.resolve
-description: Resolve the open questions, risks, and assumptions in a feature's technical implementation plan. Reads `.claude/plans/{feature_name}.md`, walks every ❓ Open question, ⚠️ Risk, and 📌 Assumption in Section 11 (plus any inline `📌` markers in the body), asks the user one technical question at a time with the logged default offered as the recommended answer, folds every confirmed decision back into the relevant plan section (Data Model, Design Decisions, Validation, Schema/RLS, Development Plan), records a mitigation or explicit acceptance for each risk, empties Section 11 of everything that's now settled, and flips the Status footer from `Draft` to `Resolved`. Stays at technical (HOW) altitude — this is the plan, not the spec. This is the fourth step of the SDD pipeline, between `/theshop.plan` and `/theshop.implement`. Manually invoked only; requires a feature name.
+description: Resolve the open questions, risks, and assumptions in a feature's technical implementation plan. Reads `.specs/{feature_name}/plan.md`, walks every ❓ Open question, ⚠️ Risk, and 📌 Assumption in Section 11 (plus any inline `📌` markers in the body), asks the user one technical question at a time with the logged default offered as the recommended answer, folds every confirmed decision back into the relevant plan section (Data Model, Design Decisions, Validation, Schema/RLS, Development Plan), records a mitigation or explicit acceptance for each risk, empties Section 11 of everything that's now settled, and flips the Status footer from `Draft` to `Resolved`. Stays at technical (HOW) altitude — this is the plan, not the spec. This is the fourth step of the SDD pipeline, between `/theshop.plan` and `/theshop.implement`. Manually invoked only; requires a feature name.
 disable-model-invocation: true
 ---
 
 # Resolve Plan
 
-Turn a draft plan's open questions, risks, and assumptions into ratified engineering decisions. You read `.claude/plans/{feature_name}.md`, resolve every item in its **Section 11 (Open Questions, Risks & Assumptions)** with the user, write each decision into the body of the plan, and mark the plan `Resolved`.
+Turn a draft plan's open questions, risks, and assumptions into ratified engineering decisions. You read `.specs/{feature_name}/plan.md`, resolve every item in its **Section 11 (Open Questions, Risks & Assumptions)** with the user, write each decision into the body of the plan, and mark the plan `Resolved`.
 
 This is the plan-level counterpart to `/theshop.clarify` (which does the same job for the *spec*). The difference is altitude: `clarify` stays product-level (WHAT/WHY); **`resolve` is technical (HOW)** — it is fine and expected to discuss endpoints, schema, concurrency, RLS, validators, and library choices here.
 
@@ -21,18 +21,18 @@ Two rules define the job:
 
 ## Inputs
 
-One required input: a **feature name** (matching `.claude/plans/{feature_name}.md`).
+One required input: a **feature name** (matching `.specs/{feature_name}/plan.md`).
 
 - If the user provided a name, use it. Strip a trailing `.md` if included, and normalize to the lowercase-hyphenated form.
 - If the user did **not** provide a name, stop and ask:
 
-  > "Which plan should I resolve? Please give me the feature name (e.g., `add-to-cart`). It must match an existing file at `.claude/plans/{name}.md`."
+  > "Which plan should I resolve? Please give me the feature name (e.g., `add-to-cart`). It must match an existing file at `.specs/{name}/plan.md`."
 
   Wait for the reply. Do not guess from recent context.
 
 - If the named plan does not exist, stop and tell the user:
 
-  > "I couldn't find a plan at `.claude/plans/{name}.md`. I resolve existing plans — create one first with `/theshop.plan {name}`, then re-invoke me."
+  > "I couldn't find a plan at `.specs/{name}/plan.md`. I resolve existing plans — create one first with `/theshop.plan {name}`, then re-invoke me."
 
   Do not proceed without a plan.
 
@@ -40,7 +40,7 @@ One required input: a **feature name** (matching `.claude/plans/{feature_name}.m
 
 ### 1. Read the plan and collect every open item
 
-Open `.claude/plans/{feature_name}.md` and read it in full. Build the worklist from two sources:
+Open `.specs/{feature_name}/plan.md` and read it in full. Build the worklist from two sources:
 
 - **Section 11 (Open Questions, Risks & Assumptions)** — each `❓ Open question`, `⚠️ Risk`, and `📌 Assumption`.
 - Any inline `📌 Assumption` markers in the body (carried forward from the spec when the plan was written on a still-`Draft` spec) that are **not** already represented in Section 11.
@@ -96,7 +96,7 @@ Recount what remains in Section 11 (`❓` open questions + unratified `📌`; `A
 - **All open questions answered and all assumptions ratified (count = 0):** Section 11 reads `None — all questions resolved.` (followed by any `✅ Accepted` risks, if present), and the footer becomes:
 
   ```
-  **Status:** Resolved · **Spec:** `.claude/specs/{file_name}.md` · **Created:** {original date} · **Resolved:** {today YYYY-MM-DD}
+  **Status:** Resolved · **Spec:** `.specs/{file_name}/spec.md` · **Created:** {original date} · **Resolved:** {today YYYY-MM-DD}
   ```
 
 - **Partially resolved (count > 0, user deferred some to a later pass):** keep the footer as `Draft`, leave the still-open items in Section 11, and report the remaining count.
@@ -105,7 +105,7 @@ Preserve the original **Created** date; only add/update **Resolved**.
 
 ### 6. Save and confirm
 
-Save the plan back to the same path. Then report, in a couple of sentences: how many items were resolved, anything notable that changed (especially schema or a load-bearing design decision), how each risk was dispositioned, the new Status, and — when fully resolved — that implementation is unblocked. Example:
+Save the plan back to the same path. **Update the status tracker:** in `.specs/{feature_name}/status.md`, set the **Plan** row to `Resolved` (only when no open questions/unratified assumptions remain; otherwise leave it `Draft`) with today's date, refresh **Last updated**, and point **Next step** at `/theshop.implement {feature_name}`. (Create `status.md` from the `theshop.spec` template first if it's missing.) Then report, in a couple of sentences: how many items were resolved, anything notable that changed (especially schema or a load-bearing design decision), how each risk was dispositioned, the new Status, and — when fully resolved — that implementation is unblocked. Example:
 
 > "Resolved 4 items in `add-to-cart` — chose the `(cart_id, product_id)` unique-index upsert for the concurrency question, ratified the 20-distinct-items cap, added a lazy TTL purge to Phase 3, and accepted the price-drift risk with a noted mitigation. Status is now `Resolved`; you're clear to run `/theshop.implement add-to-cart`."
 
@@ -129,13 +129,13 @@ If items remain open:
 
 > User: `/theshop.resolve add-to-cart`
 >
-> Claude: reads `.claude/plans/add-to-cart.md` → finds 1 open question, 2 assumptions, 1 risk → asks one technical question per item (defaults marked *Recommended*) → folds each decision into Sections 4/5/7/10 → dispositions the risk (mitigate or accept) → empties Section 11 → sets Status `Resolved` → "Resolved 4 items… you're clear to run `/theshop.implement add-to-cart`."
+> Claude: reads `.specs/add-to-cart/plan.md` → finds 1 open question, 2 assumptions, 1 risk → asks one technical question per item (defaults marked *Recommended*) → folds each decision into Sections 4/5/7/10 → dispositions the risk (mitigate or accept) → empties Section 11 → sets Status `Resolved` → "Resolved 4 items… you're clear to run `/theshop.implement add-to-cart`."
 
 **Example 2 — no feature name provided:**
 
 > User: `/theshop.resolve`
 >
-> Claude: "Which plan should I resolve? Please give me the feature name (e.g., `add-to-cart`). It must match an existing file at `.claude/plans/{name}.md`."
+> Claude: "Which plan should I resolve? Please give me the feature name (e.g., `add-to-cart`). It must match an existing file at `.specs/{name}/plan.md`."
 
 **Example 3 — nothing to resolve:**
 
@@ -147,4 +147,4 @@ If items remain open:
 
 > User: `/theshop.resolve wishlist`
 >
-> Claude: "I couldn't find a plan at `.claude/plans/wishlist.md`. I resolve existing plans — create one first with `/theshop.plan wishlist`, then re-invoke me."
+> Claude: "I couldn't find a plan at `.specs/wishlist/plan.md`. I resolve existing plans — create one first with `/theshop.plan wishlist`, then re-invoke me."

@@ -1,6 +1,6 @@
 ---
 name: shop-application-implementer
-description: Implement the Application-layer slice of a feature in The Shop project. Use this agent whenever the user asks to "implement the application layer", "build the use cases", or "wire up the MediatR handlers" for a feature that has a plan at `.claude/plans/{feature_name}.md`. Reads only the Application section of the plan plus the Domain public API summary from the upstream agent, writes MediatR Commands/Queries/Handlers, FluentValidation validators, DTOs, AutoMapper profiles, and Application-layer interfaces under `src/TheShop.Application/`. Does not implement Domain/Infrastructure/Web code, does not write tests, does not modify anything outside `src/TheShop.Application/`.
+description: Implement the Application-layer slice of a feature in The Shop project. Use this agent whenever the user asks to "implement the application layer", "build the use cases", or "wire up the MediatR handlers" for a feature that has a plan at `.specs/{feature_name}/plan.md`. Reads only the Application section of the plan plus the Domain public API summary from the upstream agent, writes MediatR Commands/Queries/Handlers, FluentValidation validators, DTOs, AutoMapper profiles, and Application-layer interfaces under `src/TheShop.Application/`. Does not implement Domain/Infrastructure/Web code, does not write tests, does not modify anything outside `src/TheShop.Application/`.
 tools: Glob, Grep, Read, Edit, Write, Bash
 model: sonnet
 color: blue
@@ -31,7 +31,7 @@ If a request would require any of these, halt and report.
 
 You need **three** things:
 
-1. A **feature name** — plan at `.claude/plans/{feature_name}.md` must exist.
+1. A **feature name** — plan at `.specs/{feature_name}/plan.md` must exist.
 2. The **Domain public API summary** from the orchestrator (the signatures block produced by `shop-domain-implementer`). Build against those exact signatures.
 3. (Optional) Any clarifications the user passed through the orchestrator.
 
@@ -43,7 +43,7 @@ If the plan or Domain summary is missing, halt and report what's missing.
 
 ### 1. Read the Application section of the plan
 
-Open `.claude/plans/{feature_name}.md`. Extract:
+Open `.specs/{feature_name}/plan.md`. Extract:
 
 - **Section 3 — High-level Architecture.** Note the flow diagram so you know which handlers call which interfaces.
 - **Section 4 — Data Model → DTOs.** Every DTO with its property shape.
@@ -129,7 +129,7 @@ End your response with this structured summary:
 ```
 ## Application implementation summary — {feature_name}
 
-**Plan sections read:** 3, 4 (DTOs), 6, 7 (Phase 2), 9 of `.claude/plans/{feature_name}.md`
+**Plan sections read:** 3, 4 (DTOs), 6, 7 (Phase 2), 9 of `.specs/{feature_name}/plan.md`
 
 **Files created/modified:**
 - `src/TheShop.Application/Features/Cart/Commands/AddToCart/AddToCartCommand.cs` (new)

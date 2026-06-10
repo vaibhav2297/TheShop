@@ -17,7 +17,7 @@ This command produces working code across Domain, Application, Infrastructure, a
 
 If `$ARGUMENTS` is empty, stop and ask:
 
-> "Please provide a feature name. Usage: `/theshop.implement <feature-name>` — for example, `/theshop.implement add-to-cart`. The feature name must match an existing plan at `.claude/plans/{feature_name}.md`."
+> "Please provide a feature name. Usage: `/theshop.implement <feature-name>` — for example, `/theshop.implement add-to-cart`. The feature name must match an existing plan at `.specs/{feature_name}/plan.md`."
 
 Wait for the reply. Do nothing else.
 
@@ -29,9 +29,9 @@ Run these in order. A failure halts the whole flow.
 
 ### Pre-flight 1 — Plan must exist
 
-Check `.claude/plans/$ARGUMENTS.md` exists. If not, halt:
+Check `.specs/$ARGUMENTS/plan.md` exists (the feature's home folder is `.specs/$ARGUMENTS/`). If not, halt:
 
-> "I couldn't find a plan at `.claude/plans/$ARGUMENTS.md`. Implementation works from a plan — please run `/theshop.plan $ARGUMENTS` first."
+> "I couldn't find a plan at `.specs/$ARGUMENTS/plan.md`. Implementation works from a plan — please run `/theshop.plan $ARGUMENTS` first."
 
 ### Pre-flight 1b — Plan should be resolved (warn, not a hard gate)
 
@@ -63,7 +63,7 @@ Run `git status --short`. If the working tree is dirty, note it once at the top 
 
 Invoke `shop-domain-implementer` via the Task tool, `subagent_type: shop-domain-implementer`. Prompt:
 
-> "Implement the Domain-layer slice of feature `$ARGUMENTS`. Read `.claude/plans/$ARGUMENTS.md`, focus on Sections 4 (Domain entities/VOs), 5 (relevant decisions), and 9 (Domain exceptions). Follow your standard protocol and end with the structured summary including the **Public API produced** signatures block."
+> "Implement the Domain-layer slice of feature `$ARGUMENTS`. Read `.specs/$ARGUMENTS/plan.md`, focus on Sections 4 (Domain entities/VOs), 5 (relevant decisions), and 9 (Domain exceptions). Follow your standard protocol and end with the structured summary including the **Public API produced** signatures block."
 
 Wait for completion.
 
@@ -83,7 +83,7 @@ Capture the **Public API produced** signatures block. This is the **Domain API h
 
 Invoke `shop-application-implementer` via the Task tool, `subagent_type: shop-application-implementer`. Prompt:
 
-> "Implement the Application-layer slice of feature `$ARGUMENTS`. Read `.claude/plans/$ARGUMENTS.md`, focus on Sections 3, 4 (DTOs), 6, 7 (Phase 2), and 9. Build against this exact Domain API produced by the upstream agent — do not re-derive it:
+> "Implement the Application-layer slice of feature `$ARGUMENTS`. Read `.specs/$ARGUMENTS/plan.md`, focus on Sections 3, 4 (DTOs), 6, 7 (Phase 2), and 9. Build against this exact Domain API produced by the upstream agent — do not re-derive it:
 >
 > {paste the Domain Public API block from Phase 1 verbatim, fenced as csharp}
 >
@@ -111,7 +111,7 @@ These two layers are siblings — both depend on Application, neither depends on
 
 Prompt:
 
-> "Implement the Infrastructure-layer slice of feature `$ARGUMENTS`. Read `.claude/plans/$ARGUMENTS.md`, focus on Sections 4 (tables), 7 (Phase 3), and 10 (Schema + RLS). Build against these Application interfaces produced by the upstream agent — do not re-derive them:
+> "Implement the Infrastructure-layer slice of feature `$ARGUMENTS`. Read `.specs/$ARGUMENTS/plan.md`, focus on Sections 4 (tables), 7 (Phase 3), and 10 (Schema + RLS). Build against these Application interfaces produced by the upstream agent — do not re-derive them:
 >
 > {paste the Interfaces produced block from Phase 2 verbatim}
 >
@@ -121,7 +121,7 @@ Prompt:
 
 Prompt:
 
-> "Implement the Web-layer slice of feature `$ARGUMENTS`. Read `.claude/plans/$ARGUMENTS.md`, focus on Sections 6, 7 (Phase 4), and 9, plus the Figma references in the Web section. Build against these Application DTOs and Commands produced by the upstream agent — do not re-derive them:
+> "Implement the Web-layer slice of feature `$ARGUMENTS`. Read `.specs/$ARGUMENTS/plan.md`, focus on Sections 6, 7 (Phase 4), and 9, plus the Figma references in the Web section. Build against these Application DTOs and Commands produced by the upstream agent — do not re-derive them:
 >
 > {paste the DTOs and Commands produced block from Phase 2 verbatim}
 >
@@ -161,10 +161,14 @@ You do not run `dotnet format` yourself. A `Stop` hook configured in `.claude/se
 2. **Phase 3's two agents launch in the same response.** Sequential invocation is a bug.
 3. **API handoff payloads are literal C# signatures**, pasted verbatim from the upstream agent's summary. Do not paraphrase. Do not abbreviate. Do not "summarize the gist."
 4. **Maximum one retry per agent.** Two failures in a row → halt and surface the failure to the user. Don't loop indefinitely.
-5. **No edits by the orchestrator.** You delegate; you don't edit. If a layer agent's summary suggests a Domain change is needed, halt and ask the user — do not patch from here.
+5. **No edits by the orchestrator.** You delegate; you don't edit *production code*. The one exception is the feature's tracking artifact: on a fully successful run you update `.specs/$ARGUMENTS/status.md` (see below). If a layer agent's summary suggests a Domain change is needed, halt and ask the user — do not patch from here.
 6. **No `Strings.resx` edits outside of the Application agent's explicit scope.** The Application agent owns resource-key additions per its protocol. Other agents flag missing keys as open questions; they don't add them.
 
 ---
+
+## Update the status tracker (full success only)
+
+After Phase 3's full-solution build passes (Template A path), update `.specs/$ARGUMENTS/status.md`: set the **Implement** row to `Done` with today's date, refresh **Last updated**, and point **Next step** at `/theshop.test $ARGUMENTS`. If `status.md` is missing (a pre-tracker feature), create it from the template in the `theshop.spec` skill first. Do **not** touch the tracker on a halted/failed run (templates B and C).
 
 ## Final output
 

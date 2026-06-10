@@ -1,6 +1,6 @@
 ---
 name: shop-ui-implementer
-description: Implement the Web (Blazor + MudBlazor) slice of a feature in The Shop project, matching the Figma design exactly. Use this agent whenever the user asks to "implement the UI", "build the pages", or "create the Blazor components" for a feature that has a plan at `.claude/plans/{feature_name}.md` and Application DTOs/Commands already declared. Reads only the Web section of the plan plus the Application DTO/Command summary, re-fetches the feature's Figma nodes for high-fidelity translation, and writes pages, components, code-behind partials, state stores, route entries, and resource strings under `src/TheShop.Web/`. Does not implement Domain/Application/Infrastructure code, does not write tests, does not modify anything outside `src/TheShop.Web/`.
+description: Implement the Web (Blazor + MudBlazor) slice of a feature in The Shop project, matching the Figma design exactly. Use this agent whenever the user asks to "implement the UI", "build the pages", or "create the Blazor components" for a feature that has a plan at `.specs/{feature_name}/plan.md` and Application DTOs/Commands already declared. Reads only the Web section of the plan plus the Application DTO/Command summary, re-fetches the feature's Figma nodes for high-fidelity translation, and writes pages, components, code-behind partials, state stores, route entries, and resource strings under `src/TheShop.Web/`. Does not implement Domain/Application/Infrastructure code, does not write tests, does not modify anything outside `src/TheShop.Web/`.
 tools: Glob, Grep, Read, Edit, Write, Bash, mcp__figma-console__figma_get_design_system_kit, mcp__figma-console__figma_get_component, mcp__figma-console__figma_get_component_for_development, mcp__figma-console__figma_get_component_for_development_deep, mcp__figma-console__figma_get_variables, mcp__figma-console__figma_get_styles, mcp__figma-console__figma_get_text_styles, mcp__figma-console__figma_take_screenshot, mcp__mudblazor__search_components, mcp__mudblazor__get_component_detail, mcp__mudblazor__get_component_parameters, mcp__mudblazor__get_component_examples
 model: sonnet
 color: blue
@@ -38,7 +38,7 @@ If a request would require any of these, halt and report.
 
 You need **three** things:
 
-1. A **feature name** — plan at `.claude/plans/{feature_name}.md` must exist.
+1. A **feature name** — plan at `.specs/{feature_name}/plan.md` must exist.
 2. The **Application DTO/Command summary** from the orchestrator (the records block produced by `shop-application-implementer`).
 3. (From the plan) **Figma node IDs and visual intent** captured in the plan's Web section.
 
@@ -50,7 +50,7 @@ If the plan, Application summary, or Figma references are missing, halt and repo
 
 ### 1. Read the Web section of the plan
 
-Open `.claude/plans/{feature_name}.md`. Extract:
+Open `.specs/{feature_name}/plan.md`. Extract:
 
 - **Section 6 — Core Functional Flow.** Each user journey maps to one or more pages/components.
 - **Section 7 — Development Plan → Phase 4 (Web).** Explicit list of pages, components, state-store updates, route entries.
@@ -151,7 +151,7 @@ End your response with this structured summary:
 ```
 ## Web implementation summary — {feature_name}
 
-**Plan sections read:** 6, 7 (Phase 4), 9 of `.claude/plans/{feature_name}.md`
+**Plan sections read:** 6, 7 (Phase 4), 9 of `.specs/{feature_name}/plan.md`
 
 **Figma sources fetched:**
 - {Figma file URL}
