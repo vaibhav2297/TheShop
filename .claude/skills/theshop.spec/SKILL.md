@@ -1,6 +1,7 @@
 ---
 name: theshop.spec
-description: Generate a non-technical specification document for a single feature and save it to `.specs/{feature_name}/spec.md`. The spec is product-level only — focused on WHAT the feature does and WHY it matters, never on HOW it's built. It contains six fixed numbered sections (problem statement, functional requirements, functional behaviors, constraints, edge cases and error handling, acceptance criteria), an In/Out of Scope block inside Section 1, and an Assumptions & Open Questions appendix that the `/theshop.clarify` skill later resolves. Blocking, load-bearing questions are asked up front; only cheap-to-change defaults are assumed and logged. This skill is manually invoked only (typically via slash command) and requires a feature name from the user.
+description: Generate a non-technical specification document for a single feature and save it to `.specs/{feature_name}/spec.md`. The spec is product-level only — focused on WHAT the feature does and WHY it matters, never on HOW it's built. It contains six fixed numbered sections (problem statement, functional requirements, functional behaviors, constraints, edge cases and error handling, acceptance criteria), an In/Out of Scope block inside Section 1, and an Assumptions & Open Questions appendix that the `/theshop.clarify` skill later resolves. Blocking, load-bearing questions are asked up front; only cheap-to-change defaults are assumed and logged. This skill is manually invoked only (typically via slash command) and requires a feature name from the user; an optional `--desc <description>` may follow the name to seed the spec's content.
+argument-hint: <feature-name> [--desc <description>]
 disable-model-invocation: true
 ---
 
@@ -30,14 +31,31 @@ If a section starts pulling toward implementation, rewrite it from the user's po
 
 ## Inputs
 
-The skill takes one required input: a **feature name**.
+The skill takes one required input — a **feature name** — and one optional input — a **free-text description** introduced by `--desc`:
 
-- If the user provided a feature name when invoking the skill, use it.
-- If the user did **not** provide a feature name, stop and ask:
+```
+/theshop.spec <feature-name> [--desc <description>]
+```
 
-  > "Which feature should I create the spec for? Please give me a short feature name (e.g., `add-to-cart`, `user-authentication`)."
+**Parsing the invocation:**
 
-  Wait for the reply before doing anything else. Do not invent a feature name, do not pick one from recent conversation context, and do not generate a generic template. The feature name must come from the user.
+- Everything before `--desc` is the **feature name** (e.g., `add-to-cart`, `user authentication`).
+- Everything after `--desc` is the **description** — free text, no quoting needed (e.g., `/theshop.spec wishlist --desc customers can save products for later and get notified on price drops`).
+- No `--desc`? The entire input is the feature name, exactly as before.
+- A `--desc` with nothing after it is treated as no description.
+
+**No feature name at all** (empty input, or input that starts with `--desc`)? Stop and ask:
+
+> "Which feature should I create the spec for? Please give me a short feature name (e.g., `add-to-cart`, `user-authentication`) — optionally followed by `--desc` and a description of what it should do."
+
+Wait for the reply before doing anything else. Do not invent a feature name, do not pick one from recent conversation context, and do not generate a generic template. The feature name must come from the user.
+
+**How the description is used (when present):**
+
+- Treat it as **authoritative product input** — it is the user pre-answering context questions. Requirements, scope hints, and behaviors stated in it go straight into the spec; don't re-ask what it already answers.
+- It does **not** bypass the workflow. Still run step 2: classify the *remaining* uncertainties, ask the blocking ones, assume-and-mark the cheap ones. A description usually shrinks the question list; it never replaces it.
+- If the description contains HOW-level details (libraries, schemas, endpoints), keep them **out of the spec** — acknowledge them in your reply and note they belong in `/theshop.plan`.
+- If the description contradicts itself or implies two distinct features, surface that before writing (see "Keep it tight").
 
 ## Workflow
 
@@ -214,13 +232,19 @@ Examples of the right level:
 >
 > Claude: [optionally asks one product-level question, e.g., "Does this need to support logged-out users, or only signed-in?"] → writes `.specs/add-to-cart/spec.md` and `.specs/add-to-cart/status.md` → "Saved to `.specs/add-to-cart/spec.md`. Want me to tighten any section?"
 
-**Example 2 — No feature name provided:**
+**Example 2 — Feature name with description:**
+
+> User: `/theshop.spec wishlist --desc signed-in customers can save products to a wishlist and move them to the cart later; no sharing with other users`
+>
+> Claude: [uses the description as product input — "signed-in only" and "no sharing" land directly in scope; asks only about uncertainties the description doesn't cover] → writes `.specs/wishlist/spec.md` and `.specs/wishlist/status.md` → "Saved to `.specs/wishlist/spec.md` — 1 open assumption logged. Run `/theshop.clarify wishlist` to resolve it."
+
+**Example 3 — No feature name provided:**
 
 > User: `/theshop.spec`
 >
-> Claude: "Which feature should I create the spec for? Please give me a short feature name (e.g., `add-to-cart`, `user-authentication`)."
+> Claude: "Which feature should I create the spec for? Please give me a short feature name (e.g., `add-to-cart`, `user-authentication`) — optionally followed by `--desc` and a description of what it should do."
 
-**Example 3 — File already exists:**
+**Example 4 — File already exists:**
 
 > User: `/theshop.spec add-to-cart`
 >

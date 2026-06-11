@@ -41,9 +41,9 @@ The end-to-end flow for a new feature. Each step is one slash command, run in th
 
 | Step | Command | What it does |
 |---|---|---|
-| 1. Spec | `/theshop.spec <feature>` | Non-technical product spec (WHAT/WHY) → `.specs/{feature}/spec.md`; also creates `.specs/{feature}/status.md` |
+| 1. Spec | `/theshop.spec <feature> [--desc <description>]` | Non-technical product spec (WHAT/WHY) → `.specs/{feature}/spec.md`; also creates `.specs/{feature}/status.md`. Optional `--desc` seeds the spec with the user's own description. |
 | 2. Clarify | `/theshop.clarify <feature>` | Resolves open assumptions in the **spec**, one decision at a time → flips spec Status to `Confirmed` |
-| 3. Plan | `/theshop.plan <feature>` | Technical implementation plan (HOW), Figma-aware → `.specs/{feature}/plan.md` |
+| 3. Plan | `/theshop.plan <feature> [--desc <description>] [--figma <url\|nodeId>]` | Technical implementation plan (HOW), Figma-aware → `.specs/{feature}/plan.md`. Optional `--desc` supplies technical direction; `--figma` pins the design frames. |
 | 4. Resolve | `/theshop.resolve <feature>` | Resolves the **plan's** open questions / risks / assumptions (Section 11), one decision at a time → flips plan Status to `Resolved` |
 | 5. Implement | `/theshop.implement <feature>` | Orchestrates four layer-scoped sub-agents (Domain → Application → Infra ‖ Web) with build gates and API handoff between phases |
 | 6. Test | `/theshop.test <feature>` | `shop-test-writer` generates tests from spec → `shop-test-runner` executes them |

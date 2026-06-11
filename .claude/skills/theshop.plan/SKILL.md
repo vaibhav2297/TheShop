@@ -1,6 +1,7 @@
 ---
 name: theshop.plan
-description: Read a feature spec from `.specs/{feature_name}/spec.md` and generate a technical implementation plan (design doc) saved to `.specs/{feature_name}/plan.md`. The plan covers architecture, data model, design decisions, validators, error handling, RLS policies, and a phased development plan — focused on HOW the feature will be built. The companion spec stays non-technical (WHAT/WHY); this plan is fully technical. Manually invoked only.
+description: Read a feature spec from `.specs/{feature_name}/spec.md` and generate a technical implementation plan (design doc) saved to `.specs/{feature_name}/plan.md`. The plan covers architecture, data model, design decisions, validators, error handling, RLS policies, and a phased development plan — focused on HOW the feature will be built. The companion spec stays non-technical (WHAT/WHY); this plan is fully technical. Optional `--desc <description>` lets the user supply technical direction up front; optional `--figma <url|nodeId>` pins the design frames. Manually invoked only.
+argument-hint: <feature-name> [--desc <description>] [--figma <url|nodeId>]
 disable-model-invocation: true
 ---
 
@@ -30,7 +31,13 @@ If a section starts pulling toward "what the user sees," redirect — that belon
 
 ## Inputs
 
-The skill takes one required input and one optional input:
+The skill takes one required input and two optional inputs:
+
+```
+/theshop.plan <feature-name> [--desc <description>] [--figma <url|nodeId>]
+```
+
+**Flag parsing:** everything before the first `--` flag is the feature name. Flags may appear in either order; each flag's value runs until the next `--` flag or the end of the input. A flag with nothing after it is treated as not provided.
 
 ### Required — spec file name
 
@@ -48,6 +55,21 @@ Must match `.specs/{file_name}/spec.md`.
   > "I couldn't find a spec at `.specs/{name}/spec.md`. I generate implementation plans from specs — please create the spec first (the `/theshop.spec` skill helps) and re-invoke me."
 
   Do not proceed without a spec.
+
+### Optional — technical direction (`--desc`)
+
+The user may supply free-text technical direction alongside the feature name:
+
+```
+/theshop.plan add-to-cart --desc reuse the existing CartState store; cart rows need a unique (cart_id, product_id) index to handle double-add
+```
+
+**How the description is used (when present):**
+
+- Treat it as **user-supplied technical input** — preferred approaches, components or services to reuse, schema/constraint requirements, things to avoid. Fold it into the relevant sections (Design Decisions, Data Model, Development Plan) and cite it where it settles a choice (e.g. "per user direction").
+- It **steers HOW, never WHAT.** If the description introduces new product behavior or scope the spec doesn't cover, don't plan it — flag the mismatch and point the user at updating the spec (`/theshop.spec` / `/theshop.clarify`) first.
+- It does **not** override the constitution. If the description asks for something the `theshop.constitution` rules forbid (e.g. a non-MudBlazor component, a layer violation), stop and raise it rather than planning the violation.
+- If part of the description conflicts with the spec or with itself, surface it in Section 11 (or ask, if it's load-bearing) instead of silently picking a side.
 
 ### Optional — Figma link or node ID (`--figma`)
 
@@ -472,3 +494,9 @@ CREATE POLICY "carts_admin_select" ON carts
 > Skill: detects Phase 4 (UI) in the plan → asks: "This feature has a UI phase. Do you have a Figma link or node ID for it?" → user replies with URL or node ID → skill fetches and records IDs → continues.
 >
 > If user replies `skip` → Figma references section is omitted; open question logged in Section 11.
+
+**Example 7 — Technical direction via `--desc`:**
+
+> User: `/theshop.plan add-to-cart --desc reuse the existing CartState store; enforce a unique (cart_id, product_id) index to handle double-add --figma 123:456`
+>
+> Skill: parses feature name `add-to-cart`, description, and Figma node → folds the direction into the plan (CartState reuse lands in Phase 4, the unique index in Section 10 / the concurrency risk's mitigation) citing "per user direction" → anything in the description that would change product scope is flagged back to the spec instead of planned.
