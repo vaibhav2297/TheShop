@@ -163,10 +163,17 @@ Use the exact 11-section structure. Stay technical, stay concrete. Replace place
 - Path: `.specs/{file_name}/plan.md` — same `{file_name}` as the input spec; the plan lives in the spec's own feature folder.
 - The `.specs/{file_name}/` directory already exists (the spec created it); create it if somehow missing.
 - If a `plan.md` already exists in that folder, ask the user whether to overwrite, save with a version suffix (e.g., `plan-v2.md`), or cancel.
+- **Run the plan gate (exit gate — mandatory).** After saving, run:
+
+  ```bash
+  pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 plan -Feature {file_name}
+  ```
+
+  The script deterministically verifies the 11-section structure, the footer, and — most importantly — **AC coverage**: every `AC-n` in the spec's Section 6 must appear in the plan's Section 8 mapping. An unmapped AC is exactly the gap this plan's quality guidelines forbid, now enforced. **Exit 1 → fix the plan and re-run the gate. Never report the plan as saved while this gate fails.**
 
 ### 8. Update the status tracker
 
-In `.specs/{file_name}/status.md`, set the **Plan** row to `Draft` with today's date, refresh **Last updated**, and point **Next step** at `/theshop.resolve {file_name}` (or `/theshop.implement {file_name}` if Section 11 has no open questions). If `status.md` is missing — a pre-tracker feature — create it from the template in `theshop.spec` first.
+In `.specs/{file_name}/status.md`, set the **Plan** row: State `Draft`, Gate `✅ plan-gate pass` (it must pass before you get here), Evidence one line (e.g. `12/12 ACs mapped · 2 ❓ · 3 📌 · 2 ⚠️ in Section 11`), today's date; refresh **Last updated**, and point **Next step** at `/theshop.resolve {file_name}` (or `/theshop.implement {file_name}` if Section 11 has no open questions). If the spec was still `Draft` and the user told you to proceed anyway, record `⚠️ waived: spec Draft, {N} open assumption(s)` in the Gate cell instead. If `status.md` is missing — a pre-tracker feature — create it from the template in `theshop.spec` first.
 
 ### 9. Confirm
 

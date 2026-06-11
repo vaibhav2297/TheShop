@@ -25,6 +25,14 @@ Wait for the reply. Do nothing else.
 
 Run checks. If fails halts the whole flow.
 
+### Pre-flight — Spec must exist (halt)
+
+Check `.specs/$ARGUMENTS/spec.md` exists. If not, halt:
+
+> "I couldn't find a spec at `.specs/$ARGUMENTS/spec.md`. Review verifies the diff against a feature's ratified record — create the spec first (`/theshop.spec $ARGUMENTS`), or pass the right feature name."
+
+This is the gate Rule 4 promises; it runs before anything else.
+
 ### Pre-flight — Diff must be non-empty
 
 Collect the current diff:
@@ -73,6 +81,25 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-design-rules
 - **Exit 1** → every reported violation is a **blocking** finding. Each cites its constitution rule number (e.g. `Rule 16`). They go into the Combined Action Plan under **Must fix before committing** and force the overall verdict to 🔴 **CHANGES REQUESTED**, same as the localization gate. Do not re-litigate them — the script is the authority for these rules; the only escape hatch is a justified `design-rules: ignore` line comment, which a human must approve.
 
 This keeps the reviewers focused on judgment-based findings; the regex-able rules are settled before they start.
+
+### Pre-flight — Test-manifest drift gate
+
+If `.specs/$ARGUMENTS/test-manifest.json` exists, run (do **not** halt — record the result and carry it into the report):
+
+```bash
+pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 manifest -Feature $ARGUMENTS
+```
+
+- **Exit 0** → record "Manifest drift: ✅ test record still matches reality" and proceed.
+- **Exit 1** → the feature's ratified test record has drifted from the code (renamed keys, moved files, stripped traits — the kind of rot a manual commit leaves behind). Every violation is a **blocking** finding under **Must fix before committing** and forces 🔴 **CHANGES REQUESTED**, same as the localization and lint gates. Stale test records are how green verdicts become lies.
+- **No manifest** → record "Manifest drift: ⏭️ skipped — no test manifest yet (run `/theshop.test $ARGUMENTS`)". Not blocking.
+
+### Pre-flight — New code has tests (Rule 29 gate)
+
+From the diff's file list, identify every **new** production file matching these shapes: `*Handler.cs`, `*Repository.cs`, `*Validator.cs`, Domain entities/value objects under `src/TheShop.Domain/`. For each, check the diff also touches at least one file under `tests/` that plausibly covers it (matching name or feature folder). Do **not** halt — record the result:
+
+- All covered → record "Rule 29: ✅ new units have tests".
+- Any new unit with no corresponding test change → a **blocking** finding under **Must fix before committing** citing Rule 29, naming each untested unit. This is the only place in the pipeline Rule 29 can be enforced for code written outside `/theshop.implement`.
 
 ---
 
@@ -138,6 +165,8 @@ Produce the report in **exactly** this structure. No prose around it.
 - Reviewers run: `shop-code-security-reviewer`, `shop-code-quality-review` (parallel)
 - Localization (French): {✅ all feature keys translated / 🔴 {N} key(s) untranslated — see action plan}
 - Design-rule lint: {✅ clean / 🔴 {N} violation(s) — see action plan}
+- Manifest drift: {✅ matches reality / 🔴 {N} drift violation(s) — see action plan / ⏭️ no manifest yet}
+- Rule 29 (new code has tests): {✅ covered / 🔴 {N} untested unit(s) — see action plan / ⏭️ no new units in diff}
 
 ---
 
@@ -205,7 +234,7 @@ Pick the verdict using only these rules — no judgment calls:
 
 | Condition | Verdict |
 |---|---|
-| Any untranslated French feature key (localization pre-flight failed), OR any design-rule lint violation (lint pre-flight failed), OR any 🚨 Critical security finding, OR any ⚠️ Important security finding, OR any 💡 Quality "Worth improving" finding | 🔴 **CHANGES REQUESTED** |
+| Any untranslated French feature key (localization pre-flight failed), OR any design-rule lint violation (lint pre-flight failed), OR any manifest-drift violation (drift pre-flight failed), OR any untested new unit (Rule 29 pre-flight failed), OR any 🚨 Critical security finding, OR any ⚠️ Important security finding, OR any 💡 Quality "Worth improving" finding | 🔴 **CHANGES REQUESTED** |
 | No items above, BUT at least one unmarked security finding, OR at least one 🌱 Quality "Polish" item | 🟡 **APPROVED WITH SUGGESTIONS** |
 | Nothing in any "must fix" or "worth addressing" bucket — only ✅ Doing well | ✅ **APPROVED** |
 
@@ -213,7 +242,7 @@ Critically: even one critical security finding — or a single untranslated Fren
 
 ### Update the status tracker
 
-Once the verdict is set, update the feature's tracking artifact `.specs/$ARGUMENTS/status.md` (this is the one `.specs/*` write this command permits): set the **Review** row to `Approved` (✅ APPROVED or 🟡 APPROVED WITH SUGGESTIONS) or `Changes requested` (🔴 CHANGES REQUESTED) with today's date, refresh **Last updated**, and point **Next step** at `/theshop.document` (approved) or back at the action plan (changes requested). Create `status.md` from the `theshop.spec` template first if it's missing.
+Once the verdict is set, update the feature's tracking artifact `.specs/$ARGUMENTS/status.md` (this is the one `.specs/*` write this command permits): set the **Review** row to State `Approved` (✅ APPROVED or 🟡 APPROVED WITH SUGGESTIONS) or `Changes requested` (🔴 CHANGES REQUESTED); Gate a one-line roll-up of the four deterministic pre-flights (e.g. `✅ FR/lint/drift/R29 pass` or `🔴 lint ×2, drift ×1`); Evidence one line (e.g. `2 security + 3 quality findings · verdict 🟡`); today's date. Refresh **Last updated**, and point **Next step** at `/theshop.document` (approved) or back at the action plan (changes requested). Create `status.md` from the `theshop.spec` template first if it's missing.
 
 ---
 
@@ -243,7 +272,7 @@ This is the only phase in which you may edit files. Apply the action plan items 
 - **Make one focused edit per finding.** Don't batch unrelated changes into a single edit.
 - **Items that require a design call** (e.g., "this DTO is over-sharing — should `IsAdmin` be exposed to the cart page?") are **not** straight-line fixes. For each such item, stop and ask the user *before* editing. Don't make architecture decisions on their behalf.
 - **Items outside `tests/` and `src/`** (e.g., changes to `.github/`, `appsettings.json` in `wwwroot/`, secrets) are higher-risk. For these, summarize the proposed change and ask the user to confirm before writing.
-- **If a finding turns out to need spec changes** (the spec disagrees with the code, and the code is actually right), don't edit the spec automatically. Flag it and tell the user to re-run `/create-spec $ARGUMENTS` or update the spec by hand.
+- **If a finding turns out to need spec changes** (the spec disagrees with the code, and the code is actually right), don't edit the spec automatically. Flag it and tell the user to re-run `/theshop.spec $ARGUMENTS` (or `/theshop.clarify`) or update the spec by hand.
 
 When implementation is finished, produce a short summary:
 

@@ -103,9 +103,17 @@ Recount what remains in Section 11 (`❓` open questions + unratified `📌`; `A
 
 Preserve the original **Created** date; only add/update **Resolved**.
 
-### 6. Save and confirm
+### 6. Save, run the gate, and confirm
 
-Save the plan back to the same path. **Update the status tracker:** in `.specs/{feature_name}/status.md`, set the **Plan** row to `Resolved` (only when no open questions/unratified assumptions remain; otherwise leave it `Draft`) with today's date, refresh **Last updated**, and point **Next step** at `/theshop.implement {feature_name}`. (Create `status.md` from the `theshop.spec` template first if it's missing.) Then report, in a couple of sentences: how many items were resolved, anything notable that changed (especially schema or a load-bearing design decision), how each risk was dispositioned, the new Status, and — when fully resolved — that implementation is unblocked. Example:
+Save the plan back to the same path. **Run the plan gate (exit gate — mandatory):**
+
+```bash
+pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 plan -Feature {feature_name}
+```
+
+This mechanically verifies what this skill promises: a `Resolved` footer with zero `❓` / unratified `📌` in Section 11, every remaining `⚠️` risk carrying an `Accepted` disposition, AC coverage still intact after your edits, and the 11-section structure unbroken. **Exit 1 → fix the plan and re-run. Never flip the Status to `Resolved` while this gate fails.**
+
+**Update the status tracker:** in `.specs/{feature_name}/status.md`, set the **Plan** row to `Resolved` (only when no open questions/unratified assumptions remain; otherwise leave it `Draft`), Gate `✅ plan-gate pass`, Evidence one line (e.g. `4 items resolved · 1 risk accepted`), today's date; refresh **Last updated**, and point **Next step** at `/theshop.implement {feature_name}`. (Create `status.md` from the `theshop.spec` template first if it's missing.) Then report, in a couple of sentences: how many items were resolved, anything notable that changed (especially schema or a load-bearing design decision), how each risk was dispositioned, the new Status, and — when fully resolved — that implementation is unblocked. Example:
 
 > "Resolved 4 items in `add-to-cart` — chose the `(cart_id, product_id)` unique-index upsert for the concurrency question, ratified the 20-distinct-items cap, added a lazy TTL purge to Phase 3, and accepted the price-drift risk with a noted mitigation. Status is now `Resolved`; you're clear to run `/theshop.implement add-to-cart`."
 

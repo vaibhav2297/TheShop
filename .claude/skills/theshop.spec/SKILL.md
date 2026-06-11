@@ -79,10 +79,17 @@ Use the exact six numbered sections — don't add or drop a numbered section. Th
 - Path: `.specs/{feature_name}/spec.md` (lowercase hyphenated folder, generic `spec.md` file name)
 - Create the `.specs/{feature_name}/` directory if it does not already exist. This is the feature's home folder — its plan, test manifest, and status tracker all live here too.
 - If a `spec.md` already exists in that folder, ask the user whether to overwrite, save with a version suffix (e.g., `spec-v2.md`), or cancel.
+- **Run the template gate (exit gate — mandatory).** After saving, run:
+
+  ```bash
+  pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 spec -Feature {feature_name}
+  ```
+
+  The script deterministically verifies the six numbered sections, the In/Out-of-Scope block, FR/AC id sequencing, the Assumptions appendix, and that the Status footer's `N` matches the appendix count. **Exit 1 → fix the spec and re-run the gate. Never report the spec as saved while this gate fails.** Record the gate result in the status tracker (next step).
 
 ### 5. Initialize the status tracker
 
-Write `.specs/{feature_name}/status.md` — the feature's at-a-glance SDD pipeline tracker — using the **Status tracker template** at the end of this file. Set the **Spec** row to `Draft` with today's date, leave every later stage as `—`, and point **Next step** at `/theshop.clarify {feature_name}`. If a `status.md` already exists (e.g., the spec is being regenerated), update the Spec row rather than overwriting the whole file.
+Write `.specs/{feature_name}/status.md` — the feature's at-a-glance SDD pipeline tracker **and gate ledger** — using the **Status tracker template** at the end of this file. Set the **Spec** row: State `Draft`, Gate `✅ spec-gate pass` (it must pass before you get here), Evidence one line of counts (e.g. `9 FRs · 12 ACs · 2 open assumptions`), today's date. Leave every later stage as `—`, and point **Next step** at `/theshop.clarify {feature_name}`. If a `status.md` already exists (e.g., the spec is being regenerated), update the Spec row rather than overwriting the whole file.
 
 ### 6. Confirm
 
@@ -221,7 +228,7 @@ Examples of the right level:
 
 ## Status tracker template
 
-Every feature carries a `.specs/{feature_name}/status.md` — a one-glance view of where it sits in the SDD pipeline. This skill **creates** it; each later step (`/theshop.clarify`, `/theshop.plan`, `/theshop.resolve`, `/theshop.implement`, `/theshop.test`, `/theshop.verify`, `/theshop.review`, `/theshop.document`) **updates its own row** plus the **Last updated** and **Next step** lines. Use this exact structure:
+Every feature carries a `.specs/{feature_name}/status.md` — a one-glance view of where it sits in the SDD pipeline **and the ledger of every verification-gate outcome**. This skill **creates** it; each later step (`/theshop.clarify`, `/theshop.plan`, `/theshop.resolve`, `/theshop.implement`, `/theshop.test`, `/theshop.verify`, `/theshop.review`, `/theshop.document`) **updates its own row** plus the **Last updated** and **Next step** lines. Use this exact structure:
 
 ```markdown
 # {Feature Title} — SDD Status
@@ -229,18 +236,34 @@ Every feature carries a `.specs/{feature_name}/status.md` — a one-glance view 
 **Feature:** `{feature_name}`
 **Last updated:** {YYYY-MM-DD}
 
-| Stage | State | Date |
-|---|---|---|
-| 1. Spec       | Draft | {YYYY-MM-DD} |
-| 2. Plan       | —     | — |
-| 3. Implement  | —     | — |
-| 4. Test       | —     | — |
-| 5. Verify     | —     | — |
-| 6. Review     | —     | — |
-| 7. Document   | —     | — |
+| Stage | State | Gate | Evidence | Date |
+|---|---|---|---|---|
+| 1. Spec       | Draft | ✅ spec-gate pass | {N} FRs · {M} ACs · {K} open assumption(s) | {YYYY-MM-DD} |
+| 2. Plan       | —     | — | — | — |
+| 3. Implement  | —     | — | — | — |
+| 4. Test       | —     | — | — | — |
+| 5. Verify     | —     | — | — | — |
+| 6. Review     | —     | — | — | — |
+| 7. Document   | —     | — | — | — |
 
 **Next step:** `/theshop.clarify {feature_name}`
 ```
+
+**Gate column vocabulary** — every step records the outcome of its verification gate(s) in its own row:
+
+| Cell | Meaning |
+|---|---|
+| `✅ {gate} pass` | The step's gate(s) passed — `check-sdd-gates.ps1` modes, build gates, lint, reconciliation. |
+| `🔴 {gate} fail` | A gate failed and the step ended in that state (the State cell should reflect it too). |
+| `⚠️ waived: {reason}` | The step proceeded past a warning gate on the user's explicit go-ahead. Waivers are **always recorded, never silent**. |
+| `—` | Stage not reached yet. |
+
+The **Evidence** cell is one line of mechanical fact — counts, migration names, failing project, gate-script summary — never a prose claim like "looks good".
+
+**Two pipeline-wide rules every step follows:**
+
+1. **Read the tracker on entry.** Before doing anything, check the upstream rows are in the state you expect (e.g. `/theshop.implement` expects Plan `Resolved`). If they aren't, warn the user; if the user says proceed, record `⚠️ waived: {reason}` in your own Gate cell so the skip stays visible downstream.
+2. **Record your gate on exit.** State + Gate + Evidence + Date, refresh **Last updated** and **Next step**. A step only ever writes its own row.
 
 Stage state vocabulary (a step only ever writes its own row):
 

@@ -93,9 +93,17 @@ Recount the open items remaining (`N`):
 
 Preserve the original **Created** date; only add/update **Clarified**.
 
-### 6. Save and confirm
+### 6. Save, run the gate, and confirm
 
-Save the spec back to the same path. **Update the status tracker:** in `.specs/{feature_name}/status.md`, set the **Spec** row to `Confirmed` (only when `N = 0`; otherwise leave it `Draft`) with today's date, refresh **Last updated**, and point **Next step** at `/theshop.plan {feature_name}`. (If `status.md` is missing — a pre-tracker feature — create it from the template in `theshop.spec` first.) Then report, in a couple of sentences: how many items were resolved, anything notable that changed (especially scope), the new Status, and — when fully confirmed — that the plan stage is unblocked. Example:
+Save the spec back to the same path. **Run the template gate (exit gate — mandatory):**
+
+```bash
+pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 spec -Feature {feature_name}
+```
+
+This mechanically verifies what this skill promises: that the footer's `N` matches the appendix count, that `Confirmed` means a genuinely empty appendix, and that folding decisions into the body didn't break the template structure. **Exit 1 → fix the spec and re-run. Never flip the Status to `Confirmed` while this gate fails.**
+
+**Update the status tracker:** in `.specs/{feature_name}/status.md`, set the **Spec** row to `Confirmed` (only when `N = 0`; otherwise leave it `Draft`), Gate `✅ spec-gate pass`, Evidence one line (e.g. `3 assumptions resolved · appendix empty`), today's date; refresh **Last updated**, and point **Next step** at `/theshop.plan {feature_name}`. (If `status.md` is missing — a pre-tracker feature — create it from the template in `theshop.spec` first.) Then report, in a couple of sentences: how many items were resolved, anything notable that changed (especially scope), the new Status, and — when fully confirmed — that the plan stage is unblocked. Example:
 
 > "Resolved 3 assumptions in `add-to-cart` — confirmed the 30-day guest cart, narrowed scope to exclude saved-for-later, and set the max-items rule to 20 distinct products. Status is now `Confirmed`; you're clear to run `/theshop.plan add-to-cart`."
 

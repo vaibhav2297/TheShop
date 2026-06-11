@@ -41,7 +41,7 @@ If the Status still reads `Draft`, **or** Section 11 still contains an unresolve
 
 > "Heads up: the plan for `$ARGUMENTS` isn't resolved yet (Status: Draft / {N} open question(s) in Section 11). Building on unresolved questions risks rework. Run `/theshop.resolve $ARGUMENTS` first, or reply `proceed` to build on the logged assumptions as-is."
 
-Proceed only on the user's explicit go-ahead. This mirrors how `/theshop.plan` warns when a spec is still `Draft` — it's a soft gate, not a halt.
+Proceed only on the user's explicit go-ahead. This mirrors how `/theshop.plan` warns when a spec is still `Draft` — it's a soft gate, not a halt. **If the user says proceed, the waiver gets recorded**: when you update `.specs/$ARGUMENTS/status.md` at the end, the Implement row's Gate cell reads `⚠️ waived: plan Draft, {N} open question(s)` instead of a plain pass. Skipped gates are visible, never silent.
 
 ### Pre-flight 2 — Solution must build clean before we start
 
@@ -59,6 +59,32 @@ Run `git status --short`. If the working tree is dirty, note it once at the top 
 
 ---
 
+## Layer-scope gate (applies to every phase)
+
+Each layer agent carries a hard constraint ("do not modify files outside `src/TheShop.{Layer}/`") — this gate **verifies** it instead of trusting the agent's self-report. Mechanic, per phase:
+
+1. **Before invoking the phase's agent(s)**, snapshot the changed-file list:
+
+   ```bash
+   git status --porcelain --untracked-files=all
+   ```
+
+   Keep the list of paths in your context as the phase baseline.
+
+2. **After the agent completes**, run the same command again. The phase's **newly changed files** = paths in the after-list that were not in the before-list, plus paths whose status changed. (Files under `.specs/` and `tests/` are not code and are exempt from this gate.)
+
+3. **Run the scope check** with the phase's owner:
+
+   ```bash
+   pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 scope -Phase {domain|application|infra|web|infra+web} -Files {comma-separated newly changed files}
+   ```
+
+   Phase 1 → `domain` · Phase 2 → `application` (the script already allows the two `Strings*.resx` exceptions) · Phase 3 → `infra+web` (the two agents run in parallel, so their changes are checked as a union against the combined allowed scope).
+
+4. **Exit 1 → halt with Template C.** Do not retry the agent — it has already written outside its layer, and unwinding that is a human decision. Quote the gate output as the evidence block. A scope escape is a contract breach, not a compile error.
+
+---
+
 ## Phase 1 — Domain (sequential)
 
 Invoke `shop-domain-implementer` via the Task tool, `subagent_type: shop-domain-implementer`. Prompt:
@@ -69,7 +95,7 @@ Wait for completion.
 
 ### Phase 1 build gate
 
-Parse the agent's summary. Three possible outcomes:
+First run the **layer-scope gate** for `domain` (see above) — a scope escape halts before the build outcome even matters. Then parse the agent's summary. Three possible outcomes:
 
 - **Build status ✅** in the summary AND "Public API produced" block is present → continue to Phase 2.
 - **Build status ❌** OR no API block → re-invoke `shop-domain-implementer` ONCE with the compile errors quoted from the summary, and the instruction "Your previous run left a broken Domain build. Fix the errors and re-emit the structured summary." If the second run still fails, halt with template C (see Final output).
@@ -93,7 +119,7 @@ Wait for completion.
 
 ### Phase 2 build gate
 
-Same logic as Phase 1:
+First run the **layer-scope gate** for `application`. Then same logic as Phase 1:
 
 - ✅ + both API blocks present → continue to Phase 3.
 - ❌ → one retry with errors quoted → halt on second failure (template C).
@@ -131,7 +157,7 @@ Wait for **both** to complete.
 
 ### Phase 3 build gate
 
-Verify each agent's summary independently:
+First run the **layer-scope gate** for `infra+web` over the union of both agents' newly changed files. Then verify each agent's summary independently:
 
 - Both ✅ → continue to Phase 4.
 - Either ❌ → re-invoke that one agent (the other stays as-is) with errors quoted → halt on second failure for that agent (template C).
@@ -168,7 +194,7 @@ You do not run `dotnet format` yourself. A `Stop` hook configured in `.claude/se
 
 ## Update the status tracker (full success only)
 
-After Phase 3's full-solution build passes (Template A path), update `.specs/$ARGUMENTS/status.md`: set the **Implement** row to `Done` with today's date, refresh **Last updated**, and point **Next step** at `/theshop.test $ARGUMENTS`. If `status.md` is missing (a pre-tracker feature), create it from the template in the `theshop.spec` skill first. Do **not** touch the tracker on a halted/failed run (templates B and C).
+After Phase 3's full-solution build passes (Template A path), update `.specs/$ARGUMENTS/status.md`: set the **Implement** row to State `Done`, Gate `✅ scope + build gates pass` — or `⚠️ waived: plan Draft, {N} open question(s)` if the user proceeded past Pre-flight 1b — Evidence one line of mechanical fact (e.g. `4 layers built · migration add_cart_tables · scope clean`), today's date; refresh **Last updated** and point **Next step** at `/theshop.test $ARGUMENTS`. If `status.md` is missing (a pre-tracker feature), create it from the template in the `theshop.spec` skill first. Do **not** touch the tracker on a halted/failed run (templates B and C).
 
 ## Final output
 

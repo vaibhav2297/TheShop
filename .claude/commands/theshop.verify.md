@@ -108,7 +108,7 @@ Always stop the background app when verification ends (success, failure, or halt
 
 ## Update the status tracker
 
-Updating the feature's tracking artifact is not a source edit, so it's allowed here. After the verdict settles, update `.specs/$ARGUMENTS/status.md`: set the **Verify** row to `Verified` (Template A, ✅ VERIFIED), `Pending` (Template A, 🔴 NOT VERIFIED — leave it open for a re-run), or `Skipped` (Template B, backend-only) with today's date; refresh **Last updated**; point **Next step** at `/theshop.review $ARGUMENTS`. Leave the tracker untouched on Template C (halted before driving). Create `status.md` from the `theshop.spec` template first if it's missing.
+Updating the feature's tracking artifact is not a source edit, so it's allowed here. After the verdict settles, update `.specs/$ARGUMENTS/status.md`: set the **Verify** row to State `Verified` (Template A, ✅ VERIFIED), `Pending` (Template A, 🔴 NOT VERIFIED — leave it open for a re-run), or `Skipped` (Template B, backend-only); Gate `✅ E2E pass (Tier {1|2})` or `🔴 {N} AC failed/unconfirmed` or `⏭️ backend-only`; Evidence one line of the AC tally and driver tier (e.g. `12 pass · 0 fail · Tier 2 guided manual`) — **always name the tier; a Tier 2 pass is user-confirmed, not automated, and the ledger must say so**; today's date. Refresh **Last updated**; point **Next step** at `/theshop.review $ARGUMENTS`. Leave the tracker untouched on Template C (halted before driving). Create `status.md` from the `theshop.spec` template first if it's missing.
 
 ## Verdict
 

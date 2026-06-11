@@ -53,6 +53,8 @@ The end-to-end flow for a new feature. Each step is one slash command, run in th
 
 Formatting is automatic: a `Stop` hook in `.claude/settings.json` runs `dotnet format` whenever a turn ended with `.cs` or `.razor` changes in the diff. No manual step.
 
+**Verification gates are scripted, not asserted.** `.claude/scripts/check-sdd-gates.ps1` deterministically validates each step's output (spec/plan template conformance, AC coverage, test-manifest integrity, layer scope, doc-only diffs, status drift); the commands above run it at entry/exit. `status.md` is the **gate ledger**: every step reads it on entry to verify the upstream rows, and records its own State + Gate + Evidence on exit. A gate the user chooses to skip is recorded as `⚠️ waived: {reason}` — never silently. Do not report a pipeline step as done while its gate fails.
+
 ---
 
 ## Common commands

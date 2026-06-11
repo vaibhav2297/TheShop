@@ -31,8 +31,23 @@ Wait for the sub-agent to fully complete its turn. Do not begin Step 2 in parall
 
 When the sub-agent returns, inspect its closing summary:
 
-- **If it created test files** (the "Files created/modified" list is non-empty), continue to Step 2.
+- **If it created test files** (the "Files created/modified" list is non-empty), continue to Step 1.5.
 - **If it halted without writing tests** — for example, the spec was missing, ambiguous, or contradicted itself, or the agent reported unresolved open questions — **stop immediately**. Do not invoke Step 2. Skip to the "Step 1 halted" output template below.
+
+---
+
+## Step 1.5 — Manifest gate (deterministic, between writer and runner)
+
+Before the expensive runner pass, verify the writer's handoff contract mechanically:
+
+```bash
+pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 manifest -Feature $ARGUMENTS
+```
+
+The script checks what the runner would otherwise discover only after a full diagnostic pass: the manifest parses, `totalTests` equals the sum of the per-class counts, every listed file exists on disk and carries the `[Trait("Feature", "$ARGUMENTS")]` stamp, every AC id from the spec appears in `acceptanceCriteria` (and none are invented), and every mapped test name belongs to a listed class.
+
+- **Exit 0** → proceed to Step 2.
+- **Exit 1** → re-invoke `shop-test-writer` **once**, quoting the gate's violation list verbatim with the instruction: "Your manifest/test handoff failed the deterministic gate. Fix exactly these violations and re-emit the structured summary." Then re-run the gate. If it fails a second time, **stop** — report with Template B, quoting the gate output as the halt reason. Do not hand a broken manifest to the runner; its reconciliation would fail anyway, just more expensively.
 
 ---
 
@@ -52,14 +67,14 @@ Wait for it to fully complete.
 
 1. **Do not start Step 2 until Step 1 is fully complete.** If the writer is still working, wait. No parallel invocation.
 2. **Do not fix any code regardless of what the test results show.** Your job ends at delivering the combined summary — plus updating the feature's tracking artifact `.specs/$ARGUMENTS/status.md` (see below), which is not code. The user is the one who acts on it. If they ask you to fix something inside this command run, tell them the slash command is orchestration-only and they can request fixes in a follow-up message.
-3. **Do not run anything outside `tests/`.** The runner agent handles all execution; you don't invoke `dotnet`, `bash`, or any other command yourself.
+3. **Do not run anything outside `tests/`.** The runner agent handles all test execution; you don't invoke `dotnet` yourself. The one command you do run is the Step 1.5 manifest gate (`check-sdd-gates.ps1`) — it's a read-only artifact check, not test execution.
 4. **If `shop-test-writer` could not write the test files, stop and report the reason.** Do not proceed to Step 2 under any circumstance — not even "to see what's already there".
 
 ---
 
 ## Update the status tracker
 
-After you settle the verdict (Template A only), update `.specs/$ARGUMENTS/status.md`: set the **Test** row to `Passing` when the verdict is ✅ Ready, or `Failing` when it is ❌ Needs fixes, with today's date; refresh **Last updated**; point **Next step** at `/theshop.verify $ARGUMENTS` (Passing) or back at the fix the runner named (Failing). On Template B (writer halted) leave the tracker untouched; on Template C (build failed) set **Test** to `Failing`. Create `status.md` from the `theshop.spec` template first if it's missing.
+After you settle the verdict (Template A only), update `.specs/$ARGUMENTS/status.md`: set the **Test** row to State `Passing` when the verdict is ✅ Ready, or `Failing` when it is ❌ Needs fixes; Gate `✅ manifest + reconciliation pass` or `🔴 {which gate failed}`; Evidence one line of the run's numbers (e.g. `194/194 reconciled · 12/12 ACs ✅` or `reconciliation mismatch 180/194`); today's date. Refresh **Last updated**; point **Next step** at `/theshop.verify $ARGUMENTS` (Passing) or back at the fix the runner named (Failing). On Template B (writer halted) leave the tracker untouched; on Template C (build failed) set **Test** to `Failing` with Gate `🔴 build gate` and the failing project as Evidence. Create `status.md` from the `theshop.spec` template first if it's missing.
 
 ## Final output
 

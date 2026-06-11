@@ -84,7 +84,7 @@ Follow the conventions in `.claude/skills/theshop.constitution/references/rules/
 After all edits, run:
 
 ```bash
-dotnet build TheShop.sln --nologo
+dotnet build TheShop.slnx --nologo
 ```
 
 Doc comments shouldn't break a build, but `<see cref="..."/>` references can if you typo a type name. A clean build is a hard gate.
