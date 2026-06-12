@@ -10,6 +10,10 @@
 #                                     spec, Section 11 <-> footer consistency
 #   manifest  -Feature x              test-manifest.json: count arithmetic, AC ids vs
 #                                     spec, listed files exist, feature trait stamped
+#   compile   -Feature x              dotnet-builds every test project the manifest
+#                                     lists (transitively building the layers they
+#                                     reference); emits each compiler error tagged
+#                                     [tests]/[src] by the failing file's location
 #   scope     -Phase p -Files f,...   newly changed files confined to the layer the
 #                                     sub-agent owns (domain|application|infra|web|infra+web)
 #   snapshot  -Snapshot dir           save every currently-changed file aside (baseline
@@ -25,7 +29,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory, Position = 0)]
-    [ValidateSet('spec', 'plan', 'manifest', 'scope', 'snapshot', 'doc-only', 'status')]
+    [ValidateSet('spec', 'plan', 'manifest', 'compile', 'scope', 'snapshot', 'doc-only', 'status')]
     [string]$Mode,
 
     [string]$Feature,
@@ -257,6 +261,49 @@ function Test-ManifestGate([string]$F) {
     }
 }
 
+# -------------------------------------------------------------- compile gate --
+# Builds (never runs) the test projects the manifest lists. Each compiler error
+# is tagged by the failing file's location so the caller can route it: [tests]
+# errors are the test writer's to fix; [src] errors mean production code is
+# broken and no amount of test editing will help.
+function Test-CompileGate([string]$F) {
+    $raw = Read-Doc ".specs/$F/test-manifest.json"
+    if (-not $raw) { Fail ".specs/$F/test-manifest.json not found - run the manifest gate first"; return }
+    try { $m = $raw | ConvertFrom-Json } catch { Fail "test-manifest.json is not valid JSON: $($_.Exception.Message)"; return }
+
+    $projects = @(@($m.classes) | ForEach-Object {
+        $norm = ("$($_.file)" -replace '\\', '/')
+        if ($norm -match '^(tests/[^/]+)/') { $Matches[1] }
+    } | Sort-Object -Unique)
+    if ($projects.Count -eq 0) { Fail 'manifest lists no files under tests/ - nothing to compile'; return }
+
+    $errRx = '^\s*(?<file>.+?)\((?<line>\d+),\d+\):\s*error\s+(?<code>\w+):\s*(?<msg>.*?)(\s*\[[^\[\]]*\])?\s*$'
+    $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+    foreach ($proj in $projects) {
+        $projPath = Join-Path $repoRoot $proj
+        if (-not (Test-Path -LiteralPath $projPath)) { Fail "test project directory missing on disk: $proj"; continue }
+        $out = & dotnet build $projPath --nologo 2>&1 | ForEach-Object { "$_" }
+        if ($LASTEXITCODE -eq 0) { continue }
+
+        $matched = $false
+        foreach ($line in $out) {
+            $em = [regex]::Match($line, $errRx)
+            if (-not $em.Success) { continue }
+            $matched = $true
+            $rel = $em.Groups['file'].Value
+            if ($rel.StartsWith($repoRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+                $rel = $rel.Substring($repoRoot.Length)
+            }
+            $rel = ($rel -replace '\\', '/').TrimStart('/')
+            if (-not $seen.Add("$rel($($em.Groups['line'].Value)):$($em.Groups['code'].Value)")) { continue }
+            $tag = if ($rel -like 'tests/*') { 'tests' } elseif ($rel -like 'src/*') { 'src' } else { 'other' }
+            Fail "[$tag] $rel($($em.Groups['line'].Value)) - error $($em.Groups['code'].Value): $($em.Groups['msg'].Value)"
+        }
+        if (-not $matched) { Fail "dotnet build $proj failed (exit $LASTEXITCODE) with no parseable compiler errors - run it manually for detail" }
+    }
+}
+
 # --------------------------------------------------------------- scope gate --
 function Test-ScopeGate {
     if (-not $Phase) { throw 'scope mode requires -Phase' }
@@ -378,6 +425,7 @@ switch ($Mode) {
     'spec'     { if (-not $Feature) { throw 'spec mode requires -Feature' };     Test-SpecGate $Feature }
     'plan'     { if (-not $Feature) { throw 'plan mode requires -Feature' };     Test-PlanGate $Feature }
     'manifest' { if (-not $Feature) { throw 'manifest mode requires -Feature' }; Test-ManifestGate $Feature }
+    'compile'  { if (-not $Feature) { throw 'compile mode requires -Feature' };  Test-CompileGate $Feature }
     'status'   { if (-not $Feature) { throw 'status mode requires -Feature' };   Test-StatusGate $Feature }
     'scope'    { Test-ScopeGate }
     'snapshot' { Invoke-SnapshotMode }

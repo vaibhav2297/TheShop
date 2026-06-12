@@ -36,9 +36,11 @@ When the sub-agent returns, inspect its closing summary:
 
 ---
 
-## Step 1.5 — Manifest gate (deterministic, between writer and runner)
+## Step 1.5 — Manifest + compile gates (deterministic, between writer and runner)
 
-Before the expensive runner pass, verify the writer's handoff contract mechanically:
+Before the expensive runner pass, verify the writer's handoff contract mechanically. Two gates, in order: the manifest gate first (cheap artifact check), then the compile gate (builds the test projects). Each may trigger at most **one** writer re-invocation.
+
+### Gate A — manifest
 
 ```bash
 pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 manifest -Feature $ARGUMENTS
@@ -46,8 +48,24 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps
 
 The script checks what the runner would otherwise discover only after a full diagnostic pass: the manifest parses, `totalTests` equals the sum of the per-class counts, every listed file exists on disk and carries the `[Trait("Feature", "$ARGUMENTS")]` stamp, every AC id from the spec appears in `acceptanceCriteria` (and none are invented), and every mapped test name belongs to a listed class.
 
-- **Exit 0** → proceed to Step 2.
+- **Exit 0** → proceed to Gate B.
 - **Exit 1** → re-invoke `shop-test-writer` **once**, quoting the gate's violation list verbatim with the instruction: "Your manifest/test handoff failed the deterministic gate. Fix exactly these violations and re-emit the structured summary." Then re-run the gate. If it fails a second time, **stop** — report with Template B, quoting the gate output as the halt reason. Do not hand a broken manifest to the runner; its reconciliation would fail anyway, just more expensively.
+
+### Gate B — compile
+
+```bash
+pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 compile -Feature $ARGUMENTS
+```
+
+The script `dotnet build`s every test project the manifest lists (transitively compiling the production layers they reference) and emits each compiler error tagged by the failing file's location: `[tests]` for errors in test files, `[src]` for errors in production code. This catches at write time what the runner's own build gate would otherwise discover only after a fresh invocation — and catches it while the one agent allowed to edit `tests/` can still be re-invoked. It builds; it never executes tests.
+
+Route by the tags in the gate's output:
+
+- **Exit 0** → proceed to Step 2.
+- **Exit 1, all errors tagged `[tests]`** → re-invoke `shop-test-writer` **once**, quoting the error list verbatim with the instruction: "Your test files do not compile. Fix exactly these compiler errors. You may glance at production code to align type/method names and signatures so the tests compile — never to change what a test expects. If an error is caused by a production type or member that does not exist yet (the feature is unimplemented), do not weaken, comment out, or delete the test — leave it and report the missing symbol in your summary." Then re-run Gate B.
+  - If the writer reports the errors come from **missing production symbols** (the feature hasn't been implemented yet), **stop** and report with Template C, noting explicitly that the tests are written and awaiting implementation — an expected pre-implementation state, not a writer defect. Point the user at `/theshop.implement $ARGUMENTS`.
+  - If Gate B fails a second time on `[tests]` errors that were the writer's to fix, **stop** — report with Template C, quoting the gate output.
+- **Exit 1, any error tagged `[src]`** → do **not** re-invoke the writer — it is forbidden from touching production code and cannot fix this. **Stop** and report with Template C: production code does not compile, so the feature's tests are written but blocked. Name the broken project/file(s) from the gate output.
 
 ---
 
@@ -67,7 +85,7 @@ Wait for it to fully complete.
 
 1. **Do not start Step 2 until Step 1 is fully complete.** If the writer is still working, wait. No parallel invocation.
 2. **Do not fix any code regardless of what the test results show.** Your job ends at delivering the combined summary — plus updating the feature's tracking artifact `.specs/$ARGUMENTS/status.md` (see below), which is not code. The user is the one who acts on it. If they ask you to fix something inside this command run, tell them the slash command is orchestration-only and they can request fixes in a follow-up message.
-3. **Do not run anything outside `tests/`.** The runner agent handles all test execution; you don't invoke `dotnet` yourself. The one command you do run is the Step 1.5 manifest gate (`check-sdd-gates.ps1`) — it's a read-only artifact check, not test execution.
+3. **Do not run anything outside `tests/`.** The runner agent handles all test execution; you never invoke `dotnet test` yourself. The commands you do run are the Step 1.5 gates (`check-sdd-gates.ps1 manifest` and `compile`) — the first is a read-only artifact check, the second builds the manifest's test projects but never executes a test.
 4. **If `shop-test-writer` could not write the test files, stop and report the reason.** Do not proceed to Step 2 under any circumstance — not even "to see what's already there".
 
 ---
@@ -78,7 +96,7 @@ After you settle the verdict (Template A only), update `.specs/$ARGUMENTS/status
 
 ## Final output
 
-After both agents complete (or after Step 1 halts), produce a combined summary in **exactly** one of the three templates below — Template A when the run completed, Template B when the writer halted, Template C when the runner's build gate failed (the solution didn't compile, so no tests ran). No extra prose before or after.
+After both agents complete (or after Step 1 halts, or a Step 1.5 gate stops the pipeline), produce a combined summary in **exactly** one of the three templates below — Template A when the run completed, Template B when the writer halted (or Gate A failed twice), Template C when a build failed — whether at the Step 1.5 compile gate or the runner's own build gate — so no tests ran. No extra prose before or after.
 
 ### Template A — Both steps ran
 
@@ -163,9 +181,14 @@ After both agents complete (or after Step 1 halts), produce a combined summary i
 {One sentence describing what the user needs to do next — typically "Resolve the issue reported above (e.g., create or fix the spec at `.specs/{feature_name}/spec.md`) and re-run `/theshop.test {feature_name}`."}
 ```
 
-### Template C — Runner build gate failed
+### Template C — Build gate failed (Step 1.5 compile gate or runner)
 
-Use this when Step 1 produced tests but `shop-test-runner` reported a **build failure** — its Step 2 build gate tripped, the solution did not compile, and no tests ran. You'll recognize it by the runner returning the trimmed build-failure report: a `Build: 🔴 Failed` summary row and a `🔴 NOT READY — build failed` verdict, with no pass/fail metrics. Do **not** force this into Template A — there are no test counts to show.
+Use this when Step 1 produced tests but a **build failure** stopped the pipeline. Two sources:
+
+- **The Step 1.5 compile gate** tripped and could not be cleared — `[src]` errors (production code broken), missing production symbols (feature not yet implemented), or `[tests]` errors that survived the single writer retry. The runner was never invoked; say so in the "Tests run" section and use the gate's tagged error list as the build errors.
+- **`shop-test-runner`'s own Step 2 build gate** tripped — recognizable by the runner returning the trimmed build-failure report: a `Build: 🔴 Failed` summary row and a `🔴 NOT READY — build failed` verdict, with no pass/fail metrics.
+
+Either way, the solution did not compile and no tests ran. Do **not** force this into Template A — there are no test counts to show.
 
 ```markdown
 # Test report — {feature_name}
@@ -179,13 +202,15 @@ Use this when Step 1 produced tests but `shop-test-runner` reported a **build fa
 
 ## Tests run (shop-test-runner)
 
-**Status:** 🔴 Build failed — the solution did not compile, so no tests ran.
+**Status:** 🔴 Build failed — the solution did not compile, so no tests ran. {If the Step 1.5 compile gate stopped the pipeline, add: "The runner was not invoked — the compile gate caught this first."}
 
-**Build errors (from the runner):**
+**Build errors (from the compile gate or the runner):**
 - `{project}` — `{file}:{line}` — `error CSxxxx`: {message}
 - ...
 
-{If the runner flagged that the break is in a project NOT part of this feature's test set, surface that here — the feature's own tests are blocked by an unrelated compile error.}
+{If the break is in a project/file NOT part of this feature's test set (the gate's `[src]` tag, or the runner's flag), surface that here — the feature's own tests are blocked by an unrelated compile error.}
+
+{If the writer reported the errors come from production symbols that don't exist yet, say instead: "The tests are written and compile-blocked only because the feature is not implemented yet — run `/theshop.implement {feature_name}` first, then re-run `/theshop.test {feature_name}`."}
 
 ## Acceptance criteria
 
@@ -211,4 +236,4 @@ A reconciliation mismatch is a hard blocker on its own — even if every test th
 
 If you're tempted to call something "Ready" with a footnote — don't. That's what "Needs fixes" is for.
 
-A **build failure** reported by the runner is a special case of "Needs fixes": render it with **Template C**, not Template A, because the solution never compiled and there are no pass/fail metrics to report — the tests did not execute. It is still "Needs fixes," just with a build-error breakdown in place of the metrics table.
+A **build failure** — whether caught by the Step 1.5 compile gate or reported by the runner — is a special case of "Needs fixes": render it with **Template C**, not Template A, because the solution never compiled and there are no pass/fail metrics to report — the tests did not execute. It is still "Needs fixes," just with a build-error breakdown in place of the metrics table. The one nuance: when the only blocker is missing production symbols (feature not yet implemented), Template C should route the user to `/theshop.implement`, not to a test fix.

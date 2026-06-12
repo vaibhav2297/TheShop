@@ -14,17 +14,11 @@ src/TheShop.Web/Resources/
 
 One `Strings.resx` holds every user-facing string for the application. Scope keys via the naming convention (below) to avoid collisions.
 
-### `.resx` configuration — required for the typed accessor
+### The typed accessor is auto-generated — never write it
 
-The `Strings.resx` file must be configured to auto-generate the strongly-typed C# accessor class that Rule 11 depends on. In Visual Studio, set these properties on `Strings.resx`:
+The strongly-typed C# accessor class that Rule 11 depends on (`Strings.Designer.cs` — a static class with one property per resource key) is **auto-generated on build**. The generator wiring (`PublicResXFileCodeGenerator`) already lives in `TheShop.Web.csproj`; it requires no setup or maintenance.
 
-| Property | Value |
-|---|---|
-| Build Action | `Embedded resource` |
-| Custom Tool | `PublicResXFileCodeGenerator` |
-| Custom Tool Namespace | `TheShop.Web.Resources` |
-
-This generates `Strings.Designer.cs` automatically — a static class with one property per resource key. The file regenerates whenever you save the `.resx`. **Never edit `Strings.Designer.cs` by hand.**
+When adding strings, edit **only** `Strings.resx` / `Strings.fr.resx` and build. **Never write or edit `Strings.Designer.cs` by hand** — it regenerates from the `.resx` automatically.
 
 ```csharp
 // Auto-generated — DO NOT EDIT

@@ -215,6 +215,14 @@ After writing the test files and the manifest, end your response with a structur
 
 This summary is your session memory. When you're invoked again for the same feature (e.g., "the spec changed, please update the tests"), the user can refer to this summary, and you can run `Glob` on `tests/**/*Tests.cs` to find what already exists rather than starting over.
 
+### Compile-fix re-invocations
+
+You have no build tool, so you cannot compile-check your own output. After you finish, the `/theshop.test` orchestrator runs a deterministic compile gate (`check-sdd-gates.ps1 compile`) that builds the test projects your manifest lists; if your files don't compile, you will be re-invoked **once** with the compiler errors quoted verbatim. When that happens:
+
+- **Fix exactly the listed errors** in the files you wrote — wrong `using` directives, typos, misaligned helper signatures. You may glance at production code to align a type or method name so the test compiles (the Hard constraint #2 allowance) — **never** to change what a test expects.
+- **If an error is caused by a production type or member that does not exist yet** (the feature is unimplemented), that is not your bug. Do not weaken, comment out, or delete the test to make it compile — leave it as written, and say plainly in your summary which symbols are missing and that the tests await implementation. The orchestrator routes that state to the user.
+- Re-emit the full structured summary (and the manifest, if any counts changed) after fixing.
+
 ---
 
 ## Testing strategy (baked in — do not look up)

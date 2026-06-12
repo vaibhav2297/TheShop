@@ -98,7 +98,7 @@ Process rules on top:
 
 - **Stick to the plan.** Pages, components, state stores, routes, and busy keys come from the plan's Phase 4 list — no extras.
 - **Append constants before referencing them.** New routes go into `Common/Routes.cs`, new busy keys into `Common/BusyKeys.cs`.
-- **Every new user-facing string** gets a key in `Resources/Strings.resx` **and** `Strings.fr.resx` — French placeholder `[TODO] {English}` if you don't have the translation (the literal `[TODO]` marker is what the `/theshop.review` localization gate scans for).
+- **Every new user-facing string** gets a key in `Resources/Strings.resx` **and** `Strings.fr.resx` — French placeholder `[TODO] {English}` if you don't have the translation (the literal `[TODO]` marker is what the `/theshop.review` localization gate scans for). Never write or edit `Strings.Designer.cs` — it auto-generates from the `.resx` on build.
 - **Reuse before creating.** Prefer the existing component, state store, or SCSS class found in step 4's scan.
 
 ### 6. Visual validation (mandatory)

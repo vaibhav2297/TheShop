@@ -11,7 +11,7 @@
 - [ ] `@Localizer[...]` is used **only** for runtime keys (e.g. `@Localizer[result.Error]`)?
 - [ ] Resource keys follow the `{Context}_{Purpose}` naming convention?
 - [ ] Resource keys are valid C# identifiers (no hyphens, no spaces, no leading digits)?
-- [ ] `Strings.resx` configured with `PublicResXFileCodeGenerator` custom tool, namespace `TheShop.Web.Resources`?
+- [ ] Only `.resx` files edited for new strings — `Strings.Designer.cs` left untouched (it auto-generates on build)?
 - [ ] French resource file (`Strings.fr.resx`) updated alongside English (translation or `[TODO]` placeholder)?
 - [ ] Application layer returns resource keys via `nameof(Strings.{Key})` — never magic-string literals?
 

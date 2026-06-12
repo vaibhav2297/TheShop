@@ -184,7 +184,8 @@ Use the exact 11-section structure. Stay technical, stay concrete. Replace place
 
 - Path: `.specs/{file_name}/plan.md` — same `{file_name}` as the input spec; the plan lives in the spec's own feature folder.
 - The `.specs/{file_name}/` directory already exists (the spec created it); create it if somehow missing.
-- If a `plan.md` already exists in that folder, ask the user whether to overwrite, save with a version suffix (e.g., `plan-v2.md`), or cancel.
+- If a `plan.md` already exists in that folder, ask the user whether to **overwrite or cancel**. Never save under a different name (no `plan-v2.md` or similar) — `plan.md` is the canonical path every downstream skill and sub-agent reads; git history is the version archive (`git log -- .specs/{file_name}/plan.md` recovers any prior revision).
+- **On overwrite, downstream artifacts are stale.** A rewritten plan invalidates whatever was resolved, implemented, or tested from the old one. After saving, reset the downstream rows in `status.md` (Implement, Test, Verify, Review, Document) back to `—` with a note `stale: plan rewritten {date}` in the Gate cell of any row that previously had a result.
 - **Run the plan gate (exit gate — mandatory).** After saving, run:
 
   ```bash
@@ -479,7 +480,7 @@ CREATE POLICY "carts_admin_select" ON carts
 
 > User: invokes `theshop.plan` with feature name `add-to-cart`
 >
-> Skill: "A plan at `.specs/add-to-cart/plan.md` already exists. Should I overwrite, save as `add-to-cart-v2.md`, or cancel?"
+> Skill: "A plan at `.specs/add-to-cart/plan.md` already exists. Should I overwrite it or cancel? (Overwriting marks the downstream pipeline rows stale — the previous version stays recoverable via git history.)"
 
 **Example 5 — Figma URL provided via `--figma`:**
 

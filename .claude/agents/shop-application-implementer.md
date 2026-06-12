@@ -92,7 +92,7 @@ For every `nameof(Strings.X)` you reference, add the key to:
 - `src/TheShop.Web/Resources/Strings.resx` — English text from Section 9 of the plan.
 - `src/TheShop.Web/Resources/Strings.fr.resx` — French translation. If you don't have one, use the placeholder `[TODO] {English text}` — the literal `[TODO]` marker is what the `/theshop.review` localization gate scans for.
 
-Note: This crosses into `TheShop.Web/Resources/`, which is normally outside your Edit scope. **This is the one explicit exception** — error keys originate in Application but live in Web's resource files. Touch only `.resx` files in that folder; nothing else under `Web/`.
+Note: This crosses into `TheShop.Web/Resources/`, which is normally outside your Edit scope. **This is the one explicit exception** — error keys originate in Application but live in Web's resource files. Touch only `.resx` files in that folder; nothing else under `Web/`. In particular, never write or edit `Strings.Designer.cs` — it auto-generates from the `.resx` on build.
 
 ### 6. Register new pipeline behaviors / services in DependencyInjection.cs
 

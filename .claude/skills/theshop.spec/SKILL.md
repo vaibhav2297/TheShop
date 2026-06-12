@@ -96,7 +96,8 @@ Use the exact six numbered sections — don't add or drop a numbered section. Th
 
 - Path: `.specs/{feature_name}/spec.md` (lowercase hyphenated folder, generic `spec.md` file name)
 - Create the `.specs/{feature_name}/` directory if it does not already exist. This is the feature's home folder — its plan, test manifest, and status tracker all live here too.
-- If a `spec.md` already exists in that folder, ask the user whether to overwrite, save with a version suffix (e.g., `spec-v2.md`), or cancel.
+- If a `spec.md` already exists in that folder, ask the user whether to **overwrite or cancel**. Never save under a different name (no `spec-v2.md` or similar) — `spec.md` is the canonical path every downstream skill and sub-agent reads; git history is the version archive (`git log -- .specs/{feature_name}/spec.md` recovers any prior revision).
+- **On overwrite, downstream artifacts are stale.** A rewritten spec invalidates whatever was clarified, planned, or built from the old one. After saving, reset the downstream rows in `status.md` (Clarify, Plan, Implement, Test, Verify, Review, Document) back to `—` with a note `stale: spec rewritten {date}` in the Gate cell of any row that previously had a result. Existing `plan.md` / `test-manifest.json` files stay on disk but must be regenerated before the pipeline proceeds.
 - **Run the template gate (exit gate — mandatory).** After saving, run:
 
   ```bash
@@ -107,7 +108,7 @@ Use the exact six numbered sections — don't add or drop a numbered section. Th
 
 ### 5. Initialize the status tracker
 
-Write `.specs/{feature_name}/status.md` — the feature's at-a-glance SDD pipeline tracker **and gate ledger** — using the **Status tracker template** at the end of this file. Set the **Spec** row: State `Draft`, Gate `✅ spec-gate pass` (it must pass before you get here), Evidence one line of counts (e.g. `9 FRs · 12 ACs · 2 open assumptions`), today's date. Leave every later stage as `—`, and point **Next step** at `/theshop.clarify {feature_name}`. If a `status.md` already exists (e.g., the spec is being regenerated), update the Spec row rather than overwriting the whole file.
+Write `.specs/{feature_name}/status.md` — the feature's at-a-glance SDD pipeline tracker **and gate ledger** — using the **Status tracker template** at the end of this file. Set the **Spec** row: State `Draft`, Gate `✅ spec-gate pass` (it must pass before you get here), Evidence one line of counts (e.g. `9 FRs · 12 ACs · 2 open assumptions`), today's date. Leave every later stage as `—`, and point **Next step** at `/theshop.clarify {feature_name}`. If a `status.md` already exists (e.g., the spec is being regenerated), update the Spec row rather than overwriting the whole file — and apply the downstream-row staleness reset from step 4.
 
 ### 6. Confirm
 
@@ -248,7 +249,7 @@ Examples of the right level:
 
 > User: `/theshop.spec add-to-cart`
 >
-> Claude: "A spec at `.specs/add-to-cart/spec.md` already exists. Should I overwrite it, save as `spec-v2.md`, or cancel?"
+> Claude: "A spec at `.specs/add-to-cart/spec.md` already exists. Should I overwrite it or cancel? (Overwriting marks the downstream pipeline rows stale — the previous version stays recoverable via git history.)"
 
 ## Status tracker template
 
