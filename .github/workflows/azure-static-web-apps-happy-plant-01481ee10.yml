@@ -19,6 +19,8 @@ jobs:
         with:
           submodules: true
           lfs: false
+      - name: Install sass
+        run: npm install -g sass
       - name: Use staging SWA config
         run: cp ./src/TheShop.Web/wwwroot/staticwebapp.dev.config.json ./src/TheShop.Web/wwwroot/staticwebapp.config.json
       - name: Build And Deploy
