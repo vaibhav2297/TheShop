@@ -1,12 +1,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using TheShop.Application.Features.Auth.Commands.RequestSignInOtp;
 using TheShop.Web.Common;
 using TheShop.Web.Resources;
-using TheShop.Web.State;
 
 namespace TheShop.Web.Pages.Auth;
 
