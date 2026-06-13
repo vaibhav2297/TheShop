@@ -1,0 +1,80 @@
+---
+description: Add XML doc comments to the current diff using the shop-code-documenter sub-agent. Standalone wrapper for users who want to document existing changes without running the full /theshop.implement flow.
+argument-hint: [feature-name (optional, for status tracking)]
+---
+
+# /theshop.document
+
+You are a thin wrapper that invokes the `shop-code-documenter` sub-agent for the current diff. This command adds XML doc comments to whatever is in the diff — code produced by `/theshop.implement`, a manual refactor, a hand-written addition, or a feature implemented before this workflow existed.
+
+Documentation is a **manual** step — `/theshop.implement` does **not** run the documenter. Run this command yourself, as the final step of the pipeline, once the code is settled (after `/theshop.test`, `/theshop.verify`, and `/theshop.review`). Running it last avoids documenting code that review will rewrite.
+
+---
+
+## Workflow
+
+### 1. Pre-flight — diff must be non-empty
+
+Run:
+
+```bash
+git diff --name-only
+git diff --staged --name-only
+```
+
+If both are empty, halt:
+
+> "Working tree is clean and no staged changes. I document recently changed code — make changes first (or specify a commit range) and re-invoke me."
+
+If a diff exists, briefly list the changed files (output of the two commands above) so the user can confirm scope before the documenter starts.
+
+### 1.5 Snapshot the pre-documentation state (baseline for the exit gate)
+
+Before invoking the documenter, save the current state of every changed file aside:
+
+```bash
+pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 snapshot -Snapshot "$env:TEMP/theshop-doc-snapshot"
+```
+
+This baseline is what lets the Step 3.5 gate isolate the *documenter's own* changes from whatever was already in the diff.
+
+### 2. Invoke `shop-code-documenter`
+
+Call the sub-agent via the Task tool, `subagent_type: shop-code-documenter`. Prompt:
+
+> "Add XML doc comments to the current diff (`git diff` + `git diff --staged`). Follow your standard protocol per `references/rules/documentation.md` and end with the structured summary."
+
+Wait for it to complete.
+
+### 3. Run the doc-only gate (exit gate — mandatory)
+
+The documenter's defining promise is "no behavioral change." Verify it mechanically:
+
+```bash
+pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 doc-only -Snapshot "$env:TEMP/theshop-doc-snapshot"
+```
+
+The script diffs every changed file against the Step 1.5 snapshot and fails if the documenter's delta contains anything other than XML doc-comment (`///`) lines — code edits, reformatting, new files, deleted files, or touches to non-`.cs` files all violate.
+
+- **Exit 0** → proceed to Step 4.
+- **Exit 1** → surface the violations **prominently above the documenter's report** and do not record the step as done. Do not fix or revert anything yourself — show the user exactly which lines changed beyond doc comments and let them decide (revert the stray lines, or keep them as a deliberate change outside this command's scope).
+
+### 4. Relay the documenter's report
+
+Pass the documenter's structured summary back to the user verbatim. Do not add commentary on top — the documenter's report is already in the agreed format and the user will read it directly.
+
+If the documenter reported a build failure or halted on a question, surface that prominently above the summary:
+
+> "⚠️ Documenter halted — see report below for the reason."
+
+### 5. Update the status tracker (only if a feature name was given)
+
+If `$ARGUMENTS` named a feature **and** the documenter completed successfully **and** the doc-only gate passed, update `.specs/$ARGUMENTS/status.md`: set the **Document** row to State `Done`, Gate `✅ doc-only gate pass`, Evidence one line (e.g. `{N} files documented · build ✅`), today's date; refresh **Last updated**, and set **Next step** to `— (pipeline complete)`. Create `status.md` from the template in the `theshop.spec` skill first if it's missing. If no feature name was given (the common standalone case), skip this step — the command stays diff-scoped and touches no tracker.
+
+---
+
+## Hard rules
+
+1. **Do not edit any file yourself.** Delegate to the sub-agent. This command is orchestration-only.
+2. **Do not invoke any other agent.** Quality, security, tests, implementers — all out of scope. If the user wants those, they'll run the dedicated commands.
+3. **Do not loop the documenter.** One invocation per command run. If it fails, surface the failure; don't retry.

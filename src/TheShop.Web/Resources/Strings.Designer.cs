@@ -61,11 +61,38 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Welcome back!.
+        /// </summary>
+        public static string Account_Greeting {
+            get {
+                return ResourceManager.GetString("Account_Greeting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to My Account — The Vape Shop Sarnia.
         /// </summary>
         public static string Account_PageTitle {
             get {
                 return ResourceManager.GetString("Account_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signed in as {0}.
+        /// </summary>
+        public static string Account_SignedInAs {
+            get {
+                return ResourceManager.GetString("Account_SignedInAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome, {0}!.
+        /// </summary>
+        public static string Account_Welcome {
+            get {
+                return ResourceManager.GetString("Account_Welcome", resourceCulture);
             }
         }
         
@@ -133,11 +160,209 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Free shipping on orders $75+ or promo codes..
+        /// </summary>
+        public static string AnnouncementBar_Message {
+            get {
+                return ResourceManager.GetString("AnnouncementBar_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Premium Vaping, Curated for You..
+        /// </summary>
+        public static string App_Tagline {
+            get {
+                return ResourceManager.GetString("App_Tagline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Vape Shop Sarnia.
         /// </summary>
         public static string AppName {
             get {
                 return ResourceManager.GetString("AppName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An account with this email already exists..
+        /// </summary>
+        public static string Auth_AccountAlreadyExists {
+            get {
+                return ResourceManager.GetString("Auth_AccountAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No account found for this email..
+        /// </summary>
+        public static string Auth_AccountNotFound {
+            get {
+                return ResourceManager.GetString("Auth_AccountNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change.
+        /// </summary>
+        public static string Auth_Change {
+            get {
+                return ResourceManager.GetString("Auth_Change", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect code. Please try again..
+        /// </summary>
+        public static string Auth_Code_Incorrect {
+            get {
+                return ResourceManager.GetString("Auth_Code_Incorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The verification code is invalid or has expired..
+        /// </summary>
+        public static string Auth_Code_InvalidOrExpired {
+            get {
+                return ResourceManager.GetString("Auth_Code_InvalidOrExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We sent a 6-digit code to your email..
+        /// </summary>
+        public static string Auth_CodeSent {
+            get {
+                return ResourceManager.GetString("Auth_CodeSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string Auth_Create_Submit {
+            get {
+                return ResourceManager.GetString("Auth_Create_Submit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please enter a valid date of birth..
+        /// </summary>
+        public static string Auth_Dob_InPast {
+            get {
+                return ResourceManager.GetString("Auth_Dob_InPast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First name is required..
+        /// </summary>
+        public static string Auth_FirstName_Required {
+            get {
+                return ResourceManager.GetString("Auth_FirstName_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last name is required..
+        /// </summary>
+        public static string Auth_LastName_Required {
+            get {
+                return ResourceManager.GetString("Auth_LastName_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login.
+        /// </summary>
+        public static string Auth_Login_Submit {
+            get {
+                return ResourceManager.GetString("Auth_Login_Submit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t reach the server. Please check your connection and try again..
+        /// </summary>
+        public static string Auth_Network {
+            get {
+                return ResourceManager.GetString("Auth_Network", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait before requesting a new code..
+        /// </summary>
+        public static string Auth_ResendTooSoon {
+            get {
+                return ResourceManager.GetString("Auth_ResendTooSoon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send code.
+        /// </summary>
+        public static string Auth_SendCode {
+            get {
+                return ResourceManager.GetString("Auth_SendCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please sign in again to continue..
+        /// </summary>
+        public static string Auth_SessionExpired {
+            get {
+                return ResourceManager.GetString("Auth_SessionExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signed in..
+        /// </summary>
+        public static string Auth_SignedIn {
+            get {
+                return ResourceManager.GetString("Auth_SignedIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have been signed out..
+        /// </summary>
+        public static string Auth_SignedOut {
+            get {
+                return ResourceManager.GetString("Auth_SignedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Too many incorrect attempts. Please start again..
+        /// </summary>
+        public static string Auth_TooManyAttempts {
+            get {
+                return ResourceManager.GetString("Auth_TooManyAttempts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must be at least 19 years old to create an account..
+        /// </summary>
+        public static string Auth_Underage {
+            get {
+                return ResourceManager.GetString("Auth_Underage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong. Please try again..
+        /// </summary>
+        public static string Auth_Unexpected {
+            get {
+                return ResourceManager.GetString("Auth_Unexpected", resourceCulture);
             }
         }
         
@@ -205,6 +430,33 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You must be at least 19 years old..
+        /// </summary>
+        public static string DateOfBirth_Hint {
+            get {
+                return ResourceManager.GetString("DateOfBirth_Hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date of birth.
+        /// </summary>
+        public static string DateOfBirth_Label {
+            get {
+                return ResourceManager.GetString("DateOfBirth_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please enter a valid email address..
+        /// </summary>
+        public static string Email_Invalid {
+            get {
+                return ResourceManager.GetString("Email_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Email address.
         /// </summary>
         public static string Email_Label {
@@ -250,6 +502,15 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to First name.
+        /// </summary>
+        public static string FirstName_Label {
+            get {
+                return ResourceManager.GetString("FirstName_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home — The Vape Shop Sarnia.
         /// </summary>
         public static string Home_PageTitle {
@@ -268,6 +529,15 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Last name.
+        /// </summary>
+        public static string LastName_Label {
+            get {
+                return ResourceManager.GetString("LastName_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading….
         /// </summary>
         public static string Loading {
@@ -277,7 +547,7 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign In.
+        ///   Looks up a localized string similar to Login.
         /// </summary>
         public static string Login {
             get {
@@ -286,7 +556,16 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign In — The Vape Shop Sarnia.
+        ///   Looks up a localized string similar to Login with your email.
+        /// </summary>
+        public static string Login_Instruction {
+            get {
+                return ResourceManager.GetString("Login_Instruction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login — The Vape Shop Sarnia.
         /// </summary>
         public static string Login_PageTitle {
             get {
@@ -322,11 +601,38 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Brands.
+        /// </summary>
+        public static string Nav_Brands {
+            get {
+                return ResourceManager.GetString("Nav_Brands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cart.
         /// </summary>
         public static string Nav_Cart {
             get {
                 return ResourceManager.GetString("Nav_Cart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Categories.
+        /// </summary>
+        public static string Nav_Categories {
+            get {
+                return ResourceManager.GetString("Nav_Categories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deals.
+        /// </summary>
+        public static string Nav_Deals {
+            get {
+                return ResourceManager.GetString("Nav_Deals", resourceCulture);
             }
         }
         
@@ -345,6 +651,15 @@ namespace TheShop.Web.Resources {
         public static string Nav_Products {
             get {
                 return ResourceManager.GetString("Nav_Products", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string Nav_Search {
+            get {
+                return ResourceManager.GetString("Nav_Search", resourceCulture);
             }
         }
         
@@ -390,6 +705,15 @@ namespace TheShop.Web.Resources {
         public static string OrderPlaced {
             get {
                 return ResourceManager.GetString("OrderPlaced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Digit {0} of {1}.
+        /// </summary>
+        public static string OtpInput_DigitAriaLabel {
+            get {
+                return ResourceManager.GetString("OtpInput_DigitAriaLabel", resourceCulture);
             }
         }
         
@@ -475,11 +799,191 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Login.
+        /// </summary>
+        public static string SignIn_Heading {
+            get {
+                return ResourceManager.GetString("SignIn_Heading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t have an account?.
+        /// </summary>
+        public static string SignIn_NoAccount {
+            get {
+                return ResourceManager.GetString("SignIn_NoAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login — The Vape Shop Sarnia.
+        /// </summary>
+        public static string SignIn_PageTitle {
+            get {
+                return ResourceManager.GetString("SignIn_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome back to The Vape Shop.
+        /// </summary>
+        public static string SignIn_WelcomeBack {
+            get {
+                return ResourceManager.GetString("SignIn_WelcomeBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Account.
+        /// </summary>
+        public static string SignUp {
+            get {
+                return ResourceManager.GetString("SignUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I confirm I am 19 years of age or older.
+        /// </summary>
+        public static string SignUp_AgeConfirm {
+            get {
+                return ResourceManager.GetString("SignUp_AgeConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Already have an account?.
+        /// </summary>
+        public static string SignUp_HaveAccount {
+            get {
+                return ResourceManager.GetString("SignUp_HaveAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string SignUp_Heading {
+            get {
+                return ResourceManager.GetString("SignUp_Heading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Join The Vape Shop — Canada&apos;s premium vaping destination.
+        /// </summary>
+        public static string SignUp_Instruction {
+            get {
+                return ResourceManager.GetString("SignUp_Instruction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create — The Vape Shop Sarnia.
+        /// </summary>
+        public static string SignUp_PageTitle {
+            get {
+                return ResourceManager.GetString("SignUp_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Stay tuned — We’ll be live soon.
         /// </summary>
         public static string Stay_Tuned {
             get {
                 return ResourceManager.GetString("Stay_Tuned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 6 digits.
+        /// </summary>
+        public static string Verify_CodeHint {
+            get {
+                return ResourceManager.GetString("Verify_CodeHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the six-digit code sent to your email address.
+        /// </summary>
+        public static string Verify_CodeLabel {
+            get {
+                return ResourceManager.GetString("Verify_CodeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify.
+        /// </summary>
+        public static string Verify_Heading {
+            get {
+                return ResourceManager.GetString("Verify_Heading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are logged in as.
+        /// </summary>
+        public static string Verify_LoggedInAs {
+            get {
+                return ResourceManager.GetString("Verify_LoggedInAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify — The Vape Shop Sarnia.
+        /// </summary>
+        public static string Verify_PageTitle {
+            get {
+                return ResourceManager.GetString("Verify_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resend code.
+        /// </summary>
+        public static string Verify_Resend {
+            get {
+                return ResourceManager.GetString("Verify_Resend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resend in {0}s.
+        /// </summary>
+        public static string Verify_ResendIn {
+            get {
+                return ResourceManager.GetString("Verify_ResendIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are signing up as.
+        /// </summary>
+        public static string Verify_SigningUpAs {
+            get {
+                return ResourceManager.GetString("Verify_SigningUpAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We sent a 6-digit code to {0}. Check your inbox (and spam folder)..
+        /// </summary>
+        public static string Verify_Subheading {
+            get {
+                return ResourceManager.GetString("Verify_Subheading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify.
+        /// </summary>
+        public static string Verify_Submit {
+            get {
+                return ResourceManager.GetString("Verify_Submit", resourceCulture);
             }
         }
     }

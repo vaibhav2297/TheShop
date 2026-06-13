@@ -1,0 +1,40 @@
+@inherits MudComponentBase
+@using TheShop.Web.Resources
+
+<MudStack id="@_containerId"
+          Class="@Classname"
+          Style="@Stylename"
+          Spacing="3"
+          @attributes="UserAttributes">
+
+    <MudStack Row
+              Spacing="2"
+              AlignItems="AlignItems.Center">
+
+        @for (var i = 0; i < Length; i++)
+        {
+            var idx = i;
+            <MudNumericField T="int?"
+                             Value="@(_digits[idx].Length > 0 ? int.Parse(_digits[idx]) : (int?)null)"
+                             ValueChanged="@(v => OnDigitChangedAsync(idx, v))"
+                             OnKeyDown="@(e => OnKeyDownAsync(idx, e))"
+                             Variant="Variant.Filled"
+                             Typo="Typo.h6"
+                             Min="0"
+                             Max="9"
+                             HideSpinButtons="true"
+                             Immediate="true"
+                             Disabled="@Disabled"
+                             autocomplete="one-time-code"
+                             aria-label="@string.Format(Strings.OtpInput_DigitAriaLabel, idx + 1, Length)"
+                             Class="shop-otp-digit" />
+        }
+
+    </MudStack>
+
+    @if (!string.IsNullOrEmpty(HelperText))
+    {
+        <MudText Typo="Typo.caption" Color="Color.Secondary">@HelperText</MudText>
+    }
+
+</MudStack>

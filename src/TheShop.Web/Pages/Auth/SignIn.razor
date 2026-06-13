@@ -1,0 +1,100 @@
+@layout TheShop.Web.Components.Layout.AuthLayout
+@attribute [AllowAnonymous]
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.SignIn_PageTitle</PageTitle>
+
+<MudGrid Spacing="0" Class="mud-height-full">
+
+    @* Left panel: sign-in form — space-between aligns heading at top, form at bottom *@
+    <MudItem xs="12" md="6">
+        <MudStack Class="mud-height-full px-16 py-4"
+                  Justify="Justify.SpaceBetween">
+
+            @* Top bar: cross-navigation link only *@
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Primary"
+                           Href="@Routes.Auth.SignUp">@Strings.SignUp</MudButton>
+            </MudStack>
+
+            <MudStack Justify="Justify.SpaceBetween"
+                      Class="flex-1">
+
+                @* Hero heading block *@
+                <MudStack Spacing="2">
+                    <MudText Typo="Typo.h2" Color="Color.Primary">@Strings.SignIn_Heading</MudText>
+                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.SignIn_WelcomeBack</MudText>
+                </MudStack>
+
+                @* Form block: label + input + submit *@
+                <MudStack Spacing="4">
+                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.Login_Instruction</MudText>
+
+                    <MudForm @ref="_form"
+                             @bind-IsValid="_isFormValid"
+                             SuppressImplicitSubmission="true">
+                        @* BusyFor wraps the field and the button so the email input freezes
+                           while its captured value is in flight — see DESIGN.md §Loading & Busy States *@
+                        <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
+                            <MudStack Spacing="3">
+                                <MudTextField T="string"
+                                              @bind-Value="_email"
+                                              Placeholder="@Strings.Email_Placeholder"
+                                              InputType="InputType.Email"
+                                              Variant="Variant.Filled"
+                                              FullWidth="true"
+                                              Typo="Typo.body2"
+                                              Required="true"
+                                              Disabled="@busy"
+                                              Adornment="Adornment.Start"
+                                              AdornmentColor="Color.Primary"
+                                              AdornmentIcon="@ShopIcons.Edit.Mention"
+                                              RequiredError="@Strings.Email_Required"
+                                              Validation="@_emailValidation"
+                                              Immediate="true"
+                                              autocomplete="email" />
+
+                                @* Row wrapper prevents MudStack stretch from expanding the button to full width *@
+                                <MudStack Row="true">
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Size="Size.Large"
+                                               Disabled="@(!_isFormValid || busy)"
+                                               EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
+                                               OnClick="OnSendCodeAsync">
+                                        @if (busy)
+                                        {
+                                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                        }
+                                        @Strings.Auth_Login_Submit
+                                    </MudButton>
+                                </MudStack>
+                            </MudStack>
+                        </BusyFor>
+                    </MudForm>
+                </MudStack>
+
+            </MudStack>
+
+        </MudStack>
+    </MudItem>
+
+    @* Right panel: brand splash — hidden on small screens *@
+    <MudItem xs="12" md="6" Class="d-none d-md-flex">
+        <MudStack AlignItems="AlignItems.Center"
+                  Justify="Justify.Center"
+                  Class="flex-1 my-4 me-4 mud-surface"
+                  Spacing="4">
+            <MudImage Src="/images/logo/logo_primary.svg"
+                      Alt="@Strings.AppName"
+                      Width="280"
+                      Height="280"
+                      ObjectFit="ObjectFit.Contain" />
+
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Strings.App_Tagline</MudText>
+        </MudStack>
+    </MudItem>
+
+</MudGrid>

@@ -1,0 +1,22 @@
+// Match filled MudTextField height to the outlined variant (~56px) since
+// fields use placeholders, not floating labels. The :not() is a specificity
+// bump to outweigh MudBlazor's default padding rule, not a real guard.
+.mud-input.mud-input-filled:not(.mud-input-filled-with-label) {
+    > input,
+    > textarea {
+        padding-top: 18.5px;
+        padding-bottom: 18.5px;
+    }
+
+    .mud-input-adornment {
+        margin-top: 0;
+    }
+}
+
+// MudBlazor's DefaultBorderRadius layout property sets --mud-default-borderradius
+// but filled inputs apply it as "4px 4px 0 0" (Material Design top-round). In v9
+// this doesn't reliably reach every component, so force zero radius here.
+// Covers MudTextField, MudSelect, MudDatePicker, MudAutocomplete, etc.
+.mud-input-filled {
+    border-radius: 0 !important;
+}

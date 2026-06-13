@@ -1,0 +1,112 @@
+@layout TheShop.Web.Components.Layout.AuthLayout
+@attribute [AllowAnonymous]
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.Verify_PageTitle</PageTitle>
+
+<MudGrid Spacing="0" Class="mud-height-full">
+
+    @* Left panel: OTP entry — space-between aligns heading at top, form at bottom *@
+    <MudItem xs="12" md="6">
+        <MudStack Class="mud-height-full px-16 py-4"
+                  Justify="Justify.SpaceBetween">
+
+            @* Top bar: cross-navigation link only *@
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Primary"
+                           Href="@Routes.Auth.SignIn">@Strings.Login</MudButton>
+            </MudStack>
+
+            <MudStack Justify="Justify.SpaceBetween" Class="flex-1">
+
+                @* Hero block: heading + active-email banner with "Change" link back to sign-up *@
+                <MudStack Spacing="9">
+                    <MudText Typo="Typo.h2" Color="Color.Primary">@Strings.Verify_Heading</MudText>
+                    <MudStack Spacing="2">
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.Verify_SigningUpAs</MudText>
+                            <MudButton Variant="Variant.Text"
+                                       Color="Color.Primary"
+                                       Href="@Routes.Auth.SignUp">@Strings.Auth_Change</MudButton>
+                        </MudStack>
+                        <MudText Typo="Typo.body1" Color="Color.Primary">@_pendingEmail</MudText>
+                    </MudStack>
+                </MudStack>
+
+                @* Form block *@
+                <MudStack Spacing="4">
+                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">
+                        @Strings.Verify_CodeLabel
+                    </MudText>
+
+                    <MudForm @ref="_form"
+                             @bind-IsValid="_isFormValid"
+                             SuppressImplicitSubmission="true">
+                        <MudStack Spacing="3">
+
+                            @* BusyFor wraps the OTP boxes and the verify button so the code being
+                               submitted freezes while in flight — see DESIGN.md §Loading & Busy States *@
+                            <BusyFor Key="@BusyKeys.Auth.SignUpVerify" Context="busy">
+                                <OtpInput @bind-Value="_otp"
+                                          Length="@OtpLength"
+                                          Disabled="@busy" />
+
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Size="Size.Large"
+                                               EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
+                                               Disabled="@(!_isCodeComplete || busy)"
+                                               OnClick="OnVerifyAsync">
+                                        @if (busy)
+                                        {
+                                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                        }
+                                        @Strings.Verify_Submit
+                                    </MudButton>
+
+                                    <BusyFor Key="@BusyKeys.Auth.ResendOtp" Context="resending">
+                                        <MudButton Variant="Variant.Text"
+                                                   Color="Color.Primary"
+                                                   Disabled="@(_resendCooldown > 0 || resending)"
+                                                   OnClick="OnResendAsync">
+                                            @if (_resendCooldown > 0)
+                                            {
+                                                @string.Format(Strings.Verify_ResendIn, _resendCooldown)
+                                            }
+                                            else
+                                            {
+                                                @Strings.Verify_Resend
+                                            }
+                                        </MudButton>
+                                    </BusyFor>
+                                </MudStack>
+                            </BusyFor>
+
+                        </MudStack>
+                    </MudForm>
+                </MudStack>
+
+            </MudStack>
+
+        </MudStack>
+    </MudItem>
+
+    @* Right panel: brand splash — hidden on small screens *@
+    <MudItem xs="12" md="6" Class="d-none d-md-flex mud-theme-surface">
+        <MudStack AlignItems="AlignItems.Center"
+                  Justify="Justify.Center"
+                  Class="flex-1 my-4 me-4 mud-surface"
+                  Spacing="4">
+            <MudImage Src="/images/logo/logo_primary.svg"
+                      Alt="@Strings.AppName"
+                      Width="280"
+                      Height="280"
+                      ObjectFit="ObjectFit.Contain" />
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Strings.App_Tagline</MudText>
+        </MudStack>
+    </MudItem>
+
+</MudGrid>

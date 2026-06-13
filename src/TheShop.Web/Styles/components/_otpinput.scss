@@ -1,0 +1,28 @@
+// ─── OTP digit box ───────────────────────────────────────────────────────────
+// Applied to each MudNumericField inside OtpInput. The parent MudStack is a
+// flex row so flex: 1 distributes all boxes at equal width automatically.
+.shop-otp-digit {
+    flex: 1 1 0;
+    min-width: 0; // prevent individual box from overflowing the row
+
+    // Centre the digit value inside the underlying <input>.
+    // Class on MudNumericField lands on the outermost wrapper div, so we must
+    // descend to the actual input element — inheritance alone is not reliable
+    // because MudBlazor resets text-align on the input root class.
+    input {
+        text-align: center !important;
+    }
+
+    // Remove native number-field spin arrows so the box looks like a plain
+    // digit cell. MudBlazor's HideSpinButtons adds mud-no-spin-buttons but we
+    // belt-and-suspenders with the vendor pseudo-elements for full coverage.
+    input[type=number] {
+        -moz-appearance: textfield; // Firefox
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}

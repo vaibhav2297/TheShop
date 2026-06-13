@@ -162,6 +162,8 @@ AutoTest.Net/
 
 # Web workbench (sass)
 .sass-cache/
+# Sass source maps (emitted in Debug builds by AspNetCore.SassCompiler)
+src/TheShop.Web/wwwroot/css/*.css.map
 
 # Installshield output folder
 [Ee]xpress/

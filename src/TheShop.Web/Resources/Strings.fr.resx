@@ -150,6 +150,21 @@
   <data name="Nav_AdminPanel" xml:space="preserve">
     <value>Panneau d'administration</value>
   </data>
+  <data name="Nav_Categories" xml:space="preserve">
+    <value>[TODO]</value>
+  </data>
+  <data name="Nav_Brands" xml:space="preserve">
+    <value>[TODO]</value>
+  </data>
+  <data name="Nav_Deals" xml:space="preserve">
+    <value>[TODO]</value>
+  </data>
+  <data name="Nav_Search" xml:space="preserve">
+    <value>[TODO]</value>
+  </data>
+  <data name="AnnouncementBar_Message" xml:space="preserve">
+    <value>[TODO]</value>
+  </data>
   <data name="Home_PageTitle" xml:space="preserve">
     <value>Accueil — The Vape Shop Sarnia</value>
   </data>
@@ -243,6 +258,159 @@
   <data name="Password_TooShort" xml:space="preserve">
     <value>Le mot de passe doit comporter au moins 8 caractères.</value>
   </data>
+  <data name="SignUp_PageTitle" xml:space="preserve">
+    <value>Inscription — The Vape Shop Sarnia</value>
+  </data>
+  <data name="SignUp_Heading" xml:space="preserve">
+    <value>Créez votre compte</value>
+  </data>
+  <data name="SignUp_HaveAccount" xml:space="preserve">
+    <value>Vous avez déjà un compte?</value>
+  </data>
+  <data name="SignIn_PageTitle" xml:space="preserve">
+    <value>Connexion — The Vape Shop Sarnia</value>
+  </data>
+  <data name="SignIn_Heading" xml:space="preserve">
+    <value>Connectez-vous à votre compte</value>
+  </data>
+  <data name="SignIn_NoAccount" xml:space="preserve">
+    <value>Vous n'avez pas de compte?</value>
+  </data>
+  <data name="SignUp" xml:space="preserve">
+    <value>S'inscrire</value>
+  </data>
+  <data name="Verify_PageTitle" xml:space="preserve">
+    <value>Vérifier le code — The Vape Shop Sarnia</value>
+  </data>
+  <data name="Verify_Heading" xml:space="preserve">
+    <value>Entrez votre code de vérification</value>
+  </data>
+  <data name="Verify_Subheading" xml:space="preserve">
+    <value>Nous avons envoyé un code à 6 chiffres à {0}. Vérifiez votre boîte de réception (et vos pourriels).</value>
+  </data>
+  <data name="Verify_CodeLabel" xml:space="preserve">
+    <value>Code de vérification</value>
+  </data>
+  <data name="Verify_LoggedInAs" xml:space="preserve">
+    <value>Vous êtes connecté en tant que</value>
+  </data>
+  <data name="Verify_SigningUpAs" xml:space="preserve">
+    <value>Vous vous inscrivez en tant que</value>
+  </data>
+  <data name="Auth_Change" xml:space="preserve">
+    <value>Changer</value>
+  </data>
+  <data name="Auth_Login_Submit" xml:space="preserve">
+    <value>Se connecter</value>
+  </data>
+  <data name="Auth_Create_Submit" xml:space="preserve">
+    <value>Créer</value>
+  </data>
+  <data name="Verify_CodeHint" xml:space="preserve">
+    <value>6 chiffres</value>
+  </data>
+  <data name="Verify_Submit" xml:space="preserve">
+    <value>Vérifier</value>
+  </data>
+  <data name="Verify_Resend" xml:space="preserve">
+    <value>Renvoyer le code</value>
+  </data>
+  <data name="Verify_ResendIn" xml:space="preserve">
+    <value>Renvoyer dans {0}s</value>
+  </data>
+  <data name="OtpInput_DigitAriaLabel" xml:space="preserve">
+    <value>Chiffre {0} sur {1}</value>
+  </data>
+  <data name="Auth_SendCode" xml:space="preserve">
+    <value>Envoyer le code</value>
+  </data>
+  <data name="App_Tagline" xml:space="preserve">
+    <value>Vapotage premium, sélectionné pour vous.</value>
+  </data>
+  <data name="Login_Instruction" xml:space="preserve">
+    <value>Connectez-vous avec votre courriel</value>
+  </data>
+  <data name="SignUp_Instruction" xml:space="preserve">
+    <value>Rejoignez The Vape Shop — la destination vapotage premium du Canada</value>
+  </data>
+  <data name="Account_Greeting" xml:space="preserve">
+    <value>Bon retour!</value>
+  </data>
+  <data name="SignUp_AgeConfirm" xml:space="preserve">
+    <value>Je confirme avoir 19 ans ou plus</value>
+  </data>
+  <data name="SignIn_WelcomeBack" xml:space="preserve">
+    <value>Bon retour au Vape Shop</value>
+  </data>
+  <data name="FirstName_Label" xml:space="preserve">
+    <value>Prénom</value>
+  </data>
+  <data name="LastName_Label" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="DateOfBirth_Label" xml:space="preserve">
+    <value>Date de naissance</value>
+  </data>
+  <data name="DateOfBirth_Hint" xml:space="preserve">
+    <value>Vous devez avoir au moins 19 ans.</value>
+  </data>
+  <data name="Auth_AccountAlreadyExists" xml:space="preserve">
+    <value>Un compte avec cette adresse courriel existe déjà.</value>
+  </data>
+  <data name="Auth_AccountNotFound" xml:space="preserve">
+    <value>Aucun compte trouvé pour cette adresse courriel.</value>
+  </data>
+  <data name="Auth_Underage" xml:space="preserve">
+    <value>Vous devez avoir au moins 19 ans pour créer un compte.</value>
+  </data>
+  <data name="Auth_Code_Incorrect" xml:space="preserve">
+    <value>Code incorrect. Veuillez réessayer.</value>
+  </data>
+  <data name="Auth_Code_InvalidOrExpired" xml:space="preserve">
+    <value>Le code de vérification est invalide ou a expiré.</value>
+  </data>
+  <data name="Auth_TooManyAttempts" xml:space="preserve">
+    <value>Trop de tentatives incorrectes. Veuillez recommencer.</value>
+  </data>
+  <data name="Auth_ResendTooSoon" xml:space="preserve">
+    <value>Veuillez patienter avant de demander un nouveau code.</value>
+  </data>
+  <data name="Auth_FirstName_Required" xml:space="preserve">
+    <value>Le prénom est requis.</value>
+  </data>
+  <data name="Auth_LastName_Required" xml:space="preserve">
+    <value>Le nom est requis.</value>
+  </data>
+  <data name="Auth_Dob_InPast" xml:space="preserve">
+    <value>Veuillez entrer une date de naissance valide.</value>
+  </data>
+  <data name="Email_Invalid" xml:space="preserve">
+    <value>Veuillez entrer une adresse courriel valide.</value>
+  </data>
+  <data name="Auth_CodeSent" xml:space="preserve">
+    <value>Nous avons envoyé un code à 6 chiffres à votre adresse courriel.</value>
+  </data>
+  <data name="Auth_SignedIn" xml:space="preserve">
+    <value>Connexion réussie.</value>
+  </data>
+  <data name="Auth_SignedOut" xml:space="preserve">
+    <value>Vous avez été déconnecté.</value>
+  </data>
+  <data name="Auth_SessionExpired" xml:space="preserve">
+    <value>Veuillez vous reconnecter pour continuer.</value>
+  </data>
+  <data name="Auth_Network" xml:space="preserve">
+    <value>Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.</value>
+  </data>
+  <data name="Auth_Unexpected" xml:space="preserve">
+    <value>Une erreur est survenue. Veuillez réessayer.</value>
+  </data>
+  <data name="Account_Welcome" xml:space="preserve">
+    <value>Bienvenue, {0}!</value>
+  </data>
+  <data name="Account_SignedInAs" xml:space="preserve">
+    <value>Connecté en tant que {0}</value>
+  </data>
   <data name="AdminDashboard_PageTitle" xml:space="preserve">
     <value>Tableau de bord — Admin — The Vape Shop Sarnia</value>
   </data>
@@ -254,5 +422,8 @@
   </data>
   <data name="AdminCustomers_PageTitle" xml:space="preserve">
     <value>Clients — Admin — The Vape Shop Sarnia</value>
+  </data>
+  <data name="Stay_Tuned" xml:space="preserve">
+    <value>Restez à l'écoute ! Nous serons bientôt en direct.</value>
   </data>
 </root>
