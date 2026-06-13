@@ -32,6 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Bundles the Dart Sass binary and compiles SCSS→CSS during build (config in sasscompiler.json).
+         Replaces the external `sass` CLI so the build runs anywhere (Oryx/CI/local) without a PATH dependency. -->
+    <PackageReference Include="AspNetCore.SassCompiler" Version="1.100.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.7" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.7" />
@@ -39,13 +42,5 @@
     <PackageReference Include="Blazored.LocalStorage" Version="4.*" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="10.*" />
   </ItemGroup>
-
-  <!-- Compile SCSS → CSS before every build. Expanded + source map in Debug; compressed + no map in Release. -->
-  <Target Name="CompileSass" BeforeTargets="Build">
-    <Exec Condition="'$(Configuration)' == 'Debug'"
-          Command="sass Styles/TheShop.scss wwwroot/css/TheShop.css --style=expanded" />
-    <Exec Condition="'$(Configuration)' != 'Debug'"
-          Command="sass Styles/TheShop.scss wwwroot/css/TheShop.css --style=compressed --no-source-map" />
-  </Target>
 
 </Project>
