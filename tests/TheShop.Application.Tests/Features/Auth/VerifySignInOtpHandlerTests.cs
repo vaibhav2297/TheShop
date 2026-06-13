@@ -103,14 +103,14 @@ public class VerifySignInOtpHandlerTests
     public async Task Handle_WhenOtpIsExpired_ReturnsCodeExpiredFailure()
     {
         _auth.VerifyOtpAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-             .Returns(Result.Fail<AuthSession>(AuthErrorKeys.CodeExpired));
+             .Returns(Result.Fail<AuthSession>(AuthErrorKeys.CodeInvalidOrExpired));
 
         var result = await CreateSut().Handle(
             new VerifySignInOtpCommand("returning@example.com", "123456"),
             CancellationToken.None);
 
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().Be(AuthErrorKeys.CodeExpired);
+        result.Error.Should().Be(AuthErrorKeys.CodeInvalidOrExpired);
     }
 
     [Fact]

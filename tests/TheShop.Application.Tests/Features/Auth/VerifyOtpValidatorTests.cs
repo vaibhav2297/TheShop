@@ -38,7 +38,7 @@ public class VerifySignUpOtpValidatorTests
 
         result.Errors.Should().Contain(e =>
             e.PropertyName == nameof(cmd.Code) &&
-            e.ErrorMessage == AuthErrorKeys.CodeInvalid);
+            e.ErrorMessage == AuthErrorKeys.CodeInvalidOrExpired);
     }
 
     [Theory]
@@ -55,7 +55,7 @@ public class VerifySignUpOtpValidatorTests
 
         result.Errors.Should().Contain(e =>
             e.PropertyName == nameof(cmd.Code) &&
-            e.ErrorMessage == AuthErrorKeys.CodeInvalid);
+            e.ErrorMessage == AuthErrorKeys.CodeInvalidOrExpired);
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class VerifySignInOtpValidatorTests
 
         result.Errors.Should().Contain(e =>
             e.PropertyName == nameof(cmd.Code) &&
-            e.ErrorMessage == AuthErrorKeys.CodeInvalid);
+            e.ErrorMessage == AuthErrorKeys.CodeInvalidOrExpired);
     }
 
     [Theory]
@@ -173,7 +173,7 @@ public class VerifySignInOtpValidatorTests
 
         result.Errors.Should().Contain(e =>
             e.PropertyName == nameof(cmd.Code) &&
-            e.ErrorMessage == AuthErrorKeys.CodeInvalid);
+            e.ErrorMessage == AuthErrorKeys.CodeInvalidOrExpired);
     }
 
     [Fact]
