@@ -21,6 +21,12 @@ jobs:
           lfs: false
       - name: Use staging SWA config
         run: cp ./src/TheShop.Web/wwwroot/staticwebapp.dev.config.json ./src/TheShop.Web/wwwroot/staticwebapp.config.json
+      - name: List published output
+        run: |
+        echo "=== Looking for published wwwroot ==="
+        find ${{ github.workspace }}/src/TheShop.Web -name "index.html" -path "*wwwroot*"
+        echo "=== Contents of publish wwwroot root ==="
+        ls -la ${{ github.workspace }}/src/TheShop.Web/bin/Release/net10.0/wwwroot/ || true  
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
