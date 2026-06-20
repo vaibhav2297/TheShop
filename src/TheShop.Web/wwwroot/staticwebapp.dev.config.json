@@ -1,0 +1,10 @@
+{
+  "globalHeaders": {
+    "Blazor-Environment": "Development",
+    "X-Robots-Tag": "noindex, nofollow"
+  },
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [ "/_framework/*", "/_content/*", "/css/*", "/js/*", "/fonts/*", "/images/*" ]
+  }
+}
