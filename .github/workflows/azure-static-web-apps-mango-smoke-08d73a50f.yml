@@ -1,4 +1,4 @@
-name: Azure Static Web Apps CI/CD
+name: TheShop.Web - Dev
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
       - name: Publish Blazor app
         run: dotnet publish ./src/TheShop.Web/TheShop.Web.csproj -c Release -o ./publish
 
-      - name: Use staging SWA config
+      - name: Use DEV SWA config
         run: cp ./src/TheShop.Web/wwwroot/staticwebapp.dev.config.json ./src/TheShop.Web/wwwroot/staticwebapp.config.json
 
       - name: Build And Deploy

@@ -13,6 +13,7 @@
     <ProjectReference Include="..\TheShop.Infrastructure\TheShop.Infrastructure.csproj" />
   </ItemGroup>
 
+
   <ItemGroup>
     <!-- Wire PublicResXFileCodeGenerator so Strings.Designer.cs is auto-generated on build -->
     <EmbeddedResource Update="Resources\Strings.resx">
