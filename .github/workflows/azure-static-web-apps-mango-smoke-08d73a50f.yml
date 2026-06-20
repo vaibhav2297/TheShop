@@ -29,7 +29,7 @@ jobs:
         run: dotnet publish ./src/TheShop.Web/TheShop.Web.csproj -c Release -o ./publish
 
       - name: Use DEV SWA config
-        run: cp ./src/TheShop.Web/wwwroot/staticwebapp.dev.config.json ./src/TheShop.Web/wwwroot/staticwebapp.config.json
+        run: cp ./src/TheShop.Web/wwwroot/staticwebapp.dev.config.json ./publish/wwwroot/staticwebapp.config.json
 
       - name: Build And Deploy
         id: builddeploy
