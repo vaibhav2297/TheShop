@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using MudBlazor.Services;
 using TheShop.Application;
 using TheShop.Infrastructure;
 using TheShop.Web;
@@ -19,8 +18,6 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddPresentation();
-
-builder.Services.AddMudServices();
 
 var host = builder.Build();
 
