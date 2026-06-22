@@ -26,7 +26,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Publish Blazor app
-        run: dotnet publish ./src/TheShop.Web/TheShop.Web.csproj -c Release -o ./publish
+        run: dotnet publish ./src/TheShop.Web/TheShop.Web.csproj -c Release -o ./publish -p:WasmApplicationEnvironmentName=Production
 
       - name: Use PROD SWA config
         run: cp ./src/TheShop.Web/wwwroot/staticwebapp.prod.config.json ./publish/wwwroot/staticwebapp.config.json

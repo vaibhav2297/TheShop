@@ -1,14 +1,5 @@
 {
-  "routes": [
-    {
-      "route": "/_framework/*",
-      "headers": {
-        "Blazor-Environment": "Development"
-      }
-    }
-  ],
   "globalHeaders": {
-    "Blazor-Environment": "Development",
     "X-Robots-Tag": "noindex, nofollow"
   },
   "navigationFallback": {
