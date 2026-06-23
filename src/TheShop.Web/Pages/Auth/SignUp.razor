@@ -79,7 +79,7 @@
                                               Disabled="@busy"
                                               Adornment="Adornment.Start"
                                               AdornmentColor="Color.Primary"
-                                              AdornmentIcon="@ShopIcons.Edit.Mention"
+                                              AdornmentIcon="@ShopIcons.Outlined.Mention"
                                               RequiredError="@Strings.Email_Required"
                                               Validation="@_emailValidation"
                                               Immediate="true"
@@ -91,7 +91,7 @@
                                                MaxDate="@_maxDate"
                                                Required="true"
                                                Disabled="@busy"
-                                               AdornmentIcon="@ShopIcons.Calendar.Calendar_"
+                                               AdornmentIcon="@ShopIcons.Outlined.Calendar_"
                                                Adornment="Adornment.End"
                                                AdornmentColor="Color.Primary"
                                                OpenTo="OpenTo.Year"
@@ -114,7 +114,7 @@
                                     <MudButton Variant="Variant.Filled"
                                                Color="Color.Primary"
                                                Size="Size.Large"
-                                               EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
+                                               EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
                                                Disabled="@(!_isFormValid || busy)"
                                                OnClick="OnSendCodeAsync">
                                         @if (busy)
@@ -141,7 +141,7 @@
                   Justify="Justify.Center"
                   Class="flex-1 my-4 me-4 mud-surface"
                   Spacing="4">
-            <MudImage Src="/images/logo/logo_primary.svg"
+            <MudImage Src="@ShopIcons.ImageAssets.LogoPrimary"
                       Alt="@Strings.AppName"
                       Width="280"
                       Height="280"

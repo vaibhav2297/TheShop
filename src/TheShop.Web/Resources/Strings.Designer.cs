@@ -160,15 +160,6 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Free shipping on orders $75+ or promo codes..
-        /// </summary>
-        public static string AnnouncementBar_Message {
-            get {
-                return ResourceManager.GetString("AnnouncementBar_Message", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Premium Vaping, Curated for You..
         /// </summary>
         public static string App_Tagline {

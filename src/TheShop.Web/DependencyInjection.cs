@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<BusyState>();
         services.AddScoped<CartState>();
         services.AddScoped<AuthState>();
+        services.AddScoped<AnnouncementState>();
         services.AddScoped<PendingSignUpState>();
 
         services.AddBlazoredLocalStorage();

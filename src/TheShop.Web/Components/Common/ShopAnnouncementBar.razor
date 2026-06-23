@@ -1,7 +1,16 @@
-@using TheShop.Web.Resources
+@inherits MudBlazor.MudComponentBase
 
-<MudPaper Class="mud-theme-dark" Square="true" Elevation="0">
-    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Style="padding: 6px 16px;">
-        <MudText Typo="Typo.body2">@Strings.AnnouncementBar_Message</MudText>
+<MudPaper Class="@Classname"
+          Style="@Style"
+          Square
+          Elevation="0">
+
+    <MudStack AlignItems="AlignItems.Center"
+              Justify="Justify.Center"
+              Class="py-1 px-4">
+
+        <MudText Typo="Typo.body2">@Message</MudText>
+
     </MudStack>
+
 </MudPaper>

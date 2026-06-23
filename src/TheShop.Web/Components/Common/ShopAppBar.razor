@@ -3,56 +3,81 @@
 @using TheShop.Web.Theme
 
 <MudAppBar Color="Color.Surface"
-           Elevation="0">
+           Elevation="0"
+           Fixed="false">
+            
+    <MudGrid Justify="Justify.SpaceBetween"
+             Class="flex-grow-1 align-center">
 
-    @* Logo *@
-    <MudLink Href="@Routes.Home" Underline="Underline.None" Color="Color.Inherit">
-        <MudImage Src="/images/logo/logo-header.svg"
-                  Alt="@Strings.AppName"
-                  Width="120"
-                  Height="40"
-                  ObjectFit="ObjectFit.Contain" />
-    </MudLink>
+        @* Logo *@
+        <MudItem xs="4"
+                 Class="d-flex align-center">
+            <MudLink Href="@Routes.Home" Underline="Underline.None" Color="Color.Inherit">
+                <MudImage Src="@ShopIcons.ImageAssets.LogoIcon"
+                          Alt="@Strings.AppName"
+                          Width="52"
+                          Height="52"
+                          ObjectFit="ObjectFit.Contain" />
+            </MudLink>
+        </MudItem>
 
-    <MudSpacer />
+        @* Primary navigation *@
+        <MudItem xs="4"
+                 Class="d-flex justify-center align-center">
+            <MudStack Row
+                      AlignItems="AlignItems.Center"
+                      Spacing="6">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Home">@Strings.Nav_Home</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Products">@Strings.Nav_Products</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Categories">@Strings.Nav_Categories</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Brands">@Strings.Nav_Brands</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Deals">@Strings.Nav_Deals</MudButton>
+            </MudStack>
+        </MudItem>
 
-    @* Primary navigation *@
-    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="0">
-        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Home">@Strings.Nav_Home</MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Products">@Strings.Nav_Products</MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Categories">@Strings.Nav_Categories</MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Brands">@Strings.Nav_Brands</MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Deals">@Strings.Nav_Deals</MudButton>
-    </MudStack>
+        @* Action icons *@
+        <MudItem xs="4"
+                 Class="d-flex justify-end align-center">
+            <MudStack Row
+                      AlignItems="AlignItems.Center"
+                      Spacing="2">
 
-    <MudSpacer />
+                <MudIconButton Icon="@ShopIcons.Outlined.Search_Magnifying_Glass"
+                               Color="Color.Primary"
+                               aria-label="@Strings.Nav_Search" />
 
-    @* Action icons *@
-    <MudIconButton Icon="@ShopIcons.Interface.Search_Magnifying_Glass"
-                   Color="Color.Primary"
-                   aria-label="@Strings.Nav_Search" />
+                <MudIconButton Icon="@ShopIcons.Outlined.Shopping_Bag_01"
+                               Color="Color.Primary"
+                               Href="@Routes.Cart"
+                               aria-label="@Strings.Nav_Cart" />
 
-    <MudIconButton Icon="@ShopIcons.Interface.Shopping_Cart_01"
-                   Color="Color.Primary"
-                   Href="@Routes.Cart"
-                   aria-label="@Strings.Nav_Cart" />
+                <AuthorizeView>
 
-    <AuthorizeView>
-        <Authorized>
-            <MudMenu Icon="@ShopIcons.User.User_Circle"
-                     Color="Color.Primary"
-                     AnchorOrigin="Origin.BottomRight"
-                     TransformOrigin="Origin.TopRight"
-                     aria-label="@Strings.Nav_Account">
-                <MudMenuItem OnClick="OnSignOutAsync">@Strings.Logout</MudMenuItem>
-            </MudMenu>
-        </Authorized>
-        <NotAuthorized>
-            <MudIconButton Icon="@ShopIcons.User.User_Circle"
-                           Color="Color.Primary"
-                           Href="@Routes.Auth.SignIn"
-                           aria-label="@Strings.Nav_Account" />
-        </NotAuthorized>
-    </AuthorizeView>
+                    <Authorized>
+
+                        <MudMenu Icon="@ShopIcons.Outlined.User_02"
+                                 Color="Color.Primary"
+                                 AnchorOrigin="Origin.BottomRight"
+                                 TransformOrigin="Origin.TopRight"
+                                 aria-label="@Strings.Nav_Account">
+                            <MudMenuItem OnClick="OnSignOutAsync">@Strings.Logout</MudMenuItem>
+                        </MudMenu>
+                    </Authorized>
+
+                    <NotAuthorized>
+
+                        <MudIconButton Icon="@ShopIcons.Outlined.User_02"
+                                       Color="Color.Primary"
+                                       Href="@Routes.Auth.SignIn"
+                                       aria-label="@Strings.Nav_Account" />
+
+                    </NotAuthorized>
+
+                </AuthorizeView>
+
+            </MudStack>
+        </MudItem>
+
+    </MudGrid>
 
 </MudAppBar>

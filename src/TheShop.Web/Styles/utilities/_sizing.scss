@@ -1,0 +1,13 @@
+// ─── Sizing utilities ────────────────────────────────────────────────────────
+// Generic min-height helpers. `min-height: 0` is essential for flex children that
+// must shrink below their content size to allow internal scrolling (e.g. the main
+// content region in a flex-column app shell).
+$min-heights: (
+    "0": 0,
+);
+
+@each $name, $value in $min-heights {
+    .min-height-#{$name} {
+        min-height: $value;
+    }
+}

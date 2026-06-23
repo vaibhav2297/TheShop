@@ -37,6 +37,7 @@ public class ShopTheme
         LinesDefault = ShopColors.LinesDefault,
         LinesInputs = ShopColors.LinesInput,
         Divider = ShopColors.Divider,
+        Dark = ShopColors.Primary,
     };
 
     private static PaletteDark BuildDarkPalette() => new()

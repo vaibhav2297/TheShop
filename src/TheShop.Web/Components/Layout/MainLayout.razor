@@ -11,10 +11,17 @@
 
 <ShopLoadingOverlay />
 
-<MudLayout>
+<MudLayout Class="d-flex flex-column overflow-hidden">
+
+    @if (Announcement.HasAnnouncement)
+    {
+        <ShopAnnouncementBar Message="@Announcement.Message" />
+    }
+
     <ShopAppBar />
 
-    <MudMainContent Class="mud-height-full overflow-auto">
+    <MudMainContent Class="flex-grow-1 overflow-auto min-height-0 pt-0">
         @Body
     </MudMainContent>
+
 </MudLayout>

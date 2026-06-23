@@ -57,7 +57,7 @@
                                     <MudButton Variant="Variant.Filled"
                                                Color="Color.Primary"
                                                Size="Size.Large"
-                                               EndIcon="@ShopIcons.Arrow.Arrow_Right_MD"
+                                               EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
                                                Disabled="@(!_isCodeComplete || busy)"
                                                OnClick="OnVerifyAsync">
                                         @if (busy)
@@ -100,7 +100,7 @@
                   Justify="Justify.Center"
                   Class="flex-1 my-4 me-4 mud-surface"
                   Spacing="4">
-            <MudImage Src="/images/logo/logo_primary.svg"
+            <MudImage Src="@ShopIcons.ImageAssets.LogoPrimary"
                       Alt="@Strings.AppName"
                       Width="280"
                       Height="280"
