@@ -7,7 +7,9 @@ argument-hint: <feature-name>
 
 **Feature requested:** `$ARGUMENTS`
 
-You are the **post** git bookend for the SDD pipeline on **The Shop**. Your job is to take a finished feature branch and land it on `dev`: commit → push → open PR → (confirm) merge → (confirm) delete branch → switch back to `dev`. You run **after** `/theshop.review` has approved the diff.
+You are the **post** git bookend for the SDD pipeline on **The Shop**. Your job is to take a finished feature branch and land it on `dev`: update the tracker → commit → push → open PR → (confirm) merge → (confirm) delete branch → switch back to `dev`. You run **after** `/theshop.review` has approved the diff.
+
+The tracker (`status.md`) footnote is written on the **feature branch before the commit** so it rides into the PR and lands on `dev` through the merge — never as a stray, uncommitted change stranded on `dev` afterward.
 
 Every step that touches the remote or is hard to reverse — push, PR creation, merge, branch deletion — is **gated behind an explicit user confirmation**. You never push, merge, or delete on assumption. Use the `gh` CLI for all GitHub operations.
 
@@ -64,7 +66,7 @@ The `ship-ready` mode walks all seven rows and flags every stage that isn't in a
   >
   > Shipping now lands this on `dev` with those outstanding. Resolve them first (e.g. `/theshop.review {slug}`, `/theshop.verify {slug}`), or reply `proceed` to ship as-is."
 
-  Proceed only on explicit go-ahead. **Record the waiver** in Step 7's footnote as `⚠️ waived: shipped with {N} open ledger item(s)` — carry the count from the script output. Skips stay visible, never silent.
+  Proceed only on explicit go-ahead. **Record the waiver** in Step 1's tracker footnote as `⚠️ waived: shipped with {N} open ledger item(s)` — carry the count from the script output. Skips stay visible, never silent.
 - **No `status.md`** → record "Ledger: ⏭️ no SDD tracker for this feature" and proceed. Not blocking (the feature may predate the pipeline).
 
 ### Pre-flight 3 — There must be something to ship (halt)
@@ -84,9 +86,22 @@ If the working tree is clean **and** there are no commits on the branch ahead of
 
 Each remote-mutating action is gated. If a `gh` command fails (e.g. not authenticated), stop and surface the output — suggest `! gh auth login` if it's an auth problem.
 
-### Step 1 — Commit (if there are uncommitted changes)
+### Step 1 — Record the outcome in the tracker (feature branch)
 
-If `git status --porcelain` is non-empty:
+Do this **before** committing, so the tracker update rides in the same commit and reaches `dev` through the PR merge — never as a loose, uncommitted change stranded on `dev` afterward.
+
+If `.specs/{slug}/status.md` exists:
+
+1. Refresh its **Last updated** line to today.
+2. Add (or refresh) a one-line footer note below the table: `**Shipped:** {YYYY-MM-DD} → `dev` (via PR)`. **Omit the PR number on purpose** — the PR doesn't exist yet at commit time, and writing it back after the merge is exactly the dirty-`dev` problem this ordering avoids. The PR number is reported in the ship report below instead.
+3. If you proceeded past Pre-flight 2 on open items, append ` — ⚠️ waived: shipped with {N} open ledger item(s)` to that note (carry the count from the script).
+4. Don't invent a new gate row; this is a footnote, not a pipeline stage.
+
+If there's no `status.md`, skip this step (the feature may predate the pipeline).
+
+### Step 2 — Commit (feature branch)
+
+If `git status --porcelain` is non-empty (it will be at least the Step 1 tracker change, when a tracker exists):
 
 1. **Compose the message** in the repo's convention — `{Type} | {Description}` (recent history: `Feat | App bar with announcement bar...`, `Fix | Environment setup...`). Seed `{Description}` from the feature title in `.specs/{slug}/spec.md` (its `# {Title}` heading); pick `{Type}` from the nature of the change (`Feat` for a new feature, `Fix` for a fix). Append the harness `Co-Authored-By` trailer.
 
@@ -94,7 +109,7 @@ If `git status --porcelain` is non-empty:
 
    > `Feat | {Feature Title}`
 
-2. **Show the proposed message and the files to be staged, and ask the user to confirm or edit it.** Do not commit until confirmed.
+2. **Show the proposed message and the files to be staged** (these now include the `.specs/{slug}/status.md` footnote from Step 1), and ask the user to confirm or edit it. Do not commit until confirmed.
 
 3. On confirmation:
 
@@ -103,9 +118,9 @@ If `git status --porcelain` is non-empty:
    git commit -m "{confirmed message}"
    ```
 
-If the tree was already clean (work committed earlier), skip to Step 2.
+If the tree is genuinely clean — work committed earlier **and** no `status.md` to update — skip to Step 3.
 
-### Step 2 — Push the branch (confirm)
+### Step 3 — Push the branch (confirm)
 
 Confirm: *"Push `feature/{slug}` to `origin` and open a PR against `dev`?"* On yes:
 
@@ -115,7 +130,7 @@ git push -u origin feature/{slug}
 
 Never use `--force`/`--force-with-lease` unless the user explicitly asks and explains why.
 
-### Step 3 — Open the PR against dev
+### Step 4 — Open the PR against dev
 
 Title = the commit subject (e.g. `Feat | {Feature Title}`). Body = a short summary drawn from `.specs/{slug}/spec.md` (problem + what the feature does) plus the harness PR trailer. Then:
 
@@ -125,7 +140,7 @@ gh pr create --base dev --head feature/{slug} --title "{title}" --body "{body}"
 
 Report the PR URL it returns. Capture the PR number for the merge step.
 
-### Step 4 — Ask for merge
+### Step 5 — Ask for merge
 
 Ask exactly:
 
@@ -137,9 +152,9 @@ Ask exactly:
   gh pr merge {#} --merge
   ```
 
-- **No** → stop here. Leave the PR open. Skip Steps 5–6 and report the PR as open-and-unmerged in the final output.
+- **No** → stop here. Leave the PR open. Skip Steps 6–7 and report the PR as open-and-unmerged in the final output.
 
-### Step 5 — Ask to delete the branch (only after a successful merge)
+### Step 6 — Ask to delete the branch (only after a successful merge)
 
 Ask exactly:
 
@@ -155,18 +170,14 @@ Ask exactly:
   (If `gh pr merge` already deleted the remote branch via `--delete-branch`, just clean up the local one.)
 - **No** → keep the branch; note it in the final output.
 
-### Step 6 — Return to dev
+### Step 7 — Return to dev
 
 ```bash
 git checkout dev
 git pull origin dev
 ```
 
-This leaves the user on an up-to-date `dev`, ready for the next `/theshop.start`.
-
-### Step 7 — Record the outcome (if a tracker exists)
-
-If `.specs/{slug}/status.md` exists, refresh its **Last updated** line and add a one-line footer note below the table — e.g. `**Shipped:** PR #{N} → dev ({merged YYYY-MM-DD / open})`. If you proceeded past Pre-flight 2 on open items, append the `⚠️ waived: shipped with {N} open ledger item(s)` note here too. Do not invent a new gate row; this is a footnote, not a pipeline stage.
+Because the tracker footnote shipped inside the PR (Step 1), `git status` here is **clean** — there's no stray `status.md` change left to commit. This leaves the user on an up-to-date `dev`, ready for the next `/theshop.start`.
 
 ---
 
@@ -205,6 +216,6 @@ Produce this verbatim.
 3. **Never force-push** unless the user explicitly asks and justifies it.
 4. **PRs target `dev`, never `master`.** `dev` is the integration branch.
 5. **Commit messages follow `{Type} | {Description}`** and carry the `Co-Authored-By` trailer; PR bodies carry the Claude Code generation trailer. Match the repo's existing history style.
-6. **Never edit source or `.specs/` content.** The only `.specs/` write permitted is the `status.md` footnote in Step 7.
+6. **Never edit source or `.specs/` content.** The only `.specs/` write permitted is the `status.md` footnote in Step 1, which is committed onto the feature branch and ships through the PR.
 7. **Surface raw git/gh errors.** On any failure (auth, conflict, rejected push), stop and show the output — point at `! gh auth login` for auth issues — rather than guessing a recovery.
 8. **The user may stop at any gate.** Opening a PR without merging is a valid, complete outcome — report it as such; don't push toward merge.
