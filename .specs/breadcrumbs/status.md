@@ -1,7 +1,7 @@
 # Breadcrumbs — SDD Status
 
 **Feature:** `breadcrumbs`
-**Last updated:** 2026-06-24 (Verify)
+**Last updated:** 2026-06-25 (Ship)
 
 | Stage | State | Gate | Evidence | Date |
 |---|---|---|---|---|
@@ -11,6 +11,9 @@
 | 4. Test       | Passing | ✅ manifest + reconciliation pass | 48/48 reconciled · 10/10 ACs ✅ · 48/48 passed | 2026-06-24 |
 | 5. Verify     | Pending | 🔴 9 ACs unconfirmed | 1 pass · 0 fail · 9 unconfirmed · Tier 2 guided manual | 2026-06-24 |
 | 6. Review     | Approved | ✅ FR/lint/drift/R29 pass | 11 items applied · build ✅ · 46/46 tests ✅ · verdict 🟡→✅ | 2026-06-24 |
-| 7. Document   | —     | — | — | — |
+| 7. Document   | Done  | ✅ doc-only gate pass | 2 files documented · build ✅ | 2026-06-25 |
 
-**Next step:** `/theshop.document` (add XML doc comments), then `/theshop.ship breadcrumbs`
+**Next step:** — (pipeline complete)
+
+**Shipped:** PR #6 → dev (merged 2026-06-25)
+⚠️ waived: shipped with 2 open ledger item(s) (Verify: 9 ACs unconfirmed; Document tracker not updated before ship)
