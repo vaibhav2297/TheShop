@@ -41,6 +41,7 @@ The end-to-end flow for a new feature. Each step is one slash command, run in th
 
 | Step | Command | What it does |
 |---|---|---|
+| 0. Start | `/theshop.start <feature>` | **Git pre-bookend.** Pulls the latest `dev` and cuts a `feature/{feature}` branch off it, so every artifact and code change below lands on the right branch. Run before the spec. |
 | 1. Spec | `/theshop.spec <feature> [--desc <description>]` | Non-technical product spec (WHAT/WHY) → `.specs/{feature}/spec.md`; also creates `.specs/{feature}/status.md`. Optional `--desc` seeds the spec with the user's own description. |
 | 2. Clarify | `/theshop.clarify <feature>` | Resolves open assumptions in the **spec**, one decision at a time → flips spec Status to `Confirmed` |
 | 3. Plan | `/theshop.plan <feature> [--desc <description>] [--figma <url\|nodeId>]` | Technical implementation plan (HOW), Figma-aware → `.specs/{feature}/plan.md`. Optional `--desc` supplies technical direction; `--figma` pins the design frames. |
@@ -50,10 +51,13 @@ The end-to-end flow for a new feature. Each step is one slash command, run in th
 | 7. Verify (E2E) | `/theshop.verify <feature>` | Builds and runs the app, then smoke-checks each acceptance criterion against the running feature. **User-facing features only** — skipped for backend-only work. |
 | 8. Review | `/theshop.review <feature>` | Parallel security + quality review (includes a French-localization completeness gate) with approval-gated fix-up |
 | 9. Document | `/theshop.document` | Adds XML doc comments to the current diff. **Run manually** when you're ready to document the finished code — it does not auto-run. |
+| 10. Ship | `/theshop.ship <feature>` | **Git post-bookend.** Commits the work, pushes the branch, and opens a PR against `dev`, then — confirming at each step — merges it, deletes the branch, and returns you to an up-to-date `dev`. Run after review. |
+
+The two git bookends (**Start** / **Ship**) wrap the document pipeline: `/theshop.start` puts you on a `feature/{feature}` branch before any artifact is written; `/theshop.ship` lands that branch on `dev` once the feature is reviewed. Both are slash-only (never auto-invoked) and every remote-mutating action in `/theshop.ship` — push, PR, merge, delete — is gated behind an explicit confirmation.
 
 Formatting is automatic: a `Stop` hook in `.claude/settings.json` runs `dotnet format` whenever a turn ended with `.cs` or `.razor` changes in the diff. No manual step.
 
-**Verification gates are scripted, not asserted.** `.claude/scripts/check-sdd-gates.ps1` deterministically validates each step's output (spec/plan template conformance, AC coverage, test-manifest integrity, layer scope, doc-only diffs, status drift); the commands above run it at entry/exit. `status.md` is the **gate ledger**: every step reads it on entry to verify the upstream rows, and records its own State + Gate + Evidence on exit. A gate the user chooses to skip is recorded as `⚠️ waived: {reason}` — never silently. Do not report a pipeline step as done while its gate fails.
+**Verification gates are scripted, not asserted.** `.claude/scripts/check-sdd-gates.ps1` deterministically validates each step's output (spec/plan template conformance, AC coverage, test-manifest integrity, layer scope, doc-only diffs, status drift, ship-readiness); the commands above run it at entry/exit. `status.md` is the **gate ledger**: every step reads it on entry to verify the upstream rows, and records its own State + Gate + Evidence on exit. A gate the user chooses to skip is recorded as `⚠️ waived: {reason}` — never silently. Do not report a pipeline step as done while its gate fails.
 
 ---
 

@@ -423,4 +423,11 @@
   <data name="Stay_Tuned" xml:space="preserve">
     <value>Stay tuned — We’ll be live soon</value>
   </data>
+  <data name="Nav_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Breadcrumb_AriaLabel" xml:space="preserve">
+    <value>You are here:</value>
+  </data>
+
 </root>

@@ -1,6 +1,7 @@
 @inherits LayoutComponentBase
 
 @using TheShop.Web.Components.Common
+@using TheShop.Web.Components.Navigation
 @using TheShop.Web.Theme
 
 <MudThemeProvider Theme="@ShopTheme.BuildTheme()"
@@ -19,6 +20,11 @@
     }
 
     <ShopAppBar />
+
+    @if (Breadcrumbs.HasTrail)
+    {
+        <ShopBreadcrumbs Items="@Breadcrumbs.Trail" />
+    }
 
     <MudMainContent Class="flex-grow-1 overflow-auto min-height-0 pt-0">
         @Body

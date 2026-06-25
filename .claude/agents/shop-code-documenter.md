@@ -62,22 +62,24 @@ For each changed `.cs` / `.razor.cs` file:
 
 1. Read the file in full (you need context the diff alone doesn't show — e.g., existing class-level docs, the type's role in the layer).
 2. Identify which members need docs per `.claude/skills/theshop.constitution/references/rules/documentation.md`:
-   - **Public types** (classes, records, interfaces, enums, structs).
-   - **Public methods, properties, and events** on those types.
+   - **Public, protected, and internal types** (classes, records, interfaces, enums, structs).
+   - **Public, protected, and internal methods, properties, and events** on those types.
+   - **Extension methods** — `<summary>` stating the behaviour added to the extended type.
+   - **Enums** — a `<summary>` on the type plus one on each member whose meaning isn't obvious from its name.
    - **MediatR Commands/Queries/Handlers** — Commands and Queries get a `<summary>` describing the use case; Handlers get a `<summary>` describing what the handler does.
    - **Repository / service interfaces** — every method.
    - **Domain entity public methods** — every behavior-bearing method.
    - **Value object factories** (`Create`, `From`, etc.) and any public method.
    - **Domain exceptions** — `<summary>` on the type only.
 3. Identify what to skip:
-   - Private and internal members (unless they are part of a public contract).
+   - Private members (unless explicitly requested).
    - Obvious accessors (`public Guid Id { get; }` on a `record`).
    - Test classes (anything under `tests/`).
    - Auto-generated code (`*.g.cs`, `*.designer.cs`).
 
 ### 4. Write the doc comments
 
-Follow the conventions in `.claude/skills/theshop.constitution/references/rules/documentation.md` — you read it in full in step 1. It defines the tag shapes (`<summary>` / `<param>` / `<returns>` / `<exception>` / `<see>`), the phrasing rules (one-sentence summaries, document the contract not the implementation, the anti-restatement test), and what counts as noise. Don't paraphrase it from memory — when unsure mid-write, re-check that file.
+Follow the conventions in `.claude/skills/theshop.constitution/references/rules/documentation.md` — you read it in full in step 1. It defines the tag shapes (`<summary>` / `<param>` / `<typeparam>` / `<returns>` / `<exception>` / `<remarks>` / `<inheritdoc/>` / `<see>`), the phrasing rules (one-sentence summaries, document the contract not the implementation, the anti-restatement test), and what counts as noise. Don't paraphrase it from memory — when unsure mid-write, re-check that file.
 
 ### 5. Verify the build
 

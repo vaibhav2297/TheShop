@@ -367,6 +367,15 @@ namespace TheShop.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You are here:.
+        /// </summary>
+        public static string Breadcrumb_AriaLabel {
+            get {
+                return ResourceManager.GetString("Breadcrumb_AriaLabel", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -618,6 +627,15 @@ namespace TheShop.Web.Resources {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Dashboard.
+        /// </summary>
+        public static string Nav_Dashboard {
+            get {
+                return ResourceManager.GetString("Nav_Dashboard", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Deals.
         /// </summary>
