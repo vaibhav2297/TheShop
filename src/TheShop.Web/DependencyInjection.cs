@@ -10,8 +10,16 @@ using TheShop.Web.Theme;
 
 namespace TheShop.Web;
 
+/// <summary>
+/// Registers all Web-layer services into the DI container.
+/// </summary>
 public static class DependencyInjection
 {
+    /// <summary>
+    /// Adds MudBlazor, localization, theming, all scoped UI state stores, Blazored
+    /// LocalStorage, and the Supabase-backed authentication services needed by the
+    /// presentation layer.
+    /// </summary>
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
         services.AddMudServices();
@@ -23,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<AuthState>();
         services.AddScoped<AnnouncementState>();
         services.AddScoped<PendingSignUpState>();
+        services.AddScoped<BreadcrumbState>();
 
         services.AddBlazoredLocalStorage();
 

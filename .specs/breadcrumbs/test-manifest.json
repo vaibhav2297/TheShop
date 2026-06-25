@@ -1,0 +1,105 @@
+{
+  "feature": "breadcrumbs",
+  "trait": "breadcrumbs",
+  "writtenAt": "2026-06-24",
+  "totalTests": 46,
+  "classes": [
+    {
+      "fqn": "TheShop.Web.Tests.State.BreadcrumbStateTests",
+      "file": "tests/TheShop.Web.Tests/State/BreadcrumbStateTests.cs",
+      "tests": 12
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Common.BreadcrumbTrailTests",
+      "file": "tests/TheShop.Web.Tests/Common/BreadcrumbTrailTests.cs",
+      "tests": 20
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests",
+      "file": "tests/TheShop.Web.Tests/Components/Navigation/ShopBreadcrumbsTests.cs",
+      "tests": 14
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Storefront_RootItem_HasHomeLabel",
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Storefront_RootItem_HasHomeHref",
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Storefront_DeepCategoryTrail_HasCorrectStructure",
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_StorefrontTrail_HomeIsRenderedAsLink"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Admin_RootItem_HasDashboardLabel",
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Admin_RootItem_HasDashboardHref",
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Admin_DeepTrail_HasCorrectStructure",
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_AdminTrail_DashboardIsRenderedAsLink"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Add_WithHref_AddsEnabledItemWithCorrectTextAndHref",
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Storefront_RootItem_IsEnabled",
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Admin_RootItem_IsEnabled",
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_StorefrontTrail_IntermediateLevelIsRenderedAsLink",
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_AdminTrail_IntermediateLevelIsRenderedAsLink"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Current_FinalItem_IsDisabled",
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Current_FinalItem_HasNullHref",
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_StorefrontTrail_CurrentPageItemIsNotALink",
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_AdminTrail_CurrentPageItemIsNotALink"
+      ]
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Storefront_SameArguments_ProduceSameTrail"
+      ]
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Current_FinalItem_HasSuppliedText",
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Add_WithHref_AddsEnabledItemWithCorrectTextAndHref",
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_WithDynamicProductName_DisplaysActualName"
+      ]
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Web.Tests.State.BreadcrumbStateTests.OnConstruction_HasTrailIsFalse",
+        "TheShop.Web.Tests.State.BreadcrumbStateTests.Clear_AfterSet_HasTrailReturnsFalse"
+      ]
+    },
+    {
+      "id": "AC-8",
+      "tests": [
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Storefront_RootItem_HasHomeLabel",
+        "TheShop.Web.Tests.Common.BreadcrumbTrailTests.Admin_RootItem_HasDashboardLabel",
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_Always_NavElementHasLocalizedAriaLabel"
+      ]
+    },
+    {
+      "id": "AC-9",
+      "tests": [
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_ParentLevelItems_HaveTruncationCssClassAndTitleAttribute",
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_CurrentPageItem_HasTruncationCssClassAndTitleAttribute"
+      ]
+    },
+    {
+      "id": "AC-10",
+      "tests": [
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_StorefrontTrail_CurrentPageItemHasAriaCurrent",
+        "TheShop.Web.Tests.Components.Navigation.ShopBreadcrumbsTests.Render_Always_NavElementHasLocalizedAriaLabel"
+      ]
+    }
+  ]
+}

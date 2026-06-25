@@ -6,12 +6,27 @@ The project default (per `CLAUDE.md`) is **no comments**. XML doc comments are t
 
 ---
 
+## Principles
+
+- Write documentation only for public, protected, internal, and extension APIs unless explicitly requested otherwise.
+- Keep documentation concise, precise, and professional.
+- Prefer short summaries (1–2 sentences maximum).
+- Avoid repeating information already obvious from method, property, class, or parameter names.
+- Focus on purpose, behavior, intent, side effects, and important usage notes.
+- Preserve meaning and developer value while minimizing verbosity.
+
+---
+
 ## What to document
+
+> **Surface rule.** Document the API surface — **public, protected, internal, and extension** members. Private members stay undocumented unless explicitly requested.
 
 | Where | Required? |
 |---|---|
-| Public types in any layer (class, record, interface, enum, struct) | ✅ `<summary>` |
-| Public methods, properties, events on public types | ✅ `<summary>` + `<param>` / `<returns>` / `<exception>` where they add information |
+| Public, protected, and internal types in any layer (class, record, interface, enum, struct) | ✅ `<summary>` |
+| Public, protected, and internal methods, properties, events on those types | ✅ `<summary>` + `<param>` / `<typeparam>` / `<returns>` / `<exception>` where they add information |
+| Extension methods | ✅ `<summary>` stating the behaviour added to the extended type |
+| Enum members | ✅ `<summary>` on each value whose meaning isn't obvious from its name |
 | MediatR Commands and Queries (`record ... : IRequest<...>`) | ✅ `<summary>` on the record describing the use case |
 | MediatR Handlers | ✅ `<summary>` on the class + on `Handle(...)` |
 | Repository and service interfaces (`I*Repository`, `I*Service`) | ✅ `<summary>` on the interface + on every method |
@@ -20,8 +35,7 @@ The project default (per `CLAUDE.md`) is **no comments**. XML doc comments are t
 | Value object factories and public methods | ✅ |
 | Domain exceptions | ✅ `<summary>` on the type only |
 | DTOs (`record CustomerDto(...)`) | 🟡 Only when the DTO's purpose or constraints aren't obvious from the name |
-| Internal members | ❌ Not part of the public contract |
-| Private members | ❌ |
+| Private members | ❌ Not part of the API surface (unless explicitly requested) |
 | Obvious accessors on records (`public Guid Id { get; init; }`) | ❌ Name is the doc |
 | Test classes (under `tests/`) | ❌ |
 | Auto-generated code (`*.g.cs`, `*.Designer.cs`) | ❌ |
@@ -122,6 +136,98 @@ Use sparingly. Link to a sibling type when the relationship is non-obvious (an e
 /// </summary>
 /// <seealso cref="CartDto"/>
 public record AddToCartCommand(Guid ProductId, int Quantity) : IRequest<Result<CartDto>>;
+```
+
+### Supported XML tags
+
+Reach for these tags; use each only when it adds information. Prefer active voice and don't restate what a tag already implies (no *"Gets or sets…"*, *"Represents…"*, *"This method…"*).
+
+| Tag | Use for |
+|---|---|
+| `<summary>` | What the member is or does — the contract. Always. |
+| `<param>` | A parameter's meaning, unit, or constraint when the name doesn't carry it. |
+| `<typeparam>` | A generic type parameter's role when non-obvious. |
+| `<returns>` | The return value, nullability, or special states the type alone doesn't convey. |
+| `<exception>` | Each exception the member deliberately throws. |
+| `<remarks>` | An important usage note, side effect, or caveat that doesn't fit the `<summary>`. Sparingly. |
+| `<inheritdoc/>` | A member that overrides/implements documented base or interface docs and adds nothing new. |
+| `<see cref="..."/>` | An inline cross-reference to a related type or member. |
+| `<seealso cref="..."/>` | A "related — go look at this" pointer to a sibling type. |
+| `<value>` | What a property's value represents, when the `<summary>` doesn't already say it. Rarely needed. |
+
+### Async methods
+
+Describe the *result*, not the plumbing. Never mention `Task`, `await`, or "asynchronously" — those are implementation, not contract.
+
+```csharp
+// ✅ Describes the awaited result
+/// <summary>
+/// Sends a verification email.
+/// </summary>
+/// <param name="email">Recipient email address.</param>
+/// <param name="cancellationToken">Cancels the operation.</param>
+/// <returns>The delivery result.</returns>
+/// <exception cref="ArgumentException">
+/// Thrown when the email address is invalid.
+/// </exception>
+Task<DeliveryResult> SendVerificationAsync(string email, CancellationToken cancellationToken);
+
+// ❌ Implementation noise
+/// <summary>Asynchronously returns a Task that awaits the delivery.</summary>
+```
+
+### Boolean members
+
+When `true` / `false` aren't obvious from the name, say what each represents.
+
+```csharp
+/// <summary>
+/// Validates the supplied verification code.
+/// </summary>
+/// <param name="code">Code to validate.</param>
+/// <returns><c>true</c> when the code is valid; otherwise, <c>false</c>.</returns>
+bool Validate(string code);
+```
+
+### Enums
+
+Put a `<summary>` on the type describing what the enumeration selects, and one on each member whose meaning isn't obvious from its name.
+
+```csharp
+/// <summary>
+/// How an order's payment was captured.
+/// </summary>
+public enum PaymentMethod
+{
+    /// <summary>Paid online via Stripe card checkout.</summary>
+    Card,
+
+    /// <summary>Paid in person at store pickup.</summary>
+    InStore,
+}
+```
+
+### Extension methods
+
+State the behaviour the method *adds* to the type it extends — the `this` receiver is the subject.
+
+```csharp
+/// <summary>
+/// Formats the amount as a Canadian-dollar currency string.
+/// </summary>
+public static string ToCadString(this decimal amount);
+```
+
+### Interfaces and abstractions
+
+Document the *contract and expected behaviour*, never a single implementation's mechanics. Implementers that add nothing new inherit the docs with `<inheritdoc/>`.
+
+```csharp
+/// <summary>
+/// Persistence contract for <see cref="Cart"/>. Implementations live in the
+/// Infrastructure layer.
+/// </summary>
+public interface ICartRepository { ... }
 ```
 
 ---
@@ -311,8 +417,9 @@ public record CustomerProfileDto(Guid Id, string FirstName, string LastName, str
 
 ## Things to NOT do
 
-- ❌ **Document private members.** Even if asked.
-- ❌ **Add `<remarks>` blocks with narrative explanation.** If it's worth saying, fit it into the `<summary>`. If it doesn't fit, it's probably not worth saying.
+- ❌ **Document private members by default.** They're outside the API surface — only document them when explicitly requested.
+- ❌ **Invent behaviour the code doesn't have.** Document only what's actually there; never describe a contract the implementation doesn't honour.
+- ⚠️ **Don't pad `<remarks>` with narrative.** It's allowed for a genuine usage note, side effect, or caveat that doesn't fit the `<summary>` — but if it just restates the summary in prose, drop it.
 - ❌ **Add `<example>` blocks.** Code examples belong in tests and docs, not in XML comments.
 - ❌ **Write `<summary>This class represents a ...</summary>`.** Just describe what it is or does.
 - ❌ **Add `<copyright>`, `<author>`, or other ceremony tags.** Not used in this codebase.

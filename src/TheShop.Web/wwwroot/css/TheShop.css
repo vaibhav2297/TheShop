@@ -183,4 +183,13 @@
   margin: 0;
 }
 
+.shop-breadcrumb-item {
+  display: inline-block;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
 /*# sourceMappingURL=TheShop.css.map */

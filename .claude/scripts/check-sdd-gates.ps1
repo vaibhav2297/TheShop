@@ -22,6 +22,9 @@
 #                                     ("///") line changes in .cs files
 #   status    -Feature x              status.md rows agree with the spec/plan footers
 #                                     (three-location state drift detector)
+#   ship-ready -Feature x             every status.md ledger row is in a ship-ready
+#                                     terminal state, with no recorded gate failure
+#                                     or carried waiver (the pre-ship readiness scan)
 #
 # Output: violations -> stdout, exit 1. Clean -> one line, exit 0.
 # Used by the /theshop.* commands as entry/exit gates; can also be run manually.
@@ -29,7 +32,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory, Position = 0)]
-    [ValidateSet('spec', 'plan', 'manifest', 'compile', 'scope', 'snapshot', 'doc-only', 'status')]
+    [ValidateSet('spec', 'plan', 'manifest', 'compile', 'scope', 'snapshot', 'doc-only', 'status', 'ship-ready')]
     [string]$Mode,
 
     [string]$Feature,
@@ -420,6 +423,49 @@ function Test-StatusGate([string]$F) {
     }
 }
 
+# --------------------------------------------------------- ship-ready gate --
+# Scans the feature's status.md ledger and reports every stage that is NOT in a
+# ship-ready terminal state, plus any recorded gate failure (red circle) or carried
+# waiver. /theshop.ship runs this as a warn-gate before committing: exit 0 means the
+# whole pipeline is green and safe to land on dev; exit 1 lists what is still open so
+# the command can surface it and let the user ship anyway with a recorded waiver.
+function Test-ShipReadyGate([string]$F) {
+    $doc = Read-Doc ".specs/$F/status.md"
+    if (-not $doc) { Fail ".specs/$F/status.md not found - the feature has no SDD ledger to verify"; return }
+    if ($doc -notmatch '\*\*Last updated:\*\*') { Fail "status.md missing '**Last updated:**' line" }
+
+    $RED = [char]::ConvertFromUtf32(0x1F534)   # large red circle - the gate-fail marker
+
+    # Each ledger row, paired with the State value(s) that count as ship-ready.
+    $stages = @(
+        @{ Rx = '1\.\s*Spec';      Name = '1. Spec';      Ok = @('Confirmed') }
+        @{ Rx = '2\.\s*Plan';      Name = '2. Plan';      Ok = @('Resolved') }
+        @{ Rx = '3\.\s*Implement'; Name = '3. Implement'; Ok = @('Done') }
+        @{ Rx = '4\.\s*Test';      Name = '4. Test';      Ok = @('Passing') }
+        @{ Rx = '5\.\s*Verify';    Name = '5. Verify';    Ok = @('Verified', 'Skipped') }
+        @{ Rx = '6\.\s*Review';    Name = '6. Review';    Ok = @('Approved') }
+        @{ Rx = '7\.\s*Document';  Name = '7. Document';  Ok = @('Done') }
+    )
+
+    foreach ($s in $stages) {
+        $m = [regex]::Match($doc, "(?m)^\|\s*$($s.Rx)\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|")
+        if (-not $m.Success) { Fail "status.md has no '| $($s.Name) |' row"; continue }
+        $state = $m.Groups[1].Value.Trim()
+        $gate = $m.Groups[2].Value.Trim()
+        $stateOk = @($s.Ok | Where-Object { $state -ieq $_ }).Count -gt 0
+
+        if (-not $stateOk) {
+            Fail "$($s.Name) - state '$state' is not ship-ready (expected: $($s.Ok -join '/')); gate: $gate"
+        }
+        elseif ($gate -match [regex]::Escape($RED)) {
+            Fail "$($s.Name) - reached '$state' but a $RED gate failure is recorded: $gate"
+        }
+        elseif ($gate -match '(?i)waived') {
+            Fail "$($s.Name) - passed with a carried waiver: $gate"
+        }
+    }
+}
+
 # ------------------------------------------------------------------ dispatch --
 switch ($Mode) {
     'spec'     { if (-not $Feature) { throw 'spec mode requires -Feature' };     Test-SpecGate $Feature }
@@ -427,6 +473,7 @@ switch ($Mode) {
     'manifest' { if (-not $Feature) { throw 'manifest mode requires -Feature' }; Test-ManifestGate $Feature }
     'compile'  { if (-not $Feature) { throw 'compile mode requires -Feature' };  Test-CompileGate $Feature }
     'status'   { if (-not $Feature) { throw 'status mode requires -Feature' };   Test-StatusGate $Feature }
+    'ship-ready' { if (-not $Feature) { throw 'ship-ready mode requires -Feature' }; Test-ShipReadyGate $Feature }
     'scope'    { Test-ScopeGate }
     'snapshot' { Invoke-SnapshotMode }
     'doc-only' { Test-DocOnlyGate }
