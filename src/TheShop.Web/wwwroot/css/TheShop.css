@@ -145,6 +145,10 @@
   min-height: 0;
 }
 
+.min-height-full {
+  min-height: 100%;
+}
+
 .mud-input.mud-input-filled:not(.mud-input-filled-with-label) > input,
 .mud-input.mud-input-filled:not(.mud-input-filled-with-label) > textarea {
   padding-top: 18.5px;

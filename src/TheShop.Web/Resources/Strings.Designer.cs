@@ -376,6 +376,222 @@ namespace TheShop.Web.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Site footer.
+        /// </summary>
+        public static string Footer_AriaLabel {
+            get {
+                return ResourceManager.GetString("Footer_AriaLabel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to A trusted source for quality vaping products.
+        /// </summary>
+        public static string Footer_Tagline {
+            get {
+                return ResourceManager.GetString("Footer_Tagline", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Vape Shop on Facebook.
+        /// </summary>
+        public static string Footer_Social_Facebook {
+            get {
+                return ResourceManager.GetString("Footer_Social_Facebook", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Vape Shop on WhatsApp.
+        /// </summary>
+        public static string Footer_Social_WhatsApp {
+            get {
+                return ResourceManager.GetString("Footer_Social_WhatsApp", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Vape Shop on Instagram.
+        /// </summary>
+        public static string Footer_Social_Instagram {
+            get {
+                return ResourceManager.GetString("Footer_Social_Instagram", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Shop.
+        /// </summary>
+        public static string Footer_Shop_Title {
+            get {
+                return ResourceManager.GetString("Footer_Shop_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Disposables.
+        /// </summary>
+        public static string Footer_Shop_Disposables {
+            get {
+                return ResourceManager.GetString("Footer_Shop_Disposables", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Pods.
+        /// </summary>
+        public static string Footer_Shop_Pods {
+            get {
+                return ResourceManager.GetString("Footer_Shop_Pods", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to E-liquids.
+        /// </summary>
+        public static string Footer_Shop_ELiquids {
+            get {
+                return ResourceManager.GetString("Footer_Shop_ELiquids", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Accessories.
+        /// </summary>
+        public static string Footer_Shop_Accessories {
+            get {
+                return ResourceManager.GetString("Footer_Shop_Accessories", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Coil.
+        /// </summary>
+        public static string Footer_Shop_Coil {
+            get {
+                return ResourceManager.GetString("Footer_Shop_Coil", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        public static string Footer_Help_Title {
+            get {
+                return ResourceManager.GetString("Footer_Help_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Customer Service.
+        /// </summary>
+        public static string Footer_Help_CustomerService {
+            get {
+                return ResourceManager.GetString("Footer_Help_CustomerService", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Track Orders.
+        /// </summary>
+        public static string Footer_Help_TrackOrders {
+            get {
+                return ResourceManager.GetString("Footer_Help_TrackOrders", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Return &amp; Refunds.
+        /// </summary>
+        public static string Footer_Help_ReturnRefunds {
+            get {
+                return ResourceManager.GetString("Footer_Help_ReturnRefunds", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Legal.
+        /// </summary>
+        public static string Footer_Legal_Title {
+            get {
+                return ResourceManager.GetString("Footer_Legal_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Terms &amp; Conditions.
+        /// </summary>
+        public static string Footer_Legal_Terms {
+            get {
+                return ResourceManager.GetString("Footer_Legal_Terms", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Privacy Policy.
+        /// </summary>
+        public static string Footer_Legal_Privacy {
+            get {
+                return ResourceManager.GetString("Footer_Legal_Privacy", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Return Policy.
+        /// </summary>
+        public static string Footer_Legal_Return {
+            get {
+                return ResourceManager.GetString("Footer_Legal_Return", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Age Policy.
+        /// </summary>
+        public static string Footer_Legal_Age {
+            get {
+                return ResourceManager.GetString("Footer_Legal_Age", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Contact Us.
+        /// </summary>
+        public static string Footer_Contact_Title {
+            get {
+                return ResourceManager.GetString("Footer_Contact_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to convenienceontario@gmail.com.
+        /// </summary>
+        public static string Footer_Contact_Email {
+            get {
+                return ResourceManager.GetString("Footer_Contact_Email", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to +1 647-333-7063.
+        /// </summary>
+        public static string Footer_Contact_Phone {
+            get {
+                return ResourceManager.GetString("Footer_Contact_Phone", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to 175 Ontario St, Sarnia, N7T 1L2, Canada.
+        /// </summary>
+        public static string Footer_Contact_Address {
+            get {
+                return ResourceManager.GetString("Footer_Contact_Address", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
