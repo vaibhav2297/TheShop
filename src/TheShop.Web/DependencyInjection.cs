@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<AnnouncementState>();
         services.AddScoped<PendingSignUpState>();
         services.AddScoped<BreadcrumbState>();
+        services.AddScoped<FooterState>();
 
         services.AddBlazoredLocalStorage();
 

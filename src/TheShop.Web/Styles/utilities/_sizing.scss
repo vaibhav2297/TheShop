@@ -4,6 +4,7 @@
 // content region in a flex-column app shell).
 $min-heights: (
     "0": 0,
+    "full": 100%,
 );
 
 @each $name, $value in $min-heights {

@@ -26,8 +26,18 @@
         <ShopBreadcrumbs Items="@Breadcrumbs.Trail" />
     }
 
-    <MudMainContent Class="flex-grow-1 overflow-auto min-height-0 pt-0">
-        @Body
+    <MudMainContent Class="flex-grow-1 overflow-y-auto overflow-x-hidden min-height-0 pt-0">
+
+        <MudStack Spacing="0" AlignItems="AlignItems.Stretch" Class="min-height-full">
+
+            @Body
+
+            @if (Footer.Visible)
+            {
+                <ShopFooter Class="mt-auto" />
+            }
+
+        </MudStack> 
     </MudMainContent>
 
 </MudLayout>

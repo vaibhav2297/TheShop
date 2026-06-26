@@ -429,5 +429,77 @@
   <data name="Breadcrumb_AriaLabel" xml:space="preserve">
     <value>You are here:</value>
   </data>
+  <data name="Footer_AriaLabel" xml:space="preserve">
+    <value>Site footer</value>
+  </data>
+  <data name="Footer_Tagline" xml:space="preserve">
+    <value>A trusted source for quality vaping products</value>
+  </data>
+  <data name="Footer_Social_Facebook" xml:space="preserve">
+    <value>The Vape Shop on Facebook</value>
+  </data>
+  <data name="Footer_Social_WhatsApp" xml:space="preserve">
+    <value>The Vape Shop on WhatsApp</value>
+  </data>
+  <data name="Footer_Social_Instagram" xml:space="preserve">
+    <value>The Vape Shop on Instagram</value>
+  </data>
+  <data name="Footer_Shop_Title" xml:space="preserve">
+    <value>Shop</value>
+  </data>
+  <data name="Footer_Shop_Disposables" xml:space="preserve">
+    <value>Disposables</value>
+  </data>
+  <data name="Footer_Shop_Pods" xml:space="preserve">
+    <value>Pods</value>
+  </data>
+  <data name="Footer_Shop_ELiquids" xml:space="preserve">
+    <value>E-liquids</value>
+  </data>
+  <data name="Footer_Shop_Accessories" xml:space="preserve">
+    <value>Accessories</value>
+  </data>
+  <data name="Footer_Shop_Coil" xml:space="preserve">
+    <value>Coil</value>
+  </data>
+  <data name="Footer_Help_Title" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Footer_Help_CustomerService" xml:space="preserve">
+    <value>Customer Service</value>
+  </data>
+  <data name="Footer_Help_TrackOrders" xml:space="preserve">
+    <value>Track Orders</value>
+  </data>
+  <data name="Footer_Help_ReturnRefunds" xml:space="preserve">
+    <value>Return &amp; Refunds</value>
+  </data>
+  <data name="Footer_Legal_Title" xml:space="preserve">
+    <value>Legal</value>
+  </data>
+  <data name="Footer_Legal_Terms" xml:space="preserve">
+    <value>Terms &amp; Conditions</value>
+  </data>
+  <data name="Footer_Legal_Privacy" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="Footer_Legal_Return" xml:space="preserve">
+    <value>Return Policy</value>
+  </data>
+  <data name="Footer_Legal_Age" xml:space="preserve">
+    <value>Age Policy</value>
+  </data>
+  <data name="Footer_Contact_Title" xml:space="preserve">
+    <value>Contact Us</value>
+  </data>
+  <data name="Footer_Contact_Email" xml:space="preserve">
+    <value>convenienceontario@gmail.com</value>
+  </data>
+  <data name="Footer_Contact_Phone" xml:space="preserve">
+    <value>+1 647-333-7063</value>
+  </data>
+  <data name="Footer_Contact_Address" xml:space="preserve">
+    <value>175 Ontario St, Sarnia, N7T 1L2, Canada</value>
+  </data>
 
 </root>

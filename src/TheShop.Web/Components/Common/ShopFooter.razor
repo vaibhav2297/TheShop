@@ -1,0 +1,68 @@
+@inherits MudComponentBase
+@using TheShop.Web.Common
+@using TheShop.Web.Resources
+@using TheShop.Web.Theme
+
+<footer aria-label="@Strings.Footer_AriaLabel" class="@Classname" style="@Stylename">
+    <MudGrid Spacing="12">
+
+        @* Brand column *@
+        <MudItem xs="12" md="3">
+            <MudStack Spacing="4">
+                <MudStack Spacing="2">
+                    <MudLink Href="@Routes.Home" Underline="Underline.None">
+                        <MudImage Src="@ShopIcons.ImageAssets.LogoPrimary"
+                                  Alt="@Strings.AppName"
+                                  Width="120"
+                                  Height="120"
+                                  ObjectFit="ObjectFit.Contain" />
+                    </MudLink>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@Strings.Footer_Tagline</MudText>
+                </MudStack>
+                <MudStack Row Spacing="2">
+                    <MudIconButton Icon="@ShopIcons.Outlined.Facebook"
+                                   Color="Color.Secondary"
+                                   aria-label="@Strings.Footer_Social_Facebook" />
+                    <MudIconButton Icon="@ShopIcons.Outlined.WhatsApp"
+                                   Color="Color.Secondary"
+                                   aria-label="@Strings.Footer_Social_WhatsApp" />
+                    <MudIconButton Icon="@ShopIcons.Outlined.Instagram"
+                                   Color="Color.Secondary"
+                                   aria-label="@Strings.Footer_Social_Instagram" />
+                </MudStack>
+            </MudStack>
+        </MudItem>
+
+        @* Link sections *@
+        <MudItem xs="12" md="9">
+            <MudGrid Spacing="4">
+                @foreach (var section in FooterContent.Sections())
+                {
+                    <MudItem xs="6" sm="3">
+                        <MudStack Spacing="4">
+                            <MudText Typo="Typo.h6" Color="Color.Secondary">@section.Title</MudText>
+                            <MudStack Spacing="2">
+                                @foreach (var link in section.Links)
+                                {
+                                    @if (link.Href is null)
+                                    {
+                                        <MudText Typo="Typo.subtitle1" Class="text-break">@link.Label</MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudLink Href="@link.Href"
+                                                 Typo="Typo.subtitle1"
+                                                 Color="Color.Primary"
+                                                 Underline="Underline.None"
+                                                 Class="text-break">@link.Label</MudLink>
+                                    }
+                                }
+                            </MudStack>
+                        </MudStack>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudItem>
+
+    </MudGrid>
+</footer>
