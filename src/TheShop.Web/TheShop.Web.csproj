@@ -5,6 +5,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>TheShop.Web</RootNamespace>
+    <!-- VocaDb.ResXFileCodeGenerator global option: emit GetString(...)! so the generated Strings
+         members return non-nullable string (matching the old PublicResXFileCodeGenerator) and call
+         sites stay free of CS8604. Global-only — it has no per-EmbeddedResource metadata equivalent. -->
+    <ResXFileCodeGenerator_NullForgivingOperators>true</ResXFileCodeGenerator_NullForgivingOperators>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,26 +19,27 @@
 
 
   <ItemGroup>
-    <!-- Wire PublicResXFileCodeGenerator so Strings.Designer.cs is auto-generated on build -->
+    <!-- Strings.resx stays embedded so ResourceManager has its data at runtime and the French
+         satellite (Strings.fr.resx) keeps base name "TheShop.Web.Resources.Strings".
+         The VocaDb.ResXFileCodeGenerator source generator (below) emits the public
+         TheShop.Web.Resources.Strings accessor at compile time — IDE-agnostic, runs on CI — so no
+         Strings.Designer.cs is written to disk or committed. PublicClass=true keeps it accessible
+         from TheShop.Web.Tests (a separate assembly). -->
     <EmbeddedResource Update="Resources\Strings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <PublicClass>true</PublicClass>
+      <!-- Non-static class (StaticMembers stays true) so it matches the old PublicResXFileCodeGenerator
+           output: usable as a generic arg (IStringLocalizer<Strings>) while Strings.Key stays static. -->
+      <StaticClass>false</StaticClass>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Mark the generated file so IDEs treat it as auto-generated and dependent on the resx -->
-    <Compile Update="Resources\Strings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <!-- Bundles the Dart Sass binary and compiles SCSS→CSS during build (config in sasscompiler.json).
          Replaces the external `sass` CLI so the build runs anywhere (Oryx/CI/local) without a PATH dependency. -->
     <PackageReference Include="AspNetCore.SassCompiler" Version="1.100.0" />
+    <!-- Source generator that emits the public Strings accessor from Strings.resx at compile time.
+         Replaces the VS-only PublicResXFileCodeGenerator so generation runs on CI/CLI, not just the IDE. -->
+    <PackageReference Include="VocaDb.ResXFileCodeGenerator" Version="3.2.1" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.7" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.7" />

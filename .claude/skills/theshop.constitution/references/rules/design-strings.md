@@ -14,23 +14,23 @@ src/TheShop.Web/Resources/
 
 One `Strings.resx` holds every user-facing string for the application. Scope keys via the naming convention (below) to avoid collisions.
 
-### The typed accessor is auto-generated — never write it
+### The typed accessor is source-generated — never write it
 
-The strongly-typed C# accessor class that Rule 11 depends on (`Strings.Designer.cs` — a static class with one property per resource key) is **auto-generated on build**. The generator wiring (`PublicResXFileCodeGenerator`) already lives in `TheShop.Web.csproj`; it requires no setup or maintenance.
+The strongly-typed C# accessor class that Rule 11 depends on (the `Strings` class — one property per resource key) is **generated at build time by a source generator** (`VocaDb.ResXFileCodeGenerator`, wired in `TheShop.Web.csproj`). It is emitted into the compilation in-memory: there is **no `Strings.Designer.cs` file on disk and none is committed** — the path is git-ignored and regenerates on every `dotnet build` (locally and on CI). The wiring requires no setup or maintenance.
 
-When adding strings, edit **only** `Strings.resx` / `Strings.fr.resx` and build. **Never write or edit `Strings.Designer.cs` by hand** — it regenerates from the `.resx` automatically.
+When adding strings, edit **only** `Strings.resx` / `Strings.fr.resx` and build. **Never create or edit a `Strings.Designer.cs` by hand** — the accessor regenerates from the `.resx` automatically.
 
 ```csharp
-// Auto-generated — DO NOT EDIT
+// Source-generated at build time — not committed, never edit
 namespace TheShop.Web.Resources;
 
 public class Strings
 {
     public static string AddToCart =>
-        ResourceManager.GetString("AddToCart", Culture);
+        ResourceManager.GetString("AddToCart", CultureInfo)!;
 
     public static string ProductDetail_PageTitle =>
-        ResourceManager.GetString("ProductDetail_PageTitle", Culture);
+        ResourceManager.GetString("ProductDetail_PageTitle", CultureInfo)!;
     // ... one property per resource key
 }
 ```
@@ -175,7 +175,7 @@ Web then translates the runtime key via Pattern 2:
 Application stays language-agnostic AND compile-safe.
 
 > **Wait — Application is in `TheShop.Application/`, but `Strings` lives in `TheShop.Web/Resources/`. Doesn't Application import Web?**
-> No. The Application project references the generated `Strings.Designer.cs` class through a shared resource project pattern, or via a string-key constants class in `TheShop.Application/Common/`. Whichever pattern is in use, the **rule** holds: never pass a magic string into `Result.Fail`. The compiler check is what matters; the wiring is mechanical.
+> No. The Application project references the generated `Strings` class through a shared resource project pattern, or via a string-key constants class in `TheShop.Application/Common/`. Whichever pattern is in use, the **rule** holds: never pass a magic string into `Result.Fail`. The compiler check is what matters; the wiring is mechanical.
 
 ---
 

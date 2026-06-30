@@ -109,7 +109,7 @@ End your response with this structured summary:
 - `src/TheShop.Web/Pages/Cart/CartPage.razor.cs` — class summary
 
 **Files skipped (and why):**
-- `src/TheShop.Web/Resources/Strings.Designer.cs` — auto-generated.
+- `src/TheShop.Web/Pages/Cart/CartPage.razor` — Razor markup; only the `.razor.cs` code-behind is documented.
 - `tests/TheShop.Application.Tests/Features/Cart/AddToCartHandlerTests.cs` — test class, out of scope.
 
 **Build status:** ✅ `dotnet build` succeeded with 0 warnings / 0 errors.
