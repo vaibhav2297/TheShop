@@ -1,6 +1,7 @@
 ---
 name: theshop.clarify
 description: Resolve the open assumptions and questions in a feature spec. Reads `.specs/{feature_name}/spec.md`, walks each 📌 Assumption and ❓ Open question (plus any inline `(Assumption: …)` markers), asks the user one product-level question at a time with the logged default offered as the recommended answer, folds every confirmed decision back into the relevant spec section, empties the Assumptions & Open Questions appendix, and flips the Status footer from `Draft — N open assumption(s)` to `Confirmed`. Stays strictly product-level (WHAT/WHY) — never introduces HOW. This is the second step of the spec pipeline, between `/theshop.spec` and `/theshop.plan`. Manually invoked only; requires a feature name.
+argument-hint: <feature-name>
 disable-model-invocation: true
 ---
 

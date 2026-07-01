@@ -1,6 +1,7 @@
 ---
 name: theshop.resolve
 description: Resolve the open questions, risks, and assumptions in a feature's technical implementation plan. Reads `.specs/{feature_name}/plan.md`, walks every ❓ Open question, ⚠️ Risk, and 📌 Assumption in Section 11 (plus any inline `📌` markers in the body), asks the user one technical question at a time with the logged default offered as the recommended answer, folds every confirmed decision back into the relevant plan section (Data Model, Design Decisions, Validation, Schema/RLS, Development Plan), records a mitigation or explicit acceptance for each risk, empties Section 11 of everything that's now settled, and flips the Status footer from `Draft` to `Resolved`. Stays at technical (HOW) altitude — this is the plan, not the spec. This is the fourth step of the SDD pipeline, between `/theshop.plan` and `/theshop.implement`. Manually invoked only; requires a feature name.
+argument-hint: <feature-name>
 disable-model-invocation: true
 ---
 
