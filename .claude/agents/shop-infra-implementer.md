@@ -74,7 +74,13 @@ If the plan's tables already exist with the right shape, skip the `CREATE TABLE`
 
 ### 4. Scan existing Infrastructure code
 
-`Glob` `src/TheShop.Infrastructure/**/*.cs` to see:
+**Orient with the knowledge graph first.** If `graphify-out/graph.json` exists, run:
+
+```bash
+graphify query "Supabase.Client registration, existing Record types and repositories related to {feature}"
+```
+
+It returns a scoped subgraph — far cheaper than sweeping raw files. `Read` only the specific files it surfaces. Fall back to `Glob` `src/TheShop.Infrastructure/**/*.cs` only when the graph is absent or the query surfaces nothing relevant. Either way, answer:
 
 - Is `Supabase.Client` already registered in `DependencyInjection.cs`? Reuse the registration.
 - Are there existing `*Record` types you should extend rather than duplicate?
@@ -115,6 +121,14 @@ dotnet build src/TheShop.Infrastructure/TheShop.Infrastructure.csproj --nologo
 ```
 
 If it fails, fix and rebuild. Common causes: (a) interface signature drift (re-read the Application summary), (b) wrong SDK method name, (c) missing DI registration.
+
+Once the build is green, refresh the knowledge graph so downstream agents work from the current code map:
+
+```bash
+graphify update .
+```
+
+This is AST-only (no API cost) and non-fatal — if `graphify` or `graphify-out/` is unavailable, note it in your summary and continue.
 
 ### 9. Report the produced surface
 

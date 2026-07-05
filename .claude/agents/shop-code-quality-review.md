@@ -58,7 +58,7 @@ git diff --name-only <range>   # the files to focus on
 git diff <range>                # the actual changes
 ```
 
-Read full files only when the diff lacks the context to judge a finding (e.g., you need to see whether an extracted private method already exists nearby).
+Read full files only when the diff lacks the context to judge a finding (e.g., you need to see whether an extracted private method already exists nearby). **Before reaching for a raw `Read`/`Grep` of surrounding code, use the knowledge graph if `graphify-out/graph.json` exists**: `graphify query "<question>"` (or `graphify path "<A>" "<B>"` for a relationship) returns the scoped subgraph — callers, siblings, existing helpers — for a fraction of the tokens a whole-file read costs. Then read only the exact lines you need to quote. Fall back to raw `Read`/`Grep` only when the graph is absent or unhelpful. This changes how you *locate* context, not the diff-only scope of the review.
 
 If the diff touches more than ~15 files, summarize once at the top: "This review covers N files across {layers/areas}; I focused most attention on {the meaningful ones}."
 

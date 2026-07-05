@@ -56,6 +56,8 @@ git diff --name-only <range>   # files to focus on
 git diff <range>                # the actual changes
 ```
 
+**When a finding needs context beyond the diff** (who calls a handler, where a key flows, whether a table's RLS policies exist elsewhere), use the knowledge graph first if `graphify-out/graph.json` exists: `graphify query "<question>"` or `graphify path "<A>" "<B>"` returns the scoped subgraph far cheaper than raw `Read`/`Grep` sweeps. Then read only the exact files/lines it surfaces. Fall back to raw searches only when the graph is absent or unhelpful. This changes how you *locate* context, not the diff-only scope of the review.
+
 Pay special attention to files in these locations — they're disproportionately risky in this stack:
 
 | Path | Why it deserves extra attention |

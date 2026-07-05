@@ -378,3 +378,6 @@ FodyWeavers.xsd
 
 # MudBlazor MCP server cache (auto-downloaded, not project code)
 data/
+
+# graphify knowledge graph output (regenerated from source, not project code)
+graphify-out/

@@ -274,7 +274,13 @@ This is the only phase in which you may edit files. Apply the action plan items 
 - **Items outside `tests/` and `src/`** (e.g., changes to `.github/`, `appsettings.json` in `wwwroot/`, secrets) are higher-risk. For these, summarize the proposed change and ask the user to confirm before writing.
 - **If a finding turns out to need spec changes** (the spec disagrees with the code, and the code is actually right), don't edit the spec automatically. Flag it and tell the user to re-run `/theshop.spec $ARGUMENTS` (or `/theshop.clarify`) or update the spec by hand.
 
-When implementation is finished, produce a short summary:
+When implementation is finished, refresh the knowledge graph so the applied fixes are reflected in it (skip silently if `graphify` or `graphify-out/graph.json` is unavailable — it writes only under `graphify-out/`, never source):
+
+```bash
+graphify update .
+```
+
+Then produce a short summary:
 
 ```markdown
 ## Implementation summary
