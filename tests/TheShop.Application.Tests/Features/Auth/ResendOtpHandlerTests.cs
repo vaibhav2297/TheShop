@@ -4,6 +4,7 @@ using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Auth;
 using TheShop.Application.Features.Auth.Commands.ResendOtp;
+using TheShop.Domain.Enums;
 using Xunit;
 
 namespace TheShop.Application.Tests.Features.Auth;

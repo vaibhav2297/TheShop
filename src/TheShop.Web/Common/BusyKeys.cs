@@ -17,4 +17,10 @@ public static class BusyKeys
         public const string SignUpVerify = "auth.sign-up.verify";
         public const string ResendOtp = "auth.resend-otp";
     }
+
+    /// <summary>Keys for product-catalogue operations.</summary>
+    public static class Products
+    {
+        public const string Catalogue = "products.catalogue";
+    }
 }

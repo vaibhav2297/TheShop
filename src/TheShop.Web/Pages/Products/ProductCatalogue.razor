@@ -1,0 +1,105 @@
+@attribute [AllowAnonymous]
+
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Components.Products
+
+<PageTitle>@Strings.Products_PageTitle</PageTitle>
+
+<MudStack Class="mud-height-full pa-8">
+
+    <MudText Typo="Typo.h3" Class="text-transform-uppercase mb-8">@Strings.Nav_Products</MudText>
+
+    <MudGrid Spacing="8">
+
+        <MudItem xs="12"
+                 md="3"
+                 xl="2">
+
+            <ProductFilterPanel Groups="@FilterGroups"
+                                SelectedFilters="@_selectedFilters"
+                                SelectedFiltersChanged="OnFiltersChangedAsync"
+                                PriceMin="@_priceMin"
+                                PriceMinChanged="OnPriceMinChangedAsync"
+                                PriceMax="@_priceMax"
+                                PriceMaxChanged="OnPriceMaxChangedAsync"
+                                OnClearFilters="OnClearFiltersAsync" />
+
+        </MudItem>
+
+        <MudItem xs="12"
+                 md="9"
+                 xl="10">
+            <MudStack Spacing="6"
+                      AlignItems="AlignItems.Stretch">
+
+                @if (_products.HasLoaded && _products.Items.Count > 0)
+                {
+                    <MudStack Row
+                              AlignItems="AlignItems.Center"
+                              Spacing="4">
+
+
+                        <MudText Typo="Typo.subtitle1"
+                                 Color="Color.Secondary">
+                            @string.Format(Strings.Catalogue_ResultCount, ResultRangeStart, ResultRangeEnd, _products.TotalCount)
+                        </MudText>
+
+                        <MudSpacer />
+
+                        <ProductSortControl Sort="@_sort" SortChanged="OnSortChangedAsync" />
+
+                    </MudStack>
+                }
+
+                <BusyFor Key="@BusyKeys.Products.Catalogue" Context="busy">
+                    @if (busy)
+                    {
+                        <MudGrid>
+                            @for (var i = 0; i < 12; i++)
+                            {
+                                <MudItem xs="12" sm="6" md="4" xl="3">
+                                    <MudSkeleton SkeletonType="SkeletonType.Rectangle"
+                                                 Height="420px" />
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    }
+                    else if (_products.Items.Count > 0)
+                    {
+                        <MudGrid>
+                            @foreach (var product in _products.Items)
+                            {
+                                <MudItem xs="12" sm="6" md="4" xl="3">
+                                    <ProductCard Product="@product" />
+                                </MudItem>
+                            }
+                        </MudGrid>
+
+                        <ShopPagination Page="@_products.Page"
+                                        TotalPages="@_products.TotalPages"
+                                        PageChanged="OnPageChangedAsync"
+                                        Class="align-self-center" />
+                    }
+                    else
+                    {
+                        <MudStack AlignItems="AlignItems.Center"
+                                  Justify="Justify.Center"
+                                  Spacing="4"
+                                  Class="py-20">
+
+                            <MudText Typo="Typo.h4">@Strings.Empty_NoResults</MudText>
+
+                            <MudText Typo="Typo.subtitle1"
+                                     Color="Color.Secondary">@Strings.No_Product_Found_Desc</MudText>
+
+                        </MudStack>
+                    }
+                </BusyFor>
+
+            </MudStack>
+        </MudItem>
+
+    </MudGrid>
+
+</MudStack>

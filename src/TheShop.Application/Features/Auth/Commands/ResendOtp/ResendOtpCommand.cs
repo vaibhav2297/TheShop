@@ -1,6 +1,7 @@
 using MediatR;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Auth.DTOs;
+using TheShop.Domain.Enums;
 
 namespace TheShop.Application.Features.Auth.Commands.ResendOtp;
 

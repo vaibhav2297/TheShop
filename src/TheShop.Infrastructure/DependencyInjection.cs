@@ -25,6 +25,8 @@ public static class DependencyInjection
 
         services.AddScoped<IAuthService, SupabaseAuthService>();
         services.AddScoped<ICustomerRepository, SupabaseCustomerRepository>();
+        services.AddScoped<IProductRepository, SupabaseProductRepository>();
+        services.AddScoped<IProductImageStorage, SupabaseProductImageStorage>();
 
         return services;
     }

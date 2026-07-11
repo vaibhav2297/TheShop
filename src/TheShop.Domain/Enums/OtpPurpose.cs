@@ -1,4 +1,4 @@
-namespace TheShop.Application.Features.Auth;
+namespace TheShop.Domain.Enums;
 
 /// <summary>
 /// Distinguishes the intent of an OTP so <see cref="Commands.ResendOtp.ResendOtpHandler"/>

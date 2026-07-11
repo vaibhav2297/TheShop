@@ -1,0 +1,88 @@
+@* Components/Products/ProductCard.razor *@
+@inherits MudComponentBase
+
+@using TheShop.Web.Common
+@using TheShop.Web.Resources
+@using TheShop.Web.Theme
+
+<MudPaper Class="@ClassName"
+          Style="@Style"
+          Elevation="0">
+
+    <!-- media-section -->
+    <MudStack Class="media-section mud-tertiary"
+              AlignItems="AlignItems.Center"
+              Justify="Justify.Center">
+
+        <MudImage Src="@(string.IsNullOrWhiteSpace(Product.ImageUrl) ? ShopIcons.ImageAssets.LogoPrimary : Product.ImageUrl)"
+                  Alt="@string.Format(Strings.Product_ImageAlt, Product.Name)"
+                  ObjectFit="ObjectFit.Cover"
+                  FallbackSrc="@ShopIcons.ImageAssets.LogoPrimary"
+                  Class="media-image" />
+
+        <!-- Out of Stock -->
+        @if (!Product.IsInStock)
+        {
+            <MudChip T="string"
+                     Class="media-action top right"
+                     Color="Color.Error"
+                     Variant="Variant.Filled">
+                <MudText Typo="Typo.body2">@Strings.OutOfStock</MudText>
+            </MudChip>
+        }
+
+        <!-- Cart -->
+        @if (Product.IsInStock)
+        {
+            <MudIconButton Icon="@ShopIcons.Outlined.Shopping_Bag_01"
+                           aria-label="@Strings.AddToCart"
+                           Variant="Variant.Filled"
+                           DropShadow="false"
+                           Class="media-action bottom left mud-theme-white"
+                           OnClick="OnAddToCartAsync" />
+        }
+
+        <!-- Whishlist -->
+        <MudIconButton Icon="@ShopIcons.Outlined.Heart_01"
+                       aria-label="@Strings.Wishlist_Add"
+                       Variant="Variant.Filled"
+                       DropShadow="false"
+                       Class="media-action bottom right mud-theme-white"
+                       OnClick="OnToggleWishlistAsync" />
+
+    </MudStack>
+
+    <!-- Content Section -->
+    <MudStack Class="content-section"
+              AlignItems="AlignItems.Stretch"
+              Spacing="2"
+              @onclick="OnSelectAsync">
+
+        <!-- Product Name -->
+        <MudText Typo="Typo.body1"
+                 Class="fs-18">@Product.Name</MudText>
+
+        <!-- Price -->
+        <MudStack Row
+                  AlignItems="AlignItems.Center"
+                  Spacing="2">
+
+            @if (Product.IsDiscounted)
+            {
+                <MudText Typo="Typo.h6">@CurrencyFormatter.Format(Product.SalePrice!.Value)</MudText>
+
+                <MudText Typo="Typo.subtitle1"
+                         Class="mud-secondary-text text-decoration-line-through">
+                    @CurrencyFormatter.Format(Product.OriginalPrice)
+                </MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.h6">@CurrencyFormatter.Format(Product.OriginalPrice)</MudText>
+            }
+
+        </MudStack>
+
+    </MudStack>
+
+</MudPaper>

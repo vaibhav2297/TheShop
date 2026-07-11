@@ -1,8 +1,4 @@
-.shop-breadcrumb-item {
-    display: inline-block;
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    vertical-align: bottom;
+.mud-breadcrumb-separator {
+    display: inline-flex;
+    padding: 0 8px;
 }

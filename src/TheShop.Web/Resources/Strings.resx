@@ -207,6 +207,72 @@
   <data name="Empty_NoResults" xml:space="preserve">
     <value>No products found.</value>
   </data>
+  <data name="Catalogue_Page_Invalid" xml:space="preserve">
+    <value>Invalid page number.</value>
+  </data>
+  <data name="Catalogue_PageSize_Invalid" xml:space="preserve">
+    <value>Invalid page size.</value>
+  </data>
+  <data name="Catalogue_PriceRange_Invalid" xml:space="preserve">
+    <value>The minimum price must be less than the maximum.</value>
+  </data>
+  <data name="Catalogue_Sort_Invalid" xml:space="preserve">
+    <value>Unknown sort option.</value>
+  </data>
+  <data name="Catalogue_Filter_Invalid" xml:space="preserve">
+    <value>Unknown filter.</value>
+  </data>
+  <data name="Filter_Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Filter_Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Filter_Brand" xml:space="preserve">
+    <value>Brand</value>
+  </data>
+  <data name="Filter_Flavour" xml:space="preserve">
+    <value>Flavour</value>
+  </data>
+  <data name="Filter_NicotineStrength" xml:space="preserve">
+    <value>Nicotine strength</value>
+  </data>
+  <data name="Filter_Clear" xml:space="preserve">
+    <value>Clear filters</value>
+  </data>
+  <data name="Sort_Label" xml:space="preserve">
+    <value>Sort by</value>
+  </data>
+  <data name="Sort_Newest" xml:space="preserve">
+    <value>Newest</value>
+  </data>
+  <data name="Sort_PriceLowHigh" xml:space="preserve">
+    <value>Price: low to high</value>
+  </data>
+  <data name="Sort_PriceHighLow" xml:space="preserve">
+    <value>Price: high to low</value>
+  </data>
+  <data name="Sort_NameAZ" xml:space="preserve">
+    <value>Name: A–Z</value>
+  </data>
+  <data name="Sort_NameZA" xml:space="preserve">
+    <value>Name: Z–A</value>
+  </data>
+  <data name="Wishlist_Add" xml:space="preserve">
+    <value>Add to wishlist</value>
+  </data>
+  <data name="Wishlist_Saved" xml:space="preserve">
+    <value>Saved to wishlist</value>
+  </data>
+  <data name="OutOfStock" xml:space="preserve">
+    <value>Out of stock</value>
+  </data>
+  <data name="Catalogue_ResultCount" xml:space="preserve">
+    <value>Showing {0}-{1} of {2} products</value>
+  </data>
+  <data name="Product_Price_Was" xml:space="preserve">
+    <value>Was {0}</value>
+  </data>
   <data name="Cart_PageTitle" xml:space="preserve">
     <value>Cart — The Vape Shop Sarnia</value>
   </data>
@@ -501,5 +567,10 @@
   <data name="Footer_Contact_Address" xml:space="preserve">
     <value>175 Ontario St, Sarnia, N7T 1L2, Canada</value>
   </data>
-
+  <data name="No_Product_Found_Desc" xml:space="preserve">
+    <value>Try changing your search or filters, or browse all products.</value>
+  </data>
+  <data name="No_Filters" xml:space="preserve">
+    <value>No Filters</value>
+  </data>
 </root>
