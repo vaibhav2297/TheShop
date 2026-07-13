@@ -14,3 +14,5 @@
 | 7. Document   | Done  | ✅ doc-only gate pass | 6 files documented · build ✅ | 2026-07-13 |
 
 **Next step:** `/theshop.review product-catalogue` or `/theshop.ship product-catalogue`
+
+**Shipped:** 2026-07-13 → `dev` (via PR) — ⚠️ waived: shipped with 1 open ledger item(s)
