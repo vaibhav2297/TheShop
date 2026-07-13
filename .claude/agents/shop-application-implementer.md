@@ -67,7 +67,13 @@ The Application-layer rules live behind the `theshop.constitution` skill. **Dele
 
 ### 3. Scan existing Application code
 
-Before writing, `Glob` `src/TheShop.Application/**/*.cs` to see what's already there:
+**Orient with the knowledge graph first.** If `graphify-out/graph.json` exists, run:
+
+```bash
+graphify query "Result<T>, ValidationBehavior, existing Application interfaces and Features folders related to {feature}"
+```
+
+It returns a scoped subgraph — far cheaper than sweeping raw files. `Read` only the specific files it surfaces. Fall back to `Glob` `src/TheShop.Application/**/*.cs` only when the graph is absent or the query surfaces nothing relevant. Either way, answer:
 
 - Is `Result<T>` already defined?
 - Is `ValidationBehavior<,>` already registered?
@@ -107,6 +113,14 @@ dotnet build src/TheShop.Application/TheShop.Application.csproj --nologo
 ```
 
 If it fails, fix the errors and rebuild. Compile errors here usually mean (a) you used a Domain type that doesn't exist, or (b) you imported something that shouldn't be in Application. Either way — halt before reporting.
+
+Once the build is green, refresh the knowledge graph so downstream layer agents work from the current code map:
+
+```bash
+graphify update .
+```
+
+This is AST-only (no API cost) and non-fatal — if `graphify` or `graphify-out/` is unavailable, note it in your summary and continue.
 
 ### 8. Report the produced API surface
 

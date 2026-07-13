@@ -9,8 +9,15 @@ using TheShop.Infrastructure.Persistence.Repositories;
 
 namespace TheShop.Infrastructure;
 
+/// <summary>
+/// Extension methods for registering Infrastructure services into the dependency container.
+/// </summary>
 public static class DependencyInjection
 {
+    /// <summary>
+    /// Adds Supabase authentication, product repository, and image storage services to the
+    /// dependency container.
+    /// </summary>
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -25,6 +32,8 @@ public static class DependencyInjection
 
         services.AddScoped<IAuthService, SupabaseAuthService>();
         services.AddScoped<ICustomerRepository, SupabaseCustomerRepository>();
+        services.AddScoped<IProductRepository, SupabaseProductRepository>();
+        services.AddScoped<IProductImageStorage, SupabaseProductImageStorage>();
 
         return services;
     }

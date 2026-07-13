@@ -26,6 +26,13 @@ public sealed class ExceptionHandlingBehavior<TRequest, TResponse>
         {
             return await next(cancellationToken);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // A caller-cancelled request (e.g. a superseded catalogue fetch) is not a failure —
+            // let the cancellation propagate so the caller can quietly drop it instead of turning
+            // it into an error Result that surfaces a spurious "something went wrong" toast.
+            throw;
+        }
         catch (HttpRequestException) when (TryBuildFailureResult(NetworkErrorKey, out var failure))
         {
             return (TResponse)failure!;

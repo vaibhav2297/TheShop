@@ -1,0 +1,28 @@
+﻿@import "../abstracts/_variables.scss";
+
+.mud-pagination {
+
+    .mud-pagination-item {
+        &:not(.mud-pagination-item-selected) {
+            .mud-button-outlined {
+                border-color: var(--mud-palette-lines-default);
+            }
+        }
+
+        .mud-icon-button.mud-button-outlined-default {
+            color: var(--mud-palette-primary);
+        }
+    }
+
+
+    &-outlined {
+        .mud-pagination-item-selected {
+
+            @each $color in $shop-palette-colors {
+                .mud-button-outlined-#{$color} {
+                    background-color: transparent;
+                }
+            }
+        }
+    }
+}

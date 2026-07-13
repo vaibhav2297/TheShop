@@ -61,7 +61,7 @@ The script `dotnet build`s every test project the manifest lists (transitively c
 
 Route by the tags in the gate's output:
 
-- **Exit 0** → proceed to Step 2.
+- **Exit 0** → refresh the knowledge graph so the new test files land in it — `graphify update .` (AST-only; writes only under `graphify-out/`; skip silently if `graphify` or `graphify-out/graph.json` is unavailable) — then proceed to Step 2.
 - **Exit 1, all errors tagged `[tests]`** → re-invoke `shop-test-writer` **once**, quoting the error list verbatim with the instruction: "Your test files do not compile. Fix exactly these compiler errors. You may glance at production code to align type/method names and signatures so the tests compile — never to change what a test expects. If an error is caused by a production type or member that does not exist yet (the feature is unimplemented), do not weaken, comment out, or delete the test — leave it and report the missing symbol in your summary." Then re-run Gate B.
   - If the writer reports the errors come from **missing production symbols** (the feature hasn't been implemented yet), **stop** and report with Template C, noting explicitly that the tests are written and awaiting implementation — an expected pre-implementation state, not a writer defect. Point the user at `/theshop.implement $ARGUMENTS`.
   - If Gate B fails a second time on `[tests]` errors that were the writer's to fix, **stop** — report with Template C, quoting the gate output.
@@ -85,7 +85,7 @@ Wait for it to fully complete.
 
 1. **Do not start Step 2 until Step 1 is fully complete.** If the writer is still working, wait. No parallel invocation.
 2. **Do not fix any code regardless of what the test results show.** Your job ends at delivering the combined summary — plus updating the feature's tracking artifact `.specs/$ARGUMENTS/status.md` (see below), which is not code. The user is the one who acts on it. If they ask you to fix something inside this command run, tell them the slash command is orchestration-only and they can request fixes in a follow-up message.
-3. **Do not run anything outside `tests/`.** The runner agent handles all test execution; you never invoke `dotnet test` yourself. The commands you do run are the Step 1.5 gates (`check-sdd-gates.ps1 manifest` and `compile`) — the first is a read-only artifact check, the second builds the manifest's test projects but never executes a test.
+3. **Do not run anything outside `tests/`.** The runner agent handles all test execution; you never invoke `dotnet test` yourself. The commands you do run are the Step 1.5 gates (`check-sdd-gates.ps1 manifest` and `compile`) — the first is a read-only artifact check, the second builds the manifest's test projects but never executes a test — plus the post-Gate-B `graphify update .`, which writes only under `graphify-out/` (a knowledge-graph refresh, not code).
 4. **If `shop-test-writer` could not write the test files, stop and report the reason.** Do not proceed to Step 2 under any circumstance — not even "to see what's already there".
 
 ---

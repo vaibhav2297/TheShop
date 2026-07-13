@@ -1,0 +1,11 @@
+// MudBlazor hardcodes chip border-radius per size instead of using the
+// theme's DefaultBorderRadius token, so it must be flattened explicitly here.
+
+.mud-chip {
+
+    &.mud-chip-size-small,
+    &.mud-chip-size-medium,
+    &.mud-chip-size-large {
+        border-radius: 0;
+    }
+}

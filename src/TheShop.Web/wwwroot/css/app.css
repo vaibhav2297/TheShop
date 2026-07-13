@@ -1,5 +1,8 @@
+/* Base fallback stack matches the app's primary typeface (Space Grotesk, set by ShopTheme) so the
+   pre-webfont paint on a cold deep-link is close to the final layout — the system fallback carries
+   the page until the Google Font arrives, instead of the mismatched Helvetica that reflowed on swap. */
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Space Grotesk', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 h1:focus {

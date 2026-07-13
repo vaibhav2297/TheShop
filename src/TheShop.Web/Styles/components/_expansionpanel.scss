@@ -1,0 +1,15 @@
+.mud-expand-panel {
+
+    &.mud-panel-expanded {
+        margin: 0;
+        border-bottom: 1px solid var(--mud-palette-lines-default);
+    }
+
+    &.mud-panel-next-expanded {
+        border-bottom: 1px solid var(--mud-palette-lines-default);
+    }
+
+    &:last-child {
+        border-bottom: 1px solid var(--mud-palette-lines-default);
+    }
+}

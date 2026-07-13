@@ -172,7 +172,7 @@ Before typing a single section, hold these questions in mind and resolve each:
 - **What error keys does this introduce?** Each one needs a new entry in `Strings.resx` (and a French placeholder in `Strings.fr.resx`).
 - **What new resource strings are needed for UI?** Page titles, button labels, error messages, validation messages.
 - **Which acceptance criteria are at risk?** If any AC is unclear how to verify, flag it as an open question rather than glossing.
-- **What's already in the codebase that this builds on or duplicates?** A quick scan of the relevant folders prevents redundant additions.
+- **What's already in the codebase that this builds on or duplicates?** Answer this with the knowledge graph, not folder sweeps: if `graphify-out/graph.json` exists, run `graphify query "<what exists related to {feature}>"` (and `graphify explain "<concept>"` / `graphify path "<A>" "<B>"` for focused follow-ups) — it returns a scoped subgraph for a fraction of the tokens a raw `Glob`/`Grep`/`Read` scan costs. Then read only the specific files it surfaces. Fall back to scanning the relevant folders only when the graph is absent or the query surfaces nothing relevant.
 
 Write a brief internal sketch (not in the final plan — your own scratch reasoning) of these answers before writing the document. The plan that comes out will be substantially better for it.
 

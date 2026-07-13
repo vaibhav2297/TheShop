@@ -171,6 +171,16 @@ dotnet build TheShop.slnx --nologo
 
 If the solution build fails despite both layer builds passing, you have a cross-layer issue (e.g., the DI registration is wrong, or Web is using a DTO field Application didn't ship). Halt with template C and quote the solution-level errors — do not silently re-invoke; the user needs to see the cross-layer break.
 
+### Knowledge-graph refresh (after the solution build passes)
+
+Each layer agent refreshes the graph after its own build gate, but run the safety net once here anyway:
+
+```bash
+graphify update .
+```
+
+AST-only, no API cost, and it writes only under `graphify-out/` — it is not a production-code edit, so it does not violate Handoff rule 5. Non-fatal: if `graphify` or `graphify-out/` is unavailable, skip silently.
+
 ---
 
 ## Phase 4 — Format (runs automatically after your turn)

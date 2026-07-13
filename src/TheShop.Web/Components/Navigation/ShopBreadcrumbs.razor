@@ -4,30 +4,27 @@
 
 <nav aria-label="@Strings.Breadcrumb_AriaLabel">
     <MudBreakpointProvider OnBreakpointChanged="OnBreakpointChanged">
+
         <MudBreadcrumbs Items="@Items"
                         MaxItems="@_maxItems"
                         ExpanderIcon="@ShopIcons.Outlined.More_Horizontal"
                         Class="@Classname"
                         Style="@Stylename">
+
             <SeparatorTemplate>
-                <MudIcon Icon="@ShopIcons.Outlined.Chevron_Right"
+                <MudIcon Icon="@ShopIcons.Outlined.Chevron_Right_MD"
                          Size="Size.Small" />
             </SeparatorTemplate>
+
             <ItemTemplate Context="item">
-                @if (item.Disabled)
-                {
-                    <MudText Typo="Typo.body2"
-                             Class="shop-breadcrumb-item"
-                             title="@item.Text"
-                             aria-current="page">@item.Text</MudText>
-                }
-                else
-                {
-                    <MudLink Href="@item.Href"
-                             Class="shop-breadcrumb-item"
-                             title="@item.Text">@item.Text</MudLink>
-                }
+                <MudButton Href="@(item.Disabled ? null : item.Href)"
+                           Size="Size.Small"
+                           Variant="Variant.Text"
+                           Color="Color.Primary"
+                           aria-current="@(item.Disabled ? "page" : null)">@item.Text</MudButton>
             </ItemTemplate>
+
         </MudBreadcrumbs>
+
     </MudBreakpointProvider>
 </nav>

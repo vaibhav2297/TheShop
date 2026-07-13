@@ -1,0 +1,181 @@
+{
+  "feature": "product-catalogue",
+  "trait": "product-catalogue",
+  "writtenAt": "2026-07-11",
+  "totalTests": 187,
+  "classes": [
+    { "fqn": "TheShop.Domain.Tests.ValueObjects.MoneyTests", "file": "tests/TheShop.Domain.Tests/ValueObjects/MoneyTests.cs", "tests": 9 },
+    { "fqn": "TheShop.Domain.Tests.ValueObjects.ProductPricingTests", "file": "tests/TheShop.Domain.Tests/ValueObjects/ProductPricingTests.cs", "tests": 9 },
+    { "fqn": "TheShop.Domain.Tests.Entities.ProductTests", "file": "tests/TheShop.Domain.Tests/Entities/ProductTests.cs", "tests": 10 },
+    { "fqn": "TheShop.Domain.Tests.Entities.CategoryTests", "file": "tests/TheShop.Domain.Tests/Entities/CategoryTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Domain.Tests.Entities.BrandTests", "file": "tests/TheShop.Domain.Tests/Entities/BrandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Domain.Tests.Enums.ProductSortOptionTests", "file": "tests/TheShop.Domain.Tests/Enums/ProductSortOptionTests.cs", "tests": 7 },
+
+    { "fqn": "TheShop.Application.Tests.Common.Models.PagedResultTests", "file": "tests/TheShop.Application.Tests/Common/Models/PagedResultTests.cs", "tests": 13 },
+    { "fqn": "TheShop.Application.Tests.Common.Models.PaginationRequestTests", "file": "tests/TheShop.Application.Tests/Common/Models/PaginationRequestTests.cs", "tests": 11 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.DTOs.ProductDtoMapperTests", "file": "tests/TheShop.Application.Tests/Features/Products/DTOs/ProductDtoMapperTests.cs", "tests": 7 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetProductCataloguePageHandlerTests.cs", "tests": 10 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageQueryValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetProductCataloguePageQueryValidatorTests.cs", "tests": 20 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetCatalogueFiltersHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetCatalogueFiltersHandlerTests.cs", "tests": 2 },
+
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.ProductFilterDefinitionsTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ProductFilterDefinitionsTests.cs", "tests": 11 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.SupabaseProductRepositorySchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseProductRepositorySchemaTests.cs", "tests": 19 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ProductMapperTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.ProductImageKeyTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ProductImageKeyTests.cs", "tests": 4 },
+
+    { "fqn": "TheShop.Web.Tests.Components.Products.ProductCardTests", "file": "tests/TheShop.Web.Tests/Components/Products/ProductCardTests.cs", "tests": 17 },
+    { "fqn": "TheShop.Web.Tests.Components.Products.ProductSortControlTests", "file": "tests/TheShop.Web.Tests/Components/Products/ProductSortControlTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Web.Tests.Components.Products.ProductFilterPanelTests", "file": "tests/TheShop.Web.Tests/Components/Products/ProductFilterPanelTests.cs", "tests": 11 },
+    { "fqn": "TheShop.Web.Tests.Components.Common.ShopPaginationTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopPaginationTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests", "file": "tests/TheShop.Web.Tests/Pages/Products/ProductCatalogueTests.cs", "tests": 10 },
+    { "fqn": "TheShop.Web.Tests.Common.CurrencyFormatterTests", "file": "tests/TheShop.Web.Tests/Common/CurrencyFormatterTests.cs", "tests": 4 }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.ProductTests.Create_WithValidData_ReturnsProductWithSuppliedProperties",
+        "TheShop.Application.Tests.Features.Products.DTOs.ProductDtoMapperTests.ToSummaryDto_MapsIdNameImageUrlBrandFlavourAndNicotineStrength",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageHandlerTests.Handle_WithValidQuery_ReturnsSuccessResultWithMappedProducts",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductRepositorySchemaTests.InsertProduct_WithValidData_RowCanBeSelectedBack",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductRepositorySchemaTests.SelectAsStorefrontRole_WhenProductIsPublished_IsVisible",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductRepositorySchemaTests.SelectAsStorefrontRole_WhenProductIsUnpublished_IsHidden",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WithImageUrl_RendersImageWithThatSource",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_Always_ShowsProductName",
+        "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.Render_OnInitialize_DispatchesFiltersAndPageQueries",
+        "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.Render_WithProducts_RendersAProductCardPerItem"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Domain.Tests.ValueObjects.ProductPricingTests.Create_WithSalePriceBelowOriginal_IsDiscountedIsTrue",
+        "TheShop.Domain.Tests.ValueObjects.ProductPricingTests.Create_WithSalePriceBelowOriginal_EffectiveIsSalePrice",
+        "TheShop.Domain.Tests.ValueObjects.ProductPricingTests.Create_WithoutSalePrice_IsDiscountedIsFalse",
+        "TheShop.Domain.Tests.Entities.ProductTests.IsDiscounted_WhenPricingHasSalePrice_ReturnsTrue",
+        "TheShop.Domain.Tests.Entities.ProductTests.IsDiscounted_WhenPricingHasNoSalePrice_ReturnsFalse",
+        "TheShop.Application.Tests.Features.Products.DTOs.ProductDtoMapperTests.ToSummaryDto_WithDiscountedProduct_MapsSalePriceAndIsDiscountedTrue",
+        "TheShop.Application.Tests.Features.Products.DTOs.ProductDtoMapperTests.ToSummaryDto_WithoutDiscount_MapsSalePriceNullAndIsDiscountedFalse",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageHandlerTests.Handle_WithDiscountedProduct_MapsSalePriceAndIsDiscountedTrue",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductRepositorySchemaTests.InsertProduct_WhenSalePriceExceedsOriginalPrice_ThrowsPostgresException",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductRepositorySchemaTests.InsertProduct_WhenSalePriceEqualsOriginalPrice_Succeeds",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WithDiscountedProduct_ShowsSalePriceAndStruckThroughOriginalPrice",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WithoutDiscount_ShowsOnlyASinglePrice"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WhenInStock_ShowsAddToCartButtonWithAccessibleLabel",
+        "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.Render_WithoutAnyAuthenticationContextRegistered_RendersSuccessfully"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WhenInStock_ShowsWishlistButtonWithAccessibleLabel"
+      ]
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.ClickAddToCartButton_WhenActivated_DoesNotThrowWithoutACallbackBound",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.ClickAddToCartButton_WhenActivated_InvokesOnAddToCartCallback",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.ClickWishlistButton_WhenActivated_InvokesOnToggleWishlistCallback"
+      ]
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageHandlerTests.Handle_ForwardsSelectedFiltersToRepositoryCriteria",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageQueryValidatorTests.Validate_WhenSelectedFilterKeyIsUnknown_HasFilterInvalidError",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageQueryValidatorTests.Validate_WhenSelectedFilterKeyIsPrice_HasFilterInvalidError",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageQueryValidatorTests.Validate_WhenSelectedFilterKeyIsSelectable_HasNoFilterError",
+        "TheShop.Application.Tests.Features.Products.Queries.GetCatalogueFiltersHandlerTests.Handle_ReturnsSuccessResultWrappingRepositoryFilterGroups",
+        "TheShop.Infrastructure.Tests.Persistence.ProductFilterDefinitionsTests.All_ContainsExactlyOneEntryPerSelectableFilterKey",
+        "TheShop.Web.Tests.Components.Products.ProductFilterPanelTests.ToggleOption_WhenUserChecksAnOption_RaisesFilterToggledForThatOptionAsSelected",
+        "TheShop.Web.Tests.Components.Products.ProductFilterPanelTests.ToggleOption_WhenUserUnchecksASelectedOption_RaisesFilterToggledAsDeselected",
+        "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.ApplyFilter_WhenUserSelectsAFilterOption_ResetsToPageOneWithTheFilterApplied",
+        "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.ApplyFilters_WhenTwoOptionsAreToggledInRapidSuccession_BothSurviveInTheQuery",
+        "TheShop.Web.Tests.Pages.Products.CatalogueQueryStateTests.ToggleFilter_AppliedInSequenceAcrossGroups_CompoundsInsteadOfOverwriting",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductRepositorySchemaTests.EffectivePrice_WhenProductHasNoSalePrice_EqualsOriginalPrice",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductRepositorySchemaTests.EffectivePrice_WhenProductIsDiscounted_EqualsSalePrice"
+      ]
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Domain.Tests.Enums.ProductSortOptionTests.ProductSortOption_DefinesExactlyFiveOptions",
+        "TheShop.Domain.Tests.Enums.ProductSortOptionTests.ProductSortOption_NewestFirstIsTheDefaultValue",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageHandlerTests.Handle_ForwardsSortToRepositoryCriteria",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageQueryValidatorTests.Validate_WhenSortIsUndefined_HasSortInvalidError",
+        "TheShop.Web.Tests.Components.Products.ProductSortControlTests.Render_Always_OffersAllFiveSpecSortOptions",
+        "TheShop.Web.Tests.Components.Products.ProductSortControlTests.ChangeSort_WhenUserSelectsADifferentOption_InvokesSortChangedWithTheNewOption",
+        "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.ChangeSort_WhenUserSelectsADifferentOption_ResetsToPageOneAndSendsNewSort"
+      ]
+    },
+    {
+      "id": "AC-8",
+      "tests": [
+        "TheShop.Application.Tests.Common.Models.PagedResultTests.TotalPages_ComputesCeilingOfTotalCountOverPageSize",
+        "TheShop.Application.Tests.Common.Models.PaginationRequestTests.Normalized_WithValidPageAndPageSize_LeavesValuesUnchanged",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageHandlerTests.Handle_WhenPageSizeExceedsMax_ClampsPageSizeBeforeQueryingRepository",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageQueryValidatorTests.Validate_WhenPageSizeIsOutOfRange_HasPageSizeInvalidError",
+        "TheShop.Web.Tests.Components.Common.ShopPaginationTests.SelectPage_WhenUserChangesPage_InvokesPageChangedWithTheNewPage",
+        "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.ChangePage_WhenUserNavigatesToPage2_PreservesTheActiveSort"
+      ]
+    },
+    {
+      "id": "AC-9",
+      "tests": [
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.ClickCardBody_WhenActivated_InvokesOnSelectCallback"
+      ]
+    },
+    {
+      "id": "AC-10",
+      "tests": [
+        "TheShop.Application.Tests.Common.Models.PagedResultTests.Empty_ReturnsPageWithNoItemsAndZeroTotalCount",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageHandlerTests.Handle_WhenRepositoryReturnsNoMatches_ReturnsEmptyPagedResult",
+        "TheShop.Web.Tests.Components.Products.ProductFilterPanelTests.Render_WithSelectedFilters_ShowsClearFiltersButton",
+        "TheShop.Web.Tests.Components.Products.ProductFilterPanelTests.Render_WithPriceBoundApplied_ShowsClearFiltersButton",
+        "TheShop.Web.Tests.Components.Products.ProductFilterPanelTests.ClickClearFilters_WhenActivated_InvokesOnClearFiltersCallback",
+        "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.ClearFilters_AfterNarrowingThePriceRange_ResetsPriceBoundsToNull",
+        "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.Render_WhenNoProductsMatch_ShowsEmptyStateMessage"
+      ]
+    },
+    {
+      "id": "AC-11",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.ProductTests.IsInStock_WhenStockQuantityIsZero_ReturnsFalse",
+        "TheShop.Application.Tests.Features.Products.DTOs.ProductDtoMapperTests.ToSummaryDto_WhenOutOfStock_MapsIsInStockFalse",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageHandlerTests.Handle_WithOutOfStockProduct_MapsIsInStockFalse",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WhenOutOfStock_HidesAddToCartButton",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WhenOutOfStock_ShowsOutOfStockIndicator",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WhenOutOfStock_StillShowsWishlistButton"
+      ]
+    },
+    {
+      "id": "AC-12",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.DTOs.ProductDtoMapperTests.ToSummaryDto_WhenProductHasNoImage_MapsImageUrlAsNull",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WithoutImageUrl_ShowsPlaceholderImage",
+        "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests.ToDomain_WhenImagePathBlank_FallsBackToPlaceholder",
+        "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests.ToDomain_WhenImagePathSet_ResolvesToPublicUrl"
+      ]
+    },
+    {
+      "id": "AC-13",
+      "tests": [
+        "TheShop.Web.Tests.Common.CurrencyFormatterTests.Format_UnderFrenchCulture_RendersDollarSignSuffixed",
+        "TheShop.Web.Tests.Common.CurrencyFormatterTests.Format_SameAmountUnderEnglishAndFrenchCultures_ProducesDifferentText"
+      ]
+    },
+    {
+      "id": "AC-14",
+      "tests": [
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WhenInStock_ShowsAddToCartButtonWithAccessibleLabel",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_WhenInStock_ShowsWishlistButtonWithAccessibleLabel"
+      ]
+    }
+  ]
+}

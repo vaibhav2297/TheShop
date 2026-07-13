@@ -1,0 +1,16 @@
+@* Components/Common/ShopPagination.razor *@
+@inherits MudComponentBase
+
+<MudPagination Rectangular
+               Class="@Class"
+               Style="@Style"
+               Selected="@Page"
+               NextIcon="@ShopIcons.Outlined.Arrow_Right_SM"
+               BeforeIcon="@ShopIcons.Outlined.Arrow_Left_SM"
+               Size="Size.Large"
+               SelectedChanged="OnSelectedChangedAsync"
+               Count="@TotalPages"
+               BoundaryCount="2"
+               MiddleCount="5"
+               Variant="Variant.Outlined"
+               Color="Color.Primary" />

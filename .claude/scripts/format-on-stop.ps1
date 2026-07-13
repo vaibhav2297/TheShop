@@ -2,6 +2,8 @@
 # Stop hook for Claude Code on The Shop project.
 # Runs `dotnet format` on the solution when the current diff includes any
 # .cs or .razor files. No-ops otherwise so non-code turns are fast.
+# Also refreshes the graphify knowledge graph (AST-only, no API cost) when
+# any file changed, so agents always query an up-to-date graph next turn.
 
 $ErrorActionPreference = 'SilentlyContinue'
 
@@ -24,6 +26,21 @@ if ($relevant) {
     }
 } else {
     Write-Host "[format-on-stop] No .cs / .razor changes in diff - skipping format."
+}
+
+# --- graphify refresh (non-fatal) -------------------------------------------
+# Keep the knowledge graph current so agents can query it instead of grepping.
+# Runs only when something changed, the graph exists, and graphify is on PATH.
+$graphExists = Test-Path (Join-Path $repoRoot 'graphify-out/graph.json')
+$graphifyCmd = Get-Command graphify -ErrorAction SilentlyContinue
+if ($changed -and $graphExists -and $graphifyCmd) {
+    Write-Host "[format-on-stop] Changes detected - running graphify update (AST-only)..."
+    & graphify update .
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[format-on-stop] graphify update exited with code $LASTEXITCODE (non-fatal)."
+    }
+} elseif ($changed -and $graphExists) {
+    Write-Host "[format-on-stop] graphify not found on PATH - skipping graph refresh."
 }
 
 exit 0

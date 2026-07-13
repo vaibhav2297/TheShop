@@ -83,7 +83,13 @@ If a Figma token has no clear `Shop*` equivalent, surface it as an open question
 
 ### 4. Scan existing Web code
 
-`Glob` `src/TheShop.Web/**/*.razor` and `src/TheShop.Web/**/*.razor.cs` to see:
+**Orient with the knowledge graph first.** If `graphify-out/graph.json` exists, run:
+
+```bash
+graphify query "existing layouts, components, state stores, Routes and BusyKeys constants related to {feature}"
+```
+
+It returns a scoped subgraph — far cheaper than sweeping raw files. `Read` only the specific files it surfaces. Fall back to `Glob` `src/TheShop.Web/**/*.razor` and `src/TheShop.Web/**/*.razor.cs` only when the graph is absent or the query surfaces nothing relevant. Either way, answer:
 
 - Is there an existing layout or component you should reuse?
 - Are the `Routes.X` constants already declared, or do you need to add them?
@@ -117,6 +123,14 @@ dotnet build src/TheShop.Web/TheShop.Web.csproj --nologo
 ```
 
 A clean build is a hard gate. Do not report success on a red build.
+
+Once the build is green, refresh the knowledge graph so downstream agents work from the current code map:
+
+```bash
+graphify update .
+```
+
+This is AST-only (no API cost) and non-fatal — if `graphify` or `graphify-out/` is unavailable, note it in your summary and continue.
 
 ### 8. Report the produced surface
 

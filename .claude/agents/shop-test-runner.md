@@ -221,6 +221,8 @@ Each warning gets a one-line entry in the report. Don't editorialize; describe t
 
 #### Layer 4 — Failure deep dive
 
+When a root-cause hypothesis needs you to locate production code (which handler, which repository, who calls what), use the knowledge graph first if `graphify-out/graph.json` exists: `graphify query "<question>"` returns the scoped subgraph far cheaper than `Glob`/`Grep` sweeps over `src/`. Then `Read` only the specific file/lines it surfaces. Fall back to raw searches only when the graph is absent or unhelpful.
+
 For every failing test, produce a per-failure breakdown with these fields:
 
 - **Test:** fully qualified name (e.g., `TheShop.Application.Tests.Features.Cart.AddToCartHandlerTests.Handle_WhenProductNotFound_ReturnsFailureResult`)

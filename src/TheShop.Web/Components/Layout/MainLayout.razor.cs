@@ -25,19 +25,22 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
+    private IDisposable? _locationChangingRegistration;
+
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
         Announcement.OnChange += StateHasChanged;
         Breadcrumbs.OnChange += StateHasChanged;
         Footer.OnChange += StateHasChanged;
-        NavigationManager.LocationChanged += OnLocationChanged;
+        _locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(OnLocationChanging);
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    private ValueTask OnLocationChanging(LocationChangingContext context)
     {
         Breadcrumbs.Clear();
         Footer.Show();
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc/>
@@ -46,6 +49,6 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
         Announcement.OnChange -= StateHasChanged;
         Breadcrumbs.OnChange -= StateHasChanged;
         Footer.OnChange -= StateHasChanged;
-        NavigationManager.LocationChanged -= OnLocationChanged;
+        _locationChangingRegistration?.Dispose();
     }
 }

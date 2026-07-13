@@ -1,7 +1,7 @@
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
+using MudExtensions.Services;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Web.Auth;
 using TheShop.Web.Common;
@@ -23,6 +23,7 @@ public static class DependencyInjection
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
         services.AddMudServices();
+        services.AddMudExtensions();
         services.AddLocalization();
 
         services.AddSingleton<ShopTheme>();
