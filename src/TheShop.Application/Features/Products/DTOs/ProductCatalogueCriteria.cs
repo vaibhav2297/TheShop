@@ -1,8 +1,7 @@
 using TheShop.Application.Common.Models;
-using TheShop.Application.Features.Products.DTOs;
 using TheShop.Domain.Enums;
 
-namespace TheShop.Application.Features.Products;
+namespace TheShop.Application.Features.Products.DTOs;
 
 /// <summary>
 /// Normalized input to <c>IProductRepository.GetPageAsync</c> — the Application-layer

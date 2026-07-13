@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using MudBlazor.Utilities;
 
-namespace TheShop.Web.Components.Navigation;
+namespace TheShop.Web.Components.Common;
 
 /// <summary>
 /// Layout-mounted breadcrumb strip. Wraps <see cref="MudBreadcrumbs"/> with the

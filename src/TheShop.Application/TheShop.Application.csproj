@@ -18,4 +18,8 @@
     <PackageReference Include="ErrorOr" Version="2.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Auth\Mappers\" />
+  </ItemGroup>
+
 </Project>

@@ -4,7 +4,7 @@ using MudBlazor;
 using TheShop.Web.Common;
 using TheShop.Web.Resources;
 
-namespace TheShop.Web.Auth;
+namespace TheShop.Web.Pages.Auth;
 
 /// <summary>
 /// Component rendered by <c>AuthorizeRouteView</c> when the user is not authenticated.

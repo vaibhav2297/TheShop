@@ -1,4 +1,4 @@
-namespace TheShop.Infrastructure.Persistence;
+namespace TheShop.Infrastructure.Storage;
 
 /// <summary>
 /// Builds Supabase Storage object keys for product images. The key namespaces each object under

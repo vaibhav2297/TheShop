@@ -33,8 +33,9 @@ src/
 │   │   │   ├── Commands/
 │   │   │   │   └── {CommandName}/   ← Command + Handler + Validator live together per command
 │   │   │   ├── Queries/
-│   │   │   │   └── {QueryName}/     ← same per-query grouping
-│   │   │   └── DTOs/                ← shared across the feature's commands/queries
+│   │   │   │   └── {QueryName}/     ← same per-query grouping. Query + Handler + Validator live together per query.
+│   │   │   ├── DTOs/                ← shared across the feature's commands/queries
+│   │   │   └── Mappers/             ← hand-written entity→DTO mapper
 │   │   ├── Products/      (same sub-structure)
 │   │   ├── Checkout/      (same sub-structure)
 │   │   ├── Orders/        (same sub-structure)
@@ -45,9 +46,11 @@ src/
 ├── TheShop.Infrastructure/
 │   ├── Persistence/
 │   │   ├── SupabaseClientFactory.cs
+│   │   ├── Paging/               ← shared, cross-cutting query helper grouped in its own purpose-named subfolder (still root-level plumbing, not a feature)
 │   │   ├── Records/
 │   │   ├── Mappers/
-│   │   └── Repositories/
+│   │   ├── Repositories/
+│   │   └── Filtering/            ← example of a feature-specific subfolder (Products-only filter-definition registry)
 │   ├── Auth/
 │   ├── Payments/
 │   ├── Email/
@@ -57,6 +60,7 @@ src/
     ├── Pages/
     │   ├── Index/
     │   ├── Products/
+    │   ├── Auth/           
     │   ├── Cart/
     │   ├── Checkout/
     │   ├── Account/
@@ -65,9 +69,10 @@ src/
     ├── Components/
     │   ├── Layout/
     │   ├── Products/
-    │   └── Common/          ← generic, business-agnostic UI primitives
-    ├── Auth/
-    │   └── SupabaseAuthStateProvider.cs
+    │   └── Common/          ← generic, business-agnostic UI primitives (e.g. ShopBreadcrumbs)
+    ├── Auth/                ← non-page auth plumbing: AuthenticationStateProvider + supporting services
+    │   ├── SupabaseAuthStateProvider.cs
+    │   └── BlazorCurrentUserService.cs
     ├── State/
     │   ├── CartState.cs
     │   ├── AuthState.cs
@@ -102,6 +107,7 @@ tests/
 `Application` is sliced **vertically by business feature** (`Features/Cart/`, `Features/Checkout/` — Rule 9). `Infrastructure` is the mirror opposite: it is sliced **horizontally by technical concern / external system**. Do **not** create `Infrastructure/{Feature}/` folders.
 
 - `Persistence/` owns the **database** concern and is the **only** place holding the `Records/` + `Mappers/` + `Repositories/` trio.
+- The `Persistence/` **root** holds only cross-cutting DB plumbing (`SupabaseClientFactory.cs`, shared query/pagination extensions). Anything feature-specific lives in a subfolder of the trio (or a purpose-named subfolder like `Paging/`), and anything serving a non-database concern — a Supabase **Storage** bucket adapter, for instance — belongs in its concern folder (`Storage/`), never loose in `Persistence/`.
 - `Auth/`, `Payments/`, `Email/`, `Storage/` are **flat adapter folders** — one adapter class implementing one Application interface (`SupabaseAuthService : IAuthService`, etc.). They have no `Records/`/`Mappers/` sub-folders, because they wrap an SDK, not a set of DB rows.
 
 A single feature's Infrastructure code therefore **scatters** across these folders. Cart, for example:

@@ -1,6 +1,7 @@
+using TheShop.Application.Features.Products.DTOs;
 using TheShop.Domain.Entities;
 
-namespace TheShop.Application.Features.Products.DTOs;
+namespace TheShop.Application.Features.Products.Mappers;
 
 /// <summary>
 /// Hand-written <see cref="Product"/> → <see cref="ProductSummaryDto"/> mapping. A dedicated
