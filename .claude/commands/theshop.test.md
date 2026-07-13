@@ -84,15 +84,26 @@ Wait for it to fully complete.
 ## Handoff rules (enforce strictly)
 
 1. **Do not start Step 2 until Step 1 is fully complete.** If the writer is still working, wait. No parallel invocation.
-2. **Do not fix any code regardless of what the test results show.** Your job ends at delivering the combined summary — plus updating the feature's tracking artifact `.specs/$ARGUMENTS/status.md` (see below), which is not code. The user is the one who acts on it. If they ask you to fix something inside this command run, tell them the slash command is orchestration-only and they can request fixes in a follow-up message.
-3. **Do not run anything outside `tests/`.** The runner agent handles all test execution; you never invoke `dotnet test` yourself. The commands you do run are the Step 1.5 gates (`check-sdd-gates.ps1 manifest` and `compile`) — the first is a read-only artifact check, the second builds the manifest's test projects but never executes a test — plus the post-Gate-B `graphify update .`, which writes only under `graphify-out/` (a knowledge-graph refresh, not code).
+2. **Do not fix any code regardless of what the test results show.** Your job ends at delivering the combined summary — plus updating the feature's tracking artifact `.specs/$ARGUMENTS/status.md` and persisting the combined report to `.specs/$ARGUMENTS/test-report.md` (see below), neither of which is code. The user is the one who acts on it. If they ask you to fix something inside this command run, tell them the slash command is orchestration-only and they can request fixes in a follow-up message.
+3. **Do not run anything outside `tests/`.** The runner agent handles all test execution; you never invoke `dotnet test` yourself. The commands you do run are the Step 1.5 gates (`check-sdd-gates.ps1 manifest` and `compile`) — the first is a read-only artifact check, the second builds the manifest's test projects but never executes a test — plus the post-Gate-B `graphify update .`, which writes only under `graphify-out/` (a knowledge-graph refresh, not code), plus a read-only `git rev-parse --short HEAD` to stamp the persisted report.
 4. **If `shop-test-writer` could not write the test files, stop and report the reason.** Do not proceed to Step 2 under any circumstance — not even "to see what's already there".
 
 ---
 
 ## Update the status tracker
 
-After you settle the verdict (Template A only), update `.specs/$ARGUMENTS/status.md`: set the **Test** row to State `Passing` when the verdict is ✅ Ready, or `Failing` when it is ❌ Needs fixes; Gate `✅ manifest + reconciliation pass` or `🔴 {which gate failed}`; Evidence one line of the run's numbers (e.g. `194/194 reconciled · 12/12 ACs ✅` or `reconciliation mismatch 180/194`); today's date. Refresh **Last updated**; point **Next step** at `/theshop.verify $ARGUMENTS` (Passing) or back at the fix the runner named (Failing). On Template B (writer halted) leave the tracker untouched; on Template C (build failed) set **Test** to `Failing` with Gate `🔴 build gate` and the failing project as Evidence. Create `status.md` from the `theshop.spec` template first if it's missing.
+After you settle the verdict (Template A only), update `.specs/$ARGUMENTS/status.md`: set the **Test** row to State `Passing` when the verdict is ✅ Ready, or `Failing` when it is ❌ Needs fixes; Gate `✅ manifest + reconciliation pass` or `🔴 {which gate failed}`; Evidence one line of the run's numbers **plus a link to the persisted report** (e.g. `194/194 reconciled · 12/12 ACs ✅ — see [test-report.md](./test-report.md)` or `reconciliation mismatch 180/194 — see [test-report.md](./test-report.md)`); today's date. Refresh **Last updated**; point **Next step** at `/theshop.verify $ARGUMENTS` (Passing) or back at the fix the runner named (Failing). On Template B (writer halted) leave the tracker untouched; on Template C (build failed) set **Test** to `Failing` with Gate `🔴 build gate` and the failing project as Evidence (append `— see [test-report.md](./test-report.md)`). Create `status.md` from the `theshop.spec` template first if it's missing.
+
+## Persist the test report
+
+On **Template A** and **Template C** runs — any run where the pipeline actually executed (tests ran, or the build failed trying to compile them) — persist the combined report to `.specs/$ARGUMENTS/test-report.md`. The manifest is a stable spec of *which* tests should exist; this file is the durable record of *what happened* on the run — the per-failure breakdown, reconciliation detail, and AC pass/fail that otherwise vanish once the session scrolls away.
+
+Rules:
+
+- **One file, overwrite.** Write (never append) the full combined summary to `.specs/$ARGUMENTS/test-report.md` — the *exact same* Template A or Template C content you emit as Final output, stamp included. Each run replaces the last; git carries the history. Never accumulate dated report files and never create a `test/` subfolder.
+- **The stamp is part of the template.** Templates A and C already carry the two stamp lines under the heading. Fill `{date}` with today's date, `{short-sha}` from `git rev-parse --short HEAD` (write `(unknown)` if that command fails — e.g. not a git checkout), and `{verdict}` with the settled verdict. The persisted file and your Final output must be identical.
+- **Template B (writer halted): do not write the report.** Nothing was produced, so there is nothing to persist — this mirrors leaving `status.md` untouched. The in-session halt reason is enough.
+- Write the file as part of the same step that updates `status.md`, before emitting Final output. This is the one file you write outside `status.md`; it is a record, not code, so it does not violate the orchestration-only handoff rules.
 
 ## Final output
 
@@ -102,6 +113,9 @@ After both agents complete (or after Step 1 halts, or a Step 1.5 gate stops the 
 
 ```markdown
 # Test report — {feature_name}
+
+_Run: {date} · commit `{short-sha}` · verdict {✅ Ready / ❌ Needs fixes}_
+_Snapshot of one run — regenerate with `/theshop.test {feature_name}`._
 
 ## Tests written (shop-test-writer)
 
@@ -192,6 +206,9 @@ Either way, the solution did not compile and no tests ran. Do **not** force this
 
 ```markdown
 # Test report — {feature_name}
+
+_Run: {date} · commit `{short-sha}` · verdict ❌ Needs fixes_
+_Snapshot of one run — regenerate with `/theshop.test {feature_name}`._
 
 ## Tests written (shop-test-writer)
 
