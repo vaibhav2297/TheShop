@@ -103,7 +103,7 @@ If there's no `status.md`, skip this step (the feature may predate the pipeline)
 
 If `git status --porcelain` is non-empty (it will be at least the Step 1 tracker change, when a tracker exists):
 
-1. **Compose the message** in the repo's convention — `{Type} | {Description}` (recent history: `Feat | App bar with announcement bar...`, `Fix | Environment setup...`). Seed `{Description}` from the feature title in `.specs/{slug}/spec.md` (its `# {Title}` heading); pick `{Type}` from the nature of the change (`Feat` for a new feature, `Fix` for a fix). Append the harness `Co-Authored-By` trailer.
+1. **Compose the message** in the repo's convention — `{Type} | {Description}` (recent history: `Feat | App bar with announcement bar...`, `Fix | Environment setup...`). Seed `{Description}` from the feature title in `.specs/{slug}/spec.md` (its `# {Title}` heading); pick `{Type}` from the nature of the change (`Feat` for a new feature, `Fix` for a fix). **Do not append any AI/agent attribution trailer** (no `Co-Authored-By: Claude ...`, no "Generated with Claude Code" or similar) — see Rule 5.
 
    Proposed message, for example:
 
@@ -132,7 +132,7 @@ Never use `--force`/`--force-with-lease` unless the user explicitly asks and exp
 
 ### Step 4 — Open the PR against dev
 
-Title = the commit subject (e.g. `Feat | {Feature Title}`). Body = a short summary drawn from `.specs/{slug}/spec.md` (problem + what the feature does) plus the harness PR trailer. Then:
+Title = the commit subject (e.g. `Feat | {Feature Title}`). Body = a short summary drawn from `.specs/{slug}/spec.md` (problem + what the feature does). **No AI/agent attribution trailer or footer** — see Rule 5. Then:
 
 ```bash
 gh pr create --base dev --head feature/{slug} --title "{title}" --body "{body}"
@@ -215,7 +215,7 @@ Produce this verbatim.
 2. **Never merge or delete without a successful prior step.** No deletion before a confirmed merge; no merge before a created PR.
 3. **Never force-push** unless the user explicitly asks and justifies it.
 4. **PRs target `dev`, never `master`.** `dev` is the integration branch.
-5. **Commit messages follow `{Type} | {Description}`** and carry the `Co-Authored-By` trailer; PR bodies carry the Claude Code generation trailer. Match the repo's existing history style.
+5. **Commit messages follow `{Type} | {Description}`.** Match the repo's existing history style. **Never mention Claude, Anthropic, or any AI/agent name in commit messages, PR titles, or PR bodies** — no `Co-Authored-By: Claude ...`, no "Generated with Claude Code", no model names, no attribution footers of any kind. This applies to every message this command writes, without exception.
 6. **Never edit source or `.specs/` content.** The only `.specs/` write permitted is the `status.md` footnote in Step 1, which is committed onto the feature branch and ships through the PR.
 7. **Surface raw git/gh errors.** On any failure (auth, conflict, rejected push), stop and show the output — point at `! gh auth login` for auth issues — rather than guessing a recovery.
 8. **The user may stop at any gate.** Opening a PR without merging is a valid, complete outcome — report it as such; don't push toward merge.
