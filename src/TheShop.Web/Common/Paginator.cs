@@ -96,7 +96,13 @@ public sealed class Paginator<T>(Func<PaginationRequest, CancellationToken, Task
     /// </summary>
     public async Task GoToAsync(int page, CancellationToken ct = default)
     {
-        _current = await _fetch(new PaginationRequest(Math.Max(page, 1), PageSize), ct);
+        var result = await _fetch(new PaginationRequest(Math.Max(page, 1), PageSize), ct);
+
+        // A fetch superseded mid-flight must not adopt its (now stale) result — guard here in case
+        // the fetch delegate itself doesn't honour cancellation.
+        ct.ThrowIfCancellationRequested();
+
+        _current = result;
         HasLoaded = true;
     }
 

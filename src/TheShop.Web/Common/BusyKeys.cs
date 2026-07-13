@@ -22,5 +22,6 @@ public static class BusyKeys
     public static class Products
     {
         public const string Catalogue = "products.catalogue";
+        public const string Filters = "products.filters";
     }
 }

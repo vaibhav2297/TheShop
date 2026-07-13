@@ -189,12 +189,36 @@ public class ProductCatalogueTests : TestContext
         _receivedPageQueries.Clear();
 
         var filterPanel = cut.FindComponent<ProductFilterPanel>();
-        var selection = new List<AppliedFilterDto> { new("category", ["cat-1"]) };
-        await cut.InvokeAsync(() => filterPanel.Instance.SelectedFiltersChanged.InvokeAsync(selection));
+        await cut.InvokeAsync(() => filterPanel.Instance.FilterToggled.InvokeAsync(
+            new FilterToggle("category", "cat-1", IsSelected: true)));
 
         _receivedPageQueries.Should().ContainSingle();
         _receivedPageQueries[0].SelectedFilters.Should().ContainSingle(f => f.Key == "category");
         _receivedPageQueries[0].Pagination.Page.Should().Be(1);
+    }
+
+    [Fact]
+    [Trait("Feature", "product-catalogue")]
+    public async Task ApplyFilters_WhenTwoOptionsAreToggledInRapidSuccession_BothSurviveInTheQuery()
+    {
+        // Regression: rapid successive toggles must compound. Previously the second toggle was
+        // built from a selection that only refreshed after the first toggle's URL round-trip, so it
+        // silently dropped the first. Firing both before the round-trips settle proves they now
+        // accumulate because the page merges each toggle into its own synchronously-updated state.
+        var cut = Render<ProductCatalogue>();
+        await cut.InvokeAsync(() => { });
+        _receivedPageQueries.Clear();
+
+        var filterPanel = cut.FindComponent<ProductFilterPanel>();
+        await cut.InvokeAsync(async () =>
+        {
+            await filterPanel.Instance.FilterToggled.InvokeAsync(new FilterToggle("category", "cat-1", IsSelected: true));
+            await filterPanel.Instance.FilterToggled.InvokeAsync(new FilterToggle("brand", "brand-1", IsSelected: true));
+        });
+
+        var latest = _receivedPageQueries.Last();
+        latest.SelectedFilters.Should().Contain(f => f.Key == "category" && f.Values.Contains("cat-1"));
+        latest.SelectedFilters.Should().Contain(f => f.Key == "brand" && f.Values.Contains("brand-1"));
     }
 
     [Fact]
@@ -249,7 +273,7 @@ public class ProductCatalogueTests : TestContext
 
     [Fact]
     [Trait("Feature", "product-catalogue")]
-    public void Render_WhileQueriesAreInFlight_ShowsTwelveSkeletonPlaceholders()
+    public void Render_WhileQueriesAreInFlight_ShowsTwelveProductSkeletonsAndFiveFilterSkeletons()
     {
         var filtersTcs = new TaskCompletionSource<Result<CatalogueFiltersDto>>();
         var productsTcs = new TaskCompletionSource<Result<PagedResult<ProductSummaryDto>>>();
@@ -258,8 +282,32 @@ public class ProductCatalogueTests : TestContext
 
         var cut = Render<ProductCatalogue>();
 
-        cut.FindComponents<MudSkeleton>().Should().HaveCount(12);
+        cut.FindComponents<MudSkeleton>().Should().HaveCount(17);
         cut.FindComponents<ProductCard>().Should().BeEmpty();
+        cut.FindComponents<ProductFilterPanel>().Should().BeEmpty();
+    }
+
+    [Fact]
+    [Trait("Feature", "product-catalogue")]
+    public async Task Render_AfterFiltersLoad_ReplacesTheFilterSkeletonWithThePanelAndDoesNotReskeletonOnLaterBusyToggles()
+    {
+        var filtersTcs = new TaskCompletionSource<Result<CatalogueFiltersDto>>();
+        _mediator.Send(Arg.Any<GetCatalogueFiltersQuery>(), Arg.Any<CancellationToken>()).Returns(filtersTcs.Task);
+
+        var cut = Render<ProductCatalogue>();
+        cut.FindComponents<ProductFilterPanel>().Should().BeEmpty();
+
+        filtersTcs.SetResult(Result.Ok(new CatalogueFiltersDto([CategoryGroup()])));
+        await cut.InvokeAsync(() => { });
+
+        cut.FindComponent<ProductFilterPanel>().Should().NotBeNull();
+
+        // A later catalogue busy toggle (e.g. paginating) must not re-show the filter skeleton —
+        // the filters themselves never change after the initial load.
+        var pagination = cut.FindComponent<ShopPagination>();
+        await cut.InvokeAsync(() => pagination.Instance.PageChanged.InvokeAsync(2));
+
+        cut.FindComponent<ProductFilterPanel>().Should().NotBeNull();
     }
 }
 

@@ -93,9 +93,11 @@
         "TheShop.Application.Tests.Features.Products.Queries.GetProductCataloguePageQueryValidatorTests.Validate_WhenSelectedFilterKeyIsSelectable_HasNoFilterError",
         "TheShop.Application.Tests.Features.Products.Queries.GetCatalogueFiltersHandlerTests.Handle_ReturnsSuccessResultWrappingRepositoryFilterGroups",
         "TheShop.Infrastructure.Tests.Persistence.ProductFilterDefinitionsTests.All_ContainsExactlyOneEntryPerSelectableFilterKey",
-        "TheShop.Web.Tests.Components.Products.ProductFilterPanelTests.ToggleOption_WhenUserChecksAnOption_RaisesSelectedFiltersChangedWithNewSelection",
-        "TheShop.Web.Tests.Components.Products.ProductFilterPanelTests.ToggleOption_WhenUserUnchecksASelectedOption_RemovesItFromSelection",
+        "TheShop.Web.Tests.Components.Products.ProductFilterPanelTests.ToggleOption_WhenUserChecksAnOption_RaisesFilterToggledForThatOptionAsSelected",
+        "TheShop.Web.Tests.Components.Products.ProductFilterPanelTests.ToggleOption_WhenUserUnchecksASelectedOption_RaisesFilterToggledAsDeselected",
         "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.ApplyFilter_WhenUserSelectsAFilterOption_ResetsToPageOneWithTheFilterApplied",
+        "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests.ApplyFilters_WhenTwoOptionsAreToggledInRapidSuccession_BothSurviveInTheQuery",
+        "TheShop.Web.Tests.Pages.Products.CatalogueQueryStateTests.ToggleFilter_AppliedInSequenceAcrossGroups_CompoundsInsteadOfOverwriting",
         "TheShop.Infrastructure.Tests.Persistence.SupabaseProductRepositorySchemaTests.EffectivePrice_WhenProductHasNoSalePrice_EqualsOriginalPrice",
         "TheShop.Infrastructure.Tests.Persistence.SupabaseProductRepositorySchemaTests.EffectivePrice_WhenProductIsDiscounted_EqualsSalePrice"
       ]

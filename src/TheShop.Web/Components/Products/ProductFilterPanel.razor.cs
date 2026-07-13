@@ -24,13 +24,17 @@ public partial class ProductFilterPanel : MudComponentBase, IDisposable
     [Parameter, EditorRequired]
     public IReadOnlyList<FilterGroupDto> Groups { get; set; } = [];
 
-    /// <summary>The currently applied multi-select filter values.</summary>
+    /// <summary>The currently applied multi-select filter values (drives the checkbox states).</summary>
     [Parameter]
     public IReadOnlyList<AppliedFilterDto> SelectedFilters { get; set; } = [];
 
-    /// <summary>Raised with the full updated selection whenever an option is toggled.</summary>
+    /// <summary>
+    /// Raised with the single toggled option whenever the user checks or unchecks it. The panel
+    /// emits the atomic change (not a recomputed selection list) so the owning page can merge it
+    /// into its authoritative state — see <see cref="FilterToggle"/>.
+    /// </summary>
     [Parameter]
-    public EventCallback<IReadOnlyList<AppliedFilterDto>> SelectedFiltersChanged { get; set; }
+    public EventCallback<FilterToggle> FilterToggled { get; set; }
 
     /// <summary>The currently applied minimum price.</summary>
     [Parameter]
@@ -156,22 +160,11 @@ public partial class ProductFilterPanel : MudComponentBase, IDisposable
     private int CountSelected(string groupKey) =>
         SelectedFilters.FirstOrDefault(f => f.Key == groupKey)?.Values.Count ?? 0;
 
-    private Task OnOptionToggledAsync(string groupKey, string value, bool isChecked)
-    {
-        var current = SelectedFilters.FirstOrDefault(f => f.Key == groupKey);
-        var values = current?.Values.ToList() ?? [];
-
-        if (isChecked && !values.Contains(value))
-            values.Add(value);
-        else if (!isChecked)
-            values.Remove(value);
-
-        var updated = SelectedFilters.Where(f => f.Key != groupKey).ToList();
-        if (values.Count > 0)
-            updated.Add(new AppliedFilterDto(groupKey, values));
-
-        return SelectedFiltersChanged.InvokeAsync(updated);
-    }
+    // Emit only the atomic toggle; the page merges it into its authoritative selection. Computing
+    // the updated set here would race — SelectedFilters lags a full URL round-trip behind rapid
+    // clicks, so a second toggle would rebuild off a stale set and drop the first.
+    private Task OnOptionToggledAsync(string groupKey, string value, bool isChecked) =>
+        FilterToggled.InvokeAsync(new FilterToggle(groupKey, value, isChecked));
 
     private Task OnClearFiltersAsync() => OnClearFilters.InvokeAsync();
 

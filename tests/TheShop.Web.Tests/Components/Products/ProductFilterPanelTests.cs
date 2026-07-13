@@ -78,33 +78,39 @@ public class ProductFilterPanelTests : TestContext
 
     [Fact]
     [Trait("Feature", "product-catalogue")]
-    public async Task ToggleOption_WhenUserChecksAnOption_RaisesSelectedFiltersChangedWithNewSelection()
+    public async Task ToggleOption_WhenUserChecksAnOption_RaisesFilterToggledForThatOptionAsSelected()
     {
-        IReadOnlyList<AppliedFilterDto>? received = null;
+        FilterToggle? received = null;
         var cut = Render<ProductFilterPanel>(p => p
             .Add(c => c.Groups, [CategoryGroup()])
-            .Add(c => c.SelectedFiltersChanged, (IReadOnlyList<AppliedFilterDto> f) => received = f));
+            .Add(c => c.FilterToggled, (FilterToggle t) => received = t));
 
         var checkbox = cut.FindComponents<MudCheckBox<bool>>()[0];
         await cut.InvokeAsync(() => checkbox.Instance.ValueChanged.InvokeAsync(true));
 
-        received.Should().ContainSingle(f => f.Key == "category" && f.Values.Contains("cat-1"));
+        received.Should().NotBeNull();
+        received!.GroupKey.Should().Be("category");
+        received.Value.Should().Be("cat-1");
+        received.IsSelected.Should().BeTrue();
     }
 
     [Fact]
     [Trait("Feature", "product-catalogue")]
-    public async Task ToggleOption_WhenUserUnchecksASelectedOption_RemovesItFromSelection()
+    public async Task ToggleOption_WhenUserUnchecksASelectedOption_RaisesFilterToggledAsDeselected()
     {
-        IReadOnlyList<AppliedFilterDto>? received = null;
+        FilterToggle? received = null;
         var cut = Render<ProductFilterPanel>(p => p
             .Add(c => c.Groups, [CategoryGroup()])
             .Add(c => c.SelectedFilters, [new AppliedFilterDto("category", ["cat-1"])])
-            .Add(c => c.SelectedFiltersChanged, (IReadOnlyList<AppliedFilterDto> f) => received = f));
+            .Add(c => c.FilterToggled, (FilterToggle t) => received = t));
 
         var checkbox = cut.FindComponents<MudCheckBox<bool>>()[0];
         await cut.InvokeAsync(() => checkbox.Instance.ValueChanged.InvokeAsync(false));
 
-        received.Should().NotContain(f => f.Key == "category" && f.Values.Contains("cat-1"));
+        received.Should().NotBeNull();
+        received!.GroupKey.Should().Be("category");
+        received.Value.Should().Be("cat-1");
+        received.IsSelected.Should().BeFalse();
     }
 
     // =========================================================================
@@ -216,7 +222,7 @@ public class ProductFilterPanelTests : TestContext
 // =============================================================================
 // AC → Test mapping
 // =============================================================================
-// AC-6: ToggleOption_WhenUserChecksAnOption_RaisesSelectedFiltersChangedWithNewSelection,
-//        ToggleOption_WhenUserUnchecksASelectedOption_RemovesItFromSelection,
+// AC-6: ToggleOption_WhenUserChecksAnOption_RaisesFilterToggledForThatOptionAsSelected,
+//        ToggleOption_WhenUserUnchecksASelectedOption_RaisesFilterToggledAsDeselected,
 //        PriceRangeChange_WhenMinThumbMovesAwayFromBoundary_*, PriceRangeChange_WhenMinThumbReturnsToLowerBoundary_*
 // AC-10: Render_WithSelectedFilters_ShowsClearFiltersButton, ClickClearFilters_WhenActivated_InvokesOnClearFiltersCallback

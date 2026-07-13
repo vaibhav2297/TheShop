@@ -1,4 +1,5 @@
 @attribute [AllowAnonymous]
+@inherits QueryStatePageBase<CatalogueQueryState>
 
 @using TheShop.Web.Common
 @using TheShop.Web.Components.Common
@@ -16,14 +17,28 @@
                  md="3"
                  xl="2">
 
-            <ProductFilterPanel Groups="@FilterGroups"
-                                SelectedFilters="@_selectedFilters"
-                                SelectedFiltersChanged="OnFiltersChangedAsync"
-                                PriceMin="@_priceMin"
-                                PriceMinChanged="OnPriceMinChangedAsync"
-                                PriceMax="@_priceMax"
-                                PriceMaxChanged="OnPriceMaxChangedAsync"
-                                OnClearFilters="OnClearFiltersAsync" />
+            <BusyFor Key="@BusyKeys.Products.Filters" Context="filtersBusy">
+                @if (filtersBusy)
+                {
+                    <MudStack Spacing="3">
+                        @for (var i = 0; i < 5; i++)
+                        {
+                            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="48px" />
+                        }
+                    </MudStack>
+                }
+                else
+                {
+                    <ProductFilterPanel Groups="@FilterGroups"
+                                        SelectedFilters="@_selectedFilters"
+                                        FilterToggled="OnFilterToggledAsync"
+                                        PriceMin="@_priceMin"
+                                        PriceMinChanged="OnPriceMinChangedAsync"
+                                        PriceMax="@_priceMax"
+                                        PriceMaxChanged="OnPriceMaxChangedAsync"
+                                        OnClearFilters="OnClearFiltersAsync" />
+                }
+            </BusyFor>
 
         </MudItem>
 
