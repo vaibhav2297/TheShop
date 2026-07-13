@@ -12,6 +12,7 @@ namespace TheShop.Application.Features.Products.Queries.GetCatalogueFilters;
 public sealed class GetCatalogueFiltersHandler(IProductRepository products)
     : IRequestHandler<GetCatalogueFiltersQuery, Result<CatalogueFiltersDto>>
 {
+    /// <inheritdoc/>
     public async Task<Result<CatalogueFiltersDto>> Handle(
         GetCatalogueFiltersQuery request,
         CancellationToken cancellationToken)

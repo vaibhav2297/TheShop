@@ -46,6 +46,7 @@ public sealed class SupabaseProductRepository(Supabase.Client client) : IProduct
     // empty one (serialized to `{}`) rather than null.
     private static readonly object EmptyRpcArgs = new();
 
+    /// <inheritdoc/>
     public async Task<PagedResult<Product>> GetPageAsync(
         ProductCatalogueCriteria criteria, CancellationToken ct)
     {
@@ -63,6 +64,7 @@ public sealed class SupabaseProductRepository(Supabase.Client client) : IProduct
     private string ResolveImagePublicUrl(string imagePath) =>
         client.Storage.From(ProductImagesBucket).GetPublicUrl(imagePath);
 
+    /// <inheritdoc/>
     public async Task<IReadOnlyList<FilterGroupDto>> GetFilterGroupsAsync(CancellationToken ct)
     {
         // One server-side aggregation (get_catalogue_filters) returns every filter group — the

@@ -1,7 +1,7 @@
 # Product Catalogue — SDD Status
 
 **Feature:** `product-catalogue`
-**Last updated:** 2026-07-11
+**Last updated:** 2026-07-13
 
 | Stage | State | Gate | Evidence | Date |
 |---|---|---|---|---|
@@ -11,6 +11,6 @@
 | 4. Test       | Passing | ✅ manifest + reconciliation pass | 182/182 passed · 14/14 ACs ✅ | 2026-07-11 |
 | 5. Verify     | Verified | ✅ E2E pass (Tier 2) | 13 pass · 0 fail · 1 excluded (AC-9, accepted deviation) · Tier 2 guided manual | 2026-07-11 |
 | 6. Review     | —     | — | — | — |
-| 7. Document   | —     | — | — | — |
+| 7. Document   | Done  | ✅ doc-only gate pass | 6 files documented · build ✅ | 2026-07-13 |
 
-**Next step:** `/theshop.review product-catalogue`
+**Next step:** `/theshop.review product-catalogue` or `/theshop.ship product-catalogue`

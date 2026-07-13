@@ -14,6 +14,7 @@ public sealed class SupabaseProductImageStorage(Supabase.Client client) : IProdu
     // (see SupabaseProductRepository.ProductImagesBucket).
     private const string Bucket = "product-images";
 
+    /// <inheritdoc/>
     public async Task<string> UploadAsync(
         Guid productId, Stream content, string fileName, string contentType, CancellationToken ct)
     {
@@ -27,6 +28,7 @@ public sealed class SupabaseProductImageStorage(Supabase.Client client) : IProdu
         return key;
     }
 
+    /// <inheritdoc/>
     public async Task DeleteAsync(string imagePath, CancellationToken ct)
     {
         await client.Storage.From(Bucket).Remove([imagePath]);

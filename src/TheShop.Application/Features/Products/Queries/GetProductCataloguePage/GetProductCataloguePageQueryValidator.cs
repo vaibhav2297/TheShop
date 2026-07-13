@@ -2,6 +2,10 @@ using FluentValidation;
 
 namespace TheShop.Application.Features.Products.Queries.GetProductCataloguePage;
 
+/// <summary>
+/// Validates <see cref="GetProductCataloguePageQuery"/> to ensure page number/size and price range
+/// are within acceptable bounds and sort option is a valid enum value.
+/// </summary>
 public sealed class GetProductCataloguePageQueryValidator : AbstractValidator<GetProductCataloguePageQuery>
 {
     public const int MaxPageSize = 48;

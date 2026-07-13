@@ -13,6 +13,7 @@ namespace TheShop.Application.Features.Products.Queries.GetProductCataloguePage;
 public sealed class GetProductCataloguePageHandler(IProductRepository products)
     : IRequestHandler<GetProductCataloguePageQuery, Result<PagedResult<ProductSummaryDto>>>
 {
+    /// <inheritdoc/>
     public async Task<Result<PagedResult<ProductSummaryDto>>> Handle(
         GetProductCataloguePageQuery request,
         CancellationToken cancellationToken)
