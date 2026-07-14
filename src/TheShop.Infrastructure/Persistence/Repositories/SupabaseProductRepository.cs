@@ -6,6 +6,7 @@ using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Domain.Entities;
+using TheShop.Infrastructure.Persistence.Filtering;
 using TheShop.Infrastructure.Persistence.Mappers;
 using TheShop.Infrastructure.Persistence.Paging;
 using TheShop.Infrastructure.Persistence.Records;

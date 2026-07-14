@@ -3,7 +3,7 @@ using TheShop.Application.Features.Products;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Infrastructure.Persistence.Records;
 
-namespace TheShop.Infrastructure.Persistence;
+namespace TheShop.Infrastructure.Persistence.Filtering;
 
 /// <summary>
 /// One entry in the product catalogue's filter-definition registry: the multi-select filter

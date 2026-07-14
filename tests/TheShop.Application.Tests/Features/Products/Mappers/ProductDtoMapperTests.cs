@@ -1,10 +1,11 @@
 using FluentAssertions;
 using TheShop.Application.Features.Products.DTOs;
+using TheShop.Application.Features.Products.Mappers;
 using TheShop.Domain.Entities;
 using TheShop.Domain.ValueObjects;
 using Xunit;
 
-namespace TheShop.Application.Tests.Features.Products.DTOs;
+namespace TheShop.Application.Tests.Features.Products.Mappers;
 
 /// <summary>
 /// Tests for <see cref="ProductDtoMapper"/> — the <see cref="Product"/> → <see cref="ProductSummaryDto"/>

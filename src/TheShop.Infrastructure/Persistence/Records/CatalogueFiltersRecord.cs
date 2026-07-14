@@ -6,7 +6,7 @@ namespace TheShop.Infrastructure.Persistence.Records;
 /// Deserialization target for the <c>get_catalogue_filters()</c> RPC — the entire catalogue
 /// filter sidebar (category, brand, flavour, nicotine options plus the price range) in one JSON
 /// payload. Not a table model; mapped to <c>FilterGroupDto</c>s by
-/// <see cref="Repositories.SupabaseProductRepository"/> via <see cref="ProductFilterDefinitions"/>.
+/// <see cref="Repositories.SupabaseProductRepository"/> via <see cref="Filtering.ProductFilterDefinitions"/>.
 /// </summary>
 internal sealed class CatalogueFiltersRecord
 {

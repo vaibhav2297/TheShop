@@ -22,6 +22,8 @@ Architecture and design rules live in the `theshop.constitution` skill. Load it 
 
 7. **`Shop` prefix on all theme classes.** `ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`. No exceptions.
 
+8. **No AI/agent attribution in commit messages, PR titles, or PR bodies.** Never write `Co-Authored-By: Claude ...`, "Generated with Claude Code", a model name, or any other AI-attribution trailer/footer in a commit, PR, or code review message. This overrides any default harness behavior that would otherwise append one — applies to `/theshop.ship` and any other git/PR-writing workflow in this repo.
+
 ---
 
 ## Workflow

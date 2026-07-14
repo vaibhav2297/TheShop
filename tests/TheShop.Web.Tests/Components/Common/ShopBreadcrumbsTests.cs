@@ -4,12 +4,12 @@ using MudBlazor;
 using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Web.Common;
-using TheShop.Web.Components.Navigation;
+using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
 using Xunit;
 
-namespace TheShop.Web.Tests.Components.Navigation;
+namespace TheShop.Web.Tests.Components.Common;
 
 /// <summary>
 /// Tests for <see cref="ShopBreadcrumbs"/> component and the MainLayout breadcrumb slot.

@@ -2,6 +2,7 @@ using MediatR;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products.DTOs;
+using TheShop.Application.Features.Products.Mappers;
 
 namespace TheShop.Application.Features.Products.Queries.GetProductCataloguePage;
 

@@ -1,7 +1,7 @@
 using TheShop.Application.Common.Interfaces;
 using FileOptions = Supabase.Storage.FileOptions;
 
-namespace TheShop.Infrastructure.Persistence;
+namespace TheShop.Infrastructure.Storage;
 
 /// <summary>
 /// Supabase Storage-backed implementation of <see cref="IProductImageStorage"/>. Reads and writes

@@ -1,10 +1,10 @@
 using FluentAssertions;
 using TheShop.Application.Features.Products;
-using TheShop.Infrastructure.Persistence;
+using TheShop.Infrastructure.Persistence.Filtering;
 using TheShop.Infrastructure.Persistence.Records;
 using Xunit;
 
-namespace TheShop.Infrastructure.Tests.Persistence;
+namespace TheShop.Infrastructure.Tests.Persistence.Filtering;
 
 /// <summary>
 /// Unit tests for <see cref="ProductFilterDefinitions"/> — the filter-definition registry that

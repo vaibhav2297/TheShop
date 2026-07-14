@@ -6,6 +6,7 @@ using TheShop.Application.Common.Interfaces;
 using TheShop.Infrastructure.Auth;
 using TheShop.Infrastructure.Persistence;
 using TheShop.Infrastructure.Persistence.Repositories;
+using TheShop.Infrastructure.Storage;
 
 namespace TheShop.Infrastructure;
 

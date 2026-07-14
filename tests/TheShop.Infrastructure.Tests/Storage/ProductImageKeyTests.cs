@@ -1,8 +1,8 @@
 using FluentAssertions;
-using TheShop.Infrastructure.Persistence;
+using TheShop.Infrastructure.Storage;
 using Xunit;
 
-namespace TheShop.Infrastructure.Tests.Persistence;
+namespace TheShop.Infrastructure.Tests.Storage;
 
 /// <summary>
 /// Unit tests for <see cref="ProductImageKey"/> — the Supabase Storage object-key convention for
