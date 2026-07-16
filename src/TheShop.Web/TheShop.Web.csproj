@@ -12,6 +12,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Services\**" />
+	  <Content Remove="Services\**" />
+	  <EmbeddedResource Remove="Services\**" />
+	  <None Remove="Services\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\TheShop.Domain\TheShop.Domain.csproj" />
 		<ProjectReference Include="..\TheShop.Application\TheShop.Application.csproj" />
 		<ProjectReference Include="..\TheShop.Infrastructure\TheShop.Infrastructure.csproj" />
@@ -50,7 +57,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Services\" />
+	  <UpToDateCheckInput Remove="Services\**" />
 	</ItemGroup>
 
 </Project>

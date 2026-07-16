@@ -17,4 +17,12 @@ public interface ICurrentUserService
     string? Email { get; }
 
     bool IsAuthenticated { get; }
+
+    /// <summary>
+    /// <c>true</c> when the current user's principal carries <paramref name="permissionCode"/>
+    /// (e.g. <c>"orders.refund"</c>). Permission claims are minted into the access token by the
+    /// database at sign-in and every silent refresh, so staleness is bounded by the token TTL;
+    /// Supabase RLS remains the authoritative check. Always <c>false</c> when unauthenticated.
+    /// </summary>
+    bool HasPermission(string permissionCode);
 }

@@ -1,0 +1,147 @@
+{
+  "feature": "role-based-access-control",
+  "trait": "role-based-access-control",
+  "writtenAt": "2026-07-15",
+  "totalTests": 181,
+  "classes": [
+    { "fqn": "TheShop.Domain.Tests.ValueObjects.PermissionTests", "file": "tests/TheShop.Domain.Tests/ValueObjects/PermissionTests.cs", "tests": 19 },
+    { "fqn": "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests", "file": "tests/TheShop.Domain.Tests/ValueObjects/PermissionCatalogueTests.cs", "tests": 17 },
+    { "fqn": "TheShop.Domain.Tests.Entities.RoleTests", "file": "tests/TheShop.Domain.Tests/Entities/RoleTests.cs", "tests": 12 },
+    { "fqn": "TheShop.Domain.Tests.Entities.UserAccessTests", "file": "tests/TheShop.Domain.Tests/Entities/UserAccessTests.cs", "tests": 10 },
+    { "fqn": "TheShop.Application.Tests.Common.Behaviors.AuthorizationBehaviorTests", "file": "tests/TheShop.Application.Tests/Common/Behaviors/AuthorizationBehaviorTests.cs", "tests": 7 },
+    { "fqn": "TheShop.Application.Tests.Features.Roles.Queries.GetMyPermissionsHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Roles/Queries/GetMyPermissionsHandlerTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/RbacAuthorizationTests.cs", "tests": 24 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.RbacPolicyRegressionTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/RbacPolicyRegressionTests.cs", "tests": 11 },
+    { "fqn": "TheShop.Web.Tests.Auth.PermissionAuthorizationHandlerTests", "file": "tests/TheShop.Web.Tests/Auth/PermissionAuthorizationHandlerTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Web.Tests.Auth.AdminAreaAuthorizationHandlerTests", "file": "tests/TheShop.Web.Tests/Auth/AdminAreaAuthorizationHandlerTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Web.Tests.State.PermissionStateTests", "file": "tests/TheShop.Web.Tests/State/PermissionStateTests.cs", "tests": 8 },
+    { "fqn": "TheShop.Web.Tests.Components.Common.AccessDeniedViewTests", "file": "tests/TheShop.Web.Tests/Components/Common/AccessDeniedViewTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageProductsTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Web.Tests.Resources.RbacLocalizationTests", "file": "tests/TheShop.Web.Tests/Resources/RbacLocalizationTests.cs", "tests": 55 }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.UserAccessTests.EffectivePermissions_WithOnlyTheCustomerRole_ReturnsEmptySet",
+        "TheShop.Domain.Tests.Entities.UserAccessTests.HoldsAdminAreaPermission_WhenUserOnlyHoldsTheCustomerRole_ReturnsFalse",
+        "TheShop.Application.Tests.Features.Roles.Queries.GetMyPermissionsHandlerTests.Handle_WhenUserHasNoPermissions_ReturnsSuccessWithEmptySet",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.AssignCustomerRole_WhenNewAuthUserIsInserted_GrantsExactlyTheCustomerRole",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.AssignCustomerRole_ForANewlySignedUpUser_GrantsNoAdminAreaPermissions",
+        "TheShop.Web.Tests.Auth.AdminAreaAuthorizationHandlerTests.HandleRequirementAsync_WhenUserHoldsNoPermissionsAtAll_DoesNotSucceed",
+        "TheShop.Web.Tests.Auth.AdminAreaAuthorizationHandlerTests.HandleRequirementAsync_WhenUserIsNotAuthenticated_DoesNotSucceed",
+        "TheShop.Web.Tests.State.PermissionStateTests.HydrateAsync_WhenUserHoldsOnlyTheCustomerRole_HasAnyAdminPermissionIsFalse"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.RoleTests.Grant_OnSystemRole_ThrowsSystemRoleImmutableException",
+        "TheShop.Domain.Tests.Entities.RoleTests.Revoke_OnSystemRole_ThrowsSystemRoleImmutableException",
+        "TheShop.Domain.Tests.Entities.RoleTests.Rename_OnSystemRole_ThrowsSystemRoleImmutableException",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.RolesSystemProtection_WhenRenamingASystemRole_ThrowsInsufficientPrivilege",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.RolesSystemProtection_WhenDeletingASystemRole_ThrowsInsufficientPrivilege",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_AllFourBuiltInRoles_ExistAndAreMarkedSystem"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests.All_Always_ContainsEveryModuleListedInTheSpec",
+        "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests.All_ForEveryModule_IncludesViewCreateEditAndDeleteAtMinimum",
+        "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests.Orders_Always_IncludesRefundAsASensitiveAction",
+        "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests.Customers_Always_IncludesExportAsASensitiveAction",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_PermissionCodes_MatchPermissionCatalogueExactly",
+        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserHoldsProductsViewPermission_ShowsManageProductsContent"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Web.Tests.Auth.PermissionAuthorizationHandlerTests.HandleRequirementAsync_WhenUserHoldsTheRequiredPermission_Succeeds",
+        "TheShop.Web.Tests.Auth.PermissionAuthorizationHandlerTests.HandleRequirementAsync_WhenUserLacksTheRequiredPermission_DoesNotSucceed",
+        "TheShop.Web.Tests.Auth.AdminAreaAuthorizationHandlerTests.HandleRequirementAsync_WhenUserHoldsAnyPermission_Succeeds",
+        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserLacksProductsViewPermission_ShowsAccessDeniedInsteadOfContent"
+      ]
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Application.Tests.Common.Behaviors.AuthorizationBehaviorTests.Handle_WhenUserLacksTheRequiredPermission_ReturnsAccessDeniedFailure",
+        "TheShop.Application.Tests.Common.Behaviors.AuthorizationBehaviorTests.Handle_WhenUserLacksPermission_DoesNotInvokeNext",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Authorize_WhenCallerLacksThePermission_ReturnsFalse",
+        "TheShop.Infrastructure.Tests.Persistence.RbacPolicyRegressionTests.CustomersSelect_WhenUserLacksCustomersViewPermission_CannotSeeAnotherCustomersRow",
+        "TheShop.Infrastructure.Tests.Persistence.RbacPolicyRegressionTests.ProductImagesRead_WhenUserLacksProductsViewPermission_CannotSelectObjects",
+        "TheShop.Infrastructure.Tests.Persistence.RbacPolicyRegressionTests.ProductImagesInsert_WhenUserLacksProductsCreatePermission_ThrowsRowLevelSecurityViolation"
+      ]
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_SupportRole_GrantsExactlyOrdersViewOrdersEditAndCustomersView",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_AdminRole_GrantsEveryMerchandisingModuleButNotSettingsAdminUsersOrRoles",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_SuperAdminRole_GrantsEveryCataloguePermission",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_CustomerRole_GrantsNoPermissions",
+        "TheShop.Infrastructure.Tests.Persistence.RbacPolicyRegressionTests.CustomersSelect_WhenUserHoldsCustomersViewPermission_CanSeeAnotherCustomersRow",
+        "TheShop.Infrastructure.Tests.Persistence.RbacPolicyRegressionTests.ProductImagesRead_WhenUserHoldsProductsViewPermission_CanSelectObjects",
+        "TheShop.Infrastructure.Tests.Persistence.RbacPolicyRegressionTests.ProductImagesInsert_WhenUserHoldsProductsCreatePermission_Succeeds",
+        "TheShop.Application.Tests.Features.Roles.Queries.GetMyPermissionsHandlerTests.Handle_WhenUserHoldsPermissions_ReturnsSuccessWithExactPermissionSet",
+        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserHoldsProductsViewPermission_ShowsManageProductsContent"
+      ]
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Application.Tests.Common.Behaviors.AuthorizationBehaviorTests.Handle_WhenCalledTwiceAfterAMidSessionRevocation_BlocksTheVeryNextAttempt",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Authorize_WhenPermissionIsRevokedMidSession_TheVeryNextCallReturnsFalse",
+        "TheShop.Application.Tests.Features.Roles.Queries.GetMyPermissionsHandlerTests.Handle_Always_ReadsFromPermissionServiceOnEveryCall",
+        "TheShop.Web.Tests.Auth.PermissionAuthorizationHandlerTests.HandleRequirementAsync_AfterStateIsReHydratedWithoutThePermission_NoLongerSucceeds",
+        "TheShop.Web.Tests.State.PermissionStateTests.HydrateAsync_CalledAgainAfterAConfigurationChangeRevokesAPermission_DropsIt",
+        "TheShop.Web.Tests.State.PermissionStateTests.HydrateAsync_CalledAgainAfterAConfigurationChangeGrantsAPermission_PicksItUp"
+      ]
+    },
+    {
+      "id": "AC-8",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.UserRolesSelfChangeGuard_WhenAUserAssignsARoleToThemselves_ThrowsInsufficientPrivilege",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.UserRolesSelfChangeGuard_WhenAssigningARoleToAnotherUser_Succeeds",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.UserRolesSelfChangeGuard_WhenChangeIsMadeWithNoRequestContext_Succeeds"
+      ]
+    },
+    {
+      "id": "AC-9",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.SuperAdminFloor_WhenRemovingTheLastSuperAdmin_ThrowsInsufficientPrivilege",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.SuperAdminFloor_WhenASecondSuperAdminExists_RemovingOneSucceeds",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.SuperAdminFloor_WhenStrippingTheLastPermissionFromSuperAdminRole_ThrowsInsufficientPrivilege"
+      ]
+    },
+    {
+      "id": "AC-10",
+      "tests": [
+        "TheShop.Application.Tests.Common.Behaviors.AuthorizationBehaviorTests.Handle_WhenUserLacksTheRequiredPermission_ReturnsAccessDeniedFailure",
+        "TheShop.Application.Tests.Common.Behaviors.AuthorizationBehaviorTests.Handle_WhenPermissionMissingOnAGenericResultRequest_ReturnsTypedAccessDeniedFailure",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Authorize_WhenCallerIsUnauthenticated_ReturnsFalse",
+        "TheShop.Infrastructure.Tests.Persistence.RbacPolicyRegressionTests.ProductImagesUpdate_WhenUserLacksProductsEditPermission_AffectsNoRows",
+        "TheShop.Infrastructure.Tests.Persistence.RbacPolicyRegressionTests.ProductImagesDelete_WhenUserLacksProductsDeletePermission_AffectsNoRows",
+        "TheShop.Web.Tests.Components.Common.AccessDeniedViewTests.Render_Always_ShowsTheLocalizedAccessDeniedTitle",
+        "TheShop.Web.Tests.Components.Common.AccessDeniedViewTests.Render_Always_ShowsTheLocalizedAccessDeniedMessage",
+        "TheShop.Web.Tests.Components.Common.AccessDeniedViewTests.Render_WhenUserStillHoldsAdminAreaAccess_ShowsABackToAdminHomeLink",
+        "TheShop.Web.Tests.Components.Common.AccessDeniedViewTests.Render_WhenUserNoLongerHoldsAdminAreaAccess_ShowsABackToStoreLink",
+        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserLacksProductsViewPermission_ShowsAccessDeniedInsteadOfContent",
+        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfContent",
+        "TheShop.Web.Tests.Auth.PermissionAuthorizationHandlerTests.HandleRequirementAsync_WhenUserIsNotAuthenticated_DoesNotSucceed",
+        "TheShop.Web.Tests.Auth.AdminAreaAuthorizationHandlerTests.HandleRequirementAsync_WhenUserIsNotAuthenticated_DoesNotSucceed"
+      ]
+    },
+    {
+      "id": "AC-11",
+      "tests": [
+        "TheShop.Web.Tests.Resources.RbacLocalizationTests.RoleDisplayName_ForEveryBuiltInRole_IsAvailableInEnglishAndFrench",
+        "TheShop.Web.Tests.Resources.RbacLocalizationTests.AccessDeniedMessage_ForEveryKey_IsAvailableInEnglishAndFrench",
+        "TheShop.Web.Tests.Resources.RbacLocalizationTests.AdminPanelString_ForEveryKey_IsAvailableInEnglishAndFrench",
+        "TheShop.Web.Tests.Resources.RbacLocalizationTests.PermissionDisplayName_ForEveryCataloguePermission_IsAvailableInEnglishAndFrench"
+      ]
+    }
+  ]
+}

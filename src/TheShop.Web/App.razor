@@ -1,13 +1,26 @@
 @using Microsoft.AspNetCore.Components.Authorization
+@using TheShop.Web.Components.Common
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(TheShop.Web.Pages.NotFound)">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData"
                                 DefaultLayout="@typeof(TheShop.Web.Components.Layout.MainLayout)">
+                <Authorizing>
+                    <AuthorizingView />
+                </Authorizing>
+
                 <NotAuthorized>
-                    <RedirectToSignIn />
+                    @if (context.User.Identity?.IsAuthenticated == true)
+                    {
+                        <AccessDeniedView />
+                    }
+                    else
+                    {
+                        <RedirectToSignIn />
+                    }
                 </NotAuthorized>
+
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>

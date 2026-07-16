@@ -1,0 +1,20 @@
+@inherits MudComponentBase
+
+@using TheShop.Web.Resources
+
+<MudStack Class="@Classname"
+          Style="@Style"
+          AlignItems="AlignItems.Center"
+          Justify="Justify.Center"
+          Spacing="4">
+
+    <MudProgressCircular Color="Color.Primary"
+                         Indeterminate="true"
+                         Size="Size.Large"
+                         aria-label="@Strings.Authorizing_Loading" />
+
+    <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary" Class="fw-500">
+        @Strings.Authorizing_Loading
+    </MudText>
+
+</MudStack>
