@@ -1,7 +1,7 @@
 # Role-Based Access Control — SDD Status
 
 **Feature:** `role-based-access-control`
-**Last updated:** 2026-07-15
+**Last updated:** 2026-07-18
 
 | Stage | State | Gate | Evidence | Date |
 |---|---|---|---|---|
@@ -14,3 +14,5 @@
 | 7. Document   | —     | — | — | — |
 
 **Next step:** Fix the Super-Admin access-denial bug (likely `products.view` resolution for Super Admin — check `authorize()`/`get_my_permissions()` RPC, `PermissionAuthorizationHandler`, or `PermissionState` hydration), then re-run `/theshop.verify role-based-access-control`.
+
+**Shipped:** 2026-07-18 → `dev` (via PR) — ⚠️ waived: shipped with 3 open ledger item(s)

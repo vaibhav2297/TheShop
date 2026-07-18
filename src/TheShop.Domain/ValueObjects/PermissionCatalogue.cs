@@ -8,17 +8,6 @@ namespace TheShop.Domain.ValueObjects;
 /// </summary>
 public static class PermissionCatalogue
 {
-    public static class AdminPanel
-    {
-        /// <summary>
-        /// Grants entry to the admin surface itself (the <c>/admin/*</c> area and its nav
-        /// affordances). Deliberately separate from the per-module data permissions: a role can
-        /// hold admin-area data permissions (e.g. Support's <c>orders.view</c>) without being
-        /// able to open the panel, and panel entry is granted per role as pages relevant to that
-        /// role ship.
-        /// </summary>
-        public static readonly Permission Access = Permission.Create("admin_panel.access");
-    }
 
     public static class Products
     {
