@@ -18,6 +18,9 @@ public sealed class BlazorCurrentUserService(AuthenticationStateProvider provide
     public bool IsAuthenticated =>
         GetUser().Identity?.IsAuthenticated ?? false;
 
+    public bool HasPermission(string permissionCode) =>
+        GetUser().HasClaim(ShopClaimTypes.Permission, permissionCode);
+
     private ClaimsPrincipal GetUser()
     {
         var task = provider.GetAuthenticationStateAsync();

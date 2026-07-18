@@ -1,0 +1,17 @@
+@using TheShop.Domain.ValueObjects
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.ManageProducts_PageTitle</PageTitle>
+
+<AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.View.Code)">
+    <Authorized>
+        <MudStack Class="pa-8" Spacing="4">
+            <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.ManageProducts_Heading</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">@Strings.ManageProducts_ShellNotice</MudText>
+        </MudStack>
+    </Authorized>
+    <NotAuthorized>
+        <AccessDeniedView />
+    </NotAuthorized>
+</AuthorizeView>

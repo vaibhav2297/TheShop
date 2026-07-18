@@ -468,6 +468,9 @@
   <data name="Auth_Unexpected" xml:space="preserve">
     <value>Une erreur est survenue. Veuillez réessayer.</value>
   </data>
+  <data name="Rbac_AccessDenied" xml:space="preserve">
+    <value>Vous n'avez pas la permission d'effectuer cette action.</value>
+  </data>
   <data name="Account_Welcome" xml:space="preserve">
     <value>Bienvenue, {0}!</value>
   </data>
@@ -572,5 +575,164 @@
   </data>
   <data name="No_Filters" xml:space="preserve">
     <value>Sans filtres</value>
+  </data>
+  <data name="Authorizing_Loading" xml:space="preserve">
+    <value>Vérification de votre accès…</value>
+  </data>
+  <data name="AccessDenied_Title" xml:space="preserve">
+    <value>Accès refusé !</value>
+  </data>
+  <data name="AccessDenied_Message" xml:space="preserve">
+    <value>Votre compte ne dispose pas des autorisations nécessaires pour accéder à cette page.</value>
+  </data>
+  <data name="AccessDenied_BackToHome" xml:space="preserve">
+    <value>Retour à l'accueil</value>
+  </data>
+  <data name="ManageProducts_PageTitle" xml:space="preserve">
+    <value>Gestion des produits — Admin — The Vape Shop Sarnia</value>
+  </data>
+  <data name="ManageProducts_Heading" xml:space="preserve">
+    <value>Gestion des produits</value>
+  </data>
+  <data name="ManageProducts_ShellNotice" xml:space="preserve">
+    <value>La gestion complète des produits arrive bientôt.</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="Support" xml:space="preserve">
+    <value>Assistance</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Administrateur</value>
+  </data>
+  <data name="SuperAdmin" xml:space="preserve">
+    <value>Super administrateur</value>
+  </data>
+  <data name="Permission_Products_View" xml:space="preserve">
+    <value>Voir les produits</value>
+  </data>
+  <data name="Permission_Products_Create" xml:space="preserve">
+    <value>Créer des produits</value>
+  </data>
+  <data name="Permission_Products_Edit" xml:space="preserve">
+    <value>Modifier les produits</value>
+  </data>
+  <data name="Permission_Products_Delete" xml:space="preserve">
+    <value>Supprimer les produits</value>
+  </data>
+  <data name="Permission_Categories_View" xml:space="preserve">
+    <value>Voir les catégories</value>
+  </data>
+  <data name="Permission_Categories_Create" xml:space="preserve">
+    <value>Créer des catégories</value>
+  </data>
+  <data name="Permission_Categories_Edit" xml:space="preserve">
+    <value>Modifier les catégories</value>
+  </data>
+  <data name="Permission_Categories_Delete" xml:space="preserve">
+    <value>Supprimer les catégories</value>
+  </data>
+  <data name="Permission_Orders_View" xml:space="preserve">
+    <value>Voir les commandes</value>
+  </data>
+  <data name="Permission_Orders_Create" xml:space="preserve">
+    <value>Créer des commandes</value>
+  </data>
+  <data name="Permission_Orders_Edit" xml:space="preserve">
+    <value>Modifier les commandes</value>
+  </data>
+  <data name="Permission_Orders_Delete" xml:space="preserve">
+    <value>Supprimer les commandes</value>
+  </data>
+  <data name="Permission_Orders_Refund" xml:space="preserve">
+    <value>Émettre des remboursements</value>
+  </data>
+  <data name="Permission_Customers_View" xml:space="preserve">
+    <value>Voir les clients</value>
+  </data>
+  <data name="Permission_Customers_Create" xml:space="preserve">
+    <value>Créer des clients</value>
+  </data>
+  <data name="Permission_Customers_Edit" xml:space="preserve">
+    <value>Modifier les clients</value>
+  </data>
+  <data name="Permission_Customers_Delete" xml:space="preserve">
+    <value>Supprimer les clients</value>
+  </data>
+  <data name="Permission_Customers_Export" xml:space="preserve">
+    <value>Exporter les données clients</value>
+  </data>
+  <data name="Permission_Coupons_View" xml:space="preserve">
+    <value>Voir les coupons</value>
+  </data>
+  <data name="Permission_Coupons_Create" xml:space="preserve">
+    <value>Créer des coupons</value>
+  </data>
+  <data name="Permission_Coupons_Edit" xml:space="preserve">
+    <value>Modifier les coupons</value>
+  </data>
+  <data name="Permission_Coupons_Delete" xml:space="preserve">
+    <value>Supprimer les coupons</value>
+  </data>
+  <data name="Permission_Promotions_View" xml:space="preserve">
+    <value>Voir les promotions</value>
+  </data>
+  <data name="Permission_Promotions_Create" xml:space="preserve">
+    <value>Créer des promotions</value>
+  </data>
+  <data name="Permission_Promotions_Edit" xml:space="preserve">
+    <value>Modifier les promotions</value>
+  </data>
+  <data name="Permission_Promotions_Delete" xml:space="preserve">
+    <value>Supprimer les promotions</value>
+  </data>
+  <data name="Permission_Reports_View" xml:space="preserve">
+    <value>Voir les rapports</value>
+  </data>
+  <data name="Permission_Reports_Create" xml:space="preserve">
+    <value>Créer des rapports</value>
+  </data>
+  <data name="Permission_Reports_Edit" xml:space="preserve">
+    <value>Modifier les rapports</value>
+  </data>
+  <data name="Permission_Reports_Delete" xml:space="preserve">
+    <value>Supprimer les rapports</value>
+  </data>
+  <data name="Permission_Settings_View" xml:space="preserve">
+    <value>Voir les paramètres</value>
+  </data>
+  <data name="Permission_Settings_Create" xml:space="preserve">
+    <value>Créer des paramètres</value>
+  </data>
+  <data name="Permission_Settings_Edit" xml:space="preserve">
+    <value>Modifier les paramètres</value>
+  </data>
+  <data name="Permission_Settings_Delete" xml:space="preserve">
+    <value>Supprimer les paramètres</value>
+  </data>
+  <data name="Permission_AdminUsers_View" xml:space="preserve">
+    <value>Voir les administrateurs</value>
+  </data>
+  <data name="Permission_AdminUsers_Create" xml:space="preserve">
+    <value>Créer des administrateurs</value>
+  </data>
+  <data name="Permission_AdminUsers_Edit" xml:space="preserve">
+    <value>Modifier les administrateurs</value>
+  </data>
+  <data name="Permission_AdminUsers_Delete" xml:space="preserve">
+    <value>Supprimer les administrateurs</value>
+  </data>
+  <data name="Permission_Roles_View" xml:space="preserve">
+    <value>Voir les rôles</value>
+  </data>
+  <data name="Permission_Roles_Create" xml:space="preserve">
+    <value>Créer des rôles</value>
+  </data>
+  <data name="Permission_Roles_Edit" xml:space="preserve">
+    <value>Modifier les rôles</value>
+  </data>
+  <data name="Permission_Roles_Delete" xml:space="preserve">
+    <value>Supprimer les rôles</value>
   </data>
 </root>

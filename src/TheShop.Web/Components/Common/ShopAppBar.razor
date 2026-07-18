@@ -60,6 +60,13 @@
                                  AnchorOrigin="Origin.BottomRight"
                                  TransformOrigin="Origin.TopRight"
                                  aria-label="@Strings.Nav_Account">
+
+                            <AuthorizeView Policy="@PolicyNames.AdminArea" Context="adminContext">
+                                <Authorized>
+                                    <MudMenuItem Href="@Routes.Admin.ManageProducts">@Strings.Nav_AdminPanel</MudMenuItem>
+                                </Authorized>
+                            </AuthorizeView>
+
                             <MudMenuItem OnClick="OnSignOutAsync">@Strings.Logout</MudMenuItem>
                         </MudMenu>
                     </Authorized>

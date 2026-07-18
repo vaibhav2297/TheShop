@@ -15,13 +15,7 @@
             "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/scripts/check-design-rules.ps1\"",
             "timeout": 30,
             "statusMessage": "Checking design rules..."
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
+          },
           {
             "type": "command",
             "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/scripts/format-on-stop.ps1\"",

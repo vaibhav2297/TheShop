@@ -6,7 +6,6 @@ using TheShop.Application.Features.Auth.Commands.SignOut;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Layout;
 using TheShop.Web.Resources;
-using TheShop.Web.State;
 
 namespace TheShop.Web.Components.Common;
 

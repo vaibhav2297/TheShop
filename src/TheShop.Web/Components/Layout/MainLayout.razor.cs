@@ -11,7 +11,9 @@ namespace TheShop.Web.Components.Layout;
 /// the <see cref="ShopAppBar"/>, the breadcrumb slot (when a trail is active), the scrollable
 /// page content, and the <see cref="ShopFooter"/> slot as a vertical flex column. Clears the
 /// breadcrumb trail and restores footer visibility on every navigation so the next page starts
-/// from a clean chrome state. Auth pages use <see cref="AuthLayout"/> instead.
+/// from a clean chrome state. Admin navigation is gated by <c>AuthorizeView</c> against the
+/// permission claims in the access token, so it re-renders automatically on every auth-state
+/// change. Auth pages use <see cref="AuthLayout"/> instead.
 /// </summary>
 public partial class MainLayout : LayoutComponentBase, IDisposable
 {

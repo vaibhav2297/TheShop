@@ -18,14 +18,22 @@ public static class Routes
     /// Admin-panel route constants.
     /// <para>
     /// <b>Authorization prerequisite:</b> every page added under this prefix must be protected by
-    /// <c>Pages/Admin/_Imports.razor</c> carrying <c>[Authorize(Roles = "admin")]</c> <b>and</b>
-    /// the corresponding Supabase RLS policies. The <c>[Authorize]</c> attribute is a UX guard;
-    /// RLS is the only real authorization boundary. See <c>references/rules/architecture-admin.md</c>.
+    /// <c>Pages/Admin/_Imports.razor</c> carrying <c>[Authorize(Policy = PolicyNames.AdminArea)]</c>
+    /// <b>and</b> the corresponding Supabase RLS policies. The <c>[Authorize]</c> attribute is a
+    /// UX guard; RLS is the only real authorization boundary. See
+    /// <c>references/rules/architecture-admin.md</c>.
     /// </para>
     /// </summary>
     public static class Admin
     {
         public const string Dashboard = "/admin";
+
+        /// <summary>
+        /// The Manage Products admin harness shell. Gated on <c>PolicyNames.AdminArea</c> via
+        /// <c>Pages/Admin/_Imports.razor</c> and additionally on <c>products.view</c> on the
+        /// page itself.
+        /// </summary>
+        public const string ManageProducts = "/admin/products";
     }
 
     /// <summary>Auth-flow route constants and query-string helpers.</summary>
