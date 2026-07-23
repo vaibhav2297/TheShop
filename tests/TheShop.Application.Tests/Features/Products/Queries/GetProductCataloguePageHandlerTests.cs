@@ -28,7 +28,7 @@ public class GetProductCataloguePageHandlerTests
         Category.Create(Guid.NewGuid(), "Disposables", "disposables");
 
     private static Brand ExampleBrand() =>
-        Brand.Create(Guid.NewGuid(), "Elf Bar", "elf-bar");
+        Brand.Rehydrate(Guid.NewGuid(), "Elf Bar", "elf-bar");
 
     private static Product BuildProduct(
         string name = "Elf Bar BC5000",

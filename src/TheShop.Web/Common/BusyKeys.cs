@@ -24,4 +24,10 @@ public static class BusyKeys
         public const string Catalogue = "products.catalogue";
         public const string Filters = "products.filters";
     }
+
+    /// <summary>Keys for brand admin operations.</summary>
+    public static class Brands
+    {
+        public const string AddBrand = "brands.add";
+    }
 }

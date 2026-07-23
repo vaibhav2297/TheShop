@@ -26,7 +26,7 @@ public static class Routes
     /// </summary>
     public static class Admin
     {
-        public const string Dashboard = "/admin";
+        public const string Console = "/admin";
 
         /// <summary>
         /// The Manage Products admin harness shell. Gated on <c>PolicyNames.AdminArea</c> via
@@ -34,6 +34,20 @@ public static class Routes
         /// page itself.
         /// </summary>
         public const string ManageProducts = "/admin/products";
+
+        /// <summary>
+        /// The Manage Brands admin harness shell and AddBrand's post-save return target. Gated
+        /// on <c>PolicyNames.AdminArea</c> via <c>Pages/Admin/_Imports.razor</c> and additionally
+        /// on <c>brands.view</c> on the page itself.
+        /// </summary>
+        public const string ManageBrands = "/admin/brands";
+
+        /// <summary>
+        /// The add-brand form. Gated on <c>PolicyNames.AdminArea</c> via
+        /// <c>Pages/Admin/_Imports.razor</c> and additionally on <c>brands.create</c> on the
+        /// page itself.
+        /// </summary>
+        public const string AddBrand = "/admin/brands/new";
     }
 
     /// <summary>Auth-flow route constants and query-string helpers.</summary>

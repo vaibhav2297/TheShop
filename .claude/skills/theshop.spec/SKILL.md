@@ -1,6 +1,6 @@
 ---
 name: theshop.spec
-description: Generate a non-technical specification document for a single feature and save it to `.specs/{feature_name}/spec.md`. The spec is product-level only — focused on WHAT the feature does and WHY it matters, never on HOW it's built. It contains six fixed numbered sections (problem statement, functional requirements, functional behaviors, constraints, edge cases and error handling, acceptance criteria), an In/Out of Scope block inside Section 1, and an Assumptions & Open Questions appendix that the `/theshop.clarify` skill later resolves. Blocking, load-bearing questions are asked up front; only cheap-to-change defaults are assumed and logged. This skill is manually invoked only (typically via slash command) and requires a feature name from the user; an optional `--desc <description>` may follow the name to seed the spec's content.
+description: Generate a non-technical specification document for a single feature and save it to `.specs/{feature_name}/spec.md`. The spec is product-level only — focused on WHAT the feature does and WHY it matters, never on HOW it's built. Its structure comes from `templates/spec-template.md` — six fixed numbered sections (problem statement, functional requirements, functional behaviors, constraints, edge cases and error handling, acceptance criteria), Scope and Actors & Access sub-sections inside Section 1, a Business Rules table inside Section 4, Given/When/Then acceptance criteria, and an Assumptions & Open Questions appendix that the `/theshop.clarify` skill later resolves. Blocking, load-bearing questions are asked up front; only cheap-to-change defaults are assumed and logged. This skill is manually invoked only (typically via slash command) and requires a feature name from the user; an optional `--desc <description>` may follow the name to seed the spec's content.
 argument-hint: <feature-name> [--desc <description>]
 disable-model-invocation: true
 ---
@@ -88,9 +88,19 @@ Before writing, take a quick pass for context — but don't turn this into a lon
 - **Accessibility** — are there WCAG-level expectations a tester could check by hand (keyboard-reachable, screen reader announces cart/checkout changes, visible focus)? Keep it user-observable, not technical.
 - **Scope boundaries** — what is explicitly **not** part of this feature? Capture it in the In Scope / Out of Scope block in Section 1. Undefined scope is the single biggest source of rework.
 
-### 3. Write the spec using the template below
+### 3. Write the spec using the canonical template file
 
-Use the exact six numbered sections — don't add or drop a numbered section. The **In Scope / Out of Scope** block (inside Section 1) and the **Assumptions & Open Questions** appendix (below the status line) are part of the fixed template, not extra sections.
+**Read `.claude/skills/theshop.spec/templates/spec-template.md` and follow it exactly.** That file is the single source of truth for the spec's structure — do not reconstruct it from memory.
+
+Structural contract (the gate enforces all of this):
+
+- Exactly six numbered sections — don't add or drop a numbered section.
+- The **Scope** (`### Scope`, with In/Out bullets) and **Actors & Access** sub-sections live inside Section 1.
+- The **Business Rules** table (`### Business Rules`, `RULE-n` ids) lives inside Section 4.
+- Every acceptance criterion is phrased **Given …, when …, then …** inside its `**AC-n:**` marker.
+- The **Assumptions & Open Questions** appendix sits below the body, above the status footer.
+
+Delete the template's guidance blockquotes from the generated spec — they are authoring instructions, not spec content.
 
 ### 4. Save the file
 
@@ -104,7 +114,7 @@ Use the exact six numbered sections — don't add or drop a numbered section. Th
   pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 spec -Feature {feature_name}
   ```
 
-  The script deterministically verifies the six numbered sections, the In/Out-of-Scope block, FR/AC id sequencing, the Assumptions appendix, and that the Status footer's `N` matches the appendix count. **Exit 1 → fix the spec and re-run the gate. Never report the spec as saved while this gate fails.** Record the gate result in the status tracker (next step).
+  The script deterministically verifies the six numbered sections, the Scope and Actors & Access sub-sections (with the In/Out-of-Scope block) in Section 1, the Business Rules sub-section in Section 4 (with `RULE-n` id sequencing when rules are present), FR/AC id sequencing, Given/When/Then phrasing in every AC, the Assumptions appendix, and that the Status footer's `N` matches the appendix count. **Exit 1 → fix the spec and re-run the gate. Never report the spec as saved while this gate fails.** Record the gate result in the status tracker (next step).
 
 ### 5. Initialize the status tracker
 
@@ -120,100 +130,7 @@ Report the saved path in one short sentence. If the spec has open assumptions, p
 
 ## Spec template
 
-Use this exact structure. Replace placeholders in `{curly braces}`. Every section stays product-level.
-
-```markdown
-# {Feature Title}
-
-## 1. Problem Statement
-
-{2–4 sentences in plain language: who has the problem, when it occurs, and why it matters. Frame it from the user's or business's perspective — not the system's. Name the user, the scenario, and the cost of leaving it unsolved.}
-
-**Solution (one line):** {A single sentence describing what the feature will do for the user. No mention of how it's built.}
-
-**In scope:** {1–3 bullets naming what this feature explicitly includes.}
-**Out of scope:** {1–3 bullets naming what it explicitly does **not** cover — the boundary that stops scope creep. Write "None" only if there is genuinely nothing to exclude.}
-
-## 2. Functional Requirements
-
-{Numbered list of what the feature must do, written as user-visible or business-observable statements. Each item is complete and testable from the outside, without looking at code.}
-
-Examples of the right level:
-- ✅ "Users can add a product to their cart from the product detail page."
-- ✅ "The cart shows the running total updated in real time as items are added or removed."
-- ❌ "The system calls the /cart/add endpoint and updates the Redux store." (too technical)
-
-1. **FR-1:** ...
-2. **FR-2:** ...
-3. **FR-3:** ...
-
-## 3. Functional Behaviors
-
-{For each significant user interaction, describe what the user does and what the user observes in response. Input is a user action or business event, not a payload. Output is what the user sees or experiences, not a response object.}
-
-### Behavior 1: {Short name, e.g., "Add an item to the cart"}
-- **User does:** {The user-facing action — e.g., "Clicks 'Add to Cart' on a product page after choosing a quantity."}
-- **User sees:** {The observable result — e.g., "The cart icon updates with the new item count, and a brief confirmation message appears."}
-
-### Behavior 2: {Name}
-- **User does:** ...
-- **User sees:** ...
-
-## 4. Constraints
-
-{Bullet list of business, policy, regulatory, or user-experience constraints the feature must respect. Numbers belong here when they're user-facing or policy-driven — never performance or infrastructure numbers.}
-
-Examples of the right kind of constraint:
-- ✅ "Users must be 19 or older to purchase (Ontario regulation)."
-- ✅ "A cart can hold a maximum of 20 distinct items."
-- ✅ "Discounts cannot stack — only the largest applicable discount applies."
-- ❌ "Must respond within 200ms." (technical performance, belongs in engineering docs)
-- ❌ "Use Postgres for storage." (implementation choice)
-
-- ...
-- ...
-
-## 5. Edge Cases & Error Handling
-
-{Bullet list of user-experience edge cases and abnormal scenarios, each paired with what the user sees or experiences. Frame everything from the user's perspective — not the system's. Don't list infrastructure failures; list the user-visible consequences.}
-
-Examples of the right framing:
-- ✅ "User tries to add an out-of-stock item → The 'Add to Cart' button is disabled and shows 'Out of stock'."
-- ✅ "User adds the last available unit while another user is checking out with it → User sees a 'No longer available' message and the item is removed from their cart."
-- ❌ "Inventory service times out → Retry with exponential backoff." (that's HOW)
-
-- **Edge case:** {Description from user's perspective} → **User experience:** {What the user sees or is told}
-- **Edge case:** {Description} → **User experience:** {What the user sees or is told}
-
-## 6. Acceptance Criteria
-
-{The definition of done. Each criterion is objectively verifiable by observing the feature from the outside — a tester or stakeholder could check it without reading code. The feature is considered complete only when every criterion passes.}
-
-Examples of the right level:
-- ✅ "A logged-in user can add an item from the product page and see it reflected in the cart on the next page load."
-- ✅ "An age-gated checkout flow blocks anyone who has not confirmed they are 19 or older."
-- ❌ "Unit test coverage exceeds 80%." (engineering process, not feature behavior)
-
-- [ ] **AC-1:** ...
-- [ ] **AC-2:** ...
-- [ ] **AC-3:** ...
-
----
-
-## Assumptions & Open Questions
-
-{A working appendix — *not* a product section. It aggregates every inline `(Assumption: …)` marker from the body, plus any question a reviewer should answer, so `/theshop.clarify` has one list to walk. As each item is resolved, fold the decision into the relevant section above and delete it from here. When the list is empty, write "None — all assumptions confirmed."}
-
-- **📌 Assumption:** {A default you chose to fill a non-blocking gap — e.g., "Cart persists 30 days for guests."} → *Resolve via `/theshop.clarify`.*
-- **❓ Open question:** {Something genuinely undecided that a reviewer should answer before the plan stage.}
-
-> ⚠️ Blocking, load-bearing uncertainties do **not** belong here — those are asked before the spec is written. This list holds only cheap-to-change defaults.
-
----
-**Status:** Draft — {N} open assumption(s)   ·   **Created:** {YYYY-MM-DD}
-
-<!-- Status lifecycle: "Draft — N open assumption(s)" → "Confirmed" once /theshop.clarify resolves them all (N = 0). -->
-```
+The canonical template lives at **`.claude/skills/theshop.spec/templates/spec-template.md`** — read it in step 3 and follow it exactly. It is the single source of truth for the spec structure; this file intentionally does not duplicate it.
 
 ## Quality guidelines
 

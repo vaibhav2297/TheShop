@@ -1,0 +1,138 @@
+{
+  "feature": "add-brand",
+  "trait": "add-brand",
+  "writtenAt": "2026-07-23",
+  "totalTests": 131,
+  "classes": [
+    { "fqn": "TheShop.Domain.Tests.Entities.BrandTests", "file": "tests/TheShop.Domain.Tests/Entities/BrandTests.cs", "tests": 19 },
+    { "fqn": "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests", "file": "tests/TheShop.Domain.Tests/ValueObjects/PermissionCatalogueTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/CreateBrand/CreateBrandCommandValidatorTests.cs", "tests": 19 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/CreateBrand/CreateBrandHandlerTests.cs", "tests": 19 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandCommandTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/CreateBrand/CreateBrandCommandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Mappers.BrandDtoMapperTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Mappers/BrandDtoMapperTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.BrandMapperTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/BrandMapperTests.cs", "tests": 5 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseBrandRepositorySchemaTests.cs", "tests": 16 },
+    { "fqn": "TheShop.Web.Tests.Components.Common.ShopImageUploadTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopImageUploadTests.cs", "tests": 6 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.AddBrandTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/AddBrandTests.cs", "tests": 14 },
+    { "fqn": "TheShop.Web.Tests.Resources.BrandLocalizationTests", "file": "tests/TheShop.Web.Tests/Resources/BrandLocalizationTests.cs", "tests": 25 }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.BrandTests.Create_WithNameOnly_CreatesAnActiveBrandWithNoDescriptionOrLogo",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandCommandValidatorTests.Validate_WithNameOnly_IsValid",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WithValidNameOnly_ReturnsSuccessResult",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WithValidCommand_PersistsTheBrand",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.InsertBrand_WithValidData_RowCanBeSelectedBack",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandsAdminInsert_WhenCallerHoldsBrandsCreatePermission_Succeeds",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandsRead_WhenBrandIsActiveAndCallerIsAnonymous_IsVisible",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.SaveAsync_WithOnlyAName_SendsCreateBrandCommandWithNoDescriptionOrLogoAndActiveStatus",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.SaveAsync_WhenMediatorReturnsSuccess_ShowsConfirmationAndNavigatesToManageBrands"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.BrandTests.Create_WhenNameIsEmptyOrWhitespaceOnly_ThrowsBrandNameRequiredException",
+        "TheShop.Domain.Tests.Entities.BrandTests.Create_WhenNameIsNull_ThrowsBrandNameRequiredException",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandCommandValidatorTests.Validate_WhenNameIsEmptyOrWhitespace_HasNameRequiredError",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WhenNameIsEmpty_ReturnsNameRequiredFailure",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.SaveAsync_WhenFormIsInvalid_DoesNotSendTheCommand"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.InsertBrand_WhenNameAlreadyExistsExactMatch_ThrowsUniqueViolation",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.InsertBrand_WhenNameDiffersOnlyByCapitalization_ThrowsUniqueViolation",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.InsertBrand_WhenNameDiffersOnlyByLeadingOrTrailingSpaces_ThrowsUniqueViolation",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WhenNameAlreadyExists_ReturnsAlreadyExistsFailure",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WhenNameAlreadyExists_DoesNotPersistTheBrand",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.SaveAsync_WhenBrandAlreadyExists_ShowsErrorSnackbarAndDoesNotNavigate",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.SaveAsync_WhenBrandAlreadyExists_PreservesTheEnteredName"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.BrandTests.AttachLogo_WithAStorageKey_SetsLogoPath",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandCommandValidatorTests.Validate_WhenLogoContentTypeIsAccepted_HasNoLogoTypeError",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WithALogo_UploadsItToTheBrandLogosArea",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WithALogo_AttachesTheUploadedKeyToThePersistedBrand",
+        "TheShop.Application.Tests.Features.Brands.Mappers.BrandDtoMapperTests.ToDto_WhenLogoPathIsSet_ResolvesLogoUrlViaFileStorage",
+        "TheShop.Infrastructure.Tests.Persistence.BrandMapperTests.ToDomain_MapsAllColumnsToTheCorrespondingDomainProperties",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandLogosInsert_WhenCallerHoldsBrandsCreatePermission_Succeeds",
+        "TheShop.Web.Tests.Components.Common.ShopImageUploadTests.Render_WithASelectedImage_ShowsAPreview",
+        "TheShop.Web.Tests.Components.Common.ShopImageUploadTests.SelectFile_WithAnAllowedTypeAndSize_RaisesFilesChangedWithOneImage",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.SaveAsync_WithASelectedLogo_SendsCreateBrandCommandCarryingTheLogo"
+      ]
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandCommandValidatorTests.Validate_WhenLogoContentTypeIsNotAccepted_HasLogoInvalidTypeError",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandCommandValidatorTests.Validate_WhenLogoExceeds2Megabytes_HasLogoTooLargeError",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandLogosInsert_WhenCallerLacksBrandsCreatePermission_ThrowsRowLevelSecurityViolation",
+        "TheShop.Web.Tests.Components.Common.ShopImageUploadTests.SelectFile_WithADisallowedContentType_DoesNotAcceptItAndShowsTheTypeError",
+        "TheShop.Web.Tests.Components.Common.ShopImageUploadTests.SelectFile_ExceedingTheMaxFileSize_DoesNotAcceptItAndShowsTheSizeError"
+      ]
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.BrandTests.Create_WithoutAttachingALogo_LogoPathIsNull",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandCommandValidatorTests.Validate_WithNameOnly_IsValid",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WithValidNameOnly_ReturnsDtoWithSuppliedNameAndDefaults",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WithoutALogo_DoesNotCallFileStorageUpload",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WithoutALogo_PersistedBrandHasNoLogoUrl",
+        "TheShop.Application.Tests.Features.Brands.Mappers.BrandDtoMapperTests.ToDto_WhenLogoPathIsNull_MapsLogoUrlAsNullWithoutCallingFileStorage",
+        "TheShop.Infrastructure.Tests.Persistence.BrandMapperTests.ToDomain_WhenDescriptionAndLogoPathAreNull_MapsBothAsNull",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.InsertBrand_WithoutExplicitIsActive_DefaultsToTrue",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.SaveAsync_WithOnlyAName_SendsCreateBrandCommandWithNoDescriptionOrLogoAndActiveStatus"
+      ]
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.BrandTests.Create_WithIsActiveFalse_CreatesAnInactiveBrand",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandCommandValidatorTests.Validate_WithNameDescriptionLogoAndInactiveStatus_IsValid",
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandHandlerTests.Handle_WhenIsActiveIsFalse_PersistsAnInactiveBrand",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandsRead_WhenBrandIsInactiveAndCallerIsAnonymous_IsHidden",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandsRead_WhenBrandIsInactiveAndCallerLacksBrandsViewPermission_IsHidden",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandsRead_WhenBrandIsInactiveAndCallerHoldsBrandsViewPermission_IsVisible",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.SaveAsync_WithDescriptionAndInactiveStatus_SendsCreateBrandCommandWithBoth",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.Render_Always_DefaultsStatusToActive"
+      ]
+    },
+    {
+      "id": "AC-8",
+      "tests": [
+        "TheShop.Application.Tests.Features.Brands.Commands.CreateBrand.CreateBrandCommandTests.CreateBrandCommand_Always_IsDecoratedWithTheBrandsCreatePermissionRequirement",
+        "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests.All_Always_IncludesTheBrandsModule",
+        "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests.Brands_Always_ExposesViewCreateEditAndDeleteWithTheExpectedCodes",
+        "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests.All_Always_ContainsAllFourBrandsPermissions",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandsAdminInsert_WhenCallerLacksBrandsCreatePermission_ThrowsRowLevelSecurityViolation",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandLogosRead_WhenCallerLacksBrandsViewPermission_CannotSelectTheObject",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandLogosRead_WhenCallerHoldsBrandsViewPermission_CanSelectTheObject",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.Render_WhenUserHoldsBrandsCreatePermission_ShowsTheForm",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.Render_WhenUserLacksBrandsCreatePermission_ShowsAccessDeniedInsteadOfTheForm",
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfTheForm"
+      ]
+    },
+    {
+      "id": "AC-9",
+      "tests": [
+        "TheShop.Web.Tests.Resources.BrandLocalizationTests.ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglishAndFrench",
+        "TheShop.Web.Tests.Resources.BrandLocalizationTests.FormString_ForEveryKey_IsAvailableInEnglishAndFrench",
+        "TheShop.Web.Tests.Resources.BrandLocalizationTests.ManageBrandsShellString_ForEveryKey_IsAvailableInEnglishAndFrench"
+      ]
+    },
+    {
+      "id": "AC-10",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.Render_WithASelectedLogo_RemoveButtonHasALocalizedAriaLabel"
+      ]
+    }
+  ]
+}

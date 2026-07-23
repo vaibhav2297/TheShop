@@ -1,6 +1,6 @@
 ---
 name: theshop.plan
-description: Read a feature spec from `.specs/{feature_name}/spec.md` and generate a technical implementation plan (design doc) saved to `.specs/{feature_name}/plan.md`. The plan covers architecture, data model, design decisions, validators, error handling, RLS policies, and a phased development plan — focused on HOW the feature will be built. The companion spec stays non-technical (WHAT/WHY); this plan is fully technical. Optional `--desc <description>` lets the user supply technical direction up front; optional `--figma <url|nodeId>` pins the design frames. Manually invoked only.
+description: Read a feature spec from `.specs/{feature_name}/spec.md` and generate a technical implementation plan (design doc) saved to `.specs/{feature_name}/plan.md`. The plan's structure comes from `templates/plan-template.md` and covers architecture, data model, design decisions, validators, error handling, RLS policies, and an agent-aligned execution plan with sequential TASK ids — focused on HOW the feature will be built. The companion spec stays non-technical (WHAT/WHY); this plan is fully technical. Optional `--desc <description>` lets the user supply technical direction up front; optional `--figma <url|nodeId>` pins the design frames. Manually invoked only.
 argument-hint: <feature-name> [--desc <description>] [--figma <url|nodeId>]
 disable-model-invocation: true
 ---
@@ -149,7 +149,7 @@ If `CLAUDE.md` is present, it's already in context (loaded automatically by Clau
 
   Wait for the reply. Then:
   - **URL/node ID given** — proceed as in (a).
-  - **`skip` or no Figma** — omit the "Figma references" subsection from Phase 4 and add an open question in Section 11: "Figma node IDs not provided — `shop-ui-implementer` will need them before building the UI."
+  - **`skip` or no Figma** — omit the "Figma references" subsection from Section 7 Step 5 (Web) and add an open question in Section 11: "Figma node IDs not provided — `shop-ui-implementer` will need them before building the UI."
   - **No file open in Figma** — if the Figma MCP returns no open file, note it and surface as an open question in Section 11.
 
   **c. Extracting per-component node IDs** — once you have a starting frame or page node:
@@ -157,7 +157,7 @@ If `CLAUDE.md` is present, it's already in context (loaded automatically by Clau
   2. For each child that maps to a distinct page or major component in the feature (e.g., "Sign-in form", "OTP step", "Error state"), record its node ID and a one-sentence visual intent.
   3. Do not go deeper than one level of children unless a child is itself a complex nested component that warrants its own node ID entry.
 
-  Capture all of this in Section 7 Phase 4 (Web) of the plan using the **Figma references** subsection (see the template). If a node ID is missing or ambiguous, surface it as an open question in Section 11 — do not paper over it. Don't call Figma for non-UI features.
+  Capture all of this in Section 7 Step 5 (Web) of the plan using the **Figma references** subsection (see the template). If a node ID is missing or ambiguous, surface it as an open question in Section 11 — do not paper over it. Don't call Figma for non-UI features.
 
 Both are skippable for backend-only or domain-rule features.
 
@@ -176,9 +176,19 @@ Before typing a single section, hold these questions in mind and resolve each:
 
 Write a brief internal sketch (not in the final plan — your own scratch reasoning) of these answers before writing the document. The plan that comes out will be substantially better for it.
 
-### 6. Write the plan using the template below
+### 6. Write the plan using the canonical template file
 
-Use the exact 11-section structure. Stay technical, stay concrete. Replace placeholders. Don't pad.
+**Read `.claude/skills/theshop.plan/templates/plan-template.md` and follow it exactly.** That file is the single source of truth for the plan's structure — do not reconstruct it from memory.
+
+Structural contract (the gate enforces all of this):
+
+- Exactly eleven numbered sections with the template's title keywords.
+- Section 7 is the **agent-aligned execution plan**: one step per implementation agent (Domain → Application → Contract Freeze → Infrastructure ‖ Web → Integration), continuous sequential `TASK-nnn` ids that never reset per step, per-step completion gates, and the deviation procedure. Skip a step whose layer has no impact with a one-line note — don't leave empty scaffolding.
+- The **Figma references** subsection lives in Section 7 Step 5 (Web) when the feature touches UI.
+- Section 8 maps **every** spec AC to the TASK ids that implement it.
+- Section 11 uses the ❓ / ⚠️ / 📌 labels — `/theshop.resolve` walks exactly those.
+
+Stay technical, stay concrete. Replace placeholders. Don't pad. Delete the template's guidance blockquotes from the generated plan.
 
 ### 7. Save the file
 
@@ -192,7 +202,7 @@ Use the exact 11-section structure. Stay technical, stay concrete. Replace place
   pwsh -NoProfile -ExecutionPolicy Bypass -File .claude/scripts/check-sdd-gates.ps1 plan -Feature {file_name}
   ```
 
-  The script deterministically verifies the 11-section structure, the footer, and — most importantly — **AC coverage**: every `AC-n` in the spec's Section 6 must appear in the plan's Section 8 mapping. An unmapped AC is exactly the gap this plan's quality guidelines forbid, now enforced. **Exit 1 → fix the plan and re-run the gate. Never report the plan as saved while this gate fails.**
+  The script deterministically verifies the 11-section structure, the footer, the Section 7 execution plan (`TASK-nnn` ids present, unique, and sequential from 001), and — most importantly — **AC coverage**: every `AC-n` in the spec's Section 6 must appear in the plan's Section 8 mapping, mapped to at least one TASK id, and every TASK id Section 8 references must be defined in Section 7. An unmapped AC is exactly the gap this plan's quality guidelines forbid, now enforced. **Exit 1 → fix the plan and re-run the gate. Never report the plan as saved while this gate fails.**
 
 ### 8. Update the status tracker
 
@@ -210,237 +220,7 @@ Report the saved path in one short sentence and call out anything that needs hum
 
 ## Plan template
 
-Use this structure exactly. Replace placeholders. Sections 1–7 are the ones the user requested; sections 8–11 are additions justified by this project's specific architecture (RLS-as-security-boundary, Result<T> with localized keys, strict layer separation).
-
-```markdown
-# Implementation Plan — {Feature Title}
-
-> Companion to `.specs/{file_name}/spec.md`. This plan is technical (HOW); the spec is non-technical (WHAT/WHY). Read the spec first.
-
-## 1. Objective
-
-{2–4 sentences stating the engineering goal. What are we building, in technical terms? Reference the spec's problem statement briefly. Example: "Add a new use case that lets an authenticated customer add a product to a server-persisted cart, enforced by domain-level invariants (max 20 distinct items per cart) and gated by RLS on the `carts` table."}
-
-## 2. Tech Stack
-
-{Bullet list of every technology, library, or tool this feature relies on, with the layer it lives in and why it's chosen. Keep this scoped to what's actually used — don't list every library in the project.}
-
-- **Domain:** C# 12 (no external deps).
-- **Application:** MediatR 12, FluentValidation 11, AutoMapper 13, `Result<T>` (project-internal).
-- **Infrastructure:** `supabase-csharp` 1.x for persistence.
-- **Web:** MudBlazor, bUnit for component tests.
-- **Persistence:** Supabase (PostgreSQL 15 + RLS).
-
-## 3. High-level Architecture
-
-{One short paragraph + a layered diagram or ordered list showing how a single user action propagates through the layers. Be specific to this feature.}
-
-```
-User clicks "Add to Cart" in ProductDetail.razor
-   ↓
-IMediator.Send(AddToCartCommand)
-   ↓
-AddToCartHandler (Application)
-   ├── IProductRepository.GetByIdAsync(...)
-   ├── ICartRepository.GetForUserAsync(...) ?? Cart.CreateFor(...)
-   ├── cart.AddItem(product, qty)   // Domain invariants enforced
-   └── ICartRepository.SaveAsync(...)
-   ↓
-SupabaseCartRepository (Infrastructure) → carts + cart_items tables (RLS-gated)
-   ↓
-Result<CartDto> returned to ProductDetail.razor → CartState updated → UI re-renders
-```
-
-## 4. Data Model
-
-### Domain entities & value objects
-{List of new or modified entities, their key methods, and the invariants they enforce.}
-
-- **`Cart`** (entity) — new methods: `AddItem(Product, int)`, `RemoveItem(Guid)`, `TotalPrice()`. Invariants: max 20 distinct items; quantities must be positive; throws `InsufficientStockException` and `CartCapacityExceededException`.
-- **`CartItem`** (entity) — new. Fields: `ProductId`, `Price` (frozen at add-time), `Quantity`. Method: `IncreaseQuantity(int)`.
-
-### DTOs (Application → Web)
-- **`CartDto`** — fields: `Id`, `Items: IReadOnlyList<CartItemDto>`, `Subtotal: decimal`.
-- **`CartItemDto`** — fields: `ProductId`, `ProductName`, `UnitPrice`, `Quantity`, `Subtotal`.
-
-### Database tables (new or modified)
-| Table | Purpose | Key columns |
-|---|---|---|
-| `carts` (new) | One row per customer cart | `id`, `customer_id`, `created_at`, `updated_at` |
-| `cart_items` (new) | Items in a cart | `id`, `cart_id`, `product_id`, `unit_price`, `quantity` |
-
-### Indexes
-- `cart_items (cart_id)` — for the cart-by-customer query.
-
-## 5. Core Design Decisions
-
-{Numbered list. Each decision has: what we chose, why we chose it, and what alternatives we rejected. Tie back to spec constraints and `theshop.constitution` rule numbers where relevant (e.g. "Rule 5 — `Result<T>` for expected failures").}
-
-1. **Decision:** Cart is server-persisted (not browser-local).
-   - **Why:** Spec constraint that cart persists across devices for signed-in users. Also enables RLS-based security.
-   - **Rejected:** Local-storage cart with sync — adds conflict resolution complexity for no business benefit.
-
-2. **Decision:** Price is frozen on `CartItem` at add-time.
-   - **Why:** Prevents price-change surprise at checkout. Spec edge case: "what if the price changed since add?" — frozen-at-add is the answer.
-   - **Rejected:** Recompute price at read-time — invites support tickets and arguably violates customer expectations.
-
-3. *(more decisions as needed)*
-
-## 6. Core Functional Flow
-
-{Walkthrough of each significant user journey from spec's Section 3, mapped to the implementation. One subsection per behavior.}
-
-### Flow 1: Add an item to the cart
-
-1. `ProductDetail.razor` user clicks `MudButton` bound to `AddToCart()`.
-2. Page calls `Mediator.Send(new AddToCartCommand(productId, quantity))`.
-3. `ValidationBehavior` runs `AddToCartCommandValidator`. On failure → `Result.Fail(nameof(Strings.{...}))`.
-4. `AddToCartHandler` loads product (`IProductRepository`). If null → `Result.Fail(nameof(Strings.ProductNotFound))`.
-5. Loads or creates cart (`ICartRepository`).
-6. Calls `cart.AddItem(product, quantity)`. On `DomainException` → handler converts to `Result.Fail(ex.MessageKey)`.
-7. Saves cart. Returns `Result.Ok(_mapper.Map<CartDto>(cart))`.
-8. Page receives result; updates `CartState`; shows `Snackbar` with `Strings.AddedToCart` on success or `Localizer[result.Error]` on failure.
-
-### Flow 2: {next behavior from spec}
-{...}
-
-## 7. Development Plan
-
-{Ordered, sequenced list of phases. Each phase is independently committable and testable. Don't fold all work into one phase.}
-
-### Phase 1 — Domain foundations
-- Create `Cart` and `CartItem` entities in `TheShop.Domain/Entities/`.
-- Create `CartCapacityExceededException` in `TheShop.Domain/Exceptions/`.
-- Write Domain unit tests for invariants (`CartTests.cs`).
-
-### Phase 2 — Application use cases
-- Create `AddToCartCommand` + `AddToCartHandler` + `AddToCartCommandValidator` in `TheShop.Application/Features/Cart/Commands/`.
-- Define `ICartRepository` in `TheShop.Application/Common/Interfaces/`.
-- Create `CartDto` + `CartItemDto` + `AutoMapper` profile.
-- Add new keys to `Strings.resx` (`AddedToCart`, `ProductNotFound`, `CartCapacityExceeded`, validator messages). Mirror keys in `Strings.fr.resx` with `[TODO]` placeholders.
-- Write Application unit tests (`AddToCartHandlerTests.cs`).
-
-### Phase 3 — Infrastructure
-- Create migration: `carts` + `cart_items` tables + indexes + RLS policies.
-- Create `CartRecord` + `CartItemRecord` in `TheShop.Infrastructure/Persistence/Records/`.
-- Create `SupabaseCartRepository : ICartRepository`.
-- Register in `TheShop.Infrastructure/DependencyInjection.cs`.
-- Write integration tests with Testcontainers.
-
-### Phase 4 — Web
-
-**Figma references** *(required when the phase touches UI — read by `shop-ui-implementer` at impl time)*
-
-- **File:** {full Figma file URL}
-- **Nodes:**
-  - `123:456` — ProductDetail page (Add to Cart CTA, quantity stepper, success toast layout)
-  - `123:457` — CartIcon header badge (count + animation on update)
-- **Visual intent notes:** {one sentence per node — what it is, where it fits. Not a redescription; a hook for the implementer to confirm they're looking at the right node.}
-
-**Tasks**
-
-- Update `ProductDetail.razor` to wire the "Add to Cart" button (matches node `123:456`).
-- Update `CartState` to hold the new `CartDto`; the header `CartIcon` re-renders against node `123:457`.
-- Add `Routes.Products.Detail` if missing; add `BusyKeys.Cart.Add`.
-- Write bUnit component tests.
-
-### Phase 5 — End-to-end & polish
-- Run `/theshop.test add-to-cart` to verify the full test suite.
-- Run `/theshop.verify add-to-cart` to smoke-test the feature against the running app (user-facing features).
-- Run `/theshop.review add-to-cart` for quality + security review.
-- Run `/theshop.document` to add XML doc comments once the code is final.
-
-## 8. Acceptance Criteria → Task Mapping
-
-{Every AC in the spec must appear here, mapped to one or more tasks above. If any AC has no mapping, mark it `⛔ UNMAPPED` and surface it in Section 11.}
-
-| AC from spec | Maps to |
-|---|---|
-| AC-1: User can add an item from the product page and see it in cart | Phase 2 (`AddToCartHandler` happy path), Phase 4 (`ProductDetail.razor` wiring) |
-| AC-2: Cart cannot exceed 20 distinct items | Phase 1 (`Cart.AddItem` invariant), Phase 1 tests |
-| AC-3: {...} | {...} |
-
-## 9. Validation & Error Handling Strategy
-
-### Validators (Application layer)
-- `AddToCartCommandValidator`:
-  - `ProductId` is not empty → `Strings.ProductId_Required`
-  - `Quantity` between 1 and 99 → `Strings.Quantity_OutOfRange`
-
-### Domain exceptions
-- `CartCapacityExceededException` — thrown when `Cart.AddItem` would push count over 20. `MessageKey = nameof(Strings.CartCapacityExceeded)`.
-- `InsufficientStockException` — thrown when `quantity > product.Stock`. `MessageKey = nameof(Strings.InsufficientStock)`.
-
-### Result.Fail error keys (new entries in `Strings.resx`)
-| Key | English text |
-|---|---|
-| `Strings.ProductNotFound` | "Product not found." |
-| `Strings.CartCapacityExceeded` | "Your cart is full. Remove an item to add another." |
-| `Strings.InsufficientStock` | "Not enough stock available." |
-| `Strings.Quantity_OutOfRange` | "Please choose a quantity between 1 and 99." |
-
-All keys must be mirrored in `Strings.fr.resx` (placeholder `[TODO]` is acceptable for the first pass).
-
-## 10. Database Schema & RLS Policies
-
-### Schema
-```sql
-CREATE TABLE carts (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    customer_id UUID NOT NULL REFERENCES auth.users(id),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE TABLE cart_items (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    cart_id UUID NOT NULL REFERENCES carts(id) ON DELETE CASCADE,
-    product_id UUID NOT NULL REFERENCES products(id),
-    unit_price NUMERIC(10,2) NOT NULL,
-    quantity INTEGER NOT NULL CHECK (quantity > 0)
-);
-
-CREATE INDEX idx_cart_items_cart_id ON cart_items(cart_id);
-```
-
-### RLS policies (these are the only real security boundary — per `rules/architecture-admin.md`)
-```sql
-ALTER TABLE carts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE cart_items ENABLE ROW LEVEL SECURITY;
-
--- Customers can only access their own cart
-CREATE POLICY "carts_customer_access" ON carts
-    FOR ALL USING (customer_id = auth.uid());
-
-CREATE POLICY "cart_items_customer_access" ON cart_items
-    FOR ALL USING (
-        cart_id IN (SELECT id FROM carts WHERE customer_id = auth.uid())
-    );
-
--- Admin can read all (for support)
-CREATE POLICY "carts_admin_select" ON carts
-    FOR SELECT USING (auth.jwt() ->> 'role' = 'admin');
-```
-
-## 11. Open Questions, Risks & Assumptions
-
-{List anything unresolved. Each item is one of three labels:}
-
-- **❓ Open question** — the spec didn't say, and the answer materially affects the plan. Must be answered before implementation starts.
-- **⚠️ Risk** — something that could go wrong even with a correct implementation (e.g., race condition under high concurrency, third-party dependency reliability).
-- **📌 Assumption** — a judgment call you made to fill a spec gap. Surface it so the team can ratify or override.
-
-{Examples:}
-
-- **❓ Open question:** The spec doesn't say whether a cart expires for inactive customers. Do we want a TTL? If yes, what value?
-- **⚠️ Risk:** Two browser tabs adding the same product concurrently could result in duplicate `cart_items` rows. Mitigation: handle as part of Phase 3 (use `INSERT ... ON CONFLICT` on a unique `(cart_id, product_id)` index).
-- **📌 Assumption:** Cart capacity of 20 distinct items is exactly that — not 20 units. A single product with quantity 50 counts as one item.
-
----
-**Status:** Draft · **Spec:** `.specs/{file_name}/spec.md` · **Created:** {YYYY-MM-DD}
-
-<!-- Status lifecycle: "Draft" → "Resolved" once /theshop.resolve settles every ❓ open question and ratifies every 📌 assumption in Section 11 (accepted ⚠️ risks may remain, labeled). /theshop.implement warns while the plan is still Draft. -->
-```
+The canonical template lives at **`.claude/skills/theshop.plan/templates/plan-template.md`** — read it in step 6 and follow it exactly. It is the single source of truth for the plan structure; this file intentionally does not duplicate it.
 
 ---
 
@@ -450,7 +230,7 @@ CREATE POLICY "carts_admin_select" ON carts
 - **Every edge case in the spec must have a concrete handling strategy** in Section 9 (validator catches it, domain exception throws, or handler returns `Result.Fail`).
 - **Every constraint in the spec must be reflected** in either a design decision (Section 5), a validator (Section 9), or a database constraint (Section 10).
 - **Use the project's actual names.** `ShopColors`, `ShopIcons`, `Strings.{KeyName}`, `Result<T>`, `nameof(Strings.X)`, `MediatR`, `MudBlazor`. No invented terminology.
-- **Stay testable.** Every phase in Section 7 should be independently committable and produce something that runs.
+- **Stay testable.** Every Section 7 step should end in a buildable state, and every TASK should be one committable outcome.
 - **Surface gaps, don't paper over them.** Section 11 (Open Questions) is where you say "we don't know yet" — and that's a feature, not a failure of the plan.
 - **Keep it tight.** A good plan for a typical feature is 3–6 pages. If you're past that, either the feature is too big and should be split, or the plan is over-specifying (e.g., reading like code).
 
@@ -486,13 +266,13 @@ CREATE POLICY "carts_admin_select" ON carts
 
 > User: `/theshop.plan user-authentication --figma https://www.figma.com/file/XXXXX/TheShop?node-id=42-100`
 >
-> Skill: extracts file key `XXXXX` and node ID `42:100` from the URL → calls `figma_get_component_for_development` on node `42:100` → records child node IDs and visual intent in Phase 4 → no prompting needed.
+> Skill: extracts file key `XXXXX` and node ID `42:100` from the URL → calls `figma_get_component_for_development` on node `42:100` → records child node IDs and visual intent in Section 7 Step 5 (Web) → no prompting needed.
 
 **Example 6 — No `--figma` supplied, spec implies UI:**
 
 > User: `/theshop.plan user-authentication`
 >
-> Skill: detects Phase 4 (UI) in the plan → asks: "This feature has a UI phase. Do you have a Figma link or node ID for it?" → user replies with URL or node ID → skill fetches and records IDs → continues.
+> Skill: detects a Web step (Section 7 Step 5) in the plan → asks: "This feature has a UI phase. Do you have a Figma link or node ID for it?" → user replies with URL or node ID → skill fetches and records IDs → continues.
 >
 > If user replies `skip` → Figma references section is omitted; open question logged in Section 11.
 
@@ -500,4 +280,4 @@ CREATE POLICY "carts_admin_select" ON carts
 
 > User: `/theshop.plan add-to-cart --desc reuse the existing CartState store; enforce a unique (cart_id, product_id) index to handle double-add --figma 123:456`
 >
-> Skill: parses feature name `add-to-cart`, description, and Figma node → folds the direction into the plan (CartState reuse lands in Phase 4, the unique index in Section 10 / the concurrency risk's mitigation) citing "per user direction" → anything in the description that would change product scope is flagged back to the spec instead of planned.
+> Skill: parses feature name `add-to-cart`, description, and Figma node → folds the direction into the plan (CartState reuse lands in Section 7 Step 5, the unique index in Section 10 / the concurrency risk's mitigation) citing "per user direction" → anything in the description that would change product scope is flagged back to the spec instead of planned.

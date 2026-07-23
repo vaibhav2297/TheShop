@@ -34,10 +34,11 @@
 
 ## Admin (only if the change touches admin)
 
-- [ ] Admin pages live under `Pages/Admin/` and inherit layout + `[Authorize(Roles = "admin")]` from `_Imports.razor`?
-- [ ] Every Supabase table holding admin-only or user-scoped data has an RLS policy?
-- [ ] Customer-scoped tables filter by `customer_id = auth.uid()`?
-- [ ] Admin promotion sequence runs the SQL update **and** logs the user out/in so the JWT carries the new role?
+- [ ] Admin pages live under `Pages/Admin/`, inheriting `[Authorize(Policy = PolicyNames.AdminArea)]` from `_Imports.razor`?
+- [ ] Every admin capability is gated on its specific `PermissionCatalogue` permission (never a role name): `AuthorizeView Policy="@PolicyNames.Permission(...)"` in UI, `[RequiresPermission]` on the command/query, `(SELECT public.authorize('module.action'))` in RLS?
+- [ ] Every Supabase table holding admin-only or user-scoped data has an RLS policy? Sensitive operations (role management, refunds, customer export) use `authorize_fresh()`?
+- [ ] Customer-scoped tables filter by `auth.uid()`?
+- [ ] New capabilities introduce their own catalogue permission — no "is an Admin" shortcuts or ungated features?
 
 ## Tests (Rule 29)
 

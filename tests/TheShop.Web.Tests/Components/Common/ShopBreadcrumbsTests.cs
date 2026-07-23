@@ -122,7 +122,7 @@ public class ShopBreadcrumbsTests : TestContext
         // AC-2: admin trail must begin at Dashboard as a clickable link.
         var cut = Render<ShopBreadcrumbs>(p => p.Add(c => c.Items, AdminTrail()));
 
-        cut.Find($"a[href='{Routes.Admin.Dashboard}']").Should().NotBeNull(
+        cut.Find($"a[href='{Routes.Admin.Console}']").Should().NotBeNull(
             "the Dashboard root item in an admin trail must be a link");
     }
 

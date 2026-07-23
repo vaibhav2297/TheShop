@@ -16,8 +16,8 @@ namespace TheShop.Infrastructure;
 public static class DependencyInjection
 {
     /// <summary>
-    /// Adds Supabase authentication, product repository, and image storage services to the
-    /// dependency container.
+    /// Adds Supabase authentication, product/brand repositories, and file storage services to
+    /// the dependency container.
     /// </summary>
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
@@ -34,7 +34,8 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, SupabaseAuthService>();
         services.AddScoped<ICustomerRepository, SupabaseCustomerRepository>();
         services.AddScoped<IProductRepository, SupabaseProductRepository>();
-        services.AddScoped<IProductImageStorage, SupabaseProductImageStorage>();
+        services.AddScoped<IBrandRepository, SupabaseBrandRepository>();
+        services.AddScoped<IFileStorage, SupabaseFileStorage>();
 
         return services;
     }

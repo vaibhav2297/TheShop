@@ -31,7 +31,7 @@ internal static class ProductMapper
         var pricing = ProductPricing.Create(originalPrice, salePrice);
 
         var category = Category.Create(record.Category.Id, record.Category.Name, record.Category.Slug);
-        var brand = Brand.Create(record.Brand.Id, record.Brand.Name, record.Brand.Slug);
+        var brand = Brand.Rehydrate(record.Brand.Id, record.Brand.Name, record.Brand.Slug);
 
         var imageUrl = !string.IsNullOrWhiteSpace(record.ImagePath)
             ? resolvePublicUrl(record.ImagePath)
