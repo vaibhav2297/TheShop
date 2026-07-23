@@ -95,8 +95,16 @@ public static class PermissionCatalogue
         public static readonly Permission Delete = Permission.Create("roles.delete");
     }
 
+    public static class Brands
+    {
+        public static readonly Permission View = Permission.Create("brands.view");
+        public static readonly Permission Create = Permission.Create("brands.create");
+        public static readonly Permission Edit = Permission.Create("brands.edit");
+        public static readonly Permission Delete = Permission.Create("brands.delete");
+    }
+
     /// <summary>
-    /// Every permission defined by the catalogue, across all ten modules. This is the
+    /// Every permission defined by the catalogue, across all eleven modules. This is the
     /// generation source for the <c>permissions</c> table seed (FR-3).
     /// </summary>
     public static readonly IReadOnlyList<Permission> All =
@@ -111,6 +119,7 @@ public static class PermissionCatalogue
         Settings.View, Settings.Create, Settings.Edit, Settings.Delete,
         AdminUsers.View, AdminUsers.Create, AdminUsers.Edit, AdminUsers.Delete,
         Roles.View, Roles.Create, Roles.Edit, Roles.Delete,
+        Brands.View, Brands.Create, Brands.Edit, Brands.Delete,
     ];
 
     /// <summary>

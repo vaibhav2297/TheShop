@@ -1,0 +1,77 @@
+@inherits MudComponentBase
+@using Microsoft.AspNetCore.Components.Forms
+@using TheShop.Web.Theme
+
+<MudStack Class="@Classname"
+          Style="@Stylename"
+          Spacing="2"
+          UserAttributes="@UserAttributes">
+
+    @* Only the dropzone lives inside the file upload; previews and the remove button are rendered
+       as siblings below so a remove click never re-triggers the picker. *@
+    <MudFileUpload @ref="_fileUpload"
+                   T="IReadOnlyList<IBrowserFile>"
+                   FilesChanged="OnFilesChangedAsync"
+                   Accept="@Accept"
+                   MaximumFileCount="@EffectiveMaxFileCount"
+                   Disabled="@Disabled"
+                   AppendMultipleFiles=@(Multiple)>
+
+        <CustomContent Context="upload">
+
+            @* CustomContent is not auto-wired like ActivatorContent, so the dropzone opens the
+               picker explicitly through the MudFileUpload context on click. *@
+            <MudStack Style="@DropzoneStyle"
+                      Class="border-dashed rounded-0 border cursor-pointer mud-border-lines-default"
+                      AlignItems="AlignItems.Center"
+                      Justify="Justify.Center"
+                      Spacing="4"
+                      @onclick="@(() => OpenPickerAsync(upload))">
+
+                <MudIcon Icon="@ShopIcons.Outlined.Add_Plus" Color="Color.Primary" />
+
+                <MudText Typo="Typo.subtitle2">@UploadText</MudText>
+
+            </MudStack>
+
+        </CustomContent>
+
+    </MudFileUpload>
+
+    @* Previews are only rendered once at least one image is present. *@
+    @if (Files.Count > 0)
+    {
+        <MudStack Row
+                  Class="previews"
+                  Spacing="4">
+            @foreach (var image in Files)
+            {
+                <MudStack Class="preview mud-tertiary"
+                          Style="@PreviewStyle"
+                          AlignItems="AlignItems.Center"
+                          Justify="Justify.Center">
+
+                    <MudImage Src="@image.PreviewUrl"
+                              Alt="@PreviewAlt"
+                              ObjectFit="ObjectFit.Cover"
+                              Class="image" />
+
+                    <MudIconButton Icon="@ShopIcons.Outlined.Close_SM"
+                                   Class="remove"
+                                   Size="Size.Small"
+                                   Color="Color.Secondary"
+                                   OnClick="@(() => RemoveAsync(image))"
+                                   aria-label="@RemoveLabel"
+                                   Disabled="@Disabled" />
+
+                </MudStack>
+            }
+        </MudStack>
+    }
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <MudText Typo="Typo.caption" Color="Color.Error">@_error</MudText>
+    }
+
+</MudStack>

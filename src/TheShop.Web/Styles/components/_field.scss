@@ -8,6 +8,12 @@
         padding-bottom: 18.5px;
     }
 
+    // The filled textarea reserves label space with margin-top: 27px; drop it
+    // so the multiline field aligns to the top like the single-line input.
+    > textarea {
+        margin-top: 0;
+    }
+
     .mud-input-adornment {
         margin-top: 0;
     }

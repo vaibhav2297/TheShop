@@ -735,4 +735,100 @@
   <data name="Permission_Roles_Delete" xml:space="preserve">
     <value>Delete Roles</value>
   </data>
+  <data name="Permission_Brands_View" xml:space="preserve">
+    <value>View Brands</value>
+  </data>
+  <data name="Permission_Brands_Create" xml:space="preserve">
+    <value>Create Brands</value>
+  </data>
+  <data name="Permission_Brands_Edit" xml:space="preserve">
+    <value>Edit Brands</value>
+  </data>
+  <data name="Permission_Brands_Delete" xml:space="preserve">
+    <value>Delete Brands</value>
+  </data>
+  <data name="Brand_NameRequired" xml:space="preserve">
+    <value>Brand name is required.</value>
+  </data>
+  <data name="Brand_NameTooLong" xml:space="preserve">
+    <value>Brand name must be 100 characters or fewer.</value>
+  </data>
+  <data name="Brand_DescriptionTooLong" xml:space="preserve">
+    <value>Description must be 250 characters or fewer.</value>
+  </data>
+  <data name="Brand_AlreadyExists" xml:space="preserve">
+    <value>A brand with this name already exists.</value>
+  </data>
+  <data name="Brand_SlugConflict" xml:space="preserve">
+    <value>A brand with a similar name already exists. Please choose a more distinct name.</value>
+  </data>
+  <data name="Brand_LogoInvalidType" xml:space="preserve">
+    <value>Logo must be a PNG, JPG, or WebP image.</value>
+  </data>
+  <data name="Brand_LogoTooLarge" xml:space="preserve">
+    <value>Logo must be 2 MB or smaller.</value>
+  </data>
+  <data name="Brand_CreateFailed" xml:space="preserve">
+    <value>The brand could not be created. Please try again.</value>
+  </data>
+  <data name="Brand_Created" xml:space="preserve">
+    <value>Brand created.</value>
+  </data>
+  <data name="AddBrand_PageTitle" xml:space="preserve">
+    <value>Add Brand</value>
+  </data>
+  <data name="AddBrand_Heading" xml:space="preserve">
+    <value>Create Brand</value>
+  </data>
+  <data name="AddBrand_NameLabel" xml:space="preserve">
+    <value>Brand Name</value>
+  </data>
+  <data name="AddBrand_NamePlaceholder" xml:space="preserve">
+    <value>Enter brand name</value>
+  </data>
+  <data name="AddBrand_DescriptionLabel" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="AddBrand_DescriptionPlaceholder" xml:space="preserve">
+    <value>Enter a description (optional)</value>
+  </data>
+  <data name="AddBrand_LogoLabel" xml:space="preserve">
+    <value>Logo</value>
+  </data>
+  <data name="AddBrand_LogoUploadButton" xml:space="preserve">
+    <value>Add Logo</value>
+  </data>
+  <data name="AddBrand_LogoRemove" xml:space="preserve">
+    <value>Remove logo</value>
+  </data>
+  <data name="AddBrand_StatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="AddBrand_StatusActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="AddBrand_StatusInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="AddBrand_SaveButton" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="AddBrand_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ManageBrands_PageTitle" xml:space="preserve">
+    <value>Manage Brands</value>
+  </data>
+  <data name="ManageBrands_Heading" xml:space="preserve">
+    <value>Brands</value>
+  </data>
+  <data name="ManageBrands_ShellNotice" xml:space="preserve">
+    <value>Full brand management is coming soon.</value>
+  </data>
+  <data name="Admin_Console" xml:space="preserve">
+    <value>Admin Console</value>
+  </data>
+  <data name="Nav_AdminConsole" xml:space="preserve">
+    <value>Admin Console</value>
+  </data>
 </root>

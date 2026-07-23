@@ -22,14 +22,14 @@ public sealed class BreadcrumbTrail
         new([new BreadcrumbItem(Strings.Nav_Home, Routes.Home)]);
 
     /// <summary>
-    /// Starts an admin trail, seeding it with the Dashboard root item.
+    /// Starts an admin trail, seeding it with the Console root item.
     /// </summary>
     /// <remarks>
     /// Only call this from pages that are already protected by admin authorization and
     /// the corresponding Supabase RLS policies. See <see cref="Routes.Admin"/> for details.
     /// </remarks>
     public static BreadcrumbTrail Admin() =>
-        new([new BreadcrumbItem(Strings.Nav_Dashboard, Routes.Admin.Dashboard)]);
+        new([new BreadcrumbItem(Strings.Nav_AdminConsole, Routes.Admin.Console)]);
 
     /// <summary>
     /// Appends a clickable intermediate crumb. Pass <c>null</c> for

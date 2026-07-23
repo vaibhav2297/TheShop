@@ -18,7 +18,7 @@ public class ProductDtoMapperTests
         Category.Create(Guid.NewGuid(), "Disposables", "disposables");
 
     private static Brand ExampleBrand() =>
-        Brand.Create(Guid.NewGuid(), "Elf Bar", "elf-bar");
+        Brand.Rehydrate(Guid.NewGuid(), "Elf Bar", "elf-bar");
 
     private static Product BuildProduct(
         ProductPricing? pricing = null,

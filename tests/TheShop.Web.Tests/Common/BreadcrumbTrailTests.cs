@@ -71,7 +71,7 @@ public class BreadcrumbTrailTests
         // AC-3: Dashboard root must link to the admin dashboard route.
         var trail = BreadcrumbTrail.Admin().Current("Products");
 
-        trail[0].Href.Should().Be(Routes.Admin.Dashboard);
+        trail[0].Href.Should().Be(Routes.Admin.Console);
     }
 
     [Fact]

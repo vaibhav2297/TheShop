@@ -4,10 +4,13 @@
 # prove its output meets the contract instead of asserting it.
 #
 # Modes:
-#   spec      -Feature x              spec.md template conformance, FR/AC id sequence,
-#                                     footer <-> appendix consistency
-#   plan      -Feature x              plan.md template conformance, AC coverage vs the
-#                                     spec, Section 11 <-> footer consistency
+#   spec      -Feature x              spec.md template conformance (incl. Scope/Actors
+#                                     sub-sections, Business Rules RULE ids, Given/When/
+#                                     Then ACs), FR/AC id sequence, footer <-> appendix
+#                                     consistency
+#   plan      -Feature x              plan.md template conformance (incl. Section 7
+#                                     TASK id sequence), AC coverage vs the spec with
+#                                     AC -> TASK mapping, Section 11 <-> footer consistency
 #   manifest  -Feature x              test-manifest.json: count arithmetic, AC ids vs
 #                                     spec, listed files exist, feature trait stamped
 #   compile   -Feature x              dotnet-builds every test project the manifest
@@ -125,8 +128,10 @@ function Test-SpecGate([string]$F) {
     $s1 = Get-NumberedSection $c 1
     if ($s1) {
         if ($s1 -notmatch '\*\*Solution \(one line\):\*\*') { Fail "Section 1 missing '**Solution (one line):**'" }
+        if ($s1 -notmatch '(?m)^### Scope\s*$') { Fail "Section 1 missing the '### Scope' sub-section" }
         if ($s1 -notmatch '\*\*In scope:\*\*')  { Fail "Section 1 missing '**In scope:**' block" }
         if ($s1 -notmatch '\*\*Out of scope:\*\*') { Fail "Section 1 missing '**Out of scope:**' block" }
+        if ($s1 -notmatch '(?m)^### Actors & Access\s*$') { Fail "Section 1 missing the '### Actors & Access' sub-section" }
     }
 
     $s2 = Get-NumberedSection $c 2
@@ -138,6 +143,13 @@ function Test-SpecGate([string]$F) {
     $s3 = Get-NumberedSection $c 3
     if ($s3 -and $s3 -notmatch '(?m)^### Behavior') { Fail "Section 3 has no '### Behavior n:' subsections" }
 
+    $s4 = Get-NumberedSection $c 4
+    if ($s4) {
+        if ($s4 -notmatch '(?m)^### Business Rules\s*$') { Fail "Section 4 missing the '### Business Rules' sub-section" }
+        $ruleIds = @([regex]::Matches($s4, '\*\*RULE-(\d+)\*\*') | ForEach-Object { [int]$_.Groups[1].Value } | Sort-Object -Unique)
+        if ($ruleIds.Count -gt 0) { Test-IdSequence $ruleIds 'RULE' 'Section 4' }
+    }
+
     $s5 = Get-NumberedSection $c 5
     if ($s5 -and $s5 -notmatch '\*\*Edge case:\*\*') { Fail "Section 5 has no '**Edge case:** ... -> **User experience:** ...' items" }
 
@@ -145,6 +157,12 @@ function Test-SpecGate([string]$F) {
     if ($s6) {
         $acIds = Get-SpecAcIds $c
         Test-IdSequence $acIds 'AC' 'Section 6'
+        foreach ($m in [regex]::Matches($s6, '(?m)^.*\*\*AC-\d+:\*\*.*$')) {
+            if ($m.Value -notmatch '(?i)\bgiven\b.*\bwhen\b.*\bthen\b') {
+                $snip = $m.Value.Trim(); if ($snip.Length -gt 80) { $snip = $snip.Substring(0, 80) + '...' }
+                Fail "AC not phrased 'Given ..., when ..., then ...': $snip"
+            }
+        }
     }
 
     # Footer
@@ -185,7 +203,18 @@ function Test-PlanGate([string]$F) {
         elseif ($t -notlike "*$($keywords[$i-1])*") { Fail "section $i title '$t' does not match the template's '$($keywords[$i-1])' section" }
     }
 
-    # AC coverage: every AC in the spec must be mapped in Section 8.
+    # Section 7: agent execution plan - TASK ids defined as checklist items must be
+    # unique and sequential from 001 (continuous across steps, never reset per layer).
+    $s7 = Get-NumberedSection $c 7
+    $definedTasks = @()
+    if ($s7) {
+        $taskIds = @([regex]::Matches($s7, '\*\*TASK-(\d{3})\*\*') | ForEach-Object { [int]$_.Groups[1].Value } | Sort-Object -Unique)
+        Test-IdSequence $taskIds 'TASK' 'Section 7'
+        $definedTasks = @($taskIds | ForEach-Object { 'TASK-{0:d3}' -f $_ })
+    }
+
+    # AC coverage: every AC in the spec must be mapped in Section 8, to at least one
+    # TASK id, and every TASK id Section 8 references must be defined in Section 7.
     $spec = Read-Doc ".specs/$F/spec.md"
     if (-not $spec) { Fail "companion spec .specs/$F/spec.md not found - cannot verify AC coverage" }
     else {
@@ -194,7 +223,13 @@ function Test-PlanGate([string]$F) {
         if ($acIds.Count -eq 0) { Fail 'spec Section 6 has no **AC-n:** items to map' }
         elseif ($s8) {
             foreach ($id in $acIds) {
-                if ($s8 -notmatch "\bAC-$id\b") { Fail "AC-$id from the spec is not mapped in plan Section 8" }
+                $rows = @(($s8 -split "`n") | Where-Object { $_ -match "\bAC-$id\b" })
+                if ($rows.Count -eq 0) { Fail "AC-$id from the spec is not mapped in plan Section 8" }
+                elseif (-not @($rows | Where-Object { $_ -match 'TASK-\d{3}' })) { Fail "AC-$id is mapped in plan Section 8 but names no TASK id" }
+            }
+            foreach ($m in [regex]::Matches($s8, '\bTASK-(\d{3})\b')) {
+                $tid = "TASK-$($m.Groups[1].Value)"
+                if ($definedTasks -notcontains $tid) { Fail "plan Section 8 references $tid, which is not defined in Section 7" }
             }
         }
     }

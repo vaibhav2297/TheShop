@@ -1,0 +1,117 @@
+@using TheShop.Domain.ValueObjects
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.AddBrand_PageTitle</PageTitle>
+
+<AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Create.Code)">
+    <Authorized>
+        <MudStack Class="pa-8" Spacing="6">
+            <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.AddBrand_Heading</MudText>
+
+            <MudForm @ref="_form" @bind-IsValid="_isFormValid" SuppressImplicitSubmission="true">
+                <BusyFor Key="@BusyKeys.Brands.AddBrand" Context="busy">
+                    <MudGrid Spacing="6">
+
+                        @* Logo upload — Figma node 2490:1257 / 2493:6632 *@
+                        <MudItem xs="12"
+                                 sm="4"
+                                 md="3">
+
+                            <ShopImageUpload Files="_logoImages"
+                                             FilesChanged="OnLogoImagesChanged"
+                                             UploadText="@Strings.AddBrand_LogoUploadButton"
+                                             RemoveLabel="@Strings.AddBrand_LogoRemove"
+                                             PreviewAlt="@Strings.AddBrand_LogoLabel"
+                                             InvalidTypeError="@Strings.Brand_LogoInvalidType"
+                                             MaxFileSizeError="@Strings.Brand_LogoTooLarge"
+                                             Multiple
+                                             Disabled="@busy" />
+
+                        </MudItem>
+
+                        @* Fields + status + actions — Figma node 2493:4238 *@
+                        <MudItem xs="12"
+                                 sm="8"
+                                 md="9">
+                            <MudStack Spacing="4">
+                                <MudTextField T="string"
+                                              @bind-Value="_name"
+                                              Placeholder="@Strings.AddBrand_NamePlaceholder"
+                                              Variant="Variant.Filled"
+                                              Typo="Typo.body2"
+                                              FullWidth="true"
+                                              Required="true"
+                                              Disabled="@busy"
+                                              OnlyValidateIfDirty
+                                              Validation="@_nameValidation"
+                                              RequiredError="@Strings.Brand_NameRequired"
+                                              Immediate="true" />
+
+                                <MudTextField T="string"
+                                              @bind-Value="_description"
+                                              Placeholder="@Strings.AddBrand_DescriptionPlaceholder"
+                                              Variant="Variant.Filled"
+                                              Typo="Typo.body2"
+                                              FullWidth="true"
+                                              Lines="3"
+                                              Disabled="@busy"
+                                              Validation="@_descriptionValidation"
+                                              Immediate="true" />
+
+                                <MudDivider />
+
+                                @* Status — two-option single-select toggle, Figma node 2496:6638, defaults Active *@
+                                <MudStack Spacing="2">
+                                    <MudText Typo="Typo.subtitle2"
+                                             Color="Color.Secondary">@Strings.AddBrand_StatusLabel</MudText>
+                                    <MudChipSet T="bool"
+                                                SelectionMode="SelectionMode.SingleSelection"
+                                                @bind-SelectedValue="_isActive"
+                                                CheckMark="false">
+                                        <MudChip Value="true"
+                                                 Disabled="@busy"
+                                                 SelectedColor="Color.Primary"
+                                                 Color="Color.Default"
+                                                 Variant="Variant.Outlined">@Strings.AddBrand_StatusActive</MudChip>
+
+                                        <MudChip Value="false"
+                                                 Disabled="@busy"
+                                                 SelectedColor="Color.Primary"
+                                                 Color="Color.Default"
+                                                 Variant="Variant.Outlined">@Strings.AddBrand_StatusInactive</MudChip>
+                                    </MudChipSet>
+                                </MudStack>
+
+                                <MudDivider />
+
+                                @* Actions — Figma node 2493:4247 *@
+                                <MudStack Row="true" Spacing="3">
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Disabled="@(!_isFormValid || busy)"
+                                               OnClick="SaveAsync">
+                                        @if (busy)
+                                        {
+                                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                        }
+                                        @Strings.AddBrand_SaveButton
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Outlined"
+                                               Disabled="@busy"
+                                               Href="@Routes.Admin.ManageBrands">
+                                        @Strings.AddBrand_CancelButton
+                                    </MudButton>
+                                </MudStack>
+                            </MudStack>
+                        </MudItem>
+
+                    </MudGrid>
+                </BusyFor>
+            </MudForm>
+        </MudStack>
+    </Authorized>
+    <NotAuthorized>
+        <AccessDeniedView />
+    </NotAuthorized>
+</AuthorizeView>

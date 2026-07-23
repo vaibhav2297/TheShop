@@ -1,0 +1,26 @@
+@using TheShop.Domain.ValueObjects
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.ManageBrands_PageTitle</PageTitle>
+
+<AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.View.Code)">
+    <Authorized>
+        <MudStack Class="pa-8" Spacing="4">
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.ManageBrands_Heading</MudText>
+                <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Create.Code)" Context="createAuth">
+                    <Authorized>
+                        <MudButton Href="@Routes.Admin.AddBrand" Variant="Variant.Filled" Color="Color.Primary">
+                            @Strings.AddBrand_Heading
+                        </MudButton>
+                    </Authorized>
+                </AuthorizeView>
+            </MudStack>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">@Strings.ManageBrands_ShellNotice</MudText>
+        </MudStack>
+    </Authorized>
+    <NotAuthorized>
+        <AccessDeniedView />
+    </NotAuthorized>
+</AuthorizeView>

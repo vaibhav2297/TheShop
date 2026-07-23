@@ -1,0 +1,34 @@
+// ─── Image upload previews ───────────────────────────────────────────────────
+// Styles for ShopImageUpload. Per-instance thumbnail size and dropzone height are
+// driven from parameters via inline Style; only the static layout lives here.
+// Child selectors are scoped under the root so their names can stay short.
+.shop-image-upload {
+
+    // Horizontal preview strip. Scrolls when multiple thumbnails overflow the row.
+    .previews {
+        overflow-x: auto;
+    }
+
+    // Each thumbnail is the positioning context for its remove button and must keep
+    // its parameter-driven size instead of shrinking to fit the scrolling row.
+    .preview {
+        position: relative;
+        flex: 0 0 auto;
+        overflow: hidden;
+    }
+
+    // Fill the thumbnail frame; ObjectFit="Cover" on MudImage handles cropping.
+    .image {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    // Pinned to the top-right corner of its thumbnail; the surface token keeps the
+    // icon legible over any image.
+    .remove {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+}
