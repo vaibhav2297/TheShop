@@ -1,0 +1,71 @@
+@* Components/Common/ProfileMenu.razor *@
+@using TheShop.Web.Common
+
+<MudMenu AnchorOrigin="Origin.BottomRight"
+         TransformOrigin="Origin.TopRight"
+         ListClass="pa-0"
+         PopoverClass="pa-4">
+
+    <ActivatorContent>
+        <MudIconButton Icon="@ShopIcons.Outlined.User_02"
+                       Color="Color.Primary"
+                       aria-label="@Strings.Nav_Account"
+                       OnClick="@context.ToggleAsync" />
+    </ActivatorContent>
+
+    <ChildContent>
+
+        @* Identity header — name shows once the customer profile has loaded *@
+        <MudStack Spacing="0"
+                  Style="min-width: 280px;">   <!-- exception width style do not provide like this elsewhere -->
+
+            @if (!string.IsNullOrWhiteSpace(_displayName))
+            {
+                <MudText Typo="Typo.subtitle1">@_displayName</MudText>
+            }
+
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@_email</MudText>
+
+        </MudStack>
+
+        <MudDivider Class="mb-1 mt-3" />
+
+        <MudMenuItem Icon="@ShopIcons.Outlined.User_02"
+                     Href="@Routes.Profile"
+                     IconColor="Color.Primary">
+
+            <MudText Typo="Typo.button">@Strings.Nav_MyProfile</MudText>
+        </MudMenuItem>
+
+        <MudMenuItem Icon="@ShopIcons.Outlined.Folder"
+                     IconColor="Color.Primary"
+                     Href="@Routes.Orders">
+            <MudText Typo="Typo.button">@Strings.Nav_Orders</MudText>
+        </MudMenuItem>
+
+        <MudMenuItem Icon="@ShopIcons.Outlined.Heart_01"
+                     IconColor="Color.Primary"
+                     Href="@Routes.Wishlist">
+            <MudText Typo="Typo.button">@Strings.Nav_Wishlist</MudText>
+        </MudMenuItem>
+
+        <AuthorizeView Policy="@PolicyNames.AdminArea">
+            <Authorized>
+                <MudMenuItem Icon="@ShopIcons.Outlined.Shield"
+                             IconColor="Color.Primary"
+                             Href="@Routes.Admin.Console">
+                    <MudText Typo="Typo.button">@Strings.Nav_AdminConsole</MudText>
+                </MudMenuItem>
+            </Authorized>
+        </AuthorizeView>
+
+        <MudDivider Class="my-1" />
+
+        <MudMenuItem Icon="@ShopIcons.Outlined.Log_Out"
+                     IconColor="Color.Error"
+                     OnClick="OnSignOutAsync">
+            <MudText Typo="Typo.button">@Strings.Logout</MudText>
+        </MudMenuItem>
+
+    </ChildContent>
+</MudMenu>

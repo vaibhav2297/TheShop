@@ -4,3 +4,7 @@
 .mud-button-filled {
     box-shadow: none;
 }
+
+.mud-button-outlined {
+    border: 1px solid var(--mud-palette-lines-inputs);
+}

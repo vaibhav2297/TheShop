@@ -2,8 +2,7 @@
 @using TheShop.Web.Resources
 @using TheShop.Web.Theme
 
-<MudAppBar Color="Color.Surface"
-           Elevation="0"
+<MudAppBar Elevation="0"
            Fixed="false">
             
     <MudGrid Justify="Justify.SpaceBetween"
@@ -54,21 +53,7 @@
                 <AuthorizeView>
 
                     <Authorized>
-
-                        <MudMenu Icon="@ShopIcons.Outlined.User_02"
-                                 Color="Color.Primary"
-                                 AnchorOrigin="Origin.BottomRight"
-                                 TransformOrigin="Origin.TopRight"
-                                 aria-label="@Strings.Nav_Account">
-
-                            <AuthorizeView Policy="@PolicyNames.AdminArea" Context="adminContext">
-                                <Authorized>
-                                    <MudMenuItem Href="@Routes.Admin.ManageProducts">@Strings.Nav_AdminPanel</MudMenuItem>
-                                </Authorized>
-                            </AuthorizeView>
-
-                            <MudMenuItem OnClick="OnSignOutAsync">@Strings.Logout</MudMenuItem>
-                        </MudMenu>
+                        <ProfileMenu />
                     </Authorized>
 
                     <NotAuthorized>

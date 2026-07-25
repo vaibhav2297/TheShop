@@ -1,0 +1,28 @@
+@inherits MudComponentBase
+
+<MudPaper Class="@ClassName"
+          Style="@Style"
+          Elevation="0"
+          Outlined>
+
+    <MudStack Justify="Justify.SpaceBetween" 
+              Class="pa-6" 
+              Spacing="12">
+
+        <MudStack Spacing="4">
+            <MudText Typo="Typo.h6"
+                     Class="text-transform-uppercase fs-18">@Label</MudText>
+            <MudText Typo="Typo.h2">@CountText</MudText>
+        </MudStack>
+
+        <MudButton Href="@Href"
+                   Variant="Variant.Outlined"
+                   Color="Color.Default"
+                   EndIcon="@ShopIcons.Outlined.Edit_Pencil_02"
+                   Class="align-self-start"
+                   aria-label="@AriaLabel">
+            @ManageLabel
+        </MudButton>
+    </MudStack>
+
+</MudPaper>

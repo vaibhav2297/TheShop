@@ -1,0 +1,103 @@
+{
+  "feature": "admin-console",
+  "trait": "admin-console",
+  "writtenAt": "2026-07-25",
+  "totalTests": 65,
+  "classes": [
+    {
+      "fqn": "TheShop.Application.Tests.Features.Admin.Queries.GetAdminDashboard.GetAdminDashboardHandlerTests",
+      "file": "tests/TheShop.Application.Tests/Features/Admin/Queries/GetAdminDashboard/GetAdminDashboardHandlerTests.cs",
+      "tests": 7
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Admin.AdminDashboardCatalogueTests",
+      "file": "tests/TheShop.Application.Tests/Features/Admin/AdminDashboardCatalogueTests.cs",
+      "tests": 7
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Components.Admin.AdminModuleCardTests",
+      "file": "tests/TheShop.Web.Tests/Components/Admin/AdminModuleCardTests.cs",
+      "tests": 16
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Pages.Admin.AdminConsoleTests",
+      "file": "tests/TheShop.Web.Tests/Pages/Admin/AdminConsoleTests.cs",
+      "tests": 7
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Components.Common.ProfileMenuTests",
+      "file": "tests/TheShop.Web.Tests/Components/Common/ProfileMenuTests.cs",
+      "tests": 2
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Resources.AdminConsoleLocalizationTests",
+      "file": "tests/TheShop.Web.Tests/Resources/AdminConsoleLocalizationTests.cs",
+      "tests": 13
+    },
+    {
+      "fqn": "TheShop.Infrastructure.Tests.Persistence.SupabaseAdminDashboardRepositorySchemaTests",
+      "file": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseAdminDashboardRepositorySchemaTests.cs",
+      "tests": 13
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Application.Tests.Features.Admin.Queries.GetAdminDashboard.GetAdminDashboardHandlerTests.Handle_WhenAllFiveModulesArePermitted_ReturnsAllFiveCardsWithTheirCounts",
+        "TheShop.Application.Tests.Features.Admin.Queries.GetAdminDashboard.GetAdminDashboardHandlerTests.Handle_WhenAllFiveModulesArePermitted_ReturnsThemInCatalogueDisplayOrder",
+        "TheShop.Web.Tests.Pages.Admin.AdminConsoleTests.Render_WhenAllFiveModulesArePermitted_ShowsFiveModuleCardsWithTheirCounts",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseAdminDashboardRepositorySchemaTests.AdminModuleCount_ForProducts_WhenCallerHoldsProductsView_ReturnsAllProductsRegardlessOfPublishedStatus",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseAdminDashboardRepositorySchemaTests.AdminModuleCount_ForCategories_WhenCallerHoldsCategoriesView_ReturnsTheTrueCategoryCount",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseAdminDashboardRepositorySchemaTests.AdminModuleCount_ForBrands_WhenCallerHoldsBrandsView_ReturnsAllBrandsRegardlessOfActiveStatus",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseAdminDashboardRepositorySchemaTests.AdminModuleCount_ForUsers_WhenCallerHoldsAdminUsersView_ReturnsTheFullAuthUsersTotal",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseAdminDashboardRepositorySchemaTests.AdminModuleCount_ForRoles_WhenCallerHoldsRolesView_ReturnsTheTrueRoleCount"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Web.Tests.Components.Admin.AdminModuleCardTests.Render_ForEachModule_LinksToItsManagementPage"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Application.Tests.Features.Admin.Queries.GetAdminDashboard.GetAdminDashboardHandlerTests.Handle_WhenAdminHoldsOnlySomeModulePermissions_ReturnsOnlyThePermittedModules",
+        "TheShop.Application.Tests.Features.Admin.AdminDashboardCatalogueTests.Modules_Always_PairsEachModuleWithItsCataloguePermissionCode",
+        "TheShop.Web.Tests.Pages.Admin.AdminConsoleTests.Render_WhenAdminHoldsOnlySomeModulePermissions_ShowsOnlyThePermittedCards",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseAdminDashboardRepositorySchemaTests.AdminModuleCount_WhenCallerHoldsNoAdminPermissions_ThrowsInsufficientPrivilege"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Application.Tests.Features.Admin.Queries.GetAdminDashboard.GetAdminDashboardHandlerTests.Handle_WhenCallerIsUnauthenticated_ReturnsEmptyModulesListAndNeverCounts",
+        "TheShop.Web.Tests.Pages.Admin.AdminConsoleTests.AdminConsole_Always_CarriesTheAdminAreaAuthorizePolicyFromTheFolderImports",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseAdminDashboardRepositorySchemaTests.AdminModuleCount_WhenCallerIsUnauthenticated_ThrowsInsufficientPrivilege"
+      ]
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Application.Tests.Features.Admin.Queries.GetAdminDashboard.GetAdminDashboardHandlerTests.Handle_WhenOneModulesCountThrows_ReturnsNullCountForThatModuleWhileOthersSucceed",
+        "TheShop.Web.Tests.Pages.Admin.AdminConsoleTests.Render_WhenOneModulesCountIsUnavailable_ShowsPlaceholderOnThatCardWhileOthersShowNumbers",
+        "TheShop.Web.Tests.Components.Admin.AdminModuleCardTests.Render_WithoutACount_ShowsThePlaceholderInsteadOfANumber",
+        "TheShop.Web.Tests.Components.Admin.AdminModuleCardTests.Render_WithoutACount_PairsThePlaceholderWithAnAccessibleAriaLabelNamingTheModule"
+      ]
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ProfileMenuTests.Render_WhenUserHoldsAnAdminAreaPermission_ShowsAdminConsoleEntryLinkingToAdmin",
+        "TheShop.Web.Tests.Components.Common.ProfileMenuTests.Render_WhenUserHoldsNoAdminAreaPermission_DoesNotShowAdminConsoleEntry"
+      ]
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Web.Tests.Resources.AdminConsoleLocalizationTests.DashboardString_ForEveryKey_IsAvailableInEnglishAndFrench"
+      ]
+    }
+  ]
+}
