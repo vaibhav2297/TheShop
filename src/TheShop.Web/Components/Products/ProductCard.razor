@@ -58,9 +58,13 @@
               Spacing="2"
               @onclick="OnSelectAsync">
 
+        <!-- Brand Name -->
+        <MudText Typo="Typo.subtitle1"
+                 Color="Color.Secondary">@Product.BrandName</MudText>
+
         <!-- Product Name -->
         <MudText Typo="Typo.body1"
-                 Class="fs-18">@Product.Name</MudText>
+                 Class="fs-18 mt-n1">@Product.Name</MudText>
 
         <!-- Price -->
         <MudStack Row

@@ -25,7 +25,8 @@ public static class ShopColors
 
     // Surface
     public const string Background = "#ffffff";
-    public const string Surface = "#f5f5f5";
+    public const string BackgroundGrey = "#f5f5f5";
+    public const string Surface = "#ffffff";
     public const string AppbarBackground = "#ffffff";
     public const string DrawerBackground = "#ffffff";
 

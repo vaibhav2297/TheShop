@@ -8,6 +8,9 @@ public static class BusyKeys
 {
     public const string Global = "global";
 
+    /// <summary>Key for loading the admin console's module cards.</summary>
+    public const string AdminDashboard = "admin.dashboard";
+
     /// <summary>Keys for auth-flow operations.</summary>
     public static class Auth
     {

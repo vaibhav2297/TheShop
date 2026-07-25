@@ -24,6 +24,7 @@ public class ShopTheme
         Tertiary = ShopColors.Tertiary,
         TertiaryContrastText = ShopColors.TertiaryContrast,
         Background = ShopColors.Background,
+        BackgroundGray = ShopColors.BackgroundGrey,
         Surface = ShopColors.Surface,
         AppbarBackground = ShopColors.AppbarBackground,
         DrawerBackground = ShopColors.DrawerBackground,

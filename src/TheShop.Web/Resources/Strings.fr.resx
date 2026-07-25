@@ -162,6 +162,18 @@
   <data name="Nav_Search" xml:space="preserve">
     <value>[TODO]</value>
   </data>
+  <data name="Nav_MyProfile" xml:space="preserve">
+    <value>Mon profil</value>
+  </data>
+  <data name="Nav_Orders" xml:space="preserve">
+    <value>Commandes</value>
+  </data>
+  <data name="Nav_Wishlist" xml:space="preserve">
+    <value>Liste de souhaits</value>
+  </data>
+  <data name="Nav_AdminConsole" xml:space="preserve">
+    <value>Console d'administration</value>
+  </data>
   <data name="Home_PageTitle" xml:space="preserve">
     <value>Accueil — The Vape Shop Sarnia</value>
   </data>
@@ -298,7 +310,7 @@
     <value>Se connecter</value>
   </data>
   <data name="Logout" xml:space="preserve">
-    <value>Se déconnecter</value>
+    <value>Déconnexion</value>
   </data>
   <data name="Confirm_Logout" xml:space="preserve">
     <value>Êtes-vous sûr de vouloir vous déconnecter?</value>
@@ -828,7 +840,46 @@
   <data name="Admin_Console" xml:space="preserve">
     <value>Console d'administration</value>
   </data>
-  <data name="Nav_AdminConsole" xml:space="preserve">
+  <data name="AdminConsole_PageTitle" xml:space="preserve">
     <value>Console d'administration</value>
+  </data>
+  <data name="AdminConsole_Heading" xml:space="preserve">
+    <value>Console d'administration</value>
+  </data>
+  <data name="AdminConsole_Subtitle" xml:space="preserve">
+    <value>Gérez votre boutique depuis un seul endroit.</value>
+  </data>
+  <data name="AdminConsole_Module_Products" xml:space="preserve">
+    <value>Produits</value>
+  </data>
+  <data name="AdminConsole_Module_Categories" xml:space="preserve">
+    <value>Catégories</value>
+  </data>
+  <data name="AdminConsole_Module_Brands" xml:space="preserve">
+    <value>Marques</value>
+  </data>
+  <data name="AdminConsole_Module_Users" xml:space="preserve">
+    <value>Utilisateurs</value>
+  </data>
+  <data name="AdminConsole_Module_Roles" xml:space="preserve">
+    <value>Rôles</value>
+  </data>
+  <data name="AdminConsole_CountUnavailable" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="AdminConsole_CountAria" xml:space="preserve">
+    <value>{0} : {1} enregistrements</value>
+  </data>
+  <data name="AdminConsole_ManageAction" xml:space="preserve">
+    <value>Gérer {0}</value>
+  </data>
+  <data name="AdminConsole_NoModules" xml:space="preserve">
+    <value>Il n'y a rien à gérer ici pour le moment.</value>
+  </data>
+  <data name="AdminConsole_Welcome" xml:space="preserve">
+    <value>Bienvenue sur la console</value>
+  </data>
+  <data name="AdminConsole_NotHaveModulePermission" xml:space="preserve">
+    <value>Votre rôle n'a actuellement pas les permissions nécessaires pour afficher ou gérer des modules spécifiques.</value>
   </data>
 </root>

@@ -162,6 +162,18 @@
   <data name="Nav_Search" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="Nav_MyProfile" xml:space="preserve">
+    <value>My Profile</value>
+  </data>
+  <data name="Nav_Orders" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="Nav_Wishlist" xml:space="preserve">
+    <value>Wishlist</value>
+  </data>
+  <data name="Nav_AdminConsole" xml:space="preserve">
+    <value>Admin Console</value>
+  </data>
   <data name="Home_PageTitle" xml:space="preserve">
     <value>Home — The Vape Shop Sarnia</value>
   </data>
@@ -298,7 +310,7 @@
     <value>Login</value>
   </data>
   <data name="Logout" xml:space="preserve">
-    <value>Sign Out</value>
+    <value>Log Out</value>
   </data>
   <data name="Confirm_Logout" xml:space="preserve">
     <value>Are you sure you want to sign out?</value>
@@ -828,7 +840,46 @@
   <data name="Admin_Console" xml:space="preserve">
     <value>Admin Console</value>
   </data>
-  <data name="Nav_AdminConsole" xml:space="preserve">
+  <data name="AdminConsole_PageTitle" xml:space="preserve">
     <value>Admin Console</value>
+  </data>
+  <data name="AdminConsole_Heading" xml:space="preserve">
+    <value>Admin Console</value>
+  </data>
+  <data name="AdminConsole_Subtitle" xml:space="preserve">
+    <value>Manage your store from one place.</value>
+  </data>
+  <data name="AdminConsole_Module_Products" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="AdminConsole_Module_Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="AdminConsole_Module_Brands" xml:space="preserve">
+    <value>Brands</value>
+  </data>
+  <data name="AdminConsole_Module_Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="AdminConsole_Module_Roles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
+  <data name="AdminConsole_CountUnavailable" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="AdminConsole_CountAria" xml:space="preserve">
+    <value>{0}: {1} records</value>
+  </data>
+  <data name="AdminConsole_ManageAction" xml:space="preserve">
+    <value>Manage {0}</value>
+  </data>
+  <data name="AdminConsole_NoModules" xml:space="preserve">
+    <value>There's nothing for you to manage here yet.</value>
+  </data>
+  <data name="AdminConsole_Welcome" xml:space="preserve">
+    <value>Welcome to the Console</value>
+  </data>
+  <data name="AdminConsole_NotHaveModulePermission" xml:space="preserve">
+    <value>Your role does not currently have permissions to view or manage any specific modules.</value>
   </data>
 </root>

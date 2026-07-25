@@ -15,6 +15,24 @@ public static class Routes
     public const string Deals = "/deals";
 
     /// <summary>
+    /// The signed-in customer's profile page. Surfaced from the profile menu; not backed by a
+    /// page in this feature — resolves to the app's not-found route until the account module ships.
+    /// </summary>
+    public const string Profile = "/profile";
+
+    /// <summary>
+    /// The signed-in customer's order history. Surfaced from the profile menu; not backed by a
+    /// page in this feature — resolves to the app's not-found route until the orders module ships.
+    /// </summary>
+    public const string Orders = "/orders";
+
+    /// <summary>
+    /// The signed-in customer's wishlist. Surfaced from the profile menu; not backed by a page in
+    /// this feature — resolves to the app's not-found route until the wishlist module ships.
+    /// </summary>
+    public const string Wishlist = "/wishlist";
+
+    /// <summary>
     /// Admin-panel route constants.
     /// <para>
     /// <b>Authorization prerequisite:</b> every page added under this prefix must be protected by
@@ -48,6 +66,24 @@ public static class Routes
         /// page itself.
         /// </summary>
         public const string AddBrand = "/admin/brands/new";
+
+        /// <summary>
+        /// The admin console's Categories card target. Not backed by a page in this feature —
+        /// resolves to the app's not-found route until the Categories module ships.
+        /// </summary>
+        public const string ManageCategories = "/admin/categories";
+
+        /// <summary>
+        /// The admin console's Users card target. Not backed by a page in this feature —
+        /// resolves to the app's not-found route until the Users module ships.
+        /// </summary>
+        public const string ManageUsers = "/admin/users";
+
+        /// <summary>
+        /// The admin console's Roles card target. Not backed by a page in this feature —
+        /// resolves to the app's not-found route until the Roles module ships.
+        /// </summary>
+        public const string ManageRoles = "/admin/roles";
     }
 
     /// <summary>Auth-flow route constants and query-string helpers.</summary>

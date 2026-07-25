@@ -36,7 +36,7 @@ public partial class ShopBreadcrumbs : MudComponentBase
 
     private string Classname =>
         new CssBuilder("px-8 py-2")
-            .AddClass("mud-surface")
+            .AddClass("mud-background-gray")
             .AddClass(Class)
             .Build();
 
