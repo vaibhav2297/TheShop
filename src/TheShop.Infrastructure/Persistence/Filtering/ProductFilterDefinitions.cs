@@ -1,6 +1,6 @@
 using System.Globalization;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Features.Products;
-using TheShop.Application.Features.Products.DTOs;
 using TheShop.Infrastructure.Persistence.Records;
 
 namespace TheShop.Infrastructure.Persistence.Filtering;

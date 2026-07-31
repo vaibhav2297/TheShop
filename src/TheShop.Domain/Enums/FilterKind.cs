@@ -7,4 +7,5 @@ public enum FilterKind
 {
     MultiSelect = 0,
     Range = 1,
+    SingleSelect = 2,
 }

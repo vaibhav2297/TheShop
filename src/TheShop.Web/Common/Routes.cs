@@ -68,6 +68,18 @@ public static class Routes
         public const string AddBrand = "/admin/brands/new";
 
         /// <summary>
+        /// The edit-brand form, id-keyed (plan §5 Decision 8). Gated on
+        /// <c>PolicyNames.AdminArea</c> via <c>Pages/Admin/_Imports.razor</c> and additionally
+        /// on <c>brands.edit</c> on the page itself (plan §5 Decision 11) — <c>GetBrandByIdQuery</c>
+        /// only requires <c>brands.view</c>, so the page-level gate is what denies a view-only
+        /// admin's direct link (AC-16).
+        /// </summary>
+        public const string EditBrandPattern = "/admin/brands/{id:guid}/edit";
+
+        /// <summary>Builds the edit-brand URL for a specific brand.</summary>
+        public static string EditBrand(Guid id) => $"/admin/brands/{id}/edit";
+
+        /// <summary>
         /// The admin console's Categories card target. Not backed by a page in this feature —
         /// resolves to the app's not-found route until the Categories module ships.
         /// </summary>

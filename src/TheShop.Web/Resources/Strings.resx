@@ -771,9 +771,6 @@
   <data name="Brand_AlreadyExists" xml:space="preserve">
     <value>A brand with this name already exists.</value>
   </data>
-  <data name="Brand_SlugConflict" xml:space="preserve">
-    <value>A brand with a similar name already exists. Please choose a more distinct name.</value>
-  </data>
   <data name="Brand_LogoInvalidType" xml:space="preserve">
     <value>Logo must be a PNG, JPG, or WebP image.</value>
   </data>
@@ -786,11 +783,38 @@
   <data name="Brand_Created" xml:space="preserve">
     <value>Brand created.</value>
   </data>
+  <data name="Brand_NotFound" xml:space="preserve">
+    <value>This brand no longer exists.</value>
+  </data>
+  <data name="Brand_UpdateFailed" xml:space="preserve">
+    <value>The brand could not be updated. Please try again.</value>
+  </data>
+  <data name="Brand_DeleteFailed" xml:space="preserve">
+    <value>The brand could not be deleted. Please try again.</value>
+  </data>
+  <data name="Brand_StatusChangeFailed" xml:space="preserve">
+    <value>The brand's status could not be changed. Please try again.</value>
+  </data>
+  <data name="Brand_PageInvalid" xml:space="preserve">
+    <value>The requested page is invalid.</value>
+  </data>
+  <data name="Brand_BrandIdsRequired" xml:space="preserve">
+    <value>Select at least one brand.</value>
+  </data>
+  <data name="Brand_InUse" xml:space="preserve">
+    <value>{0} is used by {1} product(s) and cannot be deleted. Make it Inactive instead.</value>
+  </data>
+  <data name="Brand_BulkDeletePartial" xml:space="preserve">
+    <value>{0} brand(s) deleted. {1} kept because products still use them.</value>
+  </data>
+  <data name="Brand_BulkDeleteAllBlocked" xml:space="preserve">
+    <value>None of the selected brands could be deleted — products still use them. Make them Inactive instead.</value>
+  </data>
   <data name="AddBrand_PageTitle" xml:space="preserve">
     <value>Add Brand</value>
   </data>
   <data name="AddBrand_Heading" xml:space="preserve">
-    <value>Create Brand</value>
+    <value>Add Brand</value>
   </data>
   <data name="AddBrand_NameLabel" xml:space="preserve">
     <value>Brand Name</value>
@@ -832,10 +856,124 @@
     <value>Manage Brands</value>
   </data>
   <data name="ManageBrands_Heading" xml:space="preserve">
-    <value>Brands</value>
+    <value>Manage Brands</value>
   </data>
-  <data name="ManageBrands_ShellNotice" xml:space="preserve">
-    <value>Full brand management is coming soon.</value>
+  <data name="ManageBrands_SearchPlaceholder" xml:space="preserve">
+    <value>Search brands</value>
+  </data>
+  <data name="ManageBrands_ColumnName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ManageBrands_ColumnDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="ManageBrands_ColumnStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ManageBrands_ColumnProducts" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="ManageBrands_ColumnActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="ManageBrands_EmptyTitle" xml:space="preserve">
+    <value>No brands yet</value>
+  </data>
+  <data name="ManageBrands_EmptyDescription" xml:space="preserve">
+    <value>Add your first brand to get started.</value>
+  </data>
+  <data name="ManageBrands_NoMatchTitle" xml:space="preserve">
+    <value>No brands match your search</value>
+  </data>
+  <data name="ManageBrands_NoMatchDescription" xml:space="preserve">
+    <value>Try a different name or clear your filters.</value>
+  </data>
+  <data name="ManageBrands_BulkActivate" xml:space="preserve">
+    <value>Activate</value>
+  </data>
+  <data name="ManageBrands_BulkDeactivate" xml:space="preserve">
+    <value>Deactivate</value>
+  </data>
+  <data name="ManageBrands_BulkDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ManageBrands_BulkSetActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ManageBrands_BulkSetInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="BulkActions_SelectedCount" xml:space="preserve">
+    <value>{0} selected</value>
+  </data>
+  <data name="Close_BulkActionBar" xml:space="preserve">
+    <value>Clear selection</value>
+  </data>
+  <data name="ManageBrands_InUseIndicator" xml:space="preserve">
+    <value>Used by {0} product(s)</value>
+  </data>
+  <data name="ManageBrands_DeletedSuccess" xml:space="preserve">
+    <value>Brand deleted.</value>
+  </data>
+  <data name="ManageBrands_BulkDeletedSuccess" xml:space="preserve">
+    <value>{0} brand(s) deleted.</value>
+  </data>
+  <data name="ManageBrands_ActivatedSuccess" xml:space="preserve">
+    <value>{0} brand(s) activated.</value>
+  </data>
+  <data name="ManageBrands_DeactivatedSuccess" xml:space="preserve">
+    <value>{0} brand(s) deactivated.</value>
+  </data>
+  <data name="ManageBrands_DeleteConfirmTitle" xml:space="preserve">
+    <value>Delete brand?</value>
+  </data>
+  <data name="ManageBrands_DeleteConfirmBody" xml:space="preserve">
+    <value>This will permanently delete {0}. This can't be undone.</value>
+  </data>
+  <data name="ManageBrands_BulkDeleteConfirmTitle" xml:space="preserve">
+    <value>Delete {0} brands?</value>
+  </data>
+  <data name="ManageBrands_BulkDeleteConfirmBody" xml:space="preserve">
+    <value>This will permanently delete {0} brand(s). This can't be undone.</value>
+  </data>
+  <data name="ManageBrands_DeactivateConfirmTitle" xml:space="preserve">
+    <value>Deactivate brand?</value>
+  </data>
+  <data name="ManageBrands_DeactivateConfirmBody" xml:space="preserve">
+    <value>{0} will be hidden from customers until reactivated.</value>
+  </data>
+  <data name="ManageBrands_BulkDeactivateConfirmTitle" xml:space="preserve">
+    <value>Deactivate {0} brands?</value>
+  </data>
+  <data name="ManageBrands_BulkDeactivateConfirmBody" xml:space="preserve">
+    <value>{0} brand(s) will be hidden from customers until reactivated.</value>
+  </data>
+  <data name="ManageBrands_EditAria" xml:space="preserve">
+    <value>Edit {0}</value>
+  </data>
+  <data name="ManageBrands_DeleteAria" xml:space="preserve">
+    <value>Delete {0}</value>
+  </data>
+  <data name="Filter_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Filter_StatusActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Filter_StatusInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="EditBrand_PageTitle" xml:space="preserve">
+    <value>Edit Brand</value>
+  </data>
+  <data name="EditBrand_Heading" xml:space="preserve">
+    <value>Edit Brand</value>
+  </data>
+  <data name="EditBrand_BackToList" xml:space="preserve">
+    <value>Back to Brands</value>
+  </data>
+  <data name="EditBrand_Success" xml:space="preserve">
+    <value>Brand updated.</value>
   </data>
   <data name="Admin_Console" xml:space="preserve">
     <value>Admin Console</value>

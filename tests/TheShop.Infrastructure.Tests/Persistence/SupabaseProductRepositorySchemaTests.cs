@@ -68,19 +68,6 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
             .Where(ex => ex.SqlState == "23505"); // unique_violation
     }
 
-    [Fact]
-    [Trait("Feature", "product-catalogue")]
-    public async Task InsertBrand_WhenSlugAlreadyExists_ThrowsUniqueViolation()
-    {
-        await using var conn = await OpenAsync();
-        await InsertBrandAsync(conn, "Elf Bar", "elf-bar");
-
-        var act = async () => await InsertBrandAsync(conn, "Elf Bar Two", "elf-bar");
-
-        await act.Should().ThrowAsync<PostgresException>()
-            .Where(ex => ex.SqlState == "23505");
-    }
-
     // =========================================================================
     // products — NOT NULL constraints
     // =========================================================================

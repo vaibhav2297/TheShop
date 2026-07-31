@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NSubstitute;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products;

@@ -8,10 +8,13 @@ namespace TheShop.Web.Tests.Resources;
 /// <summary>
 /// Verifies that every add-brand resource string — the form's labels/buttons/placeholders, its
 /// validation and confirmation messages, and the manage-brands shell strings — resolves in both
-/// English and French (FR-9, AC-9). Reads the compiled <see cref="Strings.ResourceManager"/>
-/// directly against the invariant (English) and <c>fr</c> cultures, mirroring the approach used
-/// for the RBAC feature's own localization completeness test.
+/// English and French (FR-9, AC-9). Extended by manage-brands to cover its own list/filter/
+/// bulk-action strings, edit-form strings, and new error/outcome keys (FR-17, AC-19). Reads the
+/// compiled <see cref="Strings.ResourceManager"/> directly against the invariant (English) and
+/// <c>fr</c> cultures, mirroring the approach used for the RBAC feature's own localization
+/// completeness test.
 /// <see href=".specs/add-brand/spec.md"/>
+/// <see href=".specs/manage-brands/spec.md"/>
 /// </summary>
 public class BrandLocalizationTests
 {
@@ -51,7 +54,6 @@ public class BrandLocalizationTests
     [
         "ManageBrands_PageTitle",
         "ManageBrands_Heading",
-        "ManageBrands_ShellNotice",
     ];
 
     // =========================================================================
@@ -109,6 +111,105 @@ public class BrandLocalizationTests
         english.Should().NotBeNullOrWhiteSpace($"'{key}' must have an English resource string");
         french.Should().NotBeNullOrWhiteSpace($"'{key}' must have a French resource string (AC-9)");
     }
+
+    // =========================================================================
+    // manage-brands: list/filter/sort/bulk-action strings — English + French (FR-17, AC-19)
+    // =========================================================================
+
+    private static readonly string[] ManageBrandsListKeys =
+    [
+        "ManageBrands_PageTitle",
+        "ManageBrands_Heading",
+        "ManageBrands_SearchPlaceholder",
+        "ManageBrands_ColumnName",
+        "ManageBrands_ColumnDescription",
+        "ManageBrands_ColumnStatus",
+        "ManageBrands_ColumnActions",
+        "ManageBrands_EmptyTitle",
+        "ManageBrands_EmptyDescription",
+        "ManageBrands_NoMatchTitle",
+        "ManageBrands_NoMatchDescription",
+        "ManageBrands_BulkSetActive",
+        "ManageBrands_BulkSetInactive",
+        "ManageBrands_BulkDelete",
+        "ManageBrands_InUseIndicator",
+        "ManageBrands_DeletedSuccess",
+        "ManageBrands_BulkDeletedSuccess",
+        "ManageBrands_ActivatedSuccess",
+        "ManageBrands_DeactivatedSuccess",
+        "ManageBrands_DeleteConfirmTitle",
+        "ManageBrands_DeleteConfirmBody",
+        "ManageBrands_BulkDeleteConfirmTitle",
+        "ManageBrands_BulkDeleteConfirmBody",
+        "ManageBrands_DeactivateConfirmTitle",
+        "ManageBrands_DeactivateConfirmBody",
+        "ManageBrands_BulkDeactivateConfirmTitle",
+        "ManageBrands_BulkDeactivateConfirmBody",
+        "ManageBrands_EditAria",
+        "ManageBrands_DeleteAria",
+        "Filter_Status",
+        "Filter_StatusActive",
+        "Filter_StatusInactive",
+    ];
+
+    [Theory]
+    [MemberData(nameof(ManageBrandsListNameKeys))]
+    [Trait("Feature", "manage-brands")]
+    public void ManageBrandsListString_ForEveryKey_IsAvailableInEnglishAndFrench(string key)
+    {
+        AssertAvailableInBothCultures(key);
+    }
+
+    public static IEnumerable<object[]> ManageBrandsListNameKeys() => ManageBrandsListKeys.Select(k => (object[])[k]);
+
+    // =========================================================================
+    // manage-brands: edit form strings — English + French (FR-17, AC-19)
+    // =========================================================================
+
+    private static readonly string[] EditBrandFormKeys =
+    [
+        "EditBrand_PageTitle",
+        "EditBrand_Heading",
+        "EditBrand_BackToList",
+        "EditBrand_Success",
+    ];
+
+    [Theory]
+    [MemberData(nameof(EditBrandFormNameKeys))]
+    [Trait("Feature", "manage-brands")]
+    public void EditBrandFormString_ForEveryKey_IsAvailableInEnglishAndFrench(string key)
+    {
+        AssertAvailableInBothCultures(key);
+    }
+
+    public static IEnumerable<object[]> EditBrandFormNameKeys() => EditBrandFormKeys.Select(k => (object[])[k]);
+
+    // =========================================================================
+    // manage-brands: new error/outcome keys — English + French (FR-17, AC-19)
+    // =========================================================================
+
+    private static readonly string[] ManageBrandsErrorKeys =
+    [
+        "Brand_NotFound",
+        "Brand_UpdateFailed",
+        "Brand_DeleteFailed",
+        "Brand_StatusChangeFailed",
+        "Brand_InUse",
+        "Brand_BulkDeletePartial",
+        "Brand_BulkDeleteAllBlocked",
+        "Brand_PageInvalid",
+        "Brand_BrandIdsRequired",
+    ];
+
+    [Theory]
+    [MemberData(nameof(ManageBrandsErrorNameKeys))]
+    [Trait("Feature", "manage-brands")]
+    public void ManageBrandsErrorMessage_ForEveryKey_IsAvailableInEnglishAndFrench(string key)
+    {
+        AssertAvailableInBothCultures(key);
+    }
+
+    public static IEnumerable<object[]> ManageBrandsErrorNameKeys() => ManageBrandsErrorKeys.Select(k => (object[])[k]);
 }
 
 // =============================================================================
@@ -117,3 +218,10 @@ public class BrandLocalizationTests
 // AC-9: ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglishAndFrench,
 //        FormString_ForEveryKey_IsAvailableInEnglishAndFrench,
 //        ManageBrandsShellString_ForEveryKey_IsAvailableInEnglishAndFrench
+
+// =============================================================================
+// AC → Test mapping (manage-brands)
+// =============================================================================
+// AC-19: ManageBrandsListString_ForEveryKey_IsAvailableInEnglishAndFrench,
+//         EditBrandFormString_ForEveryKey_IsAvailableInEnglishAndFrench,
+//         ManageBrandsErrorMessage_ForEveryKey_IsAvailableInEnglishAndFrench

@@ -9,13 +9,12 @@ namespace TheShop.Infrastructure.Persistence.Mappers;
 internal static class BrandMapper
 {
     public static Brand ToDomain(this BrandRecord record) =>
-        Brand.Rehydrate(record.Id, record.Name, record.Slug, record.Description, record.LogoPath, record.IsActive);
+        Brand.Rehydrate(record.Id, record.Name, record.Description, record.LogoPath, record.IsActive);
 
     public static BrandRecord ToRecord(this Brand brand) => new()
     {
         Id = brand.Id,
         Name = brand.Name,
-        Slug = brand.Slug,
         Description = brand.Description,
         LogoPath = brand.LogoPath,
         IsActive = brand.IsActive,

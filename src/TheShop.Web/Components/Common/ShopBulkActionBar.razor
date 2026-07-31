@@ -1,0 +1,43 @@
+@* Components/Common/ShopBulkActionBar.razor *@
+@inherits MudBlazor.MudComponentBase
+
+@using TheShop.Web.Resources
+
+@if (Visible)
+{
+    <MudPaper Class="@Classname"
+              Style="@Style"
+              Square
+              Elevation="0">
+
+        @* flex-grow-1 is what makes this span the bar. The bar is a flex container, so without it
+           the stack shrinks to its content and the count/actions bunch up at the start instead of
+           sitting at either end. *@
+        <MudStack Row
+                  AlignItems="AlignItems.Center"
+                  Justify="Justify.SpaceBetween"
+                  Spacing="8"
+                  Class="flex-grow-1 px-6">
+
+            <MudText Typo="Typo.subtitle1">
+                @string.Format(Strings.BulkActions_SelectedCount, SelectedCount)
+            </MudText>
+
+            @* The close button rides inside the trailing group rather than as a sibling of this
+               stack, so it sits within the same end gutter as the actions instead of hanging off
+               the viewport edge with no padding of its own. *@
+            <MudStack Row
+                      AlignItems="AlignItems.Center"
+                      Spacing="8">
+                @Actions
+
+                <MudIconButton Icon="@ShopIcons.Outlined.Close_MD"
+                               Color="Color.Inherit"
+                               OnClick="OnClose"
+                               aria-label="@Strings.Close_BulkActionBar" />
+            </MudStack>
+
+        </MudStack>
+
+    </MudPaper>
+}

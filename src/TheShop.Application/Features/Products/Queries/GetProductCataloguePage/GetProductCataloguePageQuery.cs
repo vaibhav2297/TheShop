@@ -1,4 +1,5 @@
 using MediatR;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Domain.Enums;

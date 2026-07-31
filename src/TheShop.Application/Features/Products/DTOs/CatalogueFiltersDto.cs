@@ -1,3 +1,5 @@
+using TheShop.Application.Common.Filtering;
+
 namespace TheShop.Application.Features.Products.DTOs;
 
 /// <summary>

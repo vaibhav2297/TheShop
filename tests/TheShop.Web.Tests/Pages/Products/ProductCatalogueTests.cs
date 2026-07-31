@@ -6,7 +6,9 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using MudBlazor.Services;
 using NSubstitute;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
+using TheShop.Application.Features.Products;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Application.Features.Products.Queries.GetCatalogueFilters;
 using TheShop.Application.Features.Products.Queries.GetProductCataloguePage;
@@ -168,7 +170,7 @@ public class ProductCatalogueTests : TestContext
         await cut.InvokeAsync(() => { });
         _receivedPageQueries.Clear();
 
-        var sortControl = cut.FindComponent<ProductSortControl>();
+        var sortControl = cut.FindComponent<ShopSortSelect<ProductSortOption>>();
         await cut.InvokeAsync(() => sortControl.Instance.SortChanged.InvokeAsync(ProductSortOption.PriceLowToHigh));
 
         _receivedPageQueries.Should().ContainSingle();
@@ -188,7 +190,7 @@ public class ProductCatalogueTests : TestContext
         await cut.InvokeAsync(() => { });
         _receivedPageQueries.Clear();
 
-        var filterPanel = cut.FindComponent<ProductFilterPanel>();
+        var filterPanel = cut.FindComponent<ShopFilterPanel>();
         await cut.InvokeAsync(() => filterPanel.Instance.FilterToggled.InvokeAsync(
             new FilterToggle("category", "cat-1", IsSelected: true)));
 
@@ -209,7 +211,7 @@ public class ProductCatalogueTests : TestContext
         await cut.InvokeAsync(() => { });
         _receivedPageQueries.Clear();
 
-        var filterPanel = cut.FindComponent<ProductFilterPanel>();
+        var filterPanel = cut.FindComponent<ShopFilterPanel>();
         await cut.InvokeAsync(async () =>
         {
             await filterPanel.Instance.FilterToggled.InvokeAsync(new FilterToggle("category", "cat-1", IsSelected: true));
@@ -228,11 +230,11 @@ public class ProductCatalogueTests : TestContext
         var cut = Render<ProductCatalogue>();
         await cut.InvokeAsync(() => { });
 
-        var filterPanel = cut.FindComponent<ProductFilterPanel>();
+        var filterPanel = cut.FindComponent<ShopFilterPanel>();
 
         // Narrow the price range, then clear everything.
-        await cut.InvokeAsync(() => filterPanel.Instance.PriceMinChanged.InvokeAsync(25m));
-        await cut.InvokeAsync(() => filterPanel.Instance.PriceMaxChanged.InvokeAsync(60m));
+        await cut.InvokeAsync(() => filterPanel.Instance.RangeChanged.InvokeAsync(
+            new RangeSelection(ProductFilterKeys.Price, 25m, 60m)));
         _receivedPageQueries.Clear();
 
         await cut.InvokeAsync(() => filterPanel.Instance.OnClearFilters.InvokeAsync());
@@ -240,6 +242,27 @@ public class ProductCatalogueTests : TestContext
         _receivedPageQueries.Should().ContainSingle();
         _receivedPageQueries[0].PriceMin.Should().BeNull();
         _receivedPageQueries[0].PriceMax.Should().BeNull();
+        _receivedPageQueries[0].Pagination.Page.Should().Be(1);
+    }
+
+    [Fact]
+    [Trait("Feature", "product-catalogue")]
+    public async Task NarrowPriceRange_WhenBothBoundsSettle_SendsOnePageQueryCarryingBoth()
+    {
+        // The panel emits both bounds in one RangeSelection, so a two-thumb drag costs a single
+        // state push — not one push per bound, the second of which would carry a stale sibling.
+        var cut = Render<ProductCatalogue>();
+        await cut.InvokeAsync(() => { });
+
+        var filterPanel = cut.FindComponent<ShopFilterPanel>();
+        _receivedPageQueries.Clear();
+
+        await cut.InvokeAsync(() => filterPanel.Instance.RangeChanged.InvokeAsync(
+            new RangeSelection(ProductFilterKeys.Price, 25m, 60m)));
+
+        _receivedPageQueries.Should().ContainSingle();
+        _receivedPageQueries[0].PriceMin.Should().Be(25m);
+        _receivedPageQueries[0].PriceMax.Should().Be(60m);
         _receivedPageQueries[0].Pagination.Page.Should().Be(1);
     }
 
@@ -255,7 +278,7 @@ public class ProductCatalogueTests : TestContext
         await cut.InvokeAsync(() => { });
 
         // Establish a non-default sort first, then paginate, and confirm it survives.
-        var sortControl = cut.FindComponent<ProductSortControl>();
+        var sortControl = cut.FindComponent<ShopSortSelect<ProductSortOption>>();
         await cut.InvokeAsync(() => sortControl.Instance.SortChanged.InvokeAsync(ProductSortOption.NameAToZ));
         _receivedPageQueries.Clear();
 
@@ -284,7 +307,7 @@ public class ProductCatalogueTests : TestContext
 
         cut.FindComponents<MudSkeleton>().Should().HaveCount(17);
         cut.FindComponents<ProductCard>().Should().BeEmpty();
-        cut.FindComponents<ProductFilterPanel>().Should().BeEmpty();
+        cut.FindComponents<ShopFilterPanel>().Should().BeEmpty();
     }
 
     [Fact]
@@ -295,19 +318,19 @@ public class ProductCatalogueTests : TestContext
         _mediator.Send(Arg.Any<GetCatalogueFiltersQuery>(), Arg.Any<CancellationToken>()).Returns(filtersTcs.Task);
 
         var cut = Render<ProductCatalogue>();
-        cut.FindComponents<ProductFilterPanel>().Should().BeEmpty();
+        cut.FindComponents<ShopFilterPanel>().Should().BeEmpty();
 
         filtersTcs.SetResult(Result.Ok(new CatalogueFiltersDto([CategoryGroup()])));
         await cut.InvokeAsync(() => { });
 
-        cut.FindComponent<ProductFilterPanel>().Should().NotBeNull();
+        cut.FindComponent<ShopFilterPanel>().Should().NotBeNull();
 
         // A later catalogue busy toggle (e.g. paginating) must not re-show the filter skeleton —
         // the filters themselves never change after the initial load.
         var pagination = cut.FindComponent<ShopPagination>();
         await cut.InvokeAsync(() => pagination.Instance.PageChanged.InvokeAsync(2));
 
-        cut.FindComponent<ProductFilterPanel>().Should().NotBeNull();
+        cut.FindComponent<ShopFilterPanel>().Should().NotBeNull();
     }
 }
 

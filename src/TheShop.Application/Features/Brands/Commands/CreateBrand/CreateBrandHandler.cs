@@ -21,7 +21,7 @@ public sealed class CreateBrandHandler(IBrandRepository brands, IFileStorage fil
     /// <inheritdoc/>
     public async Task<Result<BrandDto>> Handle(CreateBrandCommand request, CancellationToken cancellationToken)
     {
-        if (await brands.ExistsByNormalizedNameAsync(request.Name, cancellationToken))
+        if (await brands.ExistsByNormalizedNameAsync(request.Name, excludeBrandId: null, cancellationToken))
             return Result.Fail<BrandDto>(BrandErrorKeys.AlreadyExists);
 
         Brand brand;

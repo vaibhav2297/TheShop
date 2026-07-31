@@ -1,6 +1,7 @@
 @attribute [AllowAnonymous]
 @inherits QueryStatePageBase<CatalogueQueryState>
 
+@using TheShop.Domain.Enums
 @using TheShop.Web.Common
 @using TheShop.Web.Components.Common
 @using TheShop.Web.Components.Products
@@ -29,14 +30,13 @@
                 }
                 else
                 {
-                    <ProductFilterPanel Groups="@FilterGroups"
-                                        SelectedFilters="@_selectedFilters"
-                                        FilterToggled="OnFilterToggledAsync"
-                                        PriceMin="@_priceMin"
-                                        PriceMinChanged="OnPriceMinChangedAsync"
-                                        PriceMax="@_priceMax"
-                                        PriceMaxChanged="OnPriceMaxChangedAsync"
-                                        OnClearFilters="OnClearFiltersAsync" />
+                    <ShopFilterPanel Groups="@FilterGroups"
+                                     SelectedFilters="@_selectedFilters"
+                                     FilterToggled="OnFilterToggledAsync"
+                                     SelectedRanges="@SelectedRanges"
+                                     RangeChanged="OnRangeChangedAsync"
+                                     RangeFormatter="FormatRange"
+                                     OnClearFilters="OnClearFiltersAsync" />
                 }
             </BusyFor>
 
@@ -62,7 +62,7 @@
 
                         <MudSpacer />
 
-                        <ProductSortControl Sort="@_sort" SortChanged="OnSortChangedAsync" />
+                        <ShopSortSelect TSort="ProductSortOption" Sort="@_sort" Options="@SortOptions" SortChanged="OnSortChangedAsync" />
 
                     </MudStack>
                 }

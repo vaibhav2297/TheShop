@@ -1,6 +1,7 @@
 using System.Globalization;
 using static Supabase.Postgrest.Constants;
 using Supabase.Postgrest.Interfaces;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products;
@@ -30,6 +31,7 @@ public sealed class SupabaseProductRepository(Supabase.Client client) : IProduct
     private const string EffectivePriceColumn = "effective_price";
     private const string NameColumn = "name";
     private const string CreatedAtColumn = "created_at";
+    private const string IdColumn = "id";
     private const string CatalogueFiltersRpc = "get_catalogue_filters";
 
     // A product's image_path is an object key inside this bucket; GetPublicUrl turns it into
@@ -81,7 +83,7 @@ public sealed class SupabaseProductRepository(Supabase.Client client) : IProduct
 
         groups.Add(new FilterGroupDto(
             ProductFilterKeys.Price, ProductFilterDefinitions.PriceLabelKey, FilterKind.Range, [],
-            new PriceRangeDto(facets.PriceMin, facets.PriceMax)));
+            new RangeFilterDto(facets.PriceMin, facets.PriceMax)));
 
         return groups;
     }
@@ -133,6 +135,13 @@ public sealed class SupabaseProductRepository(Supabase.Client client) : IProduct
                 query.Order(CreatedAtColumn, Ordering.Descending);
                 break;
         }
+
+        // Every sort column above is non-unique, and Postgres leaves the relative order of tied rows
+        // undefined — so two products sharing a price or a creation timestamp could be ordered one
+        // way while page 1 is fetched and the other way for page 2, showing one of them twice and
+        // hiding the other entirely. Breaking the tie on the primary key makes the total order
+        // deterministic across requests.
+        query.Order(IdColumn, Ordering.Ascending);
     }
 
 }

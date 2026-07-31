@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NSubstitute;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Features.Products;
-using TheShop.Application.Features.Products.DTOs;
 using TheShop.Application.Features.Products.Queries.GetCatalogueFilters;
 using TheShop.Domain.Enums;
 using Xunit;
@@ -33,7 +33,7 @@ public class GetCatalogueFiltersHandlerTests
         {
             new(ProductFilterKeys.Category, "Filter_Category", FilterKind.MultiSelect,
                 [new FilterOptionDto("cat-1", "Disposables", 5)], null),
-            new(ProductFilterKeys.Price, "Filter_Price", FilterKind.Range, [], new PriceRangeDto(6.99m, 54.99m)),
+            new(ProductFilterKeys.Price, "Filter_Price", FilterKind.Range, [], new RangeFilterDto(6.99m, 54.99m)),
         };
         _products.GetFilterGroupsAsync(Arg.Any<CancellationToken>()).Returns(groups);
 

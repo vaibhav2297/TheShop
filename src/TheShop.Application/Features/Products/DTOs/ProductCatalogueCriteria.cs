@@ -1,3 +1,4 @@
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
 using TheShop.Domain.Enums;
 

@@ -1,1 +1,36 @@
 ﻿$shop-palette-colors: primary, secondary, tertiary, info, success, warning, error, dark;
+$shop-palette-variable-colors: lighten, darken;
+
+
+@each $color in $shop-palette-colors {
+
+    @each $variant in $shop-palette-variable-colors {
+
+        /* e.g., .mud-primary-lighten */
+        .mud-#{$color}-#{$variant} {
+            background-color: var(--mud-palette-#{$color}-#{$variant}) !important;
+        }
+
+        /* e.g., .mud-theme-primary-lighten */
+        .mud-theme-#{$color}-#{$variant} {
+            color: var(--mud-palette-#{$color}-text) !important;
+            background-color: var(--mud-palette-#{$color}-#{$variant}) !important;
+        }
+
+        /* e.g., .mud-primary-lighten-text */
+        .mud-#{$color}-#{$variant}-text {
+            color: var(--mud-palette-#{$color}-#{$variant}) !important;
+            --mud-ripple-color: var(--mud-palette-#{$color}-#{$variant}) !important;
+        }
+
+            /* e.g., .mud-primary-lighten--hover */
+        .mud-#{$color}-#{$variant}--hover {
+            background-color: var(--mud-palette-#{$color}-#{$variant}-hover) !important;
+        }
+
+        /* e.g., .mud-primary-lighten-border */
+        .mud-border-#{$color}-#{$variant} {
+            border-color: var(--mud-palette-#{$color}-#{$variant}) !important;
+        }
+    }
+}

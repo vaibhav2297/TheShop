@@ -20,7 +20,7 @@ public class BrandDtoMapperTests
 
     [Fact]
     [Trait("Feature", "add-brand")]
-    public void ToDto_MapsIdNameSlugDescriptionAndIsActive()
+    public void ToDto_MapsIdNameDescriptionAndIsActive()
     {
         var brand = Brand.Create("Elf Bar", "A vape brand.", isActive: false);
 
@@ -28,7 +28,6 @@ public class BrandDtoMapperTests
 
         dto.Id.Should().Be(brand.Id);
         dto.Name.Should().Be("Elf Bar");
-        dto.Slug.Should().Be(brand.Slug);
         dto.Description.Should().Be("A vape brand.");
         dto.IsActive.Should().BeFalse();
     }

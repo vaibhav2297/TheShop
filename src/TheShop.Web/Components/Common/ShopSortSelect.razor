@@ -1,0 +1,27 @@
+@* Components/Common/ShopSortSelect.razor *@
+@typeparam TSort where TSort : struct, Enum
+@inherits MudComponentBase
+
+@using TheShop.Web.Resources
+
+<MudStack Class="@Class" Style="@Style" Spacing="2">
+
+    <MudText Typo="Typo.subtitle1"
+             Color="Color.Secondary">@Strings.Sort_Label</MudText>
+
+    <MudSelect T="TSort"
+               Value="@Sort"
+               ValueChanged="OnValueChangedAsync"
+               AdornmentIcon="@ShopIcons.Outlined.Caret_Down_MD"
+               AdornmentColor="Color.Primary"
+               IconSize="Size.Small"
+               Variant="Variant.Outlined"
+               Margin="Margin.Dense"
+               Dense>
+
+        @foreach (var option in Options)
+        {
+            <MudSelectItem Value="@option.Value">@Localizer[option.LabelKey]</MudSelectItem>
+        }
+    </MudSelect>
+</MudStack>
