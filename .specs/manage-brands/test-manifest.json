@@ -1,0 +1,212 @@
+{
+  "feature": "manage-brands",
+  "trait": "manage-brands",
+  "writtenAt": "2026-07-31",
+  "totalTests": 273,
+  "classes": [
+    { "fqn": "TheShop.Domain.Tests.Entities.BrandTests", "file": "tests/TheShop.Domain.Tests/Entities/BrandTests.cs", "tests": 24 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Queries.GetBrandsPage.GetBrandsPageQueryTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandsPage/GetBrandsPageQueryTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Queries.GetBrandsPage.GetBrandsPageQueryValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandsPage/GetBrandsPageQueryValidatorTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Queries.GetBrandsPage.GetBrandsPageHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandsPage/GetBrandsPageHandlerTests.cs", "tests": 6 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Queries.GetBrandById.GetBrandByIdQueryTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandById/GetBrandByIdQueryTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Queries.GetBrandById.GetBrandByIdHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandById/GetBrandByIdHandlerTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandCommandTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/UpdateBrand/UpdateBrandCommandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/UpdateBrand/UpdateBrandCommandValidatorTests.cs", "tests": 18 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/UpdateBrand/UpdateBrandHandlerTests.cs", "tests": 27 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.SetBrandStatus.SetBrandStatusCommandTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/SetBrandStatus/SetBrandStatusCommandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.SetBrandStatus.SetBrandStatusCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/SetBrandStatus/SetBrandStatusCommandValidatorTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.SetBrandStatus.SetBrandStatusHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/SetBrandStatus/SetBrandStatusHandlerTests.cs", "tests": 9 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsCommandTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/DeleteBrands/DeleteBrandsCommandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/DeleteBrands/DeleteBrandsCommandValidatorTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/DeleteBrands/DeleteBrandsHandlerTests.cs", "tests": 10 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ManageBrandsSchemaTests.cs", "tests": 21 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.PlaceholderImageTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/PlaceholderImageTests.cs", "tests": 2 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.EditBrandTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/EditBrandTests.cs", "tests": 20 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageBrandsTests.cs", "tests": 40 },
+    { "fqn": "TheShop.Web.Tests.Components.Common.ShopConfirmDialogTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopConfirmDialogTests.cs", "tests": 5 },
+    { "fqn": "TheShop.Web.Tests.Components.Common.ShopFilterPanelTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopFilterPanelTests.cs", "tests": 6 },
+    { "fqn": "TheShop.Web.Tests.Components.Common.ShopBulkActionBarTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopBulkActionBarTests.cs", "tests": 10 },
+    { "fqn": "TheShop.Web.Tests.Common.Sorting.BrandSortCatalogueTests", "file": "tests/TheShop.Web.Tests/Common/Sorting/BrandSortCatalogueTests.cs", "tests": 11 },
+    { "fqn": "TheShop.Web.Tests.Resources.BrandLocalizationTests", "file": "tests/TheShop.Web.Tests/Resources/BrandLocalizationTests.cs", "tests": 45 }
+  ],
+  "acceptanceCriteria": [
+    { "id": "AC-1", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Queries.GetBrandsPage.GetBrandsPageQueryValidatorTests.Validate_WithPageOne_IsValid",
+      "TheShop.Application.Tests.Features.Brands.Queries.GetBrandsPage.GetBrandsPageHandlerTests.Handle_Always_ReturnsSuccessResultWrappingTheRepositoryPage",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_OnInitialize_QueriesTheFirstPageWithNoStatusFilterAndNameAToZ",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenBrandsExist_ShowsEachBrandsNameAndDescription",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenBrandsExist_ShowsEachBrandsLogo",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenBrandsSpanMultiplePages_ShowsPaginationControls"
+    ] },
+    { "id": "AC-2", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.ChangePage_AfterFilteringAndSorting_KeepsBothCriteriaOnTheNewPage"
+    ] },
+    { "id": "AC-3", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Search_WhenStaffTypesATerm_ReQueriesWithThatTermFromPageOne"
+    ] },
+    { "id": "AC-4", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Queries.GetBrandsPage.GetBrandsPageHandlerTests.Handle_WithSearchStatusAndSort_PassesThemToTheRepositoryUnchanged",
+      "TheShop.Application.Tests.Features.Brands.Queries.GetBrandsPage.GetBrandsPageHandlerTests.Handle_WithNoStatusFilter_PassesNullThroughAsEveryStatus",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.ChangeStatusFilter_WhenStaffFiltersByInactive_ReQueriesWithThatStatusFromPageOne",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.ChangeStatusFilter_WhenStaffUnchecksTheSelectedStatus_ReQueriesWithNoStatusFilter",
+      "TheShop.Web.Tests.Components.Common.ShopFilterPanelTests.Render_WithSingleSelectGroup_RendersOneCheckboxPerOption",
+      "TheShop.Web.Tests.Components.Common.ShopFilterPanelTests.ChooseSingleSelectOption_WhenUserChecksAnOption_RaisesSingleSelectChangedWithTheGroupKeyAndValue",
+      "TheShop.Web.Tests.Components.Common.ShopFilterPanelTests.ChooseSingleSelectOption_WhenUserUnchecksTheSelectedOption_RaisesSingleSelectChangedWithANullValue"
+    ] },
+    { "id": "AC-5", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.ChangeSort_WhenStaffReversesTheNameOrder_ReQueriesWithThatSortFromPageOne"
+    ] },
+    { "id": "AC-6", "tests": [
+      "TheShop.Domain.Tests.Entities.BrandTests.Rename_WithAValidName_UpdatesTheName",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandCommandValidatorTests.Validate_WithNameDescriptionLogoAndInactiveStatus_IsValid",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WithValidCommand_PersistsTheRenamedRedescribedBrand",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.SaveAsync_WithChangesToNameDescriptionAndStatus_SendsUpdateBrandCommandWithTheNewValues",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.SaveAsync_WhenMediatorReturnsSuccess_ShowsConfirmationAndNavigatesToManageBrands"
+    ] },
+    { "id": "AC-7", "tests": [
+      "TheShop.Domain.Tests.Entities.BrandTests.Rename_WhenNameIsEmptyOrWhitespaceOnly_ThrowsBrandNameRequiredException",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandCommandValidatorTests.Validate_WhenNameIsEmptyOrWhitespace_HasNameRequiredError",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WhenNameIsEmpty_ReturnsNameRequiredFailure",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.SaveAsync_WhenFormIsInvalid_DoesNotSendTheCommand"
+    ] },
+    { "id": "AC-8", "tests": [
+      "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests.UpdateBrand_WhenRenamedToAnotherBrandsNameDifferingOnlyByCapitalization_ThrowsUniqueViolation",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WhenRenamedToAnotherBrandsName_ReturnsAlreadyExistsFailure",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.SaveAsync_WhenRenamedToAnotherBrandsName_ShowsErrorSnackbarAndDoesNotNavigate",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.SaveAsync_WhenRenamedToAnotherBrandsName_PreservesTheEnteredName"
+    ] },
+    { "id": "AC-9", "tests": [
+      "TheShop.Domain.Tests.Entities.BrandTests.Rename_ToItsOwnCurrentName_Succeeds",
+      "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests.UpdateBrand_SavedWithItsOwnUnchangedName_Succeeds",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WhenSavedWithNoChangesAtAll_Succeeds",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WhenCheckingUniqueness_ExcludesTheBrandsOwnId",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.SaveAsync_SavedWithNoChangesAtAll_Succeeds"
+    ] },
+    { "id": "AC-10", "tests": [
+      "TheShop.Domain.Tests.Entities.BrandTests.RemoveLogo_WhenALogoIsAttached_ReturnsThePreviousLogoPath",
+      "TheShop.Domain.Tests.Entities.BrandTests.RemoveLogo_WhenALogoIsAttached_ClearsTheLogoPath",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WhenRemoveLogoIsTrue_PersistsTheBrandWithNoLogo",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WhenRemoveLogoIsTrue_DeletesThePreviousLogoObjectAfterSaving",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WithANewLogo_UploadsItToTheBrandLogosArea",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WithANewLogo_PersistsTheBrandWithTheUploadedKey",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WhenANewLogoReplacesAnExistingOne_DeletesTheReplacedLogoObject",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.SaveAsync_WhenTheExistingLogoWasRemovedWithNoReplacementChosen_SendsRemoveLogoTrue",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.SaveAsync_WhenANewLogoIsSelected_SendsItAsTheReplacement"
+    ] },
+    { "id": "AC-11", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandCommandValidatorTests.Validate_WhenNewLogoContentTypeIsNotAccepted_HasLogoInvalidTypeError",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandCommandValidatorTests.Validate_WhenNewLogoExceeds2Megabytes_HasLogoTooLargeError",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WhenUpdateAsyncFailsAfterNewLogoUpload_DoesNotDeleteTheStillCurrentLogo"
+    ] },
+    { "id": "AC-12", "tests": [
+      "TheShop.Domain.Tests.Entities.BrandTests.Activate_OnAnInactiveBrand_SetsIsActiveToTrue",
+      "TheShop.Domain.Tests.Entities.BrandTests.Deactivate_OnAnActiveBrand_SetsIsActiveToFalse",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WhenIsActiveIsFalse_PersistsAnInactiveBrand",
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandHandlerTests.Handle_WhenIsActiveIsTrue_PersistsAnActiveBrand",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.SaveAsync_WhenStatusIsSetToInactive_SendsIsActiveFalse",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.SaveAsync_WhenStatusIsSetToActive_SendsIsActiveTrue"
+    ] },
+    { "id": "AC-13", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsHandlerTests.Handle_WhenTheBrandIsDeletable_ReturnsSuccessWithDeletedCountOfOne",
+      "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsHandlerTests.Handle_WhenTheDeletedBrandHadALogo_DeletesTheLogoObject",
+      "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests.DeleteBrands_WhenTheBrandHasNoProducts_DeletesItAndReportsDeletedTrue",
+      "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests.DeleteBrands_ReturnsTheDeletedBrandsLogoPathForDisposal",
+      "TheShop.Web.Tests.Components.Common.ShopConfirmDialogTests.ClickConfirm_WhenActivated_ClosesTheDialogWithANonCancelledResult",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.DeleteSingle_WhenConfirmed_SendsDeleteBrandsCommandWithThatBrandsId",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.DeleteSingle_WhenActivated_ShowsAConfirmDialogNamingTheBrand"
+    ] },
+    { "id": "AC-14", "tests": [
+      "TheShop.Web.Tests.Components.Common.ShopConfirmDialogTests.ClickCancel_WhenActivated_CancelsTheDialogWithoutClosingItAsConfirmed",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.DeleteSingle_WhenCancelled_DoesNotSendTheCommand",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.BulkDelete_WhenCancelled_DoesNotSendTheCommandAndKeepsTheSelection"
+    ] },
+    { "id": "AC-15", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsHandlerTests.Handle_WhenTheBrandIsInUse_ReturnsZeroDeletedAndTheBlockedBrandWithItsProductCount",
+      "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests.DeleteBrands_WhenTheBrandHasAProduct_IncludingDiscontinued_KeepsItAndReportsItsProductCount",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.DeleteSingle_WhenTheBrandIsInUse_ShowsTheInUseMessageNamingItAndItsProductCount"
+    ] },
+    { "id": "AC-16", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand.UpdateBrandCommandTests.UpdateBrandCommand_Always_IsDecoratedWithTheBrandsEditPermissionRequirement",
+      "TheShop.Application.Tests.Features.Brands.Queries.GetBrandById.GetBrandByIdQueryTests.GetBrandByIdQuery_Always_IsDecoratedWithTheBrandsViewPermissionRequirement",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserHoldsOnlyBrandsView_DoesNotShowTheAddBrandButton",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserHoldsOnlyBrandsView_DoesNotShowEditOrDeleteRowControls",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserHoldsOnlyBrandsView_RendersStatusAsPlainTextNotAClickableToggle",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.Render_WhenUserLacksBrandsEditPermission_ShowsAccessDeniedInsteadOfTheForm",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfTheForm"
+    ] },
+    { "id": "AC-17", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Queries.GetBrandsPage.GetBrandsPageQueryTests.GetBrandsPageQuery_Always_IsDecoratedWithTheBrandsViewPermissionRequirement",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserLacksBrandsViewPermission_ShowsAccessDeniedInsteadOfTheList",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfTheList"
+    ] },
+    { "id": "AC-18", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenNoBrandsExistYet_ShowsTheEmptyStateMessage",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.ClearFilters_AfterSearchingAndFiltering_ReQueriesWithNoSearchAndNoStatusFilter"
+    ] },
+    { "id": "AC-19", "tests": [
+      "TheShop.Web.Tests.Resources.BrandLocalizationTests.ManageBrandsListString_ForEveryKey_IsAvailableInEnglishAndFrench",
+      "TheShop.Web.Tests.Resources.BrandLocalizationTests.EditBrandFormString_ForEveryKey_IsAvailableInEnglishAndFrench",
+      "TheShop.Web.Tests.Resources.BrandLocalizationTests.ManageBrandsErrorMessage_ForEveryKey_IsAvailableInEnglishAndFrench"
+    ] },
+    { "id": "AC-20", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_EditControl_LinksToTheBrandsIdKeyedEditRoute",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserHoldsOnlyBrandsView_DoesNotShowEditOrDeleteRowControls",
+      "TheShop.Web.Tests.Components.Common.ShopConfirmDialogTests.Render_Always_ShowsTheSuppliedTitleAndBody"
+    ] },
+    { "id": "AC-21", "tests": [
+      "TheShop.Domain.Tests.Entities.BrandTests.Activate_OnAnAlreadyActiveBrand_RemainsActive",
+      "TheShop.Domain.Tests.Entities.BrandTests.Deactivate_OnAnAlreadyInactiveBrand_RemainsInactive",
+      "TheShop.Application.Tests.Features.Brands.Commands.SetBrandStatus.SetBrandStatusCommandTests.SetBrandStatusCommand_Always_IsDecoratedWithTheBrandsEditPermissionRequirement",
+      "TheShop.Application.Tests.Features.Brands.Commands.SetBrandStatus.SetBrandStatusHandlerTests.Handle_WhenActivatingASingleInactiveBrand_PersistsItAsActive",
+      "TheShop.Application.Tests.Features.Brands.Commands.SetBrandStatus.SetBrandStatusHandlerTests.Handle_WhenDeactivatingASingleActiveBrand_PersistsItAsInactive",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.StatusToggle_WhenActivatingAnInactiveBrand_SendsImmediatelyWithoutConfirmation",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.StatusToggle_WhenDeactivatingAnActiveBrand_AsksForConfirmationBeforeSending",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.StatusToggle_WhenDeactivationIsCancelled_DoesNotSendTheCommand"
+    ] },
+    { "id": "AC-22", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.ChangeSort_WithBrandsSelected_ClearsTheSelectionAndHidesTheBulkBar",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.CloseBulkBar_WhenStaffDismissesIt_ClearsTheSelectionAndHidesTheBar",
+      "TheShop.Web.Tests.Components.Common.ShopBulkActionBarTests.Render_WhenVisible_ReportsTheSelectedCount"
+    ] },
+    { "id": "AC-23", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Commands.SetBrandStatus.SetBrandStatusHandlerTests.Handle_WithThreeSelectedBrands_UpdatesEachOfThem",
+      "TheShop.Application.Tests.Features.Brands.Commands.SetBrandStatus.SetBrandStatusHandlerTests.Handle_WithFiveSelectedOfWhichTwoAlreadyInactive_CountsOnlyTheThreeThatChanged",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.BulkDeactivate_WhenConfirmed_SendsWithEverySelectedIdAndReportsHowManyChanged",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.BulkDeactivate_WhenActivated_AsksForConfirmationStatingHowManyWillBeHidden",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.BulkDeactivate_WhenCancelled_DoesNotSendTheCommand"
+    ] },
+    { "id": "AC-24", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsHandlerTests.Handle_WithAMixOfDeletableAndInUseBrands_ReturnsBothTheDeletedCountAndTheBlockedList",
+      "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsHandlerTests.Handle_WithAMixOfDeletableAndInUseBrands_DeletesOnlyTheDeletedOnesLogos",
+      "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests.DeleteBrands_WithAMixOfUnusedAndInUseBrands_DeletesTheUnusedAndKeepsTheUsedInOneCall",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.BulkDelete_WhenConfirmed_SendsDeleteBrandsCommandWithEverySelectedId",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.BulkDelete_WhenActivated_AsksForConfirmationStatingHowManyWillBeDeleted",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.BulkDelete_WithAMixedOutcome_ReportsBothCounts",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.BulkDelete_WithAMixedOutcome_KeepsOnlyTheBlockedBrandsSelected"
+    ] },
+    { "id": "AC-25", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsHandlerTests.Handle_WhenEverySelectedBrandIsInUse_ReturnsZeroDeletedAndEveryBrandBlocked",
+      "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests.DeleteBrands_WhenEverySelectedBrandIsInUse_DeletesNone",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.BulkDelete_WhenEverySelectedBrandIsInUse_ShowsTheAllBlockedMessage"
+    ] },
+    { "id": "AC-26", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsCommandTests.DeleteBrandsCommand_Always_IsDecoratedWithTheBrandsDeletePermissionRequirement",
+      "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsHandlerTests.Handle_WhenTheRepositoryThrowsAnAccessDeniedException_ReturnsRbacAccessDeniedFailure",
+      "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests.DeleteBrands_WhenCallerLacksBrandsDeletePermission_ThrowsAccessDeniedException",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserHoldsEditButNotDelete_BulkBarOffersActivateAndDeactivateButNotDelete"
+    ] },
+    { "id": "AC-27", "tests": [
+      "TheShop.Application.Tests.Features.Brands.Queries.GetBrandById.GetBrandByIdHandlerTests.Handle_WhenBrandExists_ReturnsSuccessResultWithTheBrandsDetails",
+      "TheShop.Application.Tests.Features.Brands.Queries.GetBrandById.GetBrandByIdHandlerTests.Handle_WhenBrandDoesNotExist_ReturnsNotFoundFailure",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.Render_WhenBrandExists_RequestsItByTheSuppliedId",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.Render_WhenTheBrandNoLongerExists_ShowsTheNotFoundMessage",
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.Render_WhenTheBrandNoLongerExists_OffersALinkBackToTheList",
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_EditControl_LinksToTheBrandsIdKeyedEditRoute"
+    ] },
+    { "id": "AC-28", "tests": [
+      "TheShop.Domain.Tests.Entities.BrandTests.Rename_WithAValidName_UpdatesTheName",
+      "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests.Schema_BrandsTable_HasNoSlugColumn",
+      "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests.UpdateBrand_WhenRenamedToADifferentPunctuationVariantOfAnotherBrandsName_Succeeds"
+    ] }
+  ]
+}

@@ -16,9 +16,11 @@ namespace TheShop.Web.Common;
 /// <remarks>
 /// Because the page owns the entire query string, <see cref="PushStateAsync"/> rebuilds the query
 /// from scratch on each write — stale parameters (including cleared filters) are dropped rather
-/// than lingering. A derived page that also does one-time work (e.g. loading a filter sidebar)
-/// overrides <see cref="OnInitializedAsync"/> and calls <c>base.OnInitializedAsync()</c>, which
-/// performs the first state application.
+/// than lingering. A derived page does its synchronous one-time setup in
+/// <see cref="OnPageInitialized"/> (<see cref="OnInitialized"/> is sealed, because silently losing
+/// its <c>LocationChanged</c> subscription would strand the page on its first state), and any async
+/// one-time work (e.g. loading a filter sidebar) in an <see cref="OnInitializedAsync"/> override
+/// that calls <c>base.OnInitializedAsync()</c>, which performs the first state application.
 /// </remarks>
 /// <typeparam name="TState">The immutable state carried in the query string.</typeparam>
 public abstract class QueryStatePageBase<TState> : ComponentBase, IDisposable
@@ -39,7 +41,27 @@ public abstract class QueryStatePageBase<TState> : ComponentBase, IDisposable
     private CancellationTokenSource? _cts;
 
     /// <inheritdoc/>
-    protected override void OnInitialized() => Nav.LocationChanged += OnLocationChanged;
+    /// <remarks>
+    /// Sealed on purpose. This is where the page subscribes to <c>LocationChanged</c> — the only
+    /// thing that turns a pushed URL back into an <see cref="ApplyStateAsync"/> call. An override
+    /// that forgot to call <c>base.OnInitialized()</c> would drop that subscription and leave the
+    /// page frozen on whatever state it loaded with, with no error to show why. Derived pages put
+    /// their synchronous setup in <see cref="OnPageInitialized"/> instead.
+    /// </remarks>
+    protected sealed override void OnInitialized()
+    {
+        Nav.LocationChanged += OnLocationChanged;
+        OnPageInitialized();
+    }
+
+    /// <summary>
+    /// Synchronous one-time page setup — breadcrumbs, paginator construction, and anything else
+    /// that must exist before the first state is applied. Runs immediately after the base wires up
+    /// its URL subscription, in place of an <see cref="OnInitialized"/> override.
+    /// </summary>
+    protected virtual void OnPageInitialized()
+    {
+    }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

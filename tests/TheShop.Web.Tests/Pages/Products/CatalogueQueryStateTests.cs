@@ -1,8 +1,8 @@
 using System.Globalization;
 using FluentAssertions;
 using Microsoft.Extensions.Primitives;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Features.Products;
-using TheShop.Application.Features.Products.DTOs;
 using TheShop.Domain.Enums;
 using TheShop.Web.Pages.Products;
 using Xunit;

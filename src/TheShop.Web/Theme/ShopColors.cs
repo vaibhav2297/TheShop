@@ -8,7 +8,7 @@ public static class ShopColors
     public const string Secondary = "#7a7a7a";
     public const string SecondaryContrast = "#ffffff";
     public const string Tertiary = "#e8e8e8";
-    public const string TertiaryLighter = "#ededed";
+    public const string TertiaryLighten = "#ededed";
     public const string TertiaryContrast = "#171717";
 
     // Semantic

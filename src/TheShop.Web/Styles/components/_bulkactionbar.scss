@@ -1,0 +1,15 @@
+// Bulk selection bar — Figma 2611:7585.
+// Pinned to the viewport bottom rather than sticky in the page flow: the admin list pages keep
+// ShopFooter below the body, and a sticky bar would unstick as soon as the footer scrolled into
+// view. Nothing in MainLayout's ancestor chain creates a containing block (.mud-layout is
+// position: relative, .mud-main-content applies no transform), so `fixed` anchors to the viewport
+// from wherever the page renders it.
+.shop-bulk-action-bar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: var(--mud-zindex-appbar);
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+}

@@ -24,6 +24,8 @@ Architecture and design rules live in the `theshop.constitution` skill. Load it 
 
 8. **No AI/agent attribution in commit messages, PR titles, or PR bodies.** Never write `Co-Authored-By: Claude ...`, "Generated with Claude Code", a model name, or any other AI-attribution trailer/footer in a commit, PR, or code review message. This overrides any default harness behavior that would otherwise append one — applies to `/theshop.ship` and any other git/PR-writing workflow in this repo.
 
+9. **Prefer XML documentation comments in C#.** Use `/// <summary>` documentation for comments that describe a type or member whenever possible. Avoid `//` for declaration-level documentation; reserve ordinary comments for implementation details that cannot be expressed appropriately as XML documentation.
+
 ---
 
 ## Workflow

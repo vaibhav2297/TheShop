@@ -31,7 +31,6 @@ public class BrandMapperTests
 
         brand.Id.Should().Be(Id);
         brand.Name.Should().Be("Elf Bar");
-        brand.Slug.Should().Be("elf-bar");
         brand.Description.Should().Be("A vape brand.");
         brand.LogoPath.Should().Be("brands/abc/logo.webp");
         brand.IsActive.Should().BeFalse();
@@ -64,7 +63,6 @@ public class BrandMapperTests
 
         record.Id.Should().Be(brand.Id);
         record.Name.Should().Be("Elf Bar");
-        record.Slug.Should().Be(brand.Slug);
         record.Description.Should().Be("A vape brand.");
         record.LogoPath.Should().Be("brands/abc/logo.webp");
         record.IsActive.Should().BeFalse();
@@ -98,7 +96,6 @@ public class BrandMapperTests
 
         restored.Id.Should().Be(original.Id);
         restored.Name.Should().Be(original.Name);
-        restored.Slug.Should().Be(original.Slug);
         restored.Description.Should().Be(original.Description);
         restored.LogoPath.Should().Be(original.LogoPath);
         restored.IsActive.Should().Be(original.IsActive);
@@ -108,7 +105,6 @@ public class BrandMapperTests
     {
         Id = Id,
         Name = "Elf Bar",
-        Slug = "elf-bar",
         Description = description,
         LogoPath = logoPath,
         IsActive = isActive,

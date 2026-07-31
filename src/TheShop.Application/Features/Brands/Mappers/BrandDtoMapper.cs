@@ -15,7 +15,6 @@ public static class BrandDtoMapper
         new(
             brand.Id,
             brand.Name,
-            brand.Slug,
             brand.Description,
             brand.LogoPath is { } logoPath ? fileStorage.GetPublicUrl(StorageArea.BrandLogos, logoPath) : null,
             brand.IsActive);

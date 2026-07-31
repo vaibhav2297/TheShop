@@ -59,6 +59,6 @@ public class ProductMapperTests
         NicotineStrengthMg = 50,
         CreatedAt = new DateTime(2026, 1, 10, 12, 0, 0, DateTimeKind.Utc),
         Category = new CategoryRecord { Id = Guid.NewGuid(), Name = "Disposables", Slug = "disposables" },
-        Brand = new BrandRecord { Id = Guid.NewGuid(), Name = "Elf Bar", Slug = "elf-bar" },
+        Brand = new BrandRecord { Id = Guid.NewGuid(), Name = "Elf Bar" },
     };
 }

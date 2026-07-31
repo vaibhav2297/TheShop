@@ -20,9 +20,6 @@ internal sealed class BrandRecord : BaseModel
     [Column("name")]
     public string Name { get; set; } = string.Empty;
 
-    [Column("slug")]
-    public string Slug { get; set; } = string.Empty;
-
     [Column("description")]
     public string? Description { get; set; }
 

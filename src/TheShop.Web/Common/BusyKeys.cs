@@ -32,5 +32,9 @@ public static class BusyKeys
     public static class Brands
     {
         public const string AddBrand = "brands.add";
+        public const string ManageList = "brands.manage-list";
+        public const string EditBrand = "brands.edit";
+        public const string BrandStatus = "brands.status";
+        public const string DeleteBrands = "brands.delete";
     }
 }

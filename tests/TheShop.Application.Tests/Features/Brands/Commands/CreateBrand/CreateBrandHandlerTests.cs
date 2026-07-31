@@ -34,7 +34,7 @@ public class CreateBrandHandlerTests
         new(name, description, logo, isActive);
 
     private void SetUpNoExistingBrand() =>
-        _brands.ExistsByNormalizedNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(false);
+        _brands.ExistsByNormalizedNameAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
 
     private void SetUpSuccessfulAdd() =>
         _brands.AddAsync(Arg.Any<Brand>(), Arg.Any<CancellationToken>()).Returns(Result.Ok());
@@ -110,7 +110,7 @@ public class CreateBrandHandlerTests
     [Trait("Feature", "add-brand")]
     public async Task Handle_WhenNameAlreadyExists_ReturnsAlreadyExistsFailure()
     {
-        _brands.ExistsByNormalizedNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(true);
+        _brands.ExistsByNormalizedNameAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(true);
 
         var result = await CreateSut().Handle(Command(), CancellationToken.None);
 
@@ -122,7 +122,7 @@ public class CreateBrandHandlerTests
     [Trait("Feature", "add-brand")]
     public async Task Handle_WhenNameAlreadyExists_DoesNotPersistTheBrand()
     {
-        _brands.ExistsByNormalizedNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(true);
+        _brands.ExistsByNormalizedNameAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(true);
 
         await CreateSut().Handle(Command(), CancellationToken.None);
 

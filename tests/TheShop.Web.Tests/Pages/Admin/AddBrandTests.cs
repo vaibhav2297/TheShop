@@ -65,7 +65,7 @@ public class AddBrandTests : TestContext
 
     private static BrandDto ExampleDto(
         string name = "Elf Bar", string? description = null, string? logoUrl = null, bool isActive = true) =>
-        new(Guid.NewGuid(), name, "elf-bar", description, logoUrl, isActive);
+        new(Guid.NewGuid(), name, description, logoUrl, isActive);
 
     // =========================================================================
     // Permission gating (Behavior 4, AC-8)

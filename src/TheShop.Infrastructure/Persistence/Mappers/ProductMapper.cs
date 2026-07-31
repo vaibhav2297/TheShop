@@ -31,11 +31,11 @@ internal static class ProductMapper
         var pricing = ProductPricing.Create(originalPrice, salePrice);
 
         var category = Category.Create(record.Category.Id, record.Category.Name, record.Category.Slug);
-        var brand = Brand.Rehydrate(record.Brand.Id, record.Brand.Name, record.Brand.Slug);
+        var brand = Brand.Rehydrate(record.Brand.Id, record.Brand.Name);
 
         var imageUrl = !string.IsNullOrWhiteSpace(record.ImagePath)
             ? resolvePublicUrl(record.ImagePath)
-            : $"https://placehold.co/400x400/E8E8E8/7A7A7A?text={Uri.EscapeDataString(record.Name)}&font=raleway";
+            : PlaceholderImage.For(record.Name);
 
         return Product.Rehydrate(
             record.Id,

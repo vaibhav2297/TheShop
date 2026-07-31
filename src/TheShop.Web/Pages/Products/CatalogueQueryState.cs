@@ -1,9 +1,10 @@
 using System.Globalization;
 using Microsoft.Extensions.Primitives;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Features.Products;
-using TheShop.Application.Features.Products.DTOs;
 using TheShop.Domain.Enums;
 using TheShop.Web.Common;
+using TheShop.Web.Common.Sorting;
 
 namespace TheShop.Web.Pages.Products;
 
@@ -32,7 +33,7 @@ public sealed record CatalogueQueryState(
 
     /// <summary>The empty catalogue view: no filters, no price bounds, newest-first, page 1.</summary>
     public static CatalogueQueryState Default { get; } =
-        new([], null, null, ProductSortOption.NewestFirst, 1);
+        new([], null, null, ProductSortCatalogue.Instance.Default, 1);
 
     /// <summary>
     /// Returns this state with a single filter option toggled on or off and the page reset to 1.
@@ -83,8 +84,8 @@ public sealed record CatalogueQueryState(
         if (PriceMax is { } max)
             parameters[PriceMaxKey] = max.ToString(CultureInfo.InvariantCulture);
 
-        if (Sort != ProductSortOption.NewestFirst)
-            parameters[SortKey] = Sort.ToSlug();
+        if (Sort != ProductSortCatalogue.Instance.Default)
+            parameters[SortKey] = ProductSortCatalogue.Instance.ToSlug(Sort);
 
         if (Page > 1)
             parameters[PageKey] = Page;
@@ -114,7 +115,7 @@ public sealed record CatalogueQueryState(
             filters,
             ParseDecimal(query, PriceMinKey),
             ParseDecimal(query, PriceMaxKey),
-            ProductSortOptionSlug.FromSlug(GetString(query, SortKey)),
+            ProductSortCatalogue.Instance.FromSlug(GetString(query, SortKey)),
             ParsePage(query));
     }
 

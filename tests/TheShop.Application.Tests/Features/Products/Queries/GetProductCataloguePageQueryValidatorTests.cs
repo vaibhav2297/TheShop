@@ -1,7 +1,7 @@
 using FluentAssertions;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products;
-using TheShop.Application.Features.Products.DTOs;
 using TheShop.Application.Features.Products.Queries.GetProductCataloguePage;
 using TheShop.Domain.Enums;
 using Xunit;

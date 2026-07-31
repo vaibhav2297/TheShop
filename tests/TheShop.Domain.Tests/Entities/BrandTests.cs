@@ -9,9 +9,14 @@ namespace TheShop.Domain.Tests.Entities;
 /// Tests for the <see cref="Brand"/> entity: originally reference-data-only (Rehydrate, driving
 /// the catalogue's Brand filter, FR-6 of product-catalogue), extended by add-brand into a full
 /// aggregate with creation invariants (<see cref="Brand.Create"/>, RULE-1/RULE-3/RULE-5) and an
-/// optional logo (<see cref="Brand.AttachLogo"/>, RULE-4).
+/// optional logo (<see cref="Brand.AttachLogo"/>, RULE-4), then extended again by manage-brands
+/// with the mutation methods an edit exercises — <see cref="Brand.Rename"/> and
+/// <see cref="Brand.ChangeDescription"/> (re-validating the same invariants as <c>Create</c>),
+/// <see cref="Brand.Activate"/>/<see cref="Brand.Deactivate"/>, and <see cref="Brand.RemoveLogo"/>
+/// (which hands back the discarded key for RULE-11 disposal).
 /// <see href=".specs/product-catalogue/spec.md"/>
 /// <see href=".specs/add-brand/spec.md"/>
+/// <see href=".specs/manage-brands/spec.md"/>
 /// </summary>
 public class BrandTests
 {
@@ -21,11 +26,10 @@ public class BrandTests
     {
         var id = Guid.NewGuid();
 
-        var brand = Brand.Rehydrate(id, "Elf Bar", "elf-bar");
+        var brand = Brand.Rehydrate(id, "Elf Bar");
 
         brand.Id.Should().Be(id);
         brand.Name.Should().Be("Elf Bar");
-        brand.Slug.Should().Be("elf-bar");
     }
 
     // =========================================================================
@@ -52,15 +56,6 @@ public class BrandTests
         var second = Brand.Create("Lost Mary", null, true);
 
         first.Id.Should().NotBe(second.Id);
-    }
-
-    [Fact]
-    [Trait("Feature", "add-brand")]
-    public void Create_GeneratesALowercaseHyphenatedSlugFromTheName()
-    {
-        var brand = Brand.Create("Elf Bar 5000!", null, true);
-
-        brand.Slug.Should().Be("elf-bar-5000");
     }
 
     [Fact]
@@ -221,7 +216,7 @@ public class BrandTests
     {
         var id = Guid.NewGuid();
 
-        var brand = Brand.Rehydrate(id, "Elf Bar", "elf-bar", "A vape brand.", "brands/abc/logo.webp", false);
+        var brand = Brand.Rehydrate(id, "Elf Bar", "A vape brand.", "brands/abc/logo.webp", false);
 
         brand.Id.Should().Be(id);
         brand.Description.Should().Be("A vape brand.");
@@ -233,11 +228,297 @@ public class BrandTests
     [Trait("Feature", "add-brand")]
     public void Rehydrate_WithoutOptionalArguments_DefaultsToActiveWithNoDescriptionOrLogo()
     {
-        var brand = Brand.Rehydrate(Guid.NewGuid(), "Elf Bar", "elf-bar");
+        var brand = Brand.Rehydrate(Guid.NewGuid(), "Elf Bar");
 
         brand.Description.Should().BeNull();
         brand.LogoPath.Should().BeNull();
         brand.IsActive.Should().BeTrue();
+    }
+
+    // =========================================================================
+    // manage-brands: Rename — re-validates the same invariants as Create (RULE-1/RULE-3, AC-6/AC-7)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Rename_WithAValidName_UpdatesTheName()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+
+        brand.Rename("Lost Mary");
+
+        brand.Name.Should().Be("Lost Mary");
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Rename_TrimsLeadingAndTrailingWhitespaceFromTheName()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+
+        brand.Rename("  Lost Mary  ");
+
+        brand.Name.Should().Be("Lost Mary");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [Trait("Feature", "manage-brands")]
+    public void Rename_WhenNameIsEmptyOrWhitespaceOnly_ThrowsBrandNameRequiredException(string name)
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+
+        var act = () => brand.Rename(name);
+
+        act.Should().Throw<BrandNameRequiredException>()
+           .Which.MessageKey.Should().Be(BrandNameRequiredException.MessageResourceKey);
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Rename_WhenNameIsNull_ThrowsBrandNameRequiredException()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+
+        var act = () => brand.Rename(null!);
+
+        act.Should().Throw<BrandNameRequiredException>();
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Rename_WhenNameIsEmptyOrWhitespaceOnly_LeavesTheOriginalNameUnchanged()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+
+        try { brand.Rename(""); } catch (BrandNameRequiredException) { }
+
+        brand.Name.Should().Be("Elf Bar", "a rejected save must leave the brand unchanged (RULE-1)");
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Rename_WhenNameExceeds100Characters_ThrowsBrandNameTooLongException()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+        var name = new string('a', 101);
+
+        var act = () => brand.Rename(name);
+
+        act.Should().Throw<BrandNameTooLongException>()
+           .Which.MessageKey.Should().Be(BrandNameTooLongException.MessageResourceKey);
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Rename_WhenNameIsExactly100Characters_Succeeds()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+        var name = new string('a', 100);
+
+        var act = () => brand.Rename(name);
+
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Rename_ToItsOwnCurrentName_Succeeds()
+    {
+        // The Domain layer enforces no uniqueness at all (that is a repository concern, RULE-2) —
+        // a no-op rename must not be treated any differently than any other valid name (AC-9).
+        var brand = Brand.Create("Elf Bar", null, true);
+
+        var act = () => brand.Rename("Elf Bar");
+
+        act.Should().NotThrow();
+        brand.Name.Should().Be("Elf Bar");
+    }
+
+    // =========================================================================
+    // manage-brands: ChangeDescription — re-validates the same invariant as Create (RULE-3, AC-6)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void ChangeDescription_WithAValidDescription_UpdatesTheDescription()
+    {
+        var brand = Brand.Create("Elf Bar", "Original description.", true);
+
+        brand.ChangeDescription("A new description.");
+
+        brand.Description.Should().Be("A new description.");
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void ChangeDescription_TrimsLeadingAndTrailingWhitespace()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+
+        brand.ChangeDescription("  A vape brand.  ");
+
+        brand.Description.Should().Be("A vape brand.");
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void ChangeDescription_WithNull_ClearsTheDescription()
+    {
+        var brand = Brand.Create("Elf Bar", "Original description.", true);
+
+        brand.ChangeDescription(null);
+
+        brand.Description.Should().BeNull();
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void ChangeDescription_WithWhitespaceOnly_ClearsTheDescription()
+    {
+        var brand = Brand.Create("Elf Bar", "Original description.", true);
+
+        brand.ChangeDescription("    ");
+
+        brand.Description.Should().BeNull();
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void ChangeDescription_WhenExceeds250Characters_ThrowsBrandDescriptionTooLongException()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+        var description = new string('a', 251);
+
+        var act = () => brand.ChangeDescription(description);
+
+        act.Should().Throw<BrandDescriptionTooLongException>()
+           .Which.MessageKey.Should().Be(BrandDescriptionTooLongException.MessageResourceKey);
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void ChangeDescription_WhenExceeds250Characters_LeavesTheOriginalDescriptionUnchanged()
+    {
+        var brand = Brand.Create("Elf Bar", "Original description.", true);
+
+        try { brand.ChangeDescription(new string('a', 251)); } catch (BrandDescriptionTooLongException) { }
+
+        brand.Description.Should().Be("Original description.");
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void ChangeDescription_WhenExactly250Characters_Succeeds()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+        var description = new string('a', 250);
+
+        var act = () => brand.ChangeDescription(description);
+
+        act.Should().NotThrow();
+    }
+
+    // =========================================================================
+    // manage-brands: Activate / Deactivate — RULE-5, FR-11, FR-18, AC-12, AC-21
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Activate_OnAnInactiveBrand_SetsIsActiveToTrue()
+    {
+        var brand = Brand.Create("Elf Bar", null, isActive: false);
+
+        brand.Activate();
+
+        brand.IsActive.Should().BeTrue();
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Activate_OnAnAlreadyActiveBrand_RemainsActive()
+    {
+        var brand = Brand.Create("Elf Bar", null, isActive: true);
+
+        brand.Activate();
+
+        brand.IsActive.Should().BeTrue();
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Deactivate_OnAnActiveBrand_SetsIsActiveToFalse()
+    {
+        var brand = Brand.Create("Elf Bar", null, isActive: true);
+
+        brand.Deactivate();
+
+        brand.IsActive.Should().BeFalse();
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void Deactivate_OnAnAlreadyInactiveBrand_RemainsInactive()
+    {
+        var brand = Brand.Create("Elf Bar", null, isActive: false);
+
+        brand.Deactivate();
+
+        brand.IsActive.Should().BeFalse();
+    }
+
+    // =========================================================================
+    // manage-brands: RemoveLogo — returns the previous key for disposal (RULE-11, AC-10)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void RemoveLogo_WhenALogoIsAttached_ClearsTheLogoPath()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+        brand.AttachLogo("brands/abc/logo.webp");
+
+        brand.RemoveLogo();
+
+        brand.LogoPath.Should().BeNull();
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void RemoveLogo_WhenALogoIsAttached_ReturnsThePreviousLogoPath()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+        brand.AttachLogo("brands/abc/logo.webp");
+
+        var previousPath = brand.RemoveLogo();
+
+        previousPath.Should().Be("brands/abc/logo.webp");
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void RemoveLogo_WhenNoLogoIsAttached_ReturnsNullAndLogoPathStaysNull()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+
+        var previousPath = brand.RemoveLogo();
+
+        previousPath.Should().BeNull();
+        brand.LogoPath.Should().BeNull();
+    }
+
+    [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void AttachLogo_AfterRemoveLogo_ReplacesItWithTheNewKey()
+    {
+        var brand = Brand.Create("Elf Bar", null, true);
+        brand.AttachLogo("brands/abc/logo.webp");
+        brand.RemoveLogo();
+
+        brand.AttachLogo("brands/abc/new-logo.webp");
+
+        brand.LogoPath.Should().Be("brands/abc/new-logo.webp");
     }
 }
 
@@ -261,3 +542,21 @@ public class BrandTests
 //  Create_WhenNameIsExactly100Characters_Succeeds,
 //  Create_WhenDescriptionExceeds250Characters_ThrowsBrandDescriptionTooLongException,
 //  Create_WhenDescriptionIsExactly250Characters_Succeeds)
+
+// =============================================================================
+// AC → Test mapping (manage-brands)
+// =============================================================================
+// AC-6: Rename_WithAValidName_UpdatesTheName, ChangeDescription_WithAValidDescription_UpdatesTheDescription,
+//        RemoveLogo_WhenALogoIsAttached_ClearsTheLogoPath, AttachLogo_AfterRemoveLogo_ReplacesItWithTheNewKey
+// AC-7: Rename_WhenNameIsEmptyOrWhitespaceOnly_ThrowsBrandNameRequiredException,
+//        Rename_WhenNameIsEmptyOrWhitespaceOnly_LeavesTheOriginalNameUnchanged
+// AC-9: Rename_ToItsOwnCurrentName_Succeeds (Domain enforces no uniqueness at all — that is RULE-2,
+//        a repository concern; this confirms the entity itself treats a no-op rename like any other)
+// AC-10: RemoveLogo_WhenALogoIsAttached_ReturnsThePreviousLogoPath, RemoveLogo_WhenALogoIsAttached_ClearsTheLogoPath,
+//         RemoveLogo_WhenNoLogoIsAttached_ReturnsNullAndLogoPathStaysNull, AttachLogo_AfterRemoveLogo_ReplacesItWithTheNewKey
+// AC-12: Activate_OnAnInactiveBrand_SetsIsActiveToTrue, Deactivate_OnAnActiveBrand_SetsIsActiveToFalse
+// AC-21: Activate_OnAnAlreadyActiveBrand_RemainsActive, Deactivate_OnAnAlreadyInactiveBrand_RemainsInactive
+//         (SetBrandStatusHandler relies on this idempotence to exclude no-op brands from ChangedCount)
+// (RULE-3 length limits on Rename/ChangeDescription: Rename_WhenNameExceeds100Characters_ThrowsBrandNameTooLongException,
+//  Rename_WhenNameIsExactly100Characters_Succeeds, ChangeDescription_WhenExceeds250Characters_ThrowsBrandDescriptionTooLongException,
+//  ChangeDescription_WhenExactly250Characters_Succeeds)

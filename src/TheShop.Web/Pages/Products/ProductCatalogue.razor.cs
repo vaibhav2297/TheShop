@@ -1,14 +1,18 @@
+using System.Globalization;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
+using TheShop.Application.Features.Products;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Application.Features.Products.Queries.GetCatalogueFilters;
 using TheShop.Application.Features.Products.Queries.GetProductCataloguePage;
 using TheShop.Domain.Enums;
 using TheShop.Web.Common;
-using TheShop.Web.Components.Products;
+using TheShop.Web.Common.Sorting;
+using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
 
@@ -39,9 +43,26 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
     private IReadOnlyList<AppliedFilterDto> _selectedFilters = [];
     private decimal? _priceMin;
     private decimal? _priceMax;
-    private ProductSortOption _sort = ProductSortOption.NewestFirst;
+    private ProductSortOption _sort = ProductSortCatalogue.Instance.Default;
 
     private IReadOnlyList<FilterGroupDto> FilterGroups => _filters?.Groups ?? [];
+
+    /// <summary>
+    /// The price bounds in the panel's group-keyed range shape. The catalogue's own state stays
+    /// price-specific — <see cref="CatalogueQueryState"/> and
+    /// <see cref="GetProductCataloguePageQuery"/> both name price explicitly — so the translation
+    /// to and from the feature-agnostic panel happens here, at the component boundary.
+    /// </summary>
+    private IReadOnlyList<RangeSelection> SelectedRanges =>
+        [new RangeSelection(ProductFilterKeys.Price, _priceMin, _priceMax)];
+
+    /// <summary>
+    /// The sort orders offered in the grid's picker, in display order. Declared once in
+    /// <see cref="ProductSortCatalogue"/>, which also owns the matching URL slugs and the default —
+    /// so an added order reaches the picker, the link, and the fallback together.
+    /// </summary>
+    private static readonly IReadOnlyList<(ProductSortOption Value, string LabelKey)> SortOptions =
+        ProductSortCatalogue.Instance.Picker;
 
     private int ResultRangeStart => ((_products.Page - 1) * _products.PageSize) + 1;
 
@@ -107,17 +128,28 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
         return PushStateAsync(next);
     }
 
-    private Task OnPriceMinChangedAsync(decimal? value)
+    /// <summary>
+    /// Applies a settled range from the filter panel. Both bounds arrive together, so a drag that
+    /// moved each thumb costs one state push — and one page query — instead of two.
+    /// </summary>
+    private Task OnRangeChangedAsync(RangeSelection range)
     {
-        _priceMin = value;
+        if (range.GroupKey != ProductFilterKeys.Price)
+            return Task.CompletedTask;
+
+        _priceMin = range.Min;
+        _priceMax = range.Max;
         return PushStateAsync(BuildState() with { Page = 1 }, replace: true);
     }
 
-    private Task OnPriceMaxChangedAsync(decimal? value)
-    {
-        _priceMax = value;
-        return PushStateAsync(BuildState() with { Page = 1 }, replace: true);
-    }
+    /// <summary>
+    /// Formats a range-filter bound for the panel. Price is the catalogue's only range group and
+    /// is money, so it renders in the shop's currency.
+    /// </summary>
+    private static string FormatRange(string groupKey, decimal value) =>
+        groupKey == ProductFilterKeys.Price
+            ? CurrencyFormatter.Format(value)
+            : value.ToString(CultureInfo.InvariantCulture);
 
     private Task OnSortChangedAsync(ProductSortOption sort)
     {

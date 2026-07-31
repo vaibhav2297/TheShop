@@ -22,6 +22,7 @@ public class ShopTheme
         Secondary = ShopColors.Secondary,
         SecondaryContrastText = ShopColors.SecondaryContrast,
         Tertiary = ShopColors.Tertiary,
+        TertiaryLighten = ShopColors.TertiaryLighten,
         TertiaryContrastText = ShopColors.TertiaryContrast,
         Background = ShopColors.Background,
         BackgroundGray = ShopColors.BackgroundGrey,
