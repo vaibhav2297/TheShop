@@ -36,6 +36,17 @@ public abstract class E2ETestBase(PlaywrightFixture playwright) : IAsyncLifetime
     public async ValueTask DisposeAsync()
     {
         if (Context is null) return;
+
+        // The local stack rotates refresh tokens on every use (config.toml
+        // enable_refresh_token_rotation): the token embedded in the cached storage-state file
+        // gets consumed and replaced the moment this test's session refreshes. Re-persist it so
+        // the next test (in this run or a later `dotnet test` process) picks up the still-valid
+        // rotated token instead of the now-dead one the file started with. Skipped when the file
+        // is already gone — a sign-out journey deletes it deliberately and must not have it
+        // recreated with a signed-out state.
+        if (StorageStatePath is { } path && File.Exists(path))
+            await Context.StorageStateAsync(new() { Path = path });
+
         var failed = TestContext.Current.TestState?.Result is TestResult.Failed;
         var tracePath = failed
             ? Path.Combine(AppContext.BaseDirectory, "playwright-traces",
