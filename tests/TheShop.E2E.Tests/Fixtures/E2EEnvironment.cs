@@ -9,6 +9,11 @@ public static class E2EEnvironment
     /// <summary>Base URL of the Blazor WASM dev server used for E2E runs.</summary>
     public const string AppBaseUrl = "http://localhost:5218";
 
+    /// <summary>
+    /// Whether to launch the browser in headless mode.
+    /// </summary>
+    public const bool Headless = false;
+
     /// <summary>Absolute path to the repository root, resolved from the test bin directory.</summary>
     public static string RepoRoot { get; } = FindRepoRoot();
 

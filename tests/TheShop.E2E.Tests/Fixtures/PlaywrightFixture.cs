@@ -23,7 +23,8 @@ public sealed class PlaywrightFixture : IAsyncLifetime
         Browser = await _playwright.Chromium.LaunchAsync(new()
         {
             // Set E2E_HEADED=1 locally to watch the run.
-            Headless = Environment.GetEnvironmentVariable("E2E_HEADED") is null,
+            //Headless = Environment.GetEnvironmentVariable("E2E_HEADED") is not null,
+            Headless = E2EEnvironment.Headless
         });
     }
 

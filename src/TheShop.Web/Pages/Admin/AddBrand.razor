@@ -43,7 +43,8 @@
                                       OnlyValidateIfDirty
                                       Validation="@_nameValidation"
                                       RequiredError="@Strings.Brand_NameRequired"
-                                      Immediate="true" />
+                                      Immediate="true"
+                                      UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "add-brand-name" })" />
 
                         <MudTextField T="string"
                                       @bind-Value="_description"
@@ -87,7 +88,8 @@
                             <MudButton Variant="Variant.Filled"
                                        Color="Color.Primary"
                                        Disabled="@(!_isFormValid || busy)"
-                                       OnClick="SaveAsync">
+                                       OnClick="SaveAsync"
+                                       UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "add-brand-save" })">
                                 @if (busy)
                                 {
                                     <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
