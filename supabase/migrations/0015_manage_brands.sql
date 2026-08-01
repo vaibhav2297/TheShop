@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0014_manage_brands
+-- 0015_manage_brands
 --
 -- Manage-brands admin capability (.specs/manage-brands/plan.md §10). Retires
 -- Brand.Slug end to end (spec FR-9, Decision 6) and adds the two

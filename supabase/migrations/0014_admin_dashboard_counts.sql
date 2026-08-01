@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0013_admin_dashboard_counts
+-- 0014_admin_dashboard_counts
 --
 -- Admin console (.specs/admin-console/plan.md §10). Per-module record count for
 -- the /admin dashboard. SECURITY DEFINER so it counts EVERY row regardless of

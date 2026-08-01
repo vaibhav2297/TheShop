@@ -7,7 +7,7 @@ namespace TheShop.Infrastructure.Tests.Persistence;
 
 /// <summary>
 /// Integration tests for the <c>admin_module_count</c> <c>SECURITY DEFINER</c> function (migration
-/// <c>0013_admin_dashboard_counts.sql</c>) that backs <see cref="TheShop.Infrastructure.Persistence.Repositories.SupabaseAdminDashboardRepository"/>
+/// <c>0014_admin_dashboard_counts.sql</c>) that backs <see cref="TheShop.Infrastructure.Persistence.Repositories.SupabaseAdminDashboardRepository"/>
 /// — the plan's real authorization boundary for the admin console (spec RULE-2/RULE-3, FR-3, FR-5,
 /// AC-3): the function re-checks each module's <c>authorize()</c> gate itself (so hiding a card in
 /// the UI is never the only protection) and counts <b>every</b> row regardless of storefront
@@ -304,7 +304,7 @@ public sealed class SupabaseAdminDashboardRepositorySchemaTests : IAsyncLifetime
             -- brands.* permissions and the Admin grant are seeded by RbacTestSchema
             -- (mirroring migrations 0007 + 0015).
 
-            -- Verbatim from supabase/migrations/0013_admin_dashboard_counts.sql
+            -- Verbatim from supabase/migrations/0014_admin_dashboard_counts.sql
             CREATE OR REPLACE FUNCTION public.admin_module_count(p_module TEXT)
             RETURNS BIGINT
             LANGUAGE plpgsql SECURITY DEFINER STABLE
