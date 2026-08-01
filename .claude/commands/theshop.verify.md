@@ -72,6 +72,8 @@ Present this checklist to the user before launching, so scope is clear.
 
 ## Step 2 — Launch the app
 
+Skip this step when Tier 1 applies — the E2E fixtures own app launch and teardown.
+
 Start the Web app in the background (it does not return on its own):
 
 ```bash
@@ -90,8 +92,8 @@ If the app never becomes ready, halt with 🔴 and quote the last lines of the r
 
 Verify each acceptance criterion against the running app. Use the strongest tier available:
 
-- **Tier 1 — Automated (preferred, if a browser-automation tool is connected):** drive the feature's route, perform the Functional-Behavior actions, and assert each AC's observable outcome. Record pass/fail with concrete evidence (what you saw).
-- **Tier 2 — Guided manual (fallback — current default, since no browser-automation MCP is connected):** this is a Blazor **WebAssembly** app, so the page renders client-side — a raw `curl` of a route returns the host shell, **not** the rendered component. That confirms the app *serves* but cannot confirm a component *rendered or behaves*. So:
+- **Tier 1 — Automated (preferred):** if `tests/TheShop.E2E.Tests` contains tests stamped `[Trait("Feature","$ARGUMENTS")]` (check with `dotnet test tests/TheShop.E2E.Tests --filter "Category=E2E&Feature=$ARGUMENTS" --list-tests`), run the E2E environment script (`pwsh tests/TheShop.E2E.Tests/tools/start-e2e-env.ps1`), then `dotnet test tests/TheShop.E2E.Tests --filter "Category=E2E&Feature=$ARGUMENTS"`. The E2E fixtures launch and tear down the app themselves — skip Step 2's manual launch when running this tier. Map each test's pass/fail to its AC by the `AC{n}_` prefix in the test name. Any **skipped** test means the environment didn't start — treat as a halt (Template C), never as a pass. ACs with no matching `AC{n}_` test fall through to Tier 2 for that AC only.
+- **Tier 2 — Guided manual (fallback, for ACs with no Tier 1 journey):** this is a Blazor **WebAssembly** app, so the page renders client-side — a raw `curl` of a route returns the host shell, **not** the rendered component. That confirms the app *serves* but cannot confirm a component *rendered or behaves*. So:
   1. Confirm the app is serving (host page returns 200, no startup errors in the log).
   2. Hand the user the URL and a per-AC click-path (derived from Functional Behaviors), and ask them to confirm each AC **Pass / Fail** in their browser. Present them as a tight checklist; wait for their answers.
   3. Mark any AC the user did not explicitly confirm as **⚠️ Unconfirmed** (treated as not-passed for the verdict).
@@ -122,7 +124,7 @@ Emit exactly one template. No extra prose.
 ## Scope
 - Spec: `.specs/$ARGUMENTS/spec.md` ✅
 - Surface: user-facing ({route(s) checked})
-- Driver tier: {Tier 1 — automated / Tier 2 — guided manual}
+- Driver tier: {Tier 1 — automated / Tier 2 — guided manual / Tier 1 — automated ({n} ACs) + Tier 2 — guided manual ({m} ACs)}
 
 ## App launch
 - Build: ✅ clean

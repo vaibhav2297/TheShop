@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0015_reconcile_brands_permission_seed
+-- 0016_reconcile_brands_permission_seed
 --
 -- Reconciliation: the brands.* permission rows and their role grants were
 -- applied to the hosted database by an ad-hoc migration (add_brand_management)

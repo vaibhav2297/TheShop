@@ -381,3 +381,8 @@ data/
 
 # graphify knowledge graph output (regenerated from source, not project code)
 graphify-out/
+
+# E2E automation — per-run artifacts, never committed
+tests/TheShop.E2E.Tests/.e2e-env
+tests/TheShop.E2E.Tests/.auth-states/
+**/playwright-traces/

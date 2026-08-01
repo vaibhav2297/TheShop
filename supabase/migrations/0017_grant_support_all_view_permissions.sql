@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0016_grant_support_all_view_permissions
+-- 0017_grant_support_all_view_permissions
 --
 -- Widen the Support role to read-only visibility across every module: grant
 -- it the *.view permission of all eleven catalogue modules. Support keeps its

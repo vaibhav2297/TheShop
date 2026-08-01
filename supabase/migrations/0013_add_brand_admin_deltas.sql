@@ -1,12 +1,12 @@
 -- ============================================================================
--- 0012_add_brand_admin_deltas
+-- 0013_add_brand_admin_deltas
 --
 -- Add-brand admin capability (.specs/add-brand/plan.md §10). Most of this
 -- feature's schema/RLS/seed work (brands.description/logo_path/is_active,
 -- the ux_brands_normalized_name unique index, the brands.* permissions and
 -- their Admin/SuperAdmin grants, the brand-logos bucket and its storage RLS,
 -- and the get_catalogue_filters() is_active hardening) was already applied
--- by an earlier migration (add_brand_management). Two gaps remained:
+-- by 0012_add_brand_management. Two gaps remained:
 --
 --   1. brands.created_at was never added.
 --   2. The brands SELECT policy was still "brands_public_read" (USING true)

@@ -54,7 +54,7 @@
                                               RequiredError="@Strings.Email_Required"
                                               Validation="@_emailValidation"
                                               Immediate="true"
-                                              autocomplete="email" />
+                                              UserAttributes="@(new Dictionary<string, object?> { ["autocomplete"] = "email", ["data-testid"] = "signin-email" })" />
 
                                 @* Row wrapper prevents MudStack stretch from expanding the button to full width *@
                                 <MudStack Row="true">
@@ -63,7 +63,8 @@
                                                Size="Size.Large"
                                                Disabled="@(!_isFormValid || busy)"
                                                EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
-                                               OnClick="OnSendCodeAsync">
+                                               OnClick="OnSendCodeAsync"
+                                               UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "signin-submit" })">
                                         @if (busy)
                                         {
                                             <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />

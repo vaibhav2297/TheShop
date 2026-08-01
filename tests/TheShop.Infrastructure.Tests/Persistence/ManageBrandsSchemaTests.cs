@@ -473,7 +473,7 @@ public sealed class ManageBrandsSchemaTests : IAsyncLifetime
     // brands minus slug, idx_brands_name_lower, ux_brands_normalized_name, a minimal products
     // table (brand_id FK + is_published) with no SELECT policy of its own (irrelevant to the
     // SECURITY DEFINER RPCs below, which bypass RLS by design), the four brands.* RLS policies,
-    // and the two RPCs verbatim from migration 0014_manage_brands.sql.
+    // and the two RPCs verbatim from migration 0015_manage_brands.sql.
     // =========================================================================
 
     private static async Task ApplyManageBrandsSchemaAsync(NpgsqlConnection conn)
@@ -520,7 +520,7 @@ public sealed class ManageBrandsSchemaTests : IAsyncLifetime
             -- brands.* permissions and the Admin grant are seeded by RbacTestSchema
             -- (mirroring migrations 0007 + 0015).
 
-            -- Verbatim from supabase/migrations/0014_manage_brands.sql (plan §10)
+            -- Verbatim from supabase/migrations/0015_manage_brands.sql (plan §10)
 
             CREATE OR REPLACE FUNCTION public.brand_product_counts(brand_ids UUID[])
             RETURNS TABLE (brand_id UUID, product_count BIGINT)

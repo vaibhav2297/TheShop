@@ -1,5 +1,5 @@
 -- ============================================================================
--- 0017_add_dashboard_view_permission
+-- 0018_add_dashboard_view_permission
 --
 -- Introduce dashboard.view — the admin console screen's own permission. The
 -- former client-side "AdminArea" policy (derived from the screen registry) is
