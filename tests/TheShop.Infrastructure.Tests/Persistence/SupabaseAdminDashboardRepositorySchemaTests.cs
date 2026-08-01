@@ -17,8 +17,8 @@ namespace TheShop.Infrastructure.Tests.Persistence;
 /// Spins up a real Postgres container (Testcontainers) and reproduces the RBAC core via
 /// <see cref="RbacTestSchema"/> (auth stub, <c>authorize()</c>, roles/permissions seed — the same
 /// mechanism <see cref="RbacAuthorizationTests"/> and <see cref="SupabaseBrandRepositorySchemaTests"/>
-/// use), then layers minimal <c>products</c>/<c>categories</c>/<c>brands</c> stub tables and the
-/// <c>brands.*</c> permission seed (not part of the RBAC core migrations) on top, plus the
+/// use, including the <c>brands.*</c> permission seed mirroring migration 0015), then layers
+/// minimal <c>products</c>/<c>categories</c>/<c>brands</c> stub tables on top, plus the
 /// <c>admin_module_count</c> function itself, applied verbatim from migration 0013.
 /// <see href=".specs/admin-console/spec.md"/>
 /// </summary>
@@ -119,7 +119,7 @@ public sealed class SupabaseAdminDashboardRepositorySchemaTests : IAsyncLifetime
         await InsertBrandAsync(conn, isActive: true);
         await InsertBrandAsync(conn, isActive: false);
         var userId = await RbacTestSchema.InsertAuthUserAsync(conn);
-        await RbacTestSchema.AssignRoleByNameAsync(conn, userId, "Admin"); // holds brands.view (granted below)
+        await RbacTestSchema.AssignRoleByNameAsync(conn, userId, "Admin"); // holds brands.view (seeded by RbacTestSchema)
         var sessionId = await RbacTestSchema.InsertSessionAsync(conn, userId, DateTimeOffset.UtcNow);
         await RbacTestSchema.SetJwtClaimsAsync(conn, userId, sessionId);
 
@@ -278,9 +278,9 @@ public sealed class SupabaseAdminDashboardRepositorySchemaTests : IAsyncLifetime
 
     // =========================================================================
     // Schema setup — minimal products/categories/brands stubs (this feature reads existing
-    // tables; the real column shapes are owned by their own features/migrations) plus the
-    // brands.* permission seed (not part of the RBAC core migrations reproduced by
-    // RbacTestSchema) and admin_module_count itself, applied verbatim from migration 0013.
+    // tables; the real column shapes are owned by their own features/migrations) plus
+    // admin_module_count itself, applied verbatim from migration 0013. The brands.*
+    // permission seed comes from RbacTestSchema (mirroring migration 0015).
     // =========================================================================
 
     private static async Task ApplyAdminDashboardSchemaAsync(NpgsqlConnection conn)
@@ -301,14 +301,8 @@ public sealed class SupabaseAdminDashboardRepositorySchemaTests : IAsyncLifetime
                 is_active BOOLEAN NOT NULL DEFAULT true
             );
 
-            INSERT INTO permissions (code, module) VALUES
-                ('brands.view', 'brands'), ('brands.create', 'brands'),
-                ('brands.edit', 'brands'), ('brands.delete', 'brands');
-
-            INSERT INTO role_permissions (role_id, permission_id)
-            SELECT r.id, p.id FROM roles r
-            JOIN permissions p ON p.module = 'brands'
-            WHERE r.name_key = 'Admin';
+            -- brands.* permissions and the Admin grant are seeded by RbacTestSchema
+            -- (mirroring migrations 0007 + 0015).
 
             -- Verbatim from supabase/migrations/0013_admin_dashboard_counts.sql
             CREATE OR REPLACE FUNCTION public.admin_module_count(p_module TEXT)

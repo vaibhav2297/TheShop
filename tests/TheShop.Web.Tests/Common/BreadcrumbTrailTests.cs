@@ -61,7 +61,7 @@ public class BreadcrumbTrailTests
         // FR-2 / spec §4: the first item of an admin trail is always the Dashboard.
         var trail = BreadcrumbTrail.Admin().Current("Products");
 
-        trail[0].Text.Should().Be(Strings.Nav_Dashboard);
+        trail[0].Text.Should().Be(Strings.Nav_AdminConsole);
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public class BreadcrumbTrailTests
             .Current("Wool Parka");
 
         trail.Should().HaveCount(3);
-        trail[0].Text.Should().Be(Strings.Nav_Dashboard);
+        trail[0].Text.Should().Be(Strings.Nav_AdminConsole);
         trail[0].Disabled.Should().BeFalse("Dashboard must be a link");
         trail[1].Text.Should().Be("Products");
         trail[1].Disabled.Should().BeFalse("Products must be a link");
@@ -308,7 +308,7 @@ public class BreadcrumbTrailTests
         var trail = BreadcrumbTrail.Admin().Current("Products");
 
         trail.Should().HaveCount(2);
-        trail[0].Text.Should().Be(Strings.Nav_Dashboard);
+        trail[0].Text.Should().Be(Strings.Nav_AdminConsole);
         trail[1].Text.Should().Be("Products");
     }
 }

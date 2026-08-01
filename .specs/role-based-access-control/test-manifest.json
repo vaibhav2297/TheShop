@@ -2,7 +2,7 @@
   "feature": "role-based-access-control",
   "trait": "role-based-access-control",
   "writtenAt": "2026-07-15",
-  "totalTests": 181,
+  "totalTests": 180,
   "classes": [
     { "fqn": "TheShop.Domain.Tests.ValueObjects.PermissionTests", "file": "tests/TheShop.Domain.Tests/ValueObjects/PermissionTests.cs", "tests": 19 },
     { "fqn": "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests", "file": "tests/TheShop.Domain.Tests/ValueObjects/PermissionCatalogueTests.cs", "tests": 17 },
@@ -16,7 +16,7 @@
     { "fqn": "TheShop.Web.Tests.Auth.AdminAreaAuthorizationHandlerTests", "file": "tests/TheShop.Web.Tests/Auth/AdminAreaAuthorizationHandlerTests.cs", "tests": 3 },
     { "fqn": "TheShop.Web.Tests.State.PermissionStateTests", "file": "tests/TheShop.Web.Tests/State/PermissionStateTests.cs", "tests": 8 },
     { "fqn": "TheShop.Web.Tests.Components.Common.AccessDeniedViewTests", "file": "tests/TheShop.Web.Tests/Components/Common/AccessDeniedViewTests.cs", "tests": 4 },
-    { "fqn": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageProductsTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageProductsTests.cs", "tests": 3 },
     { "fqn": "TheShop.Web.Tests.Resources.RbacLocalizationTests", "file": "tests/TheShop.Web.Tests/Resources/RbacLocalizationTests.cs", "tests": 55 }
   ],
   "acceptanceCriteria": [
@@ -27,7 +27,7 @@
         "TheShop.Domain.Tests.Entities.UserAccessTests.HoldsAdminAreaPermission_WhenUserOnlyHoldsTheCustomerRole_ReturnsFalse",
         "TheShop.Application.Tests.Features.Roles.Queries.GetMyPermissionsHandlerTests.Handle_WhenUserHasNoPermissions_ReturnsSuccessWithEmptySet",
         "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.AssignCustomerRole_WhenNewAuthUserIsInserted_GrantsExactlyTheCustomerRole",
-        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.AssignCustomerRole_ForANewlySignedUpUser_GrantsNoAdminAreaPermissions",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.AssignCustomerRole_ForANewlySignedUpUser_GrantsNoPermissions",
         "TheShop.Web.Tests.Auth.AdminAreaAuthorizationHandlerTests.HandleRequirementAsync_WhenUserHoldsNoPermissionsAtAll_DoesNotSucceed",
         "TheShop.Web.Tests.Auth.AdminAreaAuthorizationHandlerTests.HandleRequirementAsync_WhenUserIsNotAuthenticated_DoesNotSucceed",
         "TheShop.Web.Tests.State.PermissionStateTests.HydrateAsync_WhenUserHoldsOnlyTheCustomerRole_HasAnyAdminPermissionIsFalse"
@@ -61,7 +61,7 @@
         "TheShop.Web.Tests.Auth.PermissionAuthorizationHandlerTests.HandleRequirementAsync_WhenUserHoldsTheRequiredPermission_Succeeds",
         "TheShop.Web.Tests.Auth.PermissionAuthorizationHandlerTests.HandleRequirementAsync_WhenUserLacksTheRequiredPermission_DoesNotSucceed",
         "TheShop.Web.Tests.Auth.AdminAreaAuthorizationHandlerTests.HandleRequirementAsync_WhenUserHoldsAnyPermission_Succeeds",
-        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserLacksProductsViewPermission_ShowsAccessDeniedInsteadOfContent"
+        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ManageProducts_Always_CarriesTheProductsViewAuthorizePolicy"
       ]
     },
     {
@@ -78,7 +78,7 @@
     {
       "id": "AC-6",
       "tests": [
-        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_SupportRole_GrantsExactlyOrdersViewOrdersEditAndCustomersView",
+        "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_SupportRole_GrantsEveryViewPermissionPlusOrdersEdit",
         "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_AdminRole_GrantsEveryMerchandisingModuleButNotSettingsAdminUsersOrRoles",
         "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_SuperAdminRole_GrantsEveryCataloguePermission",
         "TheShop.Infrastructure.Tests.Persistence.RbacAuthorizationTests.Seed_CustomerRole_GrantsNoPermissions",
@@ -128,8 +128,7 @@
         "TheShop.Web.Tests.Components.Common.AccessDeniedViewTests.Render_Always_ShowsTheLocalizedAccessDeniedMessage",
         "TheShop.Web.Tests.Components.Common.AccessDeniedViewTests.Render_WhenUserStillHoldsAdminAreaAccess_ShowsABackToAdminHomeLink",
         "TheShop.Web.Tests.Components.Common.AccessDeniedViewTests.Render_WhenUserNoLongerHoldsAdminAreaAccess_ShowsABackToStoreLink",
-        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserLacksProductsViewPermission_ShowsAccessDeniedInsteadOfContent",
-        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfContent",
+        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ManageProducts_Always_CarriesTheProductsViewAuthorizePolicy",
         "TheShop.Web.Tests.Auth.PermissionAuthorizationHandlerTests.HandleRequirementAsync_WhenUserIsNotAuthenticated_DoesNotSucceed",
         "TheShop.Web.Tests.Auth.AdminAreaAuthorizationHandlerTests.HandleRequirementAsync_WhenUserIsNotAuthenticated_DoesNotSucceed"
       ]

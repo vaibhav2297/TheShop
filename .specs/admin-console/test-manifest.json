@@ -73,7 +73,7 @@
       "id": "AC-4",
       "tests": [
         "TheShop.Application.Tests.Features.Admin.Queries.GetAdminDashboard.GetAdminDashboardHandlerTests.Handle_WhenCallerIsUnauthenticated_ReturnsEmptyModulesListAndNeverCounts",
-        "TheShop.Web.Tests.Pages.Admin.AdminConsoleTests.AdminConsole_Always_CarriesTheAdminAreaAuthorizePolicyFromTheFolderImports",
+        "TheShop.Web.Tests.Pages.Admin.AdminConsoleTests.AdminConsole_Always_CarriesTheAdminDashboardAuthorizePolicy",
         "TheShop.Infrastructure.Tests.Persistence.SupabaseAdminDashboardRepositorySchemaTests.AdminModuleCount_WhenCallerIsUnauthenticated_ThrowsInsufficientPrivilege"
       ]
     },
@@ -89,8 +89,8 @@
     {
       "id": "AC-6",
       "tests": [
-        "TheShop.Web.Tests.Components.Common.ProfileMenuTests.Render_WhenUserHoldsAnAdminAreaPermission_ShowsAdminConsoleEntryLinkingToAdmin",
-        "TheShop.Web.Tests.Components.Common.ProfileMenuTests.Render_WhenUserHoldsNoAdminAreaPermission_DoesNotShowAdminConsoleEntry"
+        "TheShop.Web.Tests.Components.Common.ProfileMenuTests.Render_WhenUserHoldsTheAdminDashboardPermission_ShowsAdminConsoleEntryLinkingToAdmin",
+        "TheShop.Web.Tests.Components.Common.ProfileMenuTests.Render_WhenUserLacksTheAdminDashboardPermission_DoesNotShowAdminConsoleEntry"
       ]
     },
     {

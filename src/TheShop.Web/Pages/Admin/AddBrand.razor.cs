@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using TheShop.Application.Features.Brands.Commands.CreateBrand;
 using TheShop.Application.Features.Brands.DTOs;
+using TheShop.Web.Auth;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
@@ -14,11 +15,12 @@ namespace TheShop.Web.Pages.Admin;
 /// <summary>
 /// Creates a new brand (Figma node <c>2465:1128</c>). Dispatches
 /// <see cref="CreateBrandCommand"/>; on success returns to
-/// <see cref="Routes.Admin.ManageBrands"/> (Flow 1). Gated at the route level on
-/// <c>PolicyNames.AdminArea</c> via <c>Pages/Admin/_Imports.razor</c>, and additionally on
+/// <see cref="Routes.Admin.ManageBrands"/> (Flow 1). Requires a signed-in user via
+/// <c>Pages/Admin/_Imports.razor</c>, and is gated on
 /// <c>brands.create</c> within the page itself.
 /// </summary>
 [Route(Routes.Admin.AddBrand)]
+[AuthorizePermission("brands.create")]
 public partial class AddBrand : ComponentBase
 {
 

@@ -3,6 +3,7 @@ using Bunit;
 using Bunit.TestDoubles;
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -84,29 +85,14 @@ public class AddBrandTests : TestContext
 
     [Fact]
     [Trait("Feature", "add-brand")]
-    public void Render_WhenUserLacksBrandsCreatePermission_ShowsAccessDeniedInsteadOfTheForm()
+    public void AddBrand_Always_CarriesTheBrandsCreateAuthorizePolicy()
     {
-        var authContext = this.AddAuthorization();
-        authContext.SetAuthorized("support-user"); // authenticated, but no brands.create policy
+        var attributes = typeof(AddBrand).GetCustomAttributes<AuthorizeAttribute>().ToList();
 
-        var cut = Render<AddBrand>();
-
-        cut.Markup.Should().NotContain(Strings.AddBrand_Heading,
-            "an absent permission must hide the capability entirely, not merely disable it");
-        cut.Markup.Should().Contain(Strings.AccessDenied_Title);
-    }
-
-    [Fact]
-    [Trait("Feature", "add-brand")]
-    public void Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfTheForm()
-    {
-        var authContext = this.AddAuthorization();
-        authContext.SetNotAuthorized();
-
-        var cut = Render<AddBrand>();
-
-        cut.Markup.Should().NotContain(Strings.AddBrand_Heading);
-        cut.Markup.Should().Contain(Strings.AccessDenied_Title);
+        attributes.Should().Contain(
+            a => a.Policy == PolicyNames.Permission(PermissionCatalogue.Brands.Create.Code),
+            "the route-level policy is the only gate between a non-creator and the form — " +
+            "App.razor's NotAuthorized template renders the denied/redirect experience");
     }
 
     // =========================================================================

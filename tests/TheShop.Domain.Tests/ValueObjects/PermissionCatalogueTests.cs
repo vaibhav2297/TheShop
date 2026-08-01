@@ -11,11 +11,14 @@ namespace TheShop.Domain.Tests.ValueObjects;
 /// </summary>
 public class PermissionCatalogueTests
 {
-    // The ten modules the spec requires, each gated by its own permissions (AC-3).
+    // The ten modules the spec requires (AC-3), plus the Brands module added by the
+    // add-brand feature (its Decision 2), plus the single-action Dashboard module that
+    // gates the admin console shell itself.
     private static readonly string[] ExpectedModules =
     [
         "products", "categories", "orders", "customers", "coupons",
-        "promotions", "reports", "settings", "admin_users", "roles",
+        "promotions", "reports", "settings", "admin_users", "roles", "brands",
+        "dashboard",
     ];
 
     // =========================================================================
@@ -42,6 +45,7 @@ public class PermissionCatalogueTests
     [InlineData("settings")]
     [InlineData("admin_users")]
     [InlineData("roles")]
+    [InlineData("brands")]
     [Trait("Feature", "role-based-access-control")]
     public void All_ForEveryModule_IncludesViewCreateEditAndDeleteAtMinimum(string module)
     {
@@ -85,28 +89,43 @@ public class PermissionCatalogueTests
 
     [Fact]
     [Trait("Feature", "role-based-access-control")]
-    public void All_Always_ContainsExactlyFortyTwoPermissions()
+    public void All_Always_ContainsExactlyFortySevenPermissions()
     {
-        // 8 modules x 4 actions (view/create/edit/delete) + Orders.Refund + Customers.Export
-        PermissionCatalogue.All.Should().HaveCount(42);
+        // 11 modules x 4 actions (view/create/edit/delete) + Orders.Refund + Customers.Export
+        // + the single-action Dashboard module (dashboard.view only)
+        PermissionCatalogue.All.Should().HaveCount(47);
     }
 
     // =========================================================================
-    // IsAdminArea — every catalogue module is admin-area this release
+    // Dashboard — the admin console shell's own single-action module
     // =========================================================================
 
     [Fact]
     [Trait("Feature", "role-based-access-control")]
-    public void IsAdminArea_ForEveryCataloguePermission_ReturnsTrue()
+    public void Dashboard_Always_ExposesOnlyTheViewPermission()
     {
-        PermissionCatalogue.All.Should().OnlyContain(p => PermissionCatalogue.IsAdminArea(p.Code));
+        PermissionCatalogue.Dashboard.View.Code.Should().Be("dashboard.view");
+        PermissionCatalogue.All.Should().Contain(PermissionCatalogue.Dashboard.View);
+        PermissionCatalogue.All.Where(p => p.Module == "dashboard")
+            .Should().ContainSingle("the admin console shell is view-only — there is nothing to create, edit, or delete");
+    }
+
+    // =========================================================================
+    // IsDefined — catalogue membership, the fail-fast check for perm:{code} policies
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "role-based-access-control")]
+    public void IsDefined_ForEveryCataloguePermission_ReturnsTrue()
+    {
+        PermissionCatalogue.All.Should().OnlyContain(p => PermissionCatalogue.IsDefined(p.Code));
     }
 
     [Fact]
     [Trait("Feature", "role-based-access-control")]
-    public void IsAdminArea_ForACodeNotInTheCatalogue_ReturnsFalse()
+    public void IsDefined_ForACodeNotInTheCatalogue_ReturnsFalse()
     {
-        PermissionCatalogue.IsAdminArea("unknown.view").Should().BeFalse();
+        PermissionCatalogue.IsDefined("unknown.view").Should().BeFalse();
     }
 
     // =========================================================================
@@ -150,15 +169,6 @@ public class PermissionCatalogueTests
 //        Orders_Always_IncludesRefundAsASensitiveAction,
 //        Customers_Always_IncludesExportAsASensitiveAction,
 //        All_Always_HasNoDuplicateCodes
-//
-// NOTE (flagged for the user, not modified here — out of scope for the add-brand test-writer
-// invocation): add-brand's Decision 2 extends PermissionCatalogue.All with the Brands module (4
-// more codes, 1 more module). All_Always_ContainsExactlyFortyTwoPermissions (expects 42) and
-// All_Always_ContainsEveryModuleListedInTheSpec (expects exactly the pre-add-brand 10 modules)
-// are now stale and will fail once add-brand's PermissionCatalogue change is compiled in. These
-// belong to the role-based-access-control feature's own regression suite and were left untouched
-// per the append-only rule; they should be updated (42 → 46, module list +"brands") the next time
-// that feature's tests are revisited.
 
 // =============================================================================
 // AC → Test mapping (add-brand)

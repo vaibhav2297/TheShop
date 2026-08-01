@@ -517,14 +517,8 @@ public sealed class ManageBrandsSchemaTests : IAsyncLifetime
 
             CREATE POLICY "products_public_read" ON products FOR SELECT USING (is_published = true);
 
-            INSERT INTO permissions (code, module) VALUES
-                ('brands.view', 'brands'), ('brands.create', 'brands'),
-                ('brands.edit', 'brands'), ('brands.delete', 'brands');
-
-            INSERT INTO role_permissions (role_id, permission_id)
-            SELECT r.id, p.id FROM roles r
-            JOIN permissions p ON p.module = 'brands'
-            WHERE r.name_key = 'Admin';
+            -- brands.* permissions and the Admin grant are seeded by RbacTestSchema
+            -- (mirroring migrations 0007 + 0015).
 
             -- Verbatim from supabase/migrations/0014_manage_brands.sql (plan §10)
 

@@ -3,8 +3,7 @@ namespace TheShop.Domain.ValueObjects;
 /// <summary>
 /// The single source of truth for every permission code in the system, organized by admin
 /// module. The <c>permissions</c> table seed is generated from <see cref="All"/> so the code and
-/// the database can never silently drift (FR-3). Every module in this catalogue is an
-/// admin-area module this release.
+/// the database can never silently drift (FR-3).
 /// </summary>
 public static class PermissionCatalogue
 {
@@ -104,7 +103,18 @@ public static class PermissionCatalogue
     }
 
     /// <summary>
-    /// Every permission defined by the catalogue, across all eleven modules. This is the
+    /// The admin console shell itself. A single-action module: holding <see cref="View"/> is
+    /// what admits a user into the admin area (the <c>/admin</c> route gate, the admin nav
+    /// link, and the dashboard query), so every staff role is granted it alongside its
+    /// module permissions.
+    /// </summary>
+    public static class Dashboard
+    {
+        public static readonly Permission View = Permission.Create("dashboard.view");
+    }
+
+    /// <summary>
+    /// Every permission defined by the catalogue, across all twelve modules. This is the
     /// generation source for the <c>permissions</c> table seed (FR-3).
     /// </summary>
     public static readonly IReadOnlyList<Permission> All =
@@ -120,13 +130,17 @@ public static class PermissionCatalogue
         AdminUsers.View, AdminUsers.Create, AdminUsers.Edit, AdminUsers.Delete,
         Roles.View, Roles.Create, Roles.Edit, Roles.Delete,
         Brands.View, Brands.Create, Brands.Edit, Brands.Delete,
+        Dashboard.View,
     ];
 
+    private static readonly HashSet<string> KnownPermissions =
+        new(All.Select(p => p.Code), StringComparer.Ordinal);
+
     /// <summary>
-    /// <c>true</c> when <paramref name="code"/> matches a known catalogue permission. Every
-    /// module in this catalogue is admin-area this release, so membership in <see cref="All"/>
-    /// is sufficient.
+    /// <c>true</c> when <paramref name="code"/> matches a known catalogue permission. Used to
+    /// fail fast on mistyped or unknown codes (e.g. when synthesizing <c>perm:{code}</c>
+    /// authorization policies) — membership says nothing about which surface the permission
+    /// belongs to.
     /// </summary>
-    public static bool IsAdminArea(string code) =>
-        All.Any(p => string.Equals(p.Code, code, StringComparison.Ordinal));
+    public static bool IsDefined(string code) => KnownPermissions.Contains(code);
 }

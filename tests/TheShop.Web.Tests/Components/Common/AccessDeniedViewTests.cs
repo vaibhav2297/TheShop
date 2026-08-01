@@ -67,7 +67,7 @@ public class AccessDeniedViewTests : TestContext
     {
         var authContext = this.AddAuthorization();
         authContext.SetAuthorized("staff-user");
-        authContext.SetPolicies(PolicyNames.AdminArea);
+        authContext.SetPolicies(PolicyNames.AdminDashboard);
 
         var cut = Render<AccessDeniedView>();
 

@@ -5,6 +5,7 @@ using MudBlazor;
 using TheShop.Application.Features.Brands.Commands.UpdateBrand;
 using TheShop.Application.Features.Brands.DTOs;
 using TheShop.Application.Features.Brands.Queries.GetBrandById;
+using TheShop.Web.Auth;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
@@ -15,12 +16,13 @@ namespace TheShop.Web.Pages.Admin;
 /// <summary>
 /// Edits an existing brand, id-keyed (plan §5 Decision 8). Dispatches
 /// <see cref="GetBrandByIdQuery"/> (<c>brands.view</c>) on load and <see cref="UpdateBrandCommand"/>
-/// on save. Gated at the route level on <c>PolicyNames.AdminArea</c> via
-/// <c>Pages/Admin/_Imports.razor</c>, and additionally on <c>brands.edit</c> within the page
+/// on save. Requires a signed-in user via
+/// <c>Pages/Admin/_Imports.razor</c>, and is gated on <c>brands.edit</c> within the page
 /// itself — the page-level gate, not the query, is what denies a view-only admin's direct link
 /// (plan §5 Decision 11, AC-16).
 /// </summary>
 [Route(Routes.Admin.EditBrandPattern)]
+[AuthorizePermission("brands.edit")]
 public partial class EditBrand : ComponentBase
 {
     private const int MaxNameLength = 100;

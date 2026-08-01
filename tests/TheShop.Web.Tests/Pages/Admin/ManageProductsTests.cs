@@ -1,6 +1,8 @@
+using System.Reflection;
 using Bunit;
 using Bunit.TestDoubles;
 using FluentAssertions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
@@ -16,10 +18,11 @@ namespace TheShop.Web.Tests.Pages.Admin;
 
 /// <summary>
 /// Tests for the <see cref="ManageProducts"/> admin harness shell — the verification surface for
-/// RBAC's admin gating (Figma node <c>2470:2200</c>). Additionally gated on <c>products.view</c>
-/// within the page itself, rendering <c>AccessDeniedView</c> in place when that finer-grained
-/// permission is missing. Permission policies resolve against the claims minted into the access
-/// token; bUnit's auth context stands in for that principal here.
+/// RBAC's admin gating (Figma node <c>2470:2200</c>). Gated on <c>products.view</c> by its
+/// route-level <c>[AuthorizePermission]</c> attribute — the denied/redirect experience is
+/// App.razor's router scaffolding, so this class asserts the structural seam. Permission
+/// policies resolve against the claims minted into the access token; bUnit's auth context
+/// stands in for that principal here.
 /// </summary>
 public class ManageProductsTests : TestContext
 {
@@ -50,34 +53,20 @@ public class ManageProductsTests : TestContext
     }
 
     // =========================================================================
-    // Missing products.view permission — AccessDeniedView renders in place, not the content
+    // Structural — the page carries its own products.view route-level policy; the
+    // denied/redirect experience it triggers is App.razor's router scaffolding
     // =========================================================================
 
     [Fact]
     [Trait("Feature", "role-based-access-control")]
-    public void Render_WhenUserLacksProductsViewPermission_ShowsAccessDeniedInsteadOfContent()
+    public void ManageProducts_Always_CarriesTheProductsViewAuthorizePolicy()
     {
-        var authContext = this.AddAuthorization();
-        authContext.SetAuthorized("support-user"); // authenticated, but no products.view policy granted
+        var attributes = typeof(ManageProducts).GetCustomAttributes<AuthorizeAttribute>().ToList();
 
-        var cut = Render<ManageProducts>();
-
-        cut.Markup.Should().NotContain(Strings.ManageProducts_Heading,
-            "an absent permission must hide the capability entirely, not merely disable it");
-        cut.Markup.Should().Contain(Strings.AccessDenied_Title);
-    }
-
-    [Fact]
-    [Trait("Feature", "role-based-access-control")]
-    public void Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfContent()
-    {
-        var authContext = this.AddAuthorization();
-        authContext.SetNotAuthorized();
-
-        var cut = Render<ManageProducts>();
-
-        cut.Markup.Should().NotContain(Strings.ManageProducts_Heading);
-        cut.Markup.Should().Contain(Strings.AccessDenied_Title);
+        attributes.Should().Contain(
+            a => a.Policy == PolicyNames.Permission(PermissionCatalogue.Products.View.Code),
+            "the route-level policy is the only gate between a non-viewer and the shell — " +
+            "App.razor's NotAuthorized template renders the denied/redirect experience");
     }
 
     // =========================================================================

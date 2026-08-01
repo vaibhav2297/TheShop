@@ -2,7 +2,7 @@
   "feature": "manage-brands",
   "trait": "manage-brands",
   "writtenAt": "2026-07-31",
-  "totalTests": 273,
+  "totalTests": 271,
   "classes": [
     { "fqn": "TheShop.Domain.Tests.Entities.BrandTests", "file": "tests/TheShop.Domain.Tests/Entities/BrandTests.cs", "tests": 24 },
     { "fqn": "TheShop.Application.Tests.Features.Brands.Queries.GetBrandsPage.GetBrandsPageQueryTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandsPage/GetBrandsPageQueryTests.cs", "tests": 1 },
@@ -21,8 +21,8 @@
     { "fqn": "TheShop.Application.Tests.Features.Brands.Commands.DeleteBrands.DeleteBrandsHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Brands/Commands/DeleteBrands/DeleteBrandsHandlerTests.cs", "tests": 10 },
     { "fqn": "TheShop.Infrastructure.Tests.Persistence.ManageBrandsSchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ManageBrandsSchemaTests.cs", "tests": 21 },
     { "fqn": "TheShop.Infrastructure.Tests.Persistence.PlaceholderImageTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/PlaceholderImageTests.cs", "tests": 2 },
-    { "fqn": "TheShop.Web.Tests.Pages.Admin.EditBrandTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/EditBrandTests.cs", "tests": 20 },
-    { "fqn": "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageBrandsTests.cs", "tests": 40 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.EditBrandTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/EditBrandTests.cs", "tests": 19 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageBrandsTests.cs", "tests": 39 },
     { "fqn": "TheShop.Web.Tests.Components.Common.ShopConfirmDialogTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopConfirmDialogTests.cs", "tests": 5 },
     { "fqn": "TheShop.Web.Tests.Components.Common.ShopFilterPanelTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopFilterPanelTests.cs", "tests": 6 },
     { "fqn": "TheShop.Web.Tests.Components.Common.ShopBulkActionBarTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopBulkActionBarTests.cs", "tests": 10 },
@@ -131,13 +131,11 @@
       "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserHoldsOnlyBrandsView_DoesNotShowTheAddBrandButton",
       "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserHoldsOnlyBrandsView_DoesNotShowEditOrDeleteRowControls",
       "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserHoldsOnlyBrandsView_RendersStatusAsPlainTextNotAClickableToggle",
-      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.Render_WhenUserLacksBrandsEditPermission_ShowsAccessDeniedInsteadOfTheForm",
-      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfTheForm"
+      "TheShop.Web.Tests.Pages.Admin.EditBrandTests.EditBrand_Always_CarriesTheBrandsEditAuthorizePolicy"
     ] },
     { "id": "AC-17", "tests": [
       "TheShop.Application.Tests.Features.Brands.Queries.GetBrandsPage.GetBrandsPageQueryTests.GetBrandsPageQuery_Always_IsDecoratedWithTheBrandsViewPermissionRequirement",
-      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserLacksBrandsViewPermission_ShowsAccessDeniedInsteadOfTheList",
-      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfTheList"
+      "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.ManageBrands_Always_CarriesTheBrandsViewAuthorizePolicy"
     ] },
     { "id": "AC-18", "tests": [
       "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenNoBrandsExistYet_ShowsTheEmptyStateMessage",

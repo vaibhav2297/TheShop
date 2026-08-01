@@ -25,6 +25,17 @@ namespace TheShop.Infrastructure.Tests.Persistence;
 /// </summary>
 public sealed class RbacAuthorizationTests : IAsyncLifetime
 {
+    // Support's seeded grant set (0007 + 0015 + 0016 + 0017): every module's view permission
+    // (dashboard.view included) plus orders.edit. Derived from the catalogue so a new module
+    // extends it automatically.
+    private static readonly string[] SupportGrantedCodes =
+    [
+        .. PermissionCatalogue.All
+            .Select(p => p.Code)
+            .Where(c => c.EndsWith(".view", StringComparison.Ordinal)),
+        "orders.edit",
+    ];
+
     private readonly PostgreSqlContainer _pg = new PostgreSqlBuilder()
         .WithDatabase("shop_test")
         .WithUsername("shop")
@@ -67,7 +78,7 @@ public sealed class RbacAuthorizationTests : IAsyncLifetime
 
     [Fact]
     [Trait("Feature", "role-based-access-control")]
-    public async Task AssignCustomerRole_ForANewlySignedUpUser_GrantsNoAdminAreaPermissions()
+    public async Task AssignCustomerRole_ForANewlySignedUpUser_GrantsNoPermissions()
     {
         await using var conn = await OpenAsync();
         var userId = await RbacTestSchema.InsertAuthUserAsync(conn);
@@ -286,7 +297,7 @@ public sealed class RbacAuthorizationTests : IAsyncLifetime
         await RbacTestSchema.AssignRoleByNameAsync(conn, userId, "Support");
         await RbacTestSchema.SetJwtClaimsAsync(conn, userId, sessionId);
 
-        (await RbacTestSchema.CallAuthorizeAsync(conn, "settings.view")).Should().BeFalse();
+        (await RbacTestSchema.CallAuthorizeAsync(conn, "orders.refund")).Should().BeFalse();
     }
 
     [Fact]
@@ -352,7 +363,7 @@ public sealed class RbacAuthorizationTests : IAsyncLifetime
 
         var codes = await RbacTestSchema.CallGetMyPermissionsAsync(conn);
 
-        codes.Should().BeEquivalentTo(["orders.view", "orders.edit", "customers.view"]);
+        codes.Should().BeEquivalentTo(SupportGrantedCodes);
     }
 
     [Fact]
@@ -565,13 +576,13 @@ public sealed class RbacAuthorizationTests : IAsyncLifetime
 
     [Fact]
     [Trait("Feature", "role-based-access-control")]
-    public async Task Seed_SupportRole_GrantsExactlyOrdersViewOrdersEditAndCustomersView()
+    public async Task Seed_SupportRole_GrantsEveryViewPermissionPlusOrdersEdit()
     {
         await using var conn = await OpenAsync();
 
         var codes = await RbacTestSchema.GetRolePermissionCodesAsync(conn, "Support");
 
-        codes.Should().BeEquivalentTo(["orders.view", "orders.edit", "customers.view"]);
+        codes.Should().BeEquivalentTo(SupportGrantedCodes);
     }
 
     [Fact]
@@ -588,7 +599,7 @@ public sealed class RbacAuthorizationTests : IAsyncLifetime
         codes.Should().Contain([
             "products.view", "products.create", "products.edit", "products.delete",
             "categories.view", "orders.view", "orders.refund", "customers.export",
-            "coupons.view", "promotions.view", "reports.view",
+            "coupons.view", "promotions.view", "reports.view", "dashboard.view",
         ]);
     }
 
@@ -614,7 +625,7 @@ public sealed class RbacAuthorizationTests : IAsyncLifetime
 //        Seed_AllFourBuiltInRoles_ExistAndAreMarkedSystem
 // AC-3: Seed_PermissionCodes_MatchPermissionCatalogueExactly
 // AC-5: Authorize_WhenCallerLacksThePermission_ReturnsFalse
-// AC-6: Seed_SupportRole_GrantsExactlyOrdersViewOrdersEditAndCustomersView,
+// AC-6: Seed_SupportRole_GrantsEveryViewPermissionPlusOrdersEdit,
 //        Seed_AdminRole_GrantsEveryMerchandisingModuleButNotSettingsAdminUsersOrRoles,
 //        Seed_SuperAdminRole_GrantsEveryCataloguePermission,
 //        Seed_CustomerRole_GrantsNoPermissions

@@ -66,16 +66,16 @@ public class ProfileMenuTests : TestContext
     }
 
     // =========================================================================
-    // Admin holds at least one admin-area permission — entry present, targets /admin (AC-6)
+    // Staff holds the dashboard permission — entry present, targets /admin (AC-6)
     // =========================================================================
 
     [Fact]
     [Trait("Feature", "admin-console")]
-    public async Task Render_WhenUserHoldsAnAdminAreaPermission_ShowsAdminConsoleEntryLinkingToAdmin()
+    public async Task Render_WhenUserHoldsTheAdminDashboardPermission_ShowsAdminConsoleEntryLinkingToAdmin()
     {
         var authContext = this.AddAuthorization();
         authContext.SetAuthorized("admin-user");
-        authContext.SetPolicies(PolicyNames.AdminArea);
+        authContext.SetPolicies(PolicyNames.AdminDashboard);
 
         var cut = await RenderOpenProfileMenuAsync();
 
@@ -85,15 +85,15 @@ public class ProfileMenuTests : TestContext
     }
 
     // =========================================================================
-    // No admin-area permission — entry absent entirely, not merely disabled (FR-5 principle)
+    // No dashboard permission — entry absent entirely, not merely disabled (FR-5 principle)
     // =========================================================================
 
     [Fact]
     [Trait("Feature", "admin-console")]
-    public async Task Render_WhenUserHoldsNoAdminAreaPermission_DoesNotShowAdminConsoleEntry()
+    public async Task Render_WhenUserLacksTheAdminDashboardPermission_DoesNotShowAdminConsoleEntry()
     {
         var authContext = this.AddAuthorization();
-        authContext.SetAuthorized("customer-user"); // authenticated, but no AdminArea policy granted
+        authContext.SetAuthorized("customer-user"); // authenticated, but dashboard.view not granted
 
         var cut = await RenderOpenProfileMenuAsync();
 
@@ -104,5 +104,5 @@ public class ProfileMenuTests : TestContext
 // =============================================================================
 // AC → Test mapping
 // =============================================================================
-// AC-6: Render_WhenUserHoldsAnAdminAreaPermission_ShowsAdminConsoleEntryLinkingToAdmin,
-//        Render_WhenUserHoldsNoAdminAreaPermission_DoesNotShowAdminConsoleEntry
+// AC-6: Render_WhenUserHoldsTheAdminDashboardPermission_ShowsAdminConsoleEntryLinkingToAdmin,
+//        Render_WhenUserLacksTheAdminDashboardPermission_DoesNotShowAdminConsoleEntry

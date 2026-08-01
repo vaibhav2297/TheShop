@@ -35,11 +35,12 @@ public static class Routes
     /// <summary>
     /// Admin-panel route constants.
     /// <para>
-    /// <b>Authorization prerequisite:</b> every page added under this prefix must be protected by
-    /// <c>Pages/Admin/_Imports.razor</c> carrying <c>[Authorize(Policy = PolicyNames.AdminArea)]</c>
-    /// <b>and</b> the corresponding Supabase RLS policies. The <c>[Authorize]</c> attribute is a
-    /// UX guard; RLS is the only real authorization boundary. See
-    /// <c>references/rules/architecture-admin.md</c>.
+    /// <b>Authorization prerequisite:</b> every page added under this prefix requires a signed-in
+    /// user via <c>Pages/Admin/_Imports.razor</c> carrying <c>[Authorize]</c>, must gate itself on
+    /// its own screen permission (page-level <c>[Authorize(Policy = ...)]</c> or
+    /// <c>AuthorizeView</c>), <b>and</b> must be backed by the corresponding Supabase RLS
+    /// policies. The <c>[Authorize]</c> attribute is a UX guard; RLS is the only real
+    /// authorization boundary. See <c>references/rules/architecture-admin.md</c>.
     /// </para>
     /// </summary>
     public static class Admin
@@ -47,29 +48,29 @@ public static class Routes
         public const string Console = "/admin";
 
         /// <summary>
-        /// The Manage Products admin harness shell. Gated on <c>PolicyNames.AdminArea</c> via
-        /// <c>Pages/Admin/_Imports.razor</c> and additionally on <c>products.view</c> on the
+        /// The Manage Products admin harness shell. Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>products.view</c> on the
         /// page itself.
         /// </summary>
         public const string ManageProducts = "/admin/products";
 
         /// <summary>
-        /// The Manage Brands admin harness shell and AddBrand's post-save return target. Gated
-        /// on <c>PolicyNames.AdminArea</c> via <c>Pages/Admin/_Imports.razor</c> and additionally
-        /// on <c>brands.view</c> on the page itself.
+        /// The Manage Brands admin harness shell and AddBrand's post-save return target.
+        /// Requires a signed-in user via <c>Pages/Admin/_Imports.razor</c> and is gated on
+        /// <c>brands.view</c> on the page itself.
         /// </summary>
         public const string ManageBrands = "/admin/brands";
 
         /// <summary>
-        /// The add-brand form. Gated on <c>PolicyNames.AdminArea</c> via
-        /// <c>Pages/Admin/_Imports.razor</c> and additionally on <c>brands.create</c> on the
+        /// The add-brand form. Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>brands.create</c> on the
         /// page itself.
         /// </summary>
         public const string AddBrand = "/admin/brands/new";
 
         /// <summary>
-        /// The edit-brand form, id-keyed (plan §5 Decision 8). Gated on
-        /// <c>PolicyNames.AdminArea</c> via <c>Pages/Admin/_Imports.razor</c> and additionally
+        /// The edit-brand form, id-keyed (plan §5 Decision 8). Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated
         /// on <c>brands.edit</c> on the page itself (plan §5 Decision 11) — <c>GetBrandByIdQuery</c>
         /// only requires <c>brands.view</c>, so the page-level gate is what denies a view-only
         /// admin's direct link (AC-16).
