@@ -25,7 +25,7 @@ If a feature name is present, proceed.
 
 Call the `shop-test-writer` sub-agent via the Task tool, with `subagent_type: shop-test-writer`. The prompt to that agent should be:
 
-> "Write test cases for the feature `$ARGUMENTS`. Read the spec at `.specs/$ARGUMENTS/spec.md` (your behavioral oracle) and the plan at `.specs/$ARGUMENTS/plan.md` (your structural map — it reveals the Infrastructure seams the spec hides) and produce runnable test files in the appropriate `tests/TheShop.*.Tests/` projects. Follow your standard protocol and end with the structured summary."
+> "Write test cases for the feature `$ARGUMENTS`. Read the spec at `.specs/$ARGUMENTS/spec.md` (your behavioral oracle) and the plan at `.specs/$ARGUMENTS/plan.md` (your structural map — it reveals the Infrastructure seams the spec hides) and produce runnable test files in the appropriate `tests/TheShop.*.Tests/` projects. If the feature is user-facing and `tests/TheShop.E2E.Tests` exists, also write its E2E journey file per your E2E journey protocol (step 4b) — AC-named tests, `Category=E2E` + `Feature` traits, excluded from the manifest. Follow your standard protocol and end with the structured summary."
 
 Wait for the sub-agent to fully complete its turn. Do not begin Step 2 in parallel, and do not pre-empt the sub-agent's output.
 
@@ -67,6 +67,8 @@ Route by the tags in the gate's output:
   - If Gate B fails a second time on `[tests]` errors that were the writer's to fix, **stop** — report with Template C, quoting the gate output.
 - **Exit 1, any error tagged `[src]`** → do **not** re-invoke the writer — it is forbidden from touching production code and cannot fix this. **Stop** and report with Template C: production code does not compile, so the feature's tests are written but blocked. Name the broken project/file(s) from the gate output.
 
+**E2E journey addendum to Gate B:** when the writer's summary lists an E2E journey file, additionally run `dotnet build tests/TheShop.E2E.Tests/TheShop.E2E.Tests.csproj --nologo` and route any errors exactly like `[tests]`-tagged errors (at most one writer re-invocation, same instruction). The gate script itself does not build this project — the journey is deliberately unmanifested — but `/theshop.verify` must never inherit a non-compiling journey. A failure here never blocks the runner (Step 2 covers only manifested tests); if the journey still doesn't compile after the retry, proceed to Step 2 and surface the journey build failure as a ⚠️ warning line in Template A.
+
 ---
 
 ## Step 2 — Invoke `shop-test-runner`
@@ -85,8 +87,9 @@ Wait for it to fully complete.
 
 1. **Do not start Step 2 until Step 1 is fully complete.** If the writer is still working, wait. No parallel invocation.
 2. **Do not fix any code regardless of what the test results show.** Your job ends at delivering the combined summary — plus updating the feature's tracking artifact `.specs/$ARGUMENTS/status.md` and persisting the combined report to `.specs/$ARGUMENTS/test-report.md` (see below), neither of which is code. The user is the one who acts on it. If they ask you to fix something inside this command run, tell them the slash command is orchestration-only and they can request fixes in a follow-up message.
-3. **Do not run anything outside `tests/`.** The runner agent handles all test execution; you never invoke `dotnet test` yourself. The commands you do run are the Step 1.5 gates (`check-sdd-gates.ps1 manifest` and `compile`) — the first is a read-only artifact check, the second builds the manifest's test projects but never executes a test — plus the post-Gate-B `graphify update .`, which writes only under `graphify-out/` (a knowledge-graph refresh, not code), plus a read-only `git rev-parse --short HEAD` to stamp the persisted report.
+3. **Do not run anything outside `tests/`.** The runner agent handles all test execution; you never invoke `dotnet test` yourself. The commands you do run are the Step 1.5 gates (`check-sdd-gates.ps1 manifest` and `compile`) — the first is a read-only artifact check, the second builds the manifest's test projects but never executes a test — plus the Gate B E2E journey addendum build (`dotnet build tests/TheShop.E2E.Tests/...` — build only, never test), plus the post-Gate-B `graphify update .`, which writes only under `graphify-out/` (a knowledge-graph refresh, not code), plus a read-only `git rev-parse --short HEAD` to stamp the persisted report.
 4. **If `shop-test-writer` could not write the test files, stop and report the reason.** Do not proceed to Step 2 under any circumstance — not even "to see what's already there".
+5. **E2E journeys are written here but never run here.** A journey file the writer produced in Step 1 is not part of the manifest, is not counted in reconciliation, and is not executed by the runner — `/theshop.verify $ARGUMENTS` runs it as its Tier 1 driver. Do not "helpfully" include it in any count or filter.
 
 ---
 
@@ -123,6 +126,9 @@ _Snapshot of one run — regenerate with `/theshop.test {feature_name}`._
 
 - `tests/TheShop.{Layer}.Tests/{path}/{File}.cs` — {N} tests
 - ...
+
+{If the writer produced an E2E journey, add:}
+- `tests/TheShop.E2E.Tests/Journeys/{Feature}JourneyTests.cs` — {N} journeys — *runs in `/theshop.verify` Tier 1; not in the manifest, not counted in the metrics below*
 
 **Coverage by category:** Happy path: {✅/⚠️} · Validation: {✅/⚠️} · Edge cases: {✅/⚠️} · Auth guard: {✅/⚠️/N-A}
 
