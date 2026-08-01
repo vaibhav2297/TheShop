@@ -5,8 +5,9 @@ namespace TheShop.E2E.Tests.Fixtures;
 
 /// <summary>
 /// Creates browser contexts pre-wired for The Shop: every request for
-/// <c>appsettings*.json</c> is fulfilled with local-Supabase values, so the app under test
-/// talks to the E2E stack without any production config change.
+/// <c>appsettings*.json</c> is fulfilled with TheShop-Test values, so the app under test talks
+/// to the E2E project without any production config change — and can never accidentally hit
+/// the shared TheShop-Dev database.
 /// </summary>
 public static class ShopBrowser
 {
@@ -25,8 +26,8 @@ public static class ShopBrowser
         {
             Supabase = new
             {
-                Url = E2EEnvironment.Get("API_URL"),
-                PublishableKey = E2EEnvironment.Get("ANON_KEY"),
+                Url = E2EEnvironment.Get("SUPABASE_URL"),
+                PublishableKey = E2EEnvironment.Get("SUPABASE_PUBLISHABLE_KEY"),
             },
         });
 

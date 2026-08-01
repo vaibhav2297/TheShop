@@ -1,0 +1,8 @@
+# Copy to .e2e-env (same folder) and fill in. .e2e-env is gitignored — it holds secrets.
+# TheShop-Test project (public values):
+SUPABASE_URL="https://wuoyiwyvhsfrzsjpxpsy.supabase.co"
+SUPABASE_PUBLISHABLE_KEY="<TheShop-Test publishable/anon key — Dashboard → Settings → API>"
+# Mailtrap Email Testing sandbox (secrets — see plan Phase 2.1):
+MAILTRAP_API_TOKEN="<api token>"
+MAILTRAP_ACCOUNT_ID="<numeric account id>"
+MAILTRAP_INBOX_ID="<numeric inbox id>"

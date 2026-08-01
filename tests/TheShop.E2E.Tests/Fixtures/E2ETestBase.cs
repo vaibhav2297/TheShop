@@ -4,7 +4,7 @@ using Xunit;
 namespace TheShop.E2E.Tests.Fixtures;
 
 /// <summary>
-/// Base class for all E2E journeys: skips when the local environment is down, creates a fresh
+/// Base class for all E2E journeys: skips when <c>.e2e-env</c> is absent, creates a fresh
 /// browser context per test with app-config interception installed, and saves a Playwright
 /// trace on failure under <c>bin/.../playwright-traces/</c>.
 /// </summary>
@@ -26,7 +26,7 @@ public abstract class E2ETestBase(PlaywrightFixture playwright) : IAsyncLifetime
     public virtual async ValueTask InitializeAsync()
     {
         Assert.SkipUnless(E2EEnvironment.IsAvailable,
-            "E2E environment not running — execute tests/TheShop.E2E.Tests/tools/start-e2e-env.ps1 first.");
+            "E2E environment not configured — create tests/TheShop.E2E.Tests/.e2e-env (see .e2e-env.example).");
 
         Context = await ShopBrowser.NewContextAsync(Playwright.Browser, StorageStatePath);
         await Context.Tracing.StartAsync(new() { Screenshots = true, Snapshots = true });
