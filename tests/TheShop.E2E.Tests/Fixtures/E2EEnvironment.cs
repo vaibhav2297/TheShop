@@ -1,9 +1,8 @@
 namespace TheShop.E2E.Tests.Fixtures;
 
 /// <summary>
-/// Resolves the E2E environment: repo root, app URL, and the TheShop-Test / Mailtrap settings
-/// read from the gitignored <c>.e2e-env</c> file. When that file is absent, tests skip rather
-/// than fail, so a plain solution-level test run stays green.
+/// Resolves the local E2E environment: repo root, app URL, and the Supabase keys exported by
+/// <c>tools/start-e2e-env.ps1</c>. When the env file is absent, tests skip rather than fail.
 /// </summary>
 public static class E2EEnvironment
 {
@@ -13,10 +12,10 @@ public static class E2EEnvironment
     /// <summary>Absolute path to the repository root, resolved from the test bin directory.</summary>
     public static string RepoRoot { get; } = FindRepoRoot();
 
-    /// <summary>Path to the gitignored env file holding TheShop-Test / Mailtrap settings.</summary>
+    /// <summary>Path to the env file written by <c>tools/start-e2e-env.ps1</c>.</summary>
     public static string EnvFilePath => Path.Combine(RepoRoot, "tests", "TheShop.E2E.Tests", ".e2e-env");
 
-    /// <summary>Whether the E2E environment is configured for this run.</summary>
+    /// <summary>Whether the local E2E environment has been started for this run.</summary>
     public static bool IsAvailable => File.Exists(EnvFilePath);
 
     /// <summary>Reads a KEY="value" line from .e2e-env; throws with a clear message if missing.</summary>
@@ -25,7 +24,7 @@ public static class E2EEnvironment
         var line = File.ReadAllLines(EnvFilePath)
             .FirstOrDefault(l => l.StartsWith(key + "=", StringComparison.Ordinal))
             ?? throw new InvalidOperationException(
-                $"Key '{key}' not found in {EnvFilePath}. Copy .e2e-env.example and fill it in.");
+                $"Key '{key}' not found in {EnvFilePath}. Re-run tools/start-e2e-env.ps1.");
         return line[(key.Length + 1)..].Trim('"');
     }
 
