@@ -105,8 +105,9 @@ public sealed class SupabaseBrandRepository(Supabase.Client client, IFileStorage
             await client.From<BrandRecord>()
                 .Where(x => x.Id == brand.Id)
                 .Set(x => x.Name, brand.Name)
-                .Set(x => x.Description, brand.Description)
-                .Set(x => x.LogoPath, brand.LogoPath)
+                // false warning
+                .Set(x => x.Description!, brand.Description)
+                .Set(x => x.LogoPath!, brand.LogoPath)
                 .Set(x => x.IsActive, brand.IsActive)
                 .Update(cancellationToken: ct);
 

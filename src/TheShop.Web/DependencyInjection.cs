@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 using MudExtensions.Services;
 using TheShop.Application.Common.Interfaces;
-using TheShop.Domain.ValueObjects;
 using TheShop.Web.Auth;
 using TheShop.Web.Common;
 using TheShop.Web.State;
@@ -20,9 +19,9 @@ public static class DependencyInjection
     /// <summary>
     /// Adds MudBlazor, localization, theming, all scoped UI state stores, Blazored
     /// LocalStorage, the Supabase-backed authentication services, and the claims-based RBAC
-    /// authorization (a static <c>AdminArea</c> policy plus on-demand <c>perm:{code}</c>
-    /// policies via <see cref="ShopAuthorizationPolicyProvider"/>, both reading the permission
-    /// claims minted into the access token) needed by the presentation layer.
+    /// authorization (on-demand <c>perm:{code}</c> policies via
+    /// <see cref="ShopAuthorizationPolicyProvider"/>, reading the permission claims minted into
+    /// the access token) needed by the presentation layer.
     /// </summary>
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
@@ -41,17 +40,12 @@ public static class DependencyInjection
 
         services.AddBlazoredLocalStorage();
 
-        services.AddAuthorizationCore(options =>
-        {
-            // Every catalogue permission is admin-area this release, so "holds at least one
-            // permission claim" doubles as "can reach the admin surface".
-            options.AddPolicy(PolicyNames.AdminArea, policy => policy
-                .RequireAuthenticatedUser()
-                .RequireAssertion(ctx => ctx.User.HasClaim(c => c.Type == ShopClaimTypes.Permission)));
-        });
+        services.AddAuthorizationCore();
 
         // perm:{code} policies are synthesized on demand from the permission claims in the
-        // access token — no per-catalogue-entry registration, no authorization handlers.
+        // access token — no per-catalogue-entry registration, no authorization handlers. The
+        // admin shell gate (PolicyNames.AdminDashboard) is one of these ordinary permission
+        // policies, on dashboard.view — no statically registered policy exists.
         services.AddSingleton<IAuthorizationPolicyProvider, ShopAuthorizationPolicyProvider>();
 
         services.AddScoped<AuthenticationStateProvider, SupabaseAuthStateProvider>();

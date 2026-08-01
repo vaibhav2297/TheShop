@@ -11,7 +11,9 @@ namespace TheShop.Infrastructure.Tests.Persistence;
 /// <c>auth.sessions</c>, <c>auth.uid()</c>, <c>auth.jwt()</c> — reproducing Supabase's own
 /// well-known implementation (GUC-backed, reading <c>request.jwt.claims</c>) so the actual
 /// functions and triggers run unmodified against it. The applied SQL mirrors the cumulative
-/// post-migration state of <c>supabase/migrations/0007–0011</c>: the RBAC schema and guards
+/// post-migration state of <c>supabase/migrations/0007–0011</c> plus the seed deltas of
+/// <c>0015</c> (brands.* permissions and grants), <c>0016</c> (Support ← every *.view), and
+/// <c>0017</c> (dashboard.view for all staff roles): the RBAC schema and guards
 /// (0007, with the role <c>name_key</c> rename applied), grant metadata / <c>expires_at</c> /
 /// <c>user_access_meta.perm_version</c> / <c>access_audit</c> (0009), the custom access token
 /// hook (0010, minus the <c>supabase_auth_admin</c> grants that only exist on a real Supabase
@@ -689,18 +691,23 @@ internal static class RbacTestSchema
             ('reports.view', 'reports'), ('reports.create', 'reports'), ('reports.edit', 'reports'), ('reports.delete', 'reports'),
             ('settings.view', 'settings'), ('settings.create', 'settings'), ('settings.edit', 'settings'), ('settings.delete', 'settings'),
             ('admin_users.view', 'admin_users'), ('admin_users.create', 'admin_users'), ('admin_users.edit', 'admin_users'), ('admin_users.delete', 'admin_users'),
-            ('roles.view', 'roles'), ('roles.create', 'roles'), ('roles.edit', 'roles'), ('roles.delete', 'roles');
+            ('roles.view', 'roles'), ('roles.create', 'roles'), ('roles.edit', 'roles'), ('roles.delete', 'roles'),
+            ('brands.view', 'brands'), ('brands.create', 'brands'), ('brands.edit', 'brands'), ('brands.delete', 'brands'),
+            ('dashboard.view', 'dashboard');
 
         -- Role_Customer: zero admin-area permissions (AC-1) — no rows needed.
 
+        -- Support: every module's view permission (0016, dashboard.view included via 0017)
+        -- plus orders.edit (0007).
         INSERT INTO role_permissions (role_id, permission_id)
         SELECT r.id, p.id FROM roles r
-        JOIN permissions p ON p.code IN ('orders.view', 'orders.edit', 'customers.view')
+        JOIN permissions p ON p.code LIKE '%.view' OR p.code = 'orders.edit'
         WHERE r.name_key = 'Support';
 
+        -- Admin: every merchandising module (0007 + 0015) plus dashboard.view (0017).
         INSERT INTO role_permissions (role_id, permission_id)
         SELECT r.id, p.id FROM roles r
-        JOIN permissions p ON p.module IN ('products', 'categories', 'orders', 'customers', 'coupons', 'promotions', 'reports')
+        JOIN permissions p ON p.module IN ('products', 'categories', 'orders', 'customers', 'coupons', 'promotions', 'reports', 'brands', 'dashboard')
         WHERE r.name_key = 'Admin';
 
         INSERT INTO role_permissions (role_id, permission_id)

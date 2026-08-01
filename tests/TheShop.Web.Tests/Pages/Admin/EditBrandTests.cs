@@ -3,6 +3,7 @@ using Bunit;
 using Bunit.TestDoubles;
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -102,33 +103,14 @@ public class EditBrandTests : TestContext
 
     [Fact]
     [Trait("Feature", "manage-brands")]
-    public async Task Render_WhenUserLacksBrandsEditPermission_ShowsAccessDeniedInsteadOfTheForm()
+    public void EditBrand_Always_CarriesTheBrandsEditAuthorizePolicy()
     {
-        var dto = ExampleDto();
-        SetUpExistingBrand(dto);
-        var authContext = this.AddAuthorization();
-        authContext.SetAuthorized("viewer-user"); // authenticated, but only brands.view, not brands.edit
+        var attributes = typeof(EditBrand).GetCustomAttributes<AuthorizeAttribute>().ToList();
 
-        var cut = await RenderAsync(dto.Id);
-
-        cut.Markup.Should().NotContain(Strings.EditBrand_Heading,
-            "an absent permission must hide the capability entirely, not merely disable it");
-        cut.Markup.Should().Contain(Strings.AccessDenied_Title);
-    }
-
-    [Fact]
-    [Trait("Feature", "manage-brands")]
-    public async Task Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfTheForm()
-    {
-        var dto = ExampleDto();
-        SetUpExistingBrand(dto);
-        var authContext = this.AddAuthorization();
-        authContext.SetNotAuthorized();
-
-        var cut = await RenderAsync(dto.Id);
-
-        cut.Markup.Should().NotContain(Strings.EditBrand_Heading);
-        cut.Markup.Should().Contain(Strings.AccessDenied_Title);
+        attributes.Should().Contain(
+            a => a.Policy == PolicyNames.Permission(PermissionCatalogue.Brands.Edit.Code),
+            "the route-level policy, not the query, is what denies a view-only admin's direct " +
+            "link — App.razor's NotAuthorized template renders the denied/redirect experience");
     }
 
     // =========================================================================

@@ -12,8 +12,8 @@ namespace TheShop.Web.Auth;
 /// <see cref="ShopClaimTypes.Permission"/> claim (minted into the JWT by the database's custom
 /// access token hook). A <c>perm:</c> policy naming a code outside the catalogue resolves to
 /// no policy at all, so a typo fails fast at authorization time rather than silently denying.
-/// All other policy names (e.g. <see cref="PolicyNames.AdminArea"/>) fall through to the
-/// statically registered set.
+/// Policy names without the <c>perm:</c> prefix fall through to the
+/// default provider.
 /// </summary>
 public sealed class ShopAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
     : DefaultAuthorizationPolicyProvider(options)
@@ -22,7 +22,7 @@ public sealed class ShopAuthorizationPolicyProvider(IOptions<AuthorizationOption
     public override async Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
     {
         if (PolicyNames.TryGetPermissionCode(policyName, out var code) &&
-            PermissionCatalogue.IsAdminArea(code))
+            PermissionCatalogue.IsDefined(code))
         {
             return new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()

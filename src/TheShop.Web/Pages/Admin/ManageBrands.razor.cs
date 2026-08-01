@@ -9,6 +9,7 @@ using TheShop.Application.Features.Brands.Commands.SetBrandStatus;
 using TheShop.Application.Features.Brands.DTOs;
 using TheShop.Application.Features.Brands.Queries.GetBrandsPage;
 using TheShop.Domain.Enums;
+using TheShop.Web.Auth;
 using TheShop.Web.Common;
 using TheShop.Web.Common.Sorting;
 using TheShop.Web.Components.Common;
@@ -21,11 +22,12 @@ namespace TheShop.Web.Pages.Admin;
 /// The manage-brands admin list: a paged, searchable, filterable, sortable table with row
 /// selection and bulk Activate/Deactivate/Delete, plus links into the id-addressed edit form.
 /// Filter/search/sort/page state is deep-linked through the URL query string
-/// (<see cref="BrandQueryState"/>). Gated at the route level on <c>PolicyNames.AdminArea</c> via
-/// <c>Pages/Admin/_Imports.razor</c>, and additionally on <c>brands.view</c> within the page
+/// (<see cref="BrandQueryState"/>). Requires a signed-in user via
+/// <c>Pages/Admin/_Imports.razor</c>, and is gated on <c>brands.view</c> within the page
 /// itself.
 /// </summary>
 [Route(Routes.Admin.ManageBrands)]
+[AuthorizePermission("brands.view")]
 public partial class ManageBrands : QueryStatePageBase<BrandQueryState>
 {
     private const int PageSize = 10;

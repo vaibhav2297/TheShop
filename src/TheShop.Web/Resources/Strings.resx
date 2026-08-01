@@ -621,6 +621,9 @@
   <data name="SuperAdmin" xml:space="preserve">
     <value>Super Admin</value>
   </data>
+  <data name="Permission_Dashboard_View" xml:space="preserve">
+    <value>View Dashboard</value>
+  </data>
   <data name="Permission_Products_View" xml:space="preserve">
     <value>View Products</value>
   </data>

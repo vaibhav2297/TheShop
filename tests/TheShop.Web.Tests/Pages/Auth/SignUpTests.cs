@@ -43,7 +43,6 @@ public class SignUpTests : TestContext
         Services.AddSingleton(_pendingSignUp);
         Services.AddSingleton(Substitute.For<TheShop.Web.Theme.ShopTheme>());
         Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
 
         _localizer[Arg.Any<string>()].Returns(call =>
         {
@@ -184,7 +183,7 @@ public class SignUpTests : TestContext
             isFormValid: true);
 
         // Act
-        var button = cut.Find("button[type='button']");
+        var button = cut.Find("button.mud-button-filled");
         await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         // Assert: success snackbar was shown and user was navigated to the verify page.
@@ -212,7 +211,7 @@ public class SignUpTests : TestContext
             dateOfBirth: DateTime.Today.AddYears(-25),
             isFormValid: true);
 
-        var button = cut.Find("button[type='button']");
+        var button = cut.Find("button.mud-button-filled");
         await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         _pendingSignUp.HasData.Should().BeTrue();
@@ -241,7 +240,7 @@ public class SignUpTests : TestContext
             dateOfBirth: DateTime.Today.AddYears(-25),
             isFormValid: true);
 
-        var button = cut.Find("button[type='button']");
+        var button = cut.Find("button.mud-button-filled");
         await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         _snackbar.Received().Add(Arg.Any<string>(), Severity.Error);
@@ -265,7 +264,7 @@ public class SignUpTests : TestContext
             dateOfBirth: DateTime.Today.AddYears(-25),
             isFormValid: true);
 
-        var button = cut.Find("button[type='button']");
+        var button = cut.Find("button.mud-button-filled");
         await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         navManager.Uri.Should().NotContain(Routes.Auth.SignUpVerify);
@@ -295,6 +294,10 @@ public class SignUpTests : TestContext
         type.GetField("_email", flags)!.SetValue(cut.Instance, email);
         type.GetField("_dateOfBirth", flags)!.SetValue(cut.Instance, (DateTime?)dateOfBirth);
         type.GetField("_isFormValid", flags)!.SetValue(cut.Instance, isFormValid);
+        // OnSendCodeAsync re-validates via MudForm.ValidateAsync() before dispatching, which
+        // re-checks the required age-confirmation checkbox — it must be pre-set here too or
+        // that revalidation flips _isFormValid back to false and the handler returns early.
+        type.GetField("_ageConfirmed", flags)!.SetValue(cut.Instance, isFormValid);
         cut.Render();
     }
 }

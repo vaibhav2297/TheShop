@@ -8,11 +8,14 @@ namespace TheShop.Web.Common;
 public static class PolicyNames
 {
     /// <summary>
-    /// Matches any authenticated user holding at least one permission. Every permission in the
-    /// catalogue is admin-area this release, so this is the coarse "can reach the admin surface
-    /// at all" gate applied by <c>Pages/Admin/_Imports.razor</c> and the admin nav link.
+    /// The admin console screen's own permission policy (<c>dashboard.view</c>), applied by the
+    /// <c>AdminConsole</c> page and the admin nav link. This is an ordinary <c>perm:{code}</c>
+    /// permission policy — it exists as a named constant only because <c>[Authorize]</c>
+    /// attributes require compile-time values. It must always equal
+    /// <c>Permission(PermissionCatalogue.Dashboard.View.Code)</c> (guarded by test); there is
+    /// no separate "admin area" policy concept.
     /// </summary>
-    public const string AdminArea = "AdminArea";
+    public const string AdminDashboard = PermissionPolicyPrefix + "dashboard.view";
 
     /// <summary>
     /// Prefix identifying a fine-grained permission policy name. Policies carrying this prefix

@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using TheShop.Application.Features.Admin.DTOs;
 using TheShop.Application.Features.Admin.Queries.GetAdminDashboard;
@@ -9,11 +10,13 @@ namespace TheShop.Web.Pages.Admin;
 /// <summary>
 /// The admin console landing page at <c>/admin</c> — one overview card per governed module the
 /// signed-in staff member is permitted to view, each showing a current record count and a link
-/// to that module's management page (spec Behavior 1). Gated at the route level on
-/// <c>PolicyNames.AdminArea</c> via <c>Pages/Admin/_Imports.razor</c>; per-module visibility is
-/// decided by the query handler, so no per-card <c>AuthorizeView</c> is needed here.
+/// to that module's management page (spec Behavior 1). Gated on its own screen permission,
+/// <c>dashboard.view</c> (<c>PolicyNames.AdminDashboard</c>), like every other admin screen;
+/// per-module visibility is decided by the query handler, so no per-card <c>AuthorizeView</c>
+/// is needed here.
 /// </summary>
 [Route(Routes.Admin.Console)]
+[Authorize(Policy = PolicyNames.AdminDashboard)]
 public partial class AdminConsole : ComponentBase
 {
     [Inject] private IMediator Mediator { get; set; } = default!;

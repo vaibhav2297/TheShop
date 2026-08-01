@@ -2,7 +2,7 @@
   "feature": "add-brand",
   "trait": "add-brand",
   "writtenAt": "2026-07-23",
-  "totalTests": 131,
+  "totalTests": 130,
   "classes": [
     { "fqn": "TheShop.Domain.Tests.Entities.BrandTests", "file": "tests/TheShop.Domain.Tests/Entities/BrandTests.cs", "tests": 19 },
     { "fqn": "TheShop.Domain.Tests.ValueObjects.PermissionCatalogueTests", "file": "tests/TheShop.Domain.Tests/ValueObjects/PermissionCatalogueTests.cs", "tests": 3 },
@@ -13,7 +13,7 @@
     { "fqn": "TheShop.Infrastructure.Tests.Persistence.BrandMapperTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/BrandMapperTests.cs", "tests": 5 },
     { "fqn": "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseBrandRepositorySchemaTests.cs", "tests": 16 },
     { "fqn": "TheShop.Web.Tests.Components.Common.ShopImageUploadTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopImageUploadTests.cs", "tests": 6 },
-    { "fqn": "TheShop.Web.Tests.Pages.Admin.AddBrandTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/AddBrandTests.cs", "tests": 14 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.AddBrandTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/AddBrandTests.cs", "tests": 13 },
     { "fqn": "TheShop.Web.Tests.Resources.BrandLocalizationTests", "file": "tests/TheShop.Web.Tests/Resources/BrandLocalizationTests.cs", "tests": 25 }
   ],
   "acceptanceCriteria": [
@@ -116,8 +116,7 @@
         "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandLogosRead_WhenCallerLacksBrandsViewPermission_CannotSelectTheObject",
         "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests.BrandLogosRead_WhenCallerHoldsBrandsViewPermission_CanSelectTheObject",
         "TheShop.Web.Tests.Pages.Admin.AddBrandTests.Render_WhenUserHoldsBrandsCreatePermission_ShowsTheForm",
-        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.Render_WhenUserLacksBrandsCreatePermission_ShowsAccessDeniedInsteadOfTheForm",
-        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfTheForm"
+        "TheShop.Web.Tests.Pages.Admin.AddBrandTests.AddBrand_Always_CarriesTheBrandsCreateAuthorizePolicy"
       ]
     },
     {

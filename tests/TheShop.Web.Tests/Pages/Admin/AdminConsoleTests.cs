@@ -25,8 +25,8 @@ namespace TheShop.Web.Tests.Pages.Admin;
 /// governed module the query permits (Behaviors 1 &amp; 3; FR-2, FR-3; AC-1, AC-3), the
 /// count-unavailable placeholder while the rest of the dashboard renders normally (FR-7; AC-5),
 /// the zero-records and no-permitted-modules edge cases, the loading skeleton, and the structural
-/// guarantee that the page is gated by the <c>PolicyNames.AdminArea</c> policy carried in from
-/// <c>Pages/Admin/_Imports.razor</c> (RULE-1; AC-4 — the guest-redirect/access-denied experience
+/// guarantee that the page carries its own <c>PolicyNames.AdminDashboard</c> policy
+/// (<c>dashboard.view</c>) (RULE-1; AC-4 — the guest-redirect/access-denied experience
 /// itself is the shared router scaffolding, already covered by the role-based-access-control
 /// feature's own tests; this asserts the specific seam this page relies on, per plan Decision 6).
 /// <see href=".specs/admin-console/spec.md"/>
@@ -143,7 +143,7 @@ public class AdminConsoleTests : TestContext
         var cut = Render<AdminConsole>();
         await cut.InvokeAsync(() => { });
 
-        cut.Markup.Should().Contain(Strings.AdminConsole_NoModules);
+        cut.Markup.Should().Contain(Strings.AdminConsole_NotHaveModulePermission);
         cut.FindComponents<AdminModuleCard>().Should().BeEmpty();
     }
 
@@ -165,24 +165,25 @@ public class AdminConsoleTests : TestContext
     }
 
     // =========================================================================
-    // Structural — the route is gated by PolicyNames.AdminArea via Pages/Admin/_Imports.razor
-    // (RULE-1, AC-4; plan Decision 6 — no page-level AuthorizeView is added here, so this is the
-    // only seam this specific page relies on. The redirect-to-sign-in / AccessDeniedView
-    // experience the policy triggers is the shared router scaffolding, already covered by
-    // ShopAuthorizationPolicyProviderTests/AccessDeniedViewTests in the role-based-access-control
-    // feature.)
+    // Structural — the page carries its own [Authorize(Policy = PolicyNames.AdminDashboard)]
+    // (dashboard.view), exactly like every other admin screen gates on its own permission;
+    // Pages/Admin/_Imports.razor contributes only the plain [Authorize] signed-in requirement.
+    // (RULE-1, AC-4; plan Decision 6 — no page-level AuthorizeView is added here. The
+    // redirect-to-sign-in / AccessDeniedView experience the policy triggers is the shared
+    // router scaffolding, already covered by ShopAuthorizationPolicyProviderTests /
+    // AccessDeniedViewTests in the role-based-access-control feature.)
     // =========================================================================
 
     [Fact]
     [Trait("Feature", "admin-console")]
-    public void AdminConsole_Always_CarriesTheAdminAreaAuthorizePolicyFromTheFolderImports()
+    public void AdminConsole_Always_CarriesTheAdminDashboardAuthorizePolicy()
     {
-        var attribute = typeof(AdminConsole).GetCustomAttribute<AuthorizeAttribute>();
+        var attributes = typeof(AdminConsole).GetCustomAttributes<AuthorizeAttribute>().ToList();
 
-        attribute.Should().NotBeNull(
-            "AdminConsole has no internal AuthorizeView (Decision 6) — the folder-level " +
-            "[Authorize(Policy = PolicyNames.AdminArea)] is the only protection guarding /admin");
-        attribute!.Policy.Should().Be(PolicyNames.AdminArea);
+        attributes.Should().NotBeEmpty(
+            "AdminConsole has no internal AuthorizeView (Decision 6) — the page-level " +
+            "[Authorize(Policy = PolicyNames.AdminDashboard)] is the only protection guarding /admin");
+        attributes.Should().Contain(a => a.Policy == PolicyNames.AdminDashboard);
     }
 }
 
@@ -191,7 +192,7 @@ public class AdminConsoleTests : TestContext
 // =============================================================================
 // AC-1: Render_WhenAllFiveModulesArePermitted_ShowsFiveModuleCardsWithTheirCounts
 // AC-3: Render_WhenAdminHoldsOnlySomeModulePermissions_ShowsOnlyThePermittedCards
-// AC-4: AdminConsole_Always_CarriesTheAdminAreaAuthorizePolicyFromTheFolderImports
+// AC-4: AdminConsole_Always_CarriesTheAdminDashboardAuthorizePolicy
 //        (structural seam only — see class summary for why the redirect/denied experience itself
 //        isn't re-tested here)
 // AC-5: Render_WhenOneModulesCountIsUnavailable_ShowsPlaceholderOnThatCardWhileOthersShowNumbers

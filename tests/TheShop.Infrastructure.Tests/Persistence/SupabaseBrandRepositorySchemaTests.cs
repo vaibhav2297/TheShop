@@ -407,7 +407,8 @@ public sealed class SupabaseBrandRepositorySchemaTests : IAsyncLifetime
     // =========================================================================
     // Schema setup — the add-brand deltas layered on RbacTestSchema's RBAC core
     // (plan §10: brands columns, ux_brands_normalized_name, brands_read/brands_admin_insert,
-    // the brand-logos bucket's storage.objects policies, and the brands.* permission seed)
+    // and the brand-logos bucket's storage.objects policies; the brands.* permission seed
+    // itself now lives in RbacTestSchema, mirroring migration 0015)
     // =========================================================================
 
     private static async Task ApplyBrandsSchemaAsync(NpgsqlConnection conn)
@@ -451,14 +452,8 @@ public sealed class SupabaseBrandRepositorySchemaTests : IAsyncLifetime
                 FOR INSERT
                 WITH CHECK (bucket_id = 'brand-logos' AND (SELECT public.authorize('brands.create')));
 
-            INSERT INTO permissions (code, module) VALUES
-                ('brands.view', 'brands'), ('brands.create', 'brands'),
-                ('brands.edit', 'brands'), ('brands.delete', 'brands');
-
-            INSERT INTO role_permissions (role_id, permission_id)
-            SELECT r.id, p.id FROM roles r
-            JOIN permissions p ON p.module = 'brands'
-            WHERE r.name_key = 'Admin';
+            -- brands.* permissions and the Admin grant are seeded by RbacTestSchema
+            -- (mirroring migrations 0007 + 0015).
             """;
         await cmd.ExecuteNonQueryAsync();
     }

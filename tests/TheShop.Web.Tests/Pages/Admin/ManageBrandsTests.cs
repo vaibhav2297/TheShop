@@ -1,7 +1,9 @@
+using System.Reflection;
 using Bunit;
 using Bunit.TestDoubles;
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
@@ -79,7 +81,6 @@ public class ManageBrandsTests : TestContext
         var authContext = this.AddAuthorization();
         authContext.SetAuthorized("admin-user");
         authContext.SetPolicies(
-            PolicyNames.AdminArea,
             PolicyNames.Permission(PermissionCatalogue.Brands.View.Code),
             PolicyNames.Permission(PermissionCatalogue.Brands.Edit.Code),
             PolicyNames.Permission(PermissionCatalogue.Brands.Delete.Code));
@@ -100,7 +101,7 @@ public class ManageBrandsTests : TestContext
     {
         var authContext = this.AddAuthorization();
         authContext.SetAuthorized("viewer-user");
-        authContext.SetPolicies(PolicyNames.AdminArea, PolicyNames.Permission(PermissionCatalogue.Brands.View.Code));
+        authContext.SetPolicies(PolicyNames.Permission(PermissionCatalogue.Brands.View.Code));
     }
 
     private void AuthorizeAsBrandEditorOnly()
@@ -108,7 +109,6 @@ public class ManageBrandsTests : TestContext
         var authContext = this.AddAuthorization();
         authContext.SetAuthorized("editor-user");
         authContext.SetPolicies(
-            PolicyNames.AdminArea,
             PolicyNames.Permission(PermissionCatalogue.Brands.View.Code),
             PolicyNames.Permission(PermissionCatalogue.Brands.Edit.Code));
     }
@@ -495,28 +495,14 @@ public class ManageBrandsTests : TestContext
 
     [Fact]
     [Trait("Feature", "manage-brands")]
-    public void Render_WhenUserLacksBrandsViewPermission_ShowsAccessDeniedInsteadOfTheList()
+    public void ManageBrands_Always_CarriesTheBrandsViewAuthorizePolicy()
     {
-        var authContext = this.AddAuthorization();
-        authContext.SetAuthorized("customer-user");
+        var attributes = typeof(ManageBrands).GetCustomAttributes<AuthorizeAttribute>().ToList();
 
-        var cut = Render<ManageBrands>();
-
-        cut.Markup.Should().Contain(Strings.AccessDenied_Title);
-        cut.Markup.Should().NotContain(Strings.ManageBrands_Heading);
-    }
-
-    [Fact]
-    [Trait("Feature", "manage-brands")]
-    public void Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfTheList()
-    {
-        var authContext = this.AddAuthorization();
-        authContext.SetNotAuthorized();
-
-        var cut = Render<ManageBrands>();
-
-        cut.Markup.Should().Contain(Strings.AccessDenied_Title);
-        cut.Markup.Should().NotContain(Strings.ManageBrands_Heading);
+        attributes.Should().Contain(
+            a => a.Policy == PolicyNames.Permission(PermissionCatalogue.Brands.View.Code),
+            "the route-level policy is the only gate between a non-viewer and the list — " +
+            "App.razor's NotAuthorized template renders the denied/redirect experience");
     }
 
     // =========================================================================
@@ -954,8 +940,7 @@ public class ManageBrandsTests : TestContext
 // AC-16: Render_WhenUserHoldsOnlyBrandsView_DoesNotShowTheAddBrandButton,
 //        Render_WhenUserHoldsOnlyBrandsView_DoesNotShowEditOrDeleteRowControls,
 //        Render_WhenUserHoldsOnlyBrandsView_RendersStatusAsPlainTextNotAClickableToggle
-// AC-17: Render_WhenUserLacksBrandsViewPermission_ShowsAccessDeniedInsteadOfTheList,
-//        Render_WhenUserIsNotAuthenticated_ShowsAccessDeniedInsteadOfTheList
+// AC-17: ManageBrands_Always_CarriesTheBrandsViewAuthorizePolicy
 // AC-21: StatusToggle_WhenActivatingAnInactiveBrand_SendsImmediatelyWithoutConfirmation,
 //        StatusToggle_WhenDeactivatingAnActiveBrand_AsksForConfirmationBeforeSending,
 //        StatusToggle_WhenDeactivationIsCancelled_DoesNotSendTheCommand
