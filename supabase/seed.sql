@@ -14,6 +14,12 @@
 -- exempts these user_roles inserts from the self-change guard
 -- (0007_create_rbac.sql, guard_user_roles_self_change).
 --
+-- The *_token/email_change columns are set to '' rather than left NULL:
+-- Postgres allows NULL there, but GoTrue's Go client scans them into
+-- non-nullable strings and 500s ("converting NULL to string is unsupported")
+-- the moment it reads a hand-seeded row — confirmed by triggering a real
+-- OTP request against this seed and reading the auth container's logs.
+--
 -- auth.identities.email is a GENERATED ALWAYS column derived from
 -- identity_data->>'email' — it must never be set explicitly.
 --
@@ -28,13 +34,16 @@
 INSERT INTO auth.users (
     instance_id, id, aud, role, email, encrypted_password,
     email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
-    created_at, updated_at
+    created_at, updated_at,
+    confirmation_token, recovery_token, email_change_token_new, email_change,
+    phone_change, phone_change_token, email_change_token_current, reauthentication_token
 ) VALUES (
     '00000000-0000-0000-0000-000000000000',
     'a1e2e000-0000-4000-8000-000000000001',
     'authenticated', 'authenticated', 'e2e-admin@theshop.test', '',
     now(), '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
-    now(), now()
+    now(), now(),
+    '', '', '', '', '', '', '', ''
 ) ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO auth.identities (
@@ -60,13 +69,16 @@ ON CONFLICT (user_id, role_id) DO NOTHING;
 INSERT INTO auth.users (
     instance_id, id, aud, role, email, encrypted_password,
     email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
-    created_at, updated_at
+    created_at, updated_at,
+    confirmation_token, recovery_token, email_change_token_new, email_change,
+    phone_change, phone_change_token, email_change_token_current, reauthentication_token
 ) VALUES (
     '00000000-0000-0000-0000-000000000000',
     'a1e2e000-0000-4000-8000-000000000002',
     'authenticated', 'authenticated', 'e2e-support@theshop.test', '',
     now(), '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
-    now(), now()
+    now(), now(),
+    '', '', '', '', '', '', '', ''
 ) ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO auth.identities (
@@ -93,13 +105,16 @@ ON CONFLICT (user_id, role_id) DO NOTHING;
 INSERT INTO auth.users (
     instance_id, id, aud, role, email, encrypted_password,
     email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
-    created_at, updated_at
+    created_at, updated_at,
+    confirmation_token, recovery_token, email_change_token_new, email_change,
+    phone_change, phone_change_token, email_change_token_current, reauthentication_token
 ) VALUES (
     '00000000-0000-0000-0000-000000000000',
     'a1e2e000-0000-4000-8000-000000000003',
     'authenticated', 'authenticated', 'e2e-customer@theshop.test', '',
     now(), '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
-    now(), now()
+    now(), now(),
+    '', '', '', '', '', '', '', ''
 ) ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO auth.identities (

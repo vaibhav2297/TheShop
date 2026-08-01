@@ -51,7 +51,8 @@
                             <BusyFor Key="@BusyKeys.Auth.SignInVerify" Context="busy">
                                 <OtpInput @bind-Value="_otp"
                                           Length="@OtpLength"
-                                          Disabled="@busy" />
+                                          Disabled="@busy"
+                                          UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "otp-input" })" />
 
                                 <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                                     <MudButton Variant="Variant.Filled"
@@ -59,7 +60,8 @@
                                                Size="Size.Large"
                                                EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
                                                Disabled="@(!_isCodeComplete || busy)"
-                                               OnClick="OnVerifyAsync">
+                                               OnClick="OnVerifyAsync"
+                                               UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "otp-submit" })">
                                         @if (busy)
                                         {
                                             <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
