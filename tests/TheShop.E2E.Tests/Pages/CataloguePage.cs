@@ -19,7 +19,11 @@ public sealed class CataloguePage(IPage page) : ShopPage(page)
     public async Task ExpandFilterGroupAsync(string groupLabel) =>
         await Page.GetByText(groupLabel, new() { Exact = true }).ClickAsync();
 
+    /// <summary>Locator for a filter option's checkbox by its visible label — the group must already be expanded.</summary>
+    public ILocator FilterOption(string optionLabel) =>
+        Page.GetByRole(AriaRole.Checkbox, new() { Name = optionLabel });
+
     /// <summary>Toggles a filter option's checkbox by its visible label (e.g. a brand name) — the group must already be expanded.</summary>
     public async Task ToggleFilterOptionAsync(string optionLabel) =>
-        await Page.GetByRole(AriaRole.Checkbox, new() { Name = optionLabel }).ClickAsync();
+        await FilterOption(optionLabel).ClickAsync();
 }

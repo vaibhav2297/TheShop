@@ -40,6 +40,14 @@ public abstract class QueryStatePageBase<TState> : ComponentBase, IDisposable
     // application cancels the prior one so only the latest state's fetch is adopted.
     private CancellationTokenSource? _cts;
 
+    // Set by Dispose. LocationChanged fires while the page is still mounted but is handled after an
+    // InvokeAsync hop, by which point the router may already have torn the page down — navigating
+    // away from a page whose query string is non-empty does exactly that. Everything that runs on
+    // the far side of that hop has to check this first: touching the cancellation scope or the
+    // renderer afterwards throws from an async void handler, which in WebAssembly is not a caught
+    // exception but the end of the runtime.
+    private bool _disposed;
+
     /// <inheritdoc/>
     /// <remarks>
     /// Sealed on purpose. This is where the page subscribes to <c>LocationChanged</c> — the only
@@ -102,6 +110,9 @@ public abstract class QueryStatePageBase<TState> : ComponentBase, IDisposable
     // latest state always wins even when an earlier fetch resolves later.
     private async Task ApplyCoreAsync(TState state)
     {
+        if (_disposed)
+            return;
+
         var cts = new CancellationTokenSource();
         var prior = Interlocked.Exchange(ref _cts, cts);
         prior?.Cancel();
@@ -125,12 +136,17 @@ public abstract class QueryStatePageBase<TState> : ComponentBase, IDisposable
     private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         var query = CurrentQuery();
-        if (query == _appliedQuery)
+        if (_disposed || query == _appliedQuery)
             return;
 
         _appliedQuery = query;
         await InvokeAsync(async () =>
         {
+            // Re-checked on this side of the hop: navigating off the page is itself a location
+            // change, so this callback routinely runs against a page the router has just disposed.
+            if (_disposed)
+                return;
+
             await ApplyCoreAsync(ReadState());
             StateHasChanged();
         });
@@ -139,9 +155,15 @@ public abstract class QueryStatePageBase<TState> : ComponentBase, IDisposable
     /// <inheritdoc/>
     public virtual void Dispose()
     {
+        _disposed = true;
         Nav.LocationChanged -= OnLocationChanged;
-        _cts?.Cancel();
-        _cts?.Dispose();
+
+        // Taken out of the field rather than cancelled in place, so a location-change callback still
+        // in flight cannot find the disposed source and cancel it a second time.
+        var cts = Interlocked.Exchange(ref _cts, null);
+        cts?.Cancel();
+        cts?.Dispose();
+
         GC.SuppressFinalize(this);
     }
 }

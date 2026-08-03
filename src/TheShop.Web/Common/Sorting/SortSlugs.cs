@@ -22,6 +22,9 @@ public static class SortSlugs
     /// <summary>Name, descending (Z→A).</summary>
     public const string NameDesc = "name-desc";
 
+    /// <summary>Least recently created first.</summary>
+    public const string Oldest = "oldest";
+
     /// <summary>Price, ascending (low to high).</summary>
     public const string PriceAsc = "price-asc";
 

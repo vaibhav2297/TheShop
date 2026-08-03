@@ -148,8 +148,11 @@ public sealed class SupabaseBrandRepositorySchemaTests : IAsyncLifetime
     }
 
     // =========================================================================
-    // brands_read — Inactive brands hidden from customers, visible to brands.view staff
-    // (Decision 3, FR-7, AC-7)
+    // brands_read — USING (true); Inactive brands stay readable by everyone (Decision 13,
+    // .specs/manage-categories/plan.md §5). Hiding an Inactive brand from customers is now the
+    // get_catalogue_filters() facet's job, not RLS's — restricting SELECT here would null out
+    // ProductRecord's embedded BrandRecord for any published product referencing it and break
+    // ProductMapper.ToDomain, the exact hazard this decision fixes.
     // =========================================================================
 
     [Fact]
@@ -166,22 +169,25 @@ public sealed class SupabaseBrandRepositorySchemaTests : IAsyncLifetime
     }
 
     [Fact]
-    [Trait("Feature", "add-brand")]
-    public async Task BrandsRead_WhenBrandIsInactiveAndCallerIsAnonymous_IsHidden()
+    [Trait("Feature", "manage-categories")]
+    public async Task BrandsRead_WhenBrandIsInactiveAndCallerIsAnonymous_IsVisible()
     {
+        // Decision 13: the row stays readable so an anonymous customer's product page can still
+        // resolve its embedded brand — deactivating a brand must not break catalogue rendering
+        // for its published products. Hiding it from the *filter* is get_catalogue_filters()' job.
         await using var conn = await OpenAsync();
         var id = await InsertBrandAsync(conn, "Elf Bar", "elf-bar", isActive: false);
 
         await using var anonConn = await OpenAsAnonAsync();
         var count = await ScalarAsync(anonConn, $"SELECT COUNT(*) FROM brands WHERE id = '{id}'");
 
-        Convert.ToInt32(count).Should().Be(0,
-            "an Inactive brand must not appear anywhere in the store, including the catalogue's brand filter");
+        Convert.ToInt32(count).Should().Be(1,
+            "an Inactive brand row stays readable — RLS is no longer what hides it from customers (Decision 13)");
     }
 
     [Fact]
-    [Trait("Feature", "add-brand")]
-    public async Task BrandsRead_WhenBrandIsInactiveAndCallerLacksBrandsViewPermission_IsHidden()
+    [Trait("Feature", "manage-categories")]
+    public async Task BrandsRead_WhenBrandIsInactiveAndCallerLacksBrandsViewPermission_IsVisible()
     {
         await using var conn = await OpenAsync();
         var id = await InsertBrandAsync(conn, "Elf Bar", "elf-bar", isActive: false);
@@ -192,8 +198,9 @@ public sealed class SupabaseBrandRepositorySchemaTests : IAsyncLifetime
 
         var count = await ScalarAsync(conn, $"SELECT COUNT(*) FROM brands WHERE id = '{id}'");
 
-        Convert.ToInt32(count).Should().Be(0,
-            "hiding the control must never be the only protection — RLS must filter the row for product assignment too");
+        Convert.ToInt32(count).Should().Be(1,
+            "a signed-in customer with no brands.view permission must still be able to resolve the " +
+            "embedded brand on a product page (Decision 13)");
     }
 
     [Fact]
@@ -429,8 +436,13 @@ public sealed class SupabaseBrandRepositorySchemaTests : IAsyncLifetime
 
             ALTER TABLE brands ENABLE ROW LEVEL SECURITY;
 
+            -- brands_read is USING (true) — Decision 13 (.specs/manage-categories/plan.md §5):
+            -- restricting SELECT to is_active nulls out ProductRecord's embedded BrandRecord for
+            -- any published product whose brand is later deactivated, and ProductMapper.ToDomain
+            -- throws on a null embed. Inactive brands are hidden from customers by the
+            -- get_catalogue_filters() facet filter instead, not by RLS.
             CREATE POLICY "brands_read" ON brands
-                FOR SELECT USING (is_active OR (SELECT public.authorize('brands.view')));
+                FOR SELECT USING (true);
 
             CREATE POLICY "brands_admin_insert" ON brands
                 FOR INSERT WITH CHECK ((SELECT public.authorize('brands.create')));
@@ -473,9 +485,10 @@ public sealed class SupabaseBrandRepositorySchemaTests : IAsyncLifetime
 // AC-5: BrandLogosInsert_WhenCallerLacksBrandsCreatePermission_ThrowsRowLevelSecurityViolation
 //        (storage-level backstop: a caller who should never reach upload cannot write the object)
 // AC-6: InsertBrand_WithoutExplicitIsActive_DefaultsToTrue
-// AC-7: BrandsRead_WhenBrandIsInactiveAndCallerIsAnonymous_IsHidden,
-//        BrandsRead_WhenBrandIsInactiveAndCallerLacksBrandsViewPermission_IsHidden,
-//        BrandsRead_WhenBrandIsInactiveAndCallerHoldsBrandsViewPermission_IsVisible
+// AC-7: BrandsRead_WhenBrandIsInactiveAndCallerHoldsBrandsViewPermission_IsVisible
+//        (customer-facing hiding is now get_catalogue_filters()' facet, not RLS — see
+//         manage-categories Decision 13: BrandsRead_WhenBrandIsInactiveAndCallerIsAnonymous_IsVisible,
+//         BrandsRead_WhenBrandIsInactiveAndCallerLacksBrandsViewPermission_IsVisible)
 // AC-8: BrandsAdminInsert_WhenCallerLacksBrandsCreatePermission_ThrowsRowLevelSecurityViolation,
 //        BrandLogosRead_WhenCallerLacksBrandsViewPermission_CannotSelectTheObject,
 //        BrandLogosRead_WhenCallerHoldsBrandsViewPermission_CanSelectTheObject

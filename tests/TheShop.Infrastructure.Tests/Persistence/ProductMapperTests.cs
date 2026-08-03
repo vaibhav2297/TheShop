@@ -44,7 +44,25 @@ public class ProductMapperTests
         product.ImageUrl.Should().NotStartWith(ResolvedPrefix);
     }
 
-    private static ProductRecord BuildRecord(string? imagePath) => new()
+    // =========================================================================
+    // manage-categories: Decision 13 — brands_read no longer hides an Inactive brand, so a
+    // published product's embedded BrandRecord is never null on that account. ToDomain doesn't
+    // inspect IsActive at all (Brand.Rehydrate is only ever given the id/name here), so an
+    // embedded Inactive brand maps exactly like an Active one.
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "manage-categories")]
+    public void ToDomain_WhenEmbeddedBrandIsInactive_MapsWithoutThrowing()
+    {
+        var record = BuildRecord(imagePath: null, brand: new BrandRecord { Id = Guid.NewGuid(), Name = "Elf Bar", IsActive = false });
+
+        var act = () => record.ToDomain(ResolvePublicUrl);
+
+        act.Should().NotThrow();
+    }
+
+    private static ProductRecord BuildRecord(string? imagePath, BrandRecord? brand = null) => new()
     {
         Id = Guid.NewGuid(),
         Name = "Elf Bar BC5000",
@@ -58,7 +76,7 @@ public class ProductMapperTests
         Flavour = "Blue Razz Ice",
         NicotineStrengthMg = 50,
         CreatedAt = new DateTime(2026, 1, 10, 12, 0, 0, DateTimeKind.Utc),
-        Category = new CategoryRecord { Id = Guid.NewGuid(), Name = "Disposables", Slug = "disposables" },
-        Brand = new BrandRecord { Id = Guid.NewGuid(), Name = "Elf Bar" },
+        Category = new CategoryRecord { Id = Guid.NewGuid(), Name = "Disposables" },
+        Brand = brand ?? new BrandRecord { Id = Guid.NewGuid(), Name = "Elf Bar" },
     };
 }

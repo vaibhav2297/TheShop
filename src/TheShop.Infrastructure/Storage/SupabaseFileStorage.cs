@@ -16,6 +16,7 @@ public sealed class SupabaseFileStorage(Supabase.Client client) : IFileStorage
         {
             [StorageArea.ProductImages] = ("product-images", "products"),
             [StorageArea.BrandLogos] = ("brand-logos", "brands"),
+            [StorageArea.CategoryImages] = ("category-images", "categories"),
         };
 
     /// <inheritdoc/>

@@ -52,23 +52,6 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
     public async ValueTask DisposeAsync() => await _pg.DisposeAsync();
 
     // =========================================================================
-    // categories / brands — NOT NULL + UNIQUE slug
-    // =========================================================================
-
-    [Fact]
-    [Trait("Feature", "product-catalogue")]
-    public async Task InsertCategory_WhenSlugAlreadyExists_ThrowsUniqueViolation()
-    {
-        await using var conn = await OpenAsync();
-        await InsertCategoryAsync(conn, "Disposables", "disposables");
-
-        var act = async () => await InsertCategoryAsync(conn, "Other Disposables", "disposables");
-
-        await act.Should().ThrowAsync<PostgresException>()
-            .Where(ex => ex.SqlState == "23505"); // unique_violation
-    }
-
-    // =========================================================================
     // products — NOT NULL constraints
     // =========================================================================
 
@@ -337,7 +320,7 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
     {
         // Plan §10: categories/brands are public reference data (USING (true)).
         await using var conn = await OpenAsync();
-        await InsertCategoryAsync(conn, "Disposables", "disposables");
+        await InsertCategoryAsync(conn, "Disposables");
         await InsertBrandAsync(conn, "Elf Bar", "elf-bar");
 
         await using var roleConn = await OpenAsStorefrontRoleAsync();
@@ -378,10 +361,10 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
         return await cmd.ExecuteScalarAsync();
     }
 
-    private static async Task InsertCategoryAsync(NpgsqlConnection conn, string name, string slug)
+    private static async Task InsertCategoryAsync(NpgsqlConnection conn, string name)
     {
         await using var cmd = conn.CreateCommand();
-        cmd.CommandText = $"INSERT INTO categories (name, slug) VALUES ('{name}', '{slug}')";
+        cmd.CommandText = $"INSERT INTO categories (name) VALUES ('{name}')";
         await cmd.ExecuteNonQueryAsync();
     }
 
@@ -398,7 +381,7 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
 
         await using var categoryCmd = conn.CreateCommand();
         categoryCmd.CommandText = $"""
-            INSERT INTO categories (name, slug) VALUES ('Disposables {suffix}', 'disposables-{suffix}')
+            INSERT INTO categories (name) VALUES ('Disposables {suffix}')
             RETURNING id
             """;
         var categoryId = (Guid)(await categoryCmd.ExecuteScalarAsync())!;
@@ -473,8 +456,7 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
         cmd.CommandText = $"""
             CREATE TABLE IF NOT EXISTS categories (
                 id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                name    TEXT NOT NULL,
-                slug    TEXT NOT NULL UNIQUE
+                name    TEXT NOT NULL
             );
 
             CREATE TABLE IF NOT EXISTS brands (
