@@ -26,7 +26,7 @@ public class GetProductCataloguePageHandlerTests
     private GetProductCataloguePageHandler CreateSut() => new(_products);
 
     private static Category ExampleCategory() =>
-        Category.Create(Guid.NewGuid(), "Disposables", "disposables");
+        Category.Rehydrate(Guid.NewGuid(), "Disposables");
 
     private static Brand ExampleBrand() =>
         Brand.Rehydrate(Guid.NewGuid(), "Elf Bar", "elf-bar");

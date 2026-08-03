@@ -1,0 +1,111 @@
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.AddCategory_PageTitle</PageTitle>
+
+<MudStack Class="pa-8" Spacing="6">
+    <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.AddCategory_Heading</MudText>
+
+    <MudForm @ref="_form" @bind-IsValid="_isFormValid" SuppressImplicitSubmission="true">
+        <BusyFor Key="@BusyKeys.Categories.AddCategory" Context="busy">
+            <MudGrid Spacing="6">
+
+                @* Image upload — Figma node 2629:1874 form body *@
+                <MudItem xs="12"
+                         sm="4"
+                         md="3">
+
+                    <ShopImageUpload Files="_categoryImages"
+                                     FilesChanged="OnCategoryImagesChanged"
+                                     UploadText="@Strings.AddCategory_ImageUploadButton"
+                                     RemoveLabel="@Strings.AddCategory_ImageRemove"
+                                     PreviewAlt="@Strings.AddCategory_ImageLabel"
+                                     InvalidTypeError="@Strings.Category_ImageInvalidType"
+                                     MaxFileSizeError="@Strings.Category_ImageTooLarge"
+                                     Multiple
+                                     Disabled="@busy" />
+
+                </MudItem>
+
+                @* Fields + status + actions — Figma node 2629:1882 (form body) *@
+                <MudItem xs="12"
+                         sm="8"
+                         md="9">
+                    <MudStack Spacing="4">
+                        <MudTextField T="string"
+                                      @bind-Value="_name"
+                                      Placeholder="@Strings.AddCategory_NamePlaceholder"
+                                      Variant="Variant.Filled"
+                                      Typo="Typo.body2"
+                                      FullWidth="true"
+                                      Required="true"
+                                      Disabled="@busy"
+                                      OnlyValidateIfDirty
+                                      Validation="@_nameValidation"
+                                      RequiredError="@Strings.Category_NameRequired"
+                                      Immediate="true"
+                                      UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "add-category-name" })" />
+
+                        <MudTextField T="string"
+                                      @bind-Value="_description"
+                                      Placeholder="@Strings.AddCategory_DescriptionPlaceholder"
+                                      Variant="Variant.Filled"
+                                      Typo="Typo.body2"
+                                      FullWidth="true"
+                                      Lines="3"
+                                      Disabled="@busy"
+                                      Validation="@_descriptionValidation"
+                                      Immediate="true" />
+
+                        <MudDivider />
+
+                        @* Status — two-option single-select toggle, defaults Active (Decision 11, RULE-5) *@
+                        <MudStack Spacing="2">
+                            <MudText Typo="Typo.subtitle2"
+                                     Color="Color.Secondary">@Strings.AddCategory_StatusLabel</MudText>
+                            <MudChipSet T="bool"
+                                        SelectionMode="SelectionMode.SingleSelection"
+                                        @bind-SelectedValue="_isActive"
+                                        CheckMark="false">
+                                <MudChip Value="true"
+                                         Disabled="@busy"
+                                         SelectedColor="Color.Primary"
+                                         Color="Color.Default"
+                                         Variant="Variant.Outlined">@Strings.AddCategory_StatusActive</MudChip>
+
+                                <MudChip Value="false"
+                                         Disabled="@busy"
+                                         SelectedColor="Color.Primary"
+                                         Color="Color.Default"
+                                         Variant="Variant.Outlined">@Strings.AddCategory_StatusInactive</MudChip>
+                            </MudChipSet>
+                        </MudStack>
+
+                        <MudDivider />
+
+                        @* Actions *@
+                        <MudStack Row="true" Spacing="3">
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Disabled="@(!_isFormValid || busy)"
+                                       OnClick="SaveAsync"
+                                       UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "add-category-save" })">
+                                @if (busy)
+                                {
+                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                }
+                                @Strings.AddCategory_SaveButton
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined"
+                                       Disabled="@busy"
+                                       Href="@Routes.Admin.ManageCategories">
+                                @Strings.AddCategory_CancelButton
+                            </MudButton>
+                        </MudStack>
+                    </MudStack>
+                </MudItem>
+
+            </MudGrid>
+        </BusyFor>
+    </MudForm>
+</MudStack>

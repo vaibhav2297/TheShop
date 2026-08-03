@@ -1,0 +1,139 @@
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.EditCategory_PageTitle</PageTitle>
+
+<BusyFor Key="@BusyKeys.Categories.EditCategory" Context="busy">
+    @if (busy && string.IsNullOrEmpty(_name) && !_notFound)
+    {
+        <MudStack Class="pa-8" Spacing="4">
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="48px" />
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="240px" />
+        </MudStack>
+    }
+    else if (_notFound)
+    {
+        <MudStack Class="pa-8"
+                  Spacing="4"
+                  AlignItems="AlignItems.Center">
+
+            <MudText Typo="Typo.h4">@Strings.Category_NotFound</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@Routes.Admin.ManageCategories">
+                @Strings.EditCategory_BackToList
+            </MudButton>
+
+        </MudStack>
+    }
+    else
+    {
+        <MudStack Class="pa-8" Spacing="6">
+            <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.EditCategory_Heading</MudText>
+
+            <MudForm @ref="_form" @bind-IsValid="_isFormValid" SuppressImplicitSubmission="true">
+                <MudGrid Spacing="6">
+
+                    <MudItem xs="12" sm="4" md="3">
+                        @if (_hasExistingImage)
+                        {
+                            <MudStack Spacing="2" AlignItems="AlignItems.Start">
+                                <MudImage Src="@_existingImageUrl"
+                                          Alt="@Strings.AddCategory_ImageLabel"
+                                          Width="120"
+                                          Height="120"
+                                          ObjectFit="ObjectFit.Cover" />
+                                <MudButton Variant="Variant.Text"
+                                           Color="Color.Error"
+                                           Disabled="@busy"
+                                           OnClick="RemoveExistingImage">
+                                    @Strings.AddCategory_ImageRemove
+                                </MudButton>
+                            </MudStack>
+                        }
+                        else
+                        {
+                            <ShopImageUpload Files="_newCategoryImages"
+                                             FilesChanged="OnNewCategoryImagesChanged"
+                                             UploadText="@Strings.AddCategory_ImageUploadButton"
+                                             RemoveLabel="@Strings.AddCategory_ImageRemove"
+                                             PreviewAlt="@Strings.AddCategory_ImageLabel"
+                                             InvalidTypeError="@Strings.Category_ImageInvalidType"
+                                             MaxFileSizeError="@Strings.Category_ImageTooLarge"
+                                             Disabled="@busy" />
+                        }
+                    </MudItem>
+
+                    <MudItem xs="12" sm="8" md="9">
+                        <MudStack Spacing="4">
+                            <MudTextField T="string"
+                                          @bind-Value="_name"
+                                          Placeholder="@Strings.AddCategory_NamePlaceholder"
+                                          Variant="Variant.Filled"
+                                          FullWidth="true"
+                                          Required="true"
+                                          Disabled="@busy"
+                                          OnlyValidateIfDirty
+                                          Validation="@_nameValidation"
+                                          RequiredError="@Strings.Category_NameRequired"
+                                          Immediate="true"
+                                          UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "edit-category-name" })" />
+
+                            <MudTextField T="string"
+                                          @bind-Value="_description"
+                                          Placeholder="@Strings.AddCategory_DescriptionPlaceholder"
+                                          Variant="Variant.Filled"
+                                          FullWidth="true"
+                                          Lines="3"
+                                          Disabled="@busy"
+                                          Validation="@_descriptionValidation"
+                                          Immediate="true" />
+
+                            <MudDivider />
+
+                            <MudStack Spacing="2">
+                                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Strings.AddCategory_StatusLabel</MudText>
+                                <MudChipSet T="bool"
+                                            SelectionMode="SelectionMode.SingleSelection"
+                                            @bind-SelectedValue="_isActive"
+                                            CheckMark="false">
+                                    <MudChip Value="true"
+                                             Disabled="@busy"
+                                             SelectedColor="Color.Primary"
+                                             Color="Color.Default"
+                                             Variant="Variant.Outlined">@Strings.AddCategory_StatusActive</MudChip>
+
+                                    <MudChip Value="false"
+                                             Disabled="@busy"
+                                             SelectedColor="Color.Primary"
+                                             Color="Color.Default"
+                                             Variant="Variant.Outlined">@Strings.AddCategory_StatusInactive</MudChip>
+                                </MudChipSet>
+                            </MudStack>
+
+                            <MudDivider />
+
+                            <MudStack Row="true" Spacing="3">
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           Disabled="@(!_isFormValid || busy)"
+                                           OnClick="SaveAsync"
+                                           UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "edit-category-save" })">
+                                    @if (busy)
+                                    {
+                                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                    }
+                                    @Strings.Save
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined"
+                                           Disabled="@busy"
+                                           Href="@Routes.Admin.ManageCategories">
+                                    @Strings.Cancel
+                                </MudButton>
+                            </MudStack>
+                        </MudStack>
+                    </MudItem>
+
+                </MudGrid>
+            </MudForm>
+        </MudStack>
+    }
+</BusyFor>

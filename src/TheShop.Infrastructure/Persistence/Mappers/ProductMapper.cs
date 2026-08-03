@@ -30,7 +30,7 @@ internal static class ProductMapper
         var salePrice = record.SalePrice is decimal sale ? Money.Create(sale, record.Currency) : null;
         var pricing = ProductPricing.Create(originalPrice, salePrice);
 
-        var category = Category.Create(record.Category.Id, record.Category.Name, record.Category.Slug);
+        var category = Category.Rehydrate(record.Category.Id, record.Category.Name);
         var brand = Brand.Rehydrate(record.Brand.Id, record.Brand.Name);
 
         var imageUrl = !string.IsNullOrWhiteSpace(record.ImagePath)

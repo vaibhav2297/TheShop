@@ -81,10 +81,30 @@ public static class Routes
         public static string EditBrand(Guid id) => $"/admin/brands/{id}/edit";
 
         /// <summary>
-        /// The admin console's Categories card target. Not backed by a page in this feature —
-        /// resolves to the app's not-found route until the Categories module ships.
+        /// The Manage Categories admin harness shell and AddCategory's post-save return target.
+        /// Requires a signed-in user via <c>Pages/Admin/_Imports.razor</c> and is gated on
+        /// <c>categories.view</c> on the page itself.
         /// </summary>
         public const string ManageCategories = "/admin/categories";
+
+        /// <summary>
+        /// The add-category form. Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>categories.create</c> on the
+        /// page itself.
+        /// </summary>
+        public const string AddCategory = "/admin/categories/new";
+
+        /// <summary>
+        /// The edit-category form, id-keyed (plan §5 Decision 8). Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>categories.edit</c> on the page
+        /// itself (plan §5 Decision 9) — <c>GetCategoryByIdQuery</c> only requires
+        /// <c>categories.view</c>, so the page-level gate is what denies a view-only admin's
+        /// direct link (AC-20).
+        /// </summary>
+        public const string EditCategoryPattern = "/admin/categories/{id:guid}/edit";
+
+        /// <summary>Builds the edit-category URL for a specific category.</summary>
+        public static string EditCategory(Guid id) => $"/admin/categories/{id}/edit";
 
         /// <summary>
         /// The admin console's Users card target. Not backed by a page in this feature —

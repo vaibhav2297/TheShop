@@ -37,4 +37,14 @@ public static class BusyKeys
         public const string BrandStatus = "brands.status";
         public const string DeleteBrands = "brands.delete";
     }
+
+    /// <summary>Keys for category admin operations.</summary>
+    public static class Categories
+    {
+        public const string AddCategory = "categories.add";
+        public const string ManageList = "categories.manage-list";
+        public const string EditCategory = "categories.edit";
+        public const string CategoryStatus = "categories.status";
+        public const string DeleteCategories = "categories.delete";
+    }
 }

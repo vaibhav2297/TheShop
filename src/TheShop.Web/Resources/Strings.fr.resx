@@ -258,6 +258,9 @@
   <data name="Sort_Newest" xml:space="preserve">
     <value>Plus récents</value>
   </data>
+  <data name="Sort_Oldest" xml:space="preserve">
+    <value>Plus anciens</value>
+  </data>
   <data name="Sort_PriceLowHigh" xml:space="preserve">
     <value>Prix : croissant</value>
   </data>
@@ -1022,5 +1025,200 @@
   </data>
   <data name="AdminConsole_NotHaveModulePermission" xml:space="preserve">
     <value>Votre rôle n'a actuellement pas les permissions nécessaires pour afficher ou gérer des modules spécifiques.</value>
+  </data>
+  <data name="Category_NameRequired" xml:space="preserve">
+    <value>Le nom de la catégorie est requis.</value>
+  </data>
+  <data name="Category_NameTooLong" xml:space="preserve">
+    <value>Le nom de la catégorie doit contenir 100 caractères ou moins.</value>
+  </data>
+  <data name="Category_DescriptionTooLong" xml:space="preserve">
+    <value>La description doit contenir 250 caractères ou moins.</value>
+  </data>
+  <data name="Category_AlreadyExists" xml:space="preserve">
+    <value>Une catégorie portant ce nom existe déjà.</value>
+  </data>
+  <data name="Category_ImageInvalidType" xml:space="preserve">
+    <value>L'image doit être un fichier PNG, JPG ou WebP.</value>
+  </data>
+  <data name="Category_ImageTooLarge" xml:space="preserve">
+    <value>L'image doit faire 2 Mo ou moins.</value>
+  </data>
+  <data name="Category_CreateFailed" xml:space="preserve">
+    <value>La catégorie n'a pas pu être créée. Veuillez réessayer.</value>
+  </data>
+  <data name="Category_Created" xml:space="preserve">
+    <value>Catégorie créée.</value>
+  </data>
+  <data name="Category_NotFound" xml:space="preserve">
+    <value>Cette catégorie n'existe plus.</value>
+  </data>
+  <data name="Category_UpdateFailed" xml:space="preserve">
+    <value>La catégorie n'a pas pu être mise à jour. Veuillez réessayer.</value>
+  </data>
+  <data name="Category_DeleteFailed" xml:space="preserve">
+    <value>La catégorie n'a pas pu être supprimée. Veuillez réessayer.</value>
+  </data>
+  <data name="Category_StatusChangeFailed" xml:space="preserve">
+    <value>Le statut de la catégorie n'a pas pu être modifié. Veuillez réessayer.</value>
+  </data>
+  <data name="Category_PageInvalid" xml:space="preserve">
+    <value>Cette page de catégories n'existe pas.</value>
+  </data>
+  <data name="Category_CategoryIdsRequired" xml:space="preserve">
+    <value>Sélectionnez au moins une catégorie.</value>
+  </data>
+  <data name="Category_InUse" xml:space="preserve">
+    <value>{0} contient {1} produit(s) et ne peut pas être supprimée. Désactivez-la plutôt.</value>
+  </data>
+  <data name="Category_BulkDeletePartial" xml:space="preserve">
+    <value>{0} catégorie(s) supprimée(s). {1} conservée(s) parce que des produits leur appartiennent encore.</value>
+  </data>
+  <data name="Category_BulkDeleteAllBlocked" xml:space="preserve">
+    <value>Aucune des catégories sélectionnées n'a pu être supprimée — des produits leur appartiennent encore. Désactivez-les plutôt.</value>
+  </data>
+  <data name="AddCategory_PageTitle" xml:space="preserve">
+    <value>Ajouter une catégorie</value>
+  </data>
+  <data name="AddCategory_Heading" xml:space="preserve">
+    <value>Ajouter une catégorie</value>
+  </data>
+  <data name="AddCategory_NameLabel" xml:space="preserve">
+    <value>Nom de la catégorie</value>
+  </data>
+  <data name="AddCategory_NamePlaceholder" xml:space="preserve">
+    <value>Entrez le nom de la catégorie</value>
+  </data>
+  <data name="AddCategory_DescriptionLabel" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="AddCategory_DescriptionPlaceholder" xml:space="preserve">
+    <value>Entrez une description (facultatif)</value>
+  </data>
+  <data name="AddCategory_ImageLabel" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="AddCategory_ImageUploadButton" xml:space="preserve">
+    <value>Ajouter une image</value>
+  </data>
+  <data name="AddCategory_ImageRemove" xml:space="preserve">
+    <value>Supprimer l'image</value>
+  </data>
+  <data name="AddCategory_StatusLabel" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="AddCategory_StatusActive" xml:space="preserve">
+    <value>Actif</value>
+  </data>
+  <data name="AddCategory_StatusInactive" xml:space="preserve">
+    <value>Inactif</value>
+  </data>
+  <data name="AddCategory_SaveButton" xml:space="preserve">
+    <value>Créer</value>
+  </data>
+  <data name="AddCategory_CancelButton" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="ManageCategories_PageTitle" xml:space="preserve">
+    <value>Gérer les catégories</value>
+  </data>
+  <data name="ManageCategories_Heading" xml:space="preserve">
+    <value>Gérer les catégories</value>
+  </data>
+  <data name="ManageCategories_SearchPlaceholder" xml:space="preserve">
+    <value>Rechercher des catégories</value>
+  </data>
+  <data name="ManageCategories_ColumnName" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="ManageCategories_ColumnDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="ManageCategories_ColumnStatus" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="ManageCategories_ColumnActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="ManageCategories_EmptyTitle" xml:space="preserve">
+    <value>Aucune catégorie pour le moment</value>
+  </data>
+  <data name="ManageCategories_EmptyDescription" xml:space="preserve">
+    <value>Ajoutez votre première catégorie pour commencer.</value>
+  </data>
+  <data name="ManageCategories_NoMatchTitle" xml:space="preserve">
+    <value>Aucune catégorie ne correspond à votre recherche</value>
+  </data>
+  <data name="ManageCategories_NoMatchDescription" xml:space="preserve">
+    <value>Essayez un autre nom ou effacez vos filtres.</value>
+  </data>
+  <data name="ManageCategories_BulkSetActive" xml:space="preserve">
+    <value>Actif</value>
+  </data>
+  <data name="ManageCategories_BulkSetInactive" xml:space="preserve">
+    <value>Inactif</value>
+  </data>
+  <data name="ManageCategories_BulkDelete" xml:space="preserve">
+    <value>Supprimer</value>
+  </data>
+  <data name="ManageCategories_BulkDeactivate" xml:space="preserve">
+    <value>Désactiver</value>
+  </data>
+  <data name="ManageCategories_InUseIndicator" xml:space="preserve">
+    <value>Utilisée par {0} produit(s)</value>
+  </data>
+  <data name="ManageCategories_DeletedSuccess" xml:space="preserve">
+    <value>Catégorie supprimée.</value>
+  </data>
+  <data name="ManageCategories_BulkDeletedSuccess" xml:space="preserve">
+    <value>{0} catégorie(s) supprimée(s).</value>
+  </data>
+  <data name="ManageCategories_ActivatedSuccess" xml:space="preserve">
+    <value>{0} catégorie(s) activée(s).</value>
+  </data>
+  <data name="ManageCategories_DeactivatedSuccess" xml:space="preserve">
+    <value>{0} catégorie(s) désactivée(s).</value>
+  </data>
+  <data name="ManageCategories_DeleteConfirmTitle" xml:space="preserve">
+    <value>Supprimer la catégorie?</value>
+  </data>
+  <data name="ManageCategories_DeleteConfirmBody" xml:space="preserve">
+    <value>{0} sera supprimée définitivement. Cette action est irréversible.</value>
+  </data>
+  <data name="ManageCategories_BulkDeleteConfirmTitle" xml:space="preserve">
+    <value>Supprimer {0} catégories?</value>
+  </data>
+  <data name="ManageCategories_BulkDeleteConfirmBody" xml:space="preserve">
+    <value>{0} catégorie(s) seront supprimées définitivement. Cette action est irréversible.</value>
+  </data>
+  <data name="ManageCategories_DeactivateConfirmTitle" xml:space="preserve">
+    <value>Désactiver la catégorie?</value>
+  </data>
+  <data name="ManageCategories_DeactivateConfirmBody" xml:space="preserve">
+    <value>{0} sera masquée aux clients jusqu'à sa réactivation.</value>
+  </data>
+  <data name="ManageCategories_BulkDeactivateConfirmTitle" xml:space="preserve">
+    <value>Désactiver {0} catégories?</value>
+  </data>
+  <data name="ManageCategories_BulkDeactivateConfirmBody" xml:space="preserve">
+    <value>{0} catégorie(s) seront masquées aux clients jusqu'à leur réactivation.</value>
+  </data>
+  <data name="ManageCategories_EditAria" xml:space="preserve">
+    <value>Modifier {0}</value>
+  </data>
+  <data name="ManageCategories_DeleteAria" xml:space="preserve">
+    <value>Supprimer {0}</value>
+  </data>
+  <data name="EditCategory_PageTitle" xml:space="preserve">
+    <value>Modifier la catégorie</value>
+  </data>
+  <data name="EditCategory_Heading" xml:space="preserve">
+    <value>Modifier la catégorie</value>
+  </data>
+  <data name="EditCategory_BackToList" xml:space="preserve">
+    <value>Retour aux catégories</value>
+  </data>
+  <data name="EditCategory_Success" xml:space="preserve">
+    <value>Catégorie mise à jour.</value>
   </data>
 </root>

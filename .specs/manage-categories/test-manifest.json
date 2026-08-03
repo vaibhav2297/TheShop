@@ -1,0 +1,297 @@
+{
+  "feature": "manage-categories",
+  "trait": "manage-categories",
+  "writtenAt": "2026-08-02",
+  "totalTests": 374,
+  "classes": [
+    { "fqn": "TheShop.Domain.Tests.Entities.CategoryTests", "file": "tests/TheShop.Domain.Tests/Entities/CategoryTests.cs", "tests": 43 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/CreateCategory/CreateCategoryCommandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/CreateCategory/CreateCategoryCommandValidatorTests.cs", "tests": 19 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/CreateCategory/CreateCategoryHandlerTests.cs", "tests": 19 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesCommandTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/DeleteCategories/DeleteCategoriesCommandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/DeleteCategories/DeleteCategoriesCommandValidatorTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/DeleteCategories/DeleteCategoriesHandlerTests.cs", "tests": 10 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusCommandTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/SetCategoryStatus/SetCategoryStatusCommandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/SetCategoryStatus/SetCategoryStatusCommandValidatorTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/SetCategoryStatus/SetCategoryStatusHandlerTests.cs", "tests": 9 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryCommandTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/UpdateCategory/UpdateCategoryCommandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/UpdateCategory/UpdateCategoryCommandValidatorTests.cs", "tests": 18 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Commands/UpdateCategory/UpdateCategoryHandlerTests.cs", "tests": 27 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Mappers.CategoryDtoMapperTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Mappers/CategoryDtoMapperTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Queries/GetCategoriesPage/GetCategoriesPageHandlerTests.cs", "tests": 7 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageQueryTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Queries/GetCategoriesPage/GetCategoriesPageQueryTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageQueryValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Queries/GetCategoriesPage/GetCategoriesPageQueryValidatorTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Queries.GetCategoryById.GetCategoryByIdHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Queries/GetCategoryById/GetCategoryByIdHandlerTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Application.Tests.Features.Categories.Queries.GetCategoryById.GetCategoryByIdQueryTests", "file": "tests/TheShop.Application.Tests/Features/Categories/Queries/GetCategoryById/GetCategoryByIdQueryTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.CategoryMapperTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/CategoryMapperTests.cs", "tests": 5 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ManageCategoriesSchemaTests.cs", "tests": 22 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseCategoryRepositorySchemaTests.cs", "tests": 14 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ProductMapperTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.SupabaseBrandRepositorySchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseBrandRepositorySchemaTests.cs", "tests": 2 },
+    { "fqn": "TheShop.Web.Tests.Common.Sorting.CategorySortCatalogueTests", "file": "tests/TheShop.Web.Tests/Common/Sorting/CategorySortCatalogueTests.cs", "tests": 12 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.AddCategoryTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/AddCategoryTests.cs", "tests": 13 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.EditCategoryTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/EditCategoryTests.cs", "tests": 19 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageCategoriesTests.cs", "tests": 38 },
+    { "fqn": "TheShop.Web.Tests.Resources.CategoryLocalizationTests", "file": "tests/TheShop.Web.Tests/Resources/CategoryLocalizationTests.cs", "tests": 72 }
+  ],
+  "acceptanceCriteria": [
+    { "id": "AC-1", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageHandlerTests.Handle_Always_ReturnsSuccessResultWrappingTheRepositoryPage",
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageQueryValidatorTests.Validate_WithPageOne_IsValid",
+      "TheShop.Web.Tests.Common.Sorting.CategorySortCatalogueTests.Default_IsNameAToZ",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_OnInitialize_QueriesTheFirstPageWithNoStatusFilterAndNameAToZ",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_WhenCategoriesExist_ShowsEachCategorysNameAndDescription",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_WhenCategoriesExist_ShowsEachCategorysImage",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_WhenCategoriesSpanMultiplePages_ShowsPaginationControls"
+    ] },
+    { "id": "AC-2", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageHandlerTests.Handle_WhenPageSizeExceedsTheFixedLimit_ClampsItToTen",
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageHandlerTests.Handle_WhenRequestedPageIsBelowOne_ClampsToPageOne",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.ChangePage_AfterFilteringAndSorting_KeepsBothCriteriaOnTheNewPage"
+    ] },
+    { "id": "AC-3", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageHandlerTests.Handle_WithSearchStatusAndSort_PassesThemToTheRepositoryUnchanged",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Search_WhenStaffTypesATerm_ReQueriesWithThatTermFromPageOne"
+    ] },
+    { "id": "AC-4", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageHandlerTests.Handle_WithNoStatusFilter_PassesNullThroughAsEveryStatus",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.ChangeStatusFilter_WhenStaffFiltersByInactive_ReQueriesWithThatStatusFromPageOne",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.ChangeStatusFilter_WhenStaffUnchecksTheSelectedStatus_ReQueriesWithNoStatusFilter"
+    ] },
+    { "id": "AC-5", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageHandlerTests.Handle_WithSearchStatusAndSort_PassesThemToTheRepositoryUnchanged",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.ChangeSort_WhenStaffReversesTheNameOrder_ReQueriesWithThatSortFromPageOne"
+    ] },
+    { "id": "AC-6", "tests": [
+      "TheShop.Domain.Tests.Entities.CategoryTests.Create_WithNameOnly_CreatesAnActiveCategoryWithNoDescriptionOrImage",
+      "TheShop.Domain.Tests.Entities.CategoryTests.AttachImage_WithAStorageKey_SetsImagePath",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandValidatorTests.Validate_WithNameOnly_IsValid",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests.Handle_WithValidNameOnly_ReturnsSuccessResult",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests.Handle_WithValidCommand_PersistsTheCategory",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests.Handle_WithAnImage_UploadsItToTheCategoryImagesArea",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests.Handle_WithAnImage_AttachesTheUploadedKeyToThePersistedCategory",
+      "TheShop.Application.Tests.Features.Categories.Mappers.CategoryDtoMapperTests.ToDto_WhenImagePathIsSet_ResolvesImageUrlViaFileStorage",
+      "TheShop.Application.Tests.Features.Categories.Mappers.CategoryDtoMapperTests.ToDto_WhenImagePathIsSet_QueriesTheCategoryImagesStorageArea",
+      "TheShop.Application.Tests.Features.Categories.Mappers.CategoryDtoMapperTests.ToDto_WhenImagePathIsNull_MapsImageUrlAsNullWithoutCallingFileStorage",
+      "TheShop.Infrastructure.Tests.Persistence.CategoryMapperTests.RoundTrip_ToRecord_ThenToDomain_PreservesEveryField",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.InsertCategory_WithValidData_RowCanBeSelectedBack",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.CategoriesAdminInsert_WhenCallerHoldsCategoriesCreatePermission_Succeeds",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.CategoriesPublicRead_WhenCategoryIsActiveAndCallerIsAnonymous_IsVisible",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.CategoryImagesInsert_WhenCallerHoldsCategoriesCreatePermission_Succeeds",
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.SaveAsync_WithOnlyAName_SendsCreateCategoryCommandWithNoDescriptionOrImageAndActiveStatus",
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.SaveAsync_WhenMediatorReturnsSuccess_ShowsConfirmationAndNavigatesToManageCategories",
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.SaveAsync_WithASelectedImage_SendsCreateCategoryCommandCarryingTheImage"
+    ] },
+    { "id": "AC-7", "tests": [
+      "TheShop.Domain.Tests.Entities.CategoryTests.Create_WithIsActiveFalse_CreatesAnInactiveCategory",
+      "TheShop.Domain.Tests.Entities.CategoryTests.Create_WithoutAttachingAnImage_ImagePathIsNull",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandValidatorTests.Validate_WithNameDescriptionImageAndInactiveStatus_IsValid",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests.Handle_WithValidNameOnly_ReturnsDtoWithSuppliedNameAndDefaults",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests.Handle_WhenIsActiveIsFalse_PersistsAnInactiveCategory",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests.Handle_WithoutAnImage_DoesNotCallFileStorageUpload",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests.Handle_WithoutAnImage_PersistedCategoryHasNoImageUrl",
+      "TheShop.Infrastructure.Tests.Persistence.CategoryMapperTests.ToDomain_WhenDescriptionAndImagePathAreNull_MapsBothAsNull",
+      "TheShop.Infrastructure.Tests.Persistence.CategoryMapperTests.ToDomain_MapsAllColumnsToTheCorrespondingDomainProperties",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.InsertCategory_WithoutExplicitIsActive_DefaultsToTrue",
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.SaveAsync_WithDescriptionAndInactiveStatus_SendsCreateCategoryCommandWithBoth",
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.Render_Always_DefaultsStatusToActive"
+    ] },
+    { "id": "AC-8", "tests": [
+      "TheShop.Domain.Tests.Entities.CategoryTests.Rename_WithAValidName_UpdatesTheName",
+      "TheShop.Domain.Tests.Entities.CategoryTests.ChangeDescription_WithAValidDescription_UpdatesTheDescription",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryCommandTests.UpdateCategoryCommand_Always_IsDecoratedWithTheCategoriesEditPermissionRequirement",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryCommandValidatorTests.Validate_WithNameDescriptionImageAndInactiveStatus_IsValid",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WithValidCommand_ReturnsSuccessResult",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WithValidCommand_PersistsTheRenamedRedescribedCategory",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WithValidCommand_ReturnsDtoReflectingTheNewDetails",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenIsActiveIsFalse_PersistsAnInactiveCategory",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenIsActiveIsTrue_PersistsAnActiveCategory",
+      "TheShop.Infrastructure.Tests.Persistence.CategoryMapperTests.ToRecord_MapsAllDomainPropertiesToTheCorrespondingColumns",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.SaveAsync_WithChangesToNameDescriptionAndStatus_SendsUpdateCategoryCommandWithTheNewValues",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.SaveAsync_WhenMediatorReturnsSuccess_ShowsConfirmationAndNavigatesToManageCategories"
+    ] },
+    { "id": "AC-9", "tests": [
+      "TheShop.Domain.Tests.Entities.CategoryTests.Create_WhenNameIsEmptyOrWhitespaceOnly_ThrowsCategoryNameRequiredException",
+      "TheShop.Domain.Tests.Entities.CategoryTests.Create_WhenNameIsNull_ThrowsCategoryNameRequiredException",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandValidatorTests.Validate_WhenNameIsEmptyOrWhitespace_HasNameRequiredError",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryCommandValidatorTests.Validate_WhenNameIsEmptyOrWhitespace_HasNameRequiredError",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenNameIsEmpty_ReturnsNameRequiredFailure",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenNameIsEmpty_LeavesTheCategoryUnchanged",
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.SaveAsync_WhenFormIsInvalid_DoesNotSendTheCommand",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.SaveAsync_WhenFormIsInvalid_DoesNotSendTheCommand"
+    ] },
+    { "id": "AC-10", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests.Handle_WhenNameAlreadyExists_ReturnsAlreadyExistsFailure",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryHandlerTests.Handle_WhenNameAlreadyExists_DoesNotPersistTheCategory",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenRenamedToAnotherCategorysName_ReturnsAlreadyExistsFailure",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenRenamedToAnotherCategorysName_DoesNotPersistAnything",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.InsertCategory_WhenNameAlreadyExistsExactMatch_ThrowsUniqueViolation",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.InsertCategory_WhenNameDiffersOnlyByCapitalization_ThrowsUniqueViolation",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.InsertCategory_WhenNameDiffersOnlyByLeadingOrTrailingSpaces_ThrowsUniqueViolation",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.InsertCategory_WhenNamesAreDifferent_BothRowsInserted",
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.SaveAsync_WhenCategoryAlreadyExists_ShowsErrorSnackbarAndDoesNotNavigate",
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.SaveAsync_WhenCategoryAlreadyExists_PreservesTheEnteredName",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.SaveAsync_WhenRenamedToAnotherCategorysName_ShowsErrorSnackbarAndDoesNotNavigate",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.SaveAsync_WhenRenamedToAnotherCategorysName_PreservesTheEnteredName"
+    ] },
+    { "id": "AC-11", "tests": [
+      "TheShop.Domain.Tests.Entities.CategoryTests.Rename_ToItsOwnCurrentName_Succeeds",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenCheckingUniqueness_ExcludesTheCategorysOwnId",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenSavedWithNoChangesAtAll_Succeeds",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.SaveAsync_SavedWithNoChangesAtAll_Succeeds"
+    ] },
+    { "id": "AC-12", "tests": [
+      "TheShop.Domain.Tests.Entities.CategoryTests.Create_WhenNameExceeds100Characters_ThrowsCategoryNameTooLongException",
+      "TheShop.Domain.Tests.Entities.CategoryTests.Create_WhenNameIsExactly100Characters_Succeeds",
+      "TheShop.Domain.Tests.Entities.CategoryTests.Create_WhenDescriptionExceeds250Characters_ThrowsCategoryDescriptionTooLongException",
+      "TheShop.Domain.Tests.Entities.CategoryTests.Create_WhenDescriptionIsExactly250Characters_Succeeds",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandValidatorTests.Validate_WhenNameExceeds100Characters_HasNameTooLongError",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandValidatorTests.Validate_WhenNameIsExactly100Characters_HasNoNameError",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandValidatorTests.Validate_WhenDescriptionExceeds250Characters_HasDescriptionTooLongError",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandValidatorTests.Validate_WhenDescriptionIsExactly250Characters_HasNoDescriptionError"
+    ] },
+    { "id": "AC-13", "tests": [
+      "TheShop.Domain.Tests.Entities.CategoryTests.RemoveImage_WhenAnImageIsAttached_ReturnsThePreviousImagePath",
+      "TheShop.Domain.Tests.Entities.CategoryTests.RemoveImage_WhenAnImageIsAttached_ClearsTheImagePath",
+      "TheShop.Domain.Tests.Entities.CategoryTests.AttachImage_AfterRemoveImage_ReplacesItWithTheNewKey",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenRemoveImageIsTrue_PersistsTheCategoryWithNoImage",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenRemoveImageIsTrue_DeletesThePreviousImageObjectAfterSaving",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WithANewImage_UploadsItToTheCategoryImagesArea",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WithANewImage_PersistsTheCategoryWithTheUploadedKey",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenANewImageReplacesAnExistingOne_DeletesTheReplacedImageObject",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.SaveAsync_WhenTheExistingImageWasRemovedWithNoReplacementChosen_SendsRemoveImageTrue",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.SaveAsync_WhenANewImageIsSelected_SendsItAsTheReplacement",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.SaveAsync_WhenTheExistingImageIsUntouched_SendsNeitherRemoveNorANewImage"
+    ] },
+    { "id": "AC-14", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandValidatorTests.Validate_WhenImageContentTypeIsNotAccepted_HasImageInvalidTypeError",
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandValidatorTests.Validate_WhenImageExceeds2Megabytes_HasImageTooLargeError",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryCommandValidatorTests.Validate_WhenNewImageContentTypeIsNotAccepted_HasImageInvalidTypeError",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryCommandValidatorTests.Validate_WhenNewImageExceeds2Megabytes_HasImageTooLargeError",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.CategoryImagesInsert_WhenCallerLacksCategoriesCreatePermission_ThrowsRowLevelSecurityViolation"
+    ] },
+    { "id": "AC-15", "tests": [
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseCategoryRepositorySchemaTests.CategoriesPublicRead_WhenCategoryIsInactiveAndCallerIsAnonymous_IsStillVisible"
+    ] },
+    { "id": "AC-16", "tests": [
+      "TheShop.Domain.Tests.Entities.CategoryTests.Activate_OnAnInactiveCategory_SetsIsActiveToTrue",
+      "TheShop.Domain.Tests.Entities.CategoryTests.Deactivate_OnAnActiveCategory_SetsIsActiveToFalse",
+      "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusCommandTests.SetCategoryStatusCommand_Always_IsDecoratedWithTheCategoriesEditPermissionRequirement",
+      "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusCommandValidatorTests.Validate_WithOneOrMoreDistinctNonEmptyIds_IsValid",
+      "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusHandlerTests.Handle_WhenActivatingASingleInactiveCategory_PersistsItAsActive",
+      "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusHandlerTests.Handle_WhenActivatingASingleInactiveCategory_ReturnsChangedCountOfOne",
+      "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusHandlerTests.Handle_WhenDeactivatingASingleActiveCategory_PersistsItAsInactive",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.StatusToggle_WhenActivatingAnInactiveCategory_SendsImmediatelyWithoutConfirmation",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.StatusToggle_WhenDeactivatingAnActiveCategory_AsksForConfirmationBeforeSending",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.StatusToggle_WhenDeactivationIsCancelled_DoesNotSendTheCommand"
+    ] },
+    { "id": "AC-17", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesCommandTests.DeleteCategoriesCommand_Always_IsDecoratedWithTheCategoriesDeletePermissionRequirement",
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesCommandValidatorTests.Validate_WithOneOrMoreDistinctNonEmptyIds_IsValid",
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesHandlerTests.Handle_WhenTheCategoryIsDeletable_ReturnsSuccessWithDeletedCountOfOne",
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesHandlerTests.Handle_WhenTheDeletedCategoryHadAnImage_DeletesTheImageObject",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.DeleteCategories_WhenTheCategoryHasNoProducts_DeletesItAndReportsDeletedTrue",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.DeleteCategories_WhenTheCategoryHasNoProducts_RemovesTheRowFromTheTable",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.DeleteCategories_ReturnsTheDeletedCategorysImagePathForDisposal",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.DeleteSingle_WhenConfirmed_SendsDeleteCategoriesCommandWithThatCategorysId",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.DeleteSingle_WhenActivated_ShowsAConfirmDialogNamingTheCategory"
+    ] },
+    { "id": "AC-18", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.DeleteSingle_WhenCancelled_DoesNotSendTheCommand",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.BulkDelete_WhenCancelled_DoesNotSendTheCommandAndKeepsTheSelection"
+    ] },
+    { "id": "AC-19", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesHandlerTests.Handle_WhenTheCategoryIsInUse_ReturnsZeroDeletedAndTheBlockedCategoryWithItsProductCount",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.DeleteCategories_WhenTheCategoryHasAProduct_IncludingDiscontinued_KeepsItAndReportsItsProductCount",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.DeleteSingle_WhenTheCategoryIsInUse_ShowsTheInUseMessageNamingItAndItsProductCount"
+    ] },
+    { "id": "AC-20", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Commands.CreateCategory.CreateCategoryCommandTests.CreateCategoryCommand_Always_IsDecoratedWithTheCategoriesCreatePermissionRequirement",
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoryById.GetCategoryByIdQueryTests.GetCategoryByIdQuery_Always_IsDecoratedWithTheCategoriesViewPermissionRequirement",
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.Render_WhenUserHoldsCategoriesCreatePermission_ShowsTheForm",
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.AddCategory_Always_CarriesTheCategoriesCreateAuthorizePolicy",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.Render_WhenUserHoldsCategoriesEditPermission_ShowsTheForm",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.EditCategory_Always_CarriesTheCategoriesEditAuthorizePolicy",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_WhenUserHoldsOnlyCategoriesView_DoesNotShowTheAddCategoryButton",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_WhenUserHoldsOnlyCategoriesView_DoesNotShowEditOrDeleteRowControls",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_WhenUserHoldsOnlyCategoriesView_RendersStatusAsPlainTextNotAClickableToggle"
+    ] },
+    { "id": "AC-21", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageQueryTests.GetCategoriesPageQuery_Always_IsDecoratedWithTheCategoriesViewPermissionRequirement",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.ManageCategories_Always_CarriesTheCategoriesViewAuthorizePolicy"
+    ] },
+    { "id": "AC-22", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_WhenNoCategoriesExistYet_ShowsTheEmptyStateMessage",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_WhenSearchMatchesNoCategories_ShowsTheNoMatchMessage"
+    ] },
+    { "id": "AC-23", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoryById.GetCategoryByIdHandlerTests.Handle_WhenCategoryExists_ReturnsSuccessResultWithTheCategorysDetails",
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoryById.GetCategoryByIdHandlerTests.Handle_WhenCategoryDoesNotExist_ReturnsNotFoundFailure",
+      "TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory.UpdateCategoryHandlerTests.Handle_WhenCategoryDoesNotExist_ReturnsNotFoundFailure",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.Render_WhenCategoryExists_RequestsItByTheSuppliedId",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.Render_WhenCategoryExists_PreFillsNameDescriptionAndStatus",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.Render_WhenTheCategoryNoLongerExists_ShowsTheNotFoundMessage",
+      "TheShop.Web.Tests.Pages.Admin.EditCategoryTests.Render_WhenTheCategoryNoLongerExists_OffersALinkBackToTheList",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_EditControl_LinksToTheCategorysIdKeyedEditRoute"
+    ] },
+    { "id": "AC-24", "tests": [
+      "TheShop.Domain.Tests.Entities.CategoryTests.Rename_ToANameThatWouldHavePreviouslyClashedOnSlug_Succeeds",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.UpdateCategory_WhenRenamedToADifferentPunctuationVariantOfAnotherCategorysName_Succeeds",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.Schema_CategoriesTable_HasNoSlugColumn"
+    ] },
+    { "id": "AC-25", "tests": [
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglishAndFrench",
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.AddCategoryFormString_ForEveryKey_IsAvailableInEnglishAndFrench",
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.ManageCategoriesListString_ForEveryKey_IsAvailableInEnglishAndFrench",
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.EditCategoryFormString_ForEveryKey_IsAvailableInEnglishAndFrench",
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.SortLabel_ForEveryKey_IsAvailableInEnglishAndFrench"
+    ] },
+    { "id": "AC-26", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.Render_WithASelectedImage_RemoveButtonHasALocalizedAriaLabel"
+    ] },
+    { "id": "AC-27", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.ChangeSort_WithCategoriesSelected_ClearsTheSelectionAndHidesTheBulkBar",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.CloseBulkBar_WhenStaffDismissesIt_ClearsTheSelectionAndHidesTheBar"
+    ] },
+    { "id": "AC-28", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusCommandTests.SetCategoryStatusCommand_Always_IsDecoratedWithTheCategoriesEditPermissionRequirement",
+      "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusCommandValidatorTests.Validate_WithOneOrMoreDistinctNonEmptyIds_IsValid",
+      "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusHandlerTests.Handle_WithThreeSelectedCategories_UpdatesEachOfThem",
+      "TheShop.Application.Tests.Features.Categories.Commands.SetCategoryStatus.SetCategoryStatusHandlerTests.Handle_WithFiveSelectedOfWhichTwoAlreadyInactive_CountsOnlyTheThreeThatChanged",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.BulkActivate_SendsImmediatelyWithoutConfirmation",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.BulkDeactivate_WhenConfirmed_SendsWithEverySelectedIdAndReportsHowManyChanged",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.BulkDeactivate_WhenActivated_AsksForConfirmationStatingHowManyWillBeHidden",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.BulkDeactivate_WhenCancelled_DoesNotSendTheCommand"
+    ] },
+    { "id": "AC-29", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesCommandValidatorTests.Validate_WithOneOrMoreDistinctNonEmptyIds_IsValid",
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesHandlerTests.Handle_WithAMixOfDeletableAndInUseCategories_ReturnsBothTheDeletedCountAndTheBlockedList",
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesHandlerTests.Handle_WithAMixOfDeletableAndInUseCategories_DeletesOnlyTheDeletedOnesImages",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.DeleteCategories_WithAMixOfUnusedAndInUseCategories_DeletesTheUnusedAndKeepsTheUsedInOneCall",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.CategoryProductCounts_ForMultipleCategories_ReturnsTheCountPerCategory",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.BulkDelete_WhenConfirmed_SendsDeleteCategoriesCommandWithEverySelectedId",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.BulkDelete_WhenActivated_AsksForConfirmationStatingHowManyWillBeDeleted",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.BulkDelete_WithAMixedOutcome_ReportsBothCounts",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.BulkDelete_WithAMixedOutcome_KeepsOnlyTheBlockedCategoriesSelected"
+    ] },
+    { "id": "AC-30", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesHandlerTests.Handle_WhenEverySelectedCategoryIsInUse_ReturnsZeroDeletedAndEveryCategoryBlocked",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.DeleteCategories_WhenEverySelectedCategoryIsInUse_DeletesNone",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.BulkDelete_WhenEverySelectedCategoryIsInUse_ShowsTheAllBlockedMessage"
+    ] },
+    { "id": "AC-31", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesCommandTests.DeleteCategoriesCommand_Always_IsDecoratedWithTheCategoriesDeletePermissionRequirement",
+      "TheShop.Application.Tests.Features.Categories.Commands.DeleteCategories.DeleteCategoriesHandlerTests.Handle_WhenTheRepositoryThrowsAnAccessDeniedException_ReturnsRbacAccessDeniedFailure",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.DeleteCategories_WhenCallerLacksCategoriesDeletePermission_ThrowsAccessDeniedException",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_WhenUserHoldsEditButNotDelete_BulkBarOffersActivateAndDeactivateButNotDelete"
+    ] },
+    { "id": "AC-32", "tests": [
+      "TheShop.Application.Tests.Features.Categories.Queries.GetCategoriesPage.GetCategoriesPageHandlerTests.Handle_WithNewestOrOldestSort_PassesItToTheRepositoryUnchanged",
+      "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.Schema_IdxCategoriesCreatedAt_Exists",
+      "TheShop.Web.Tests.Common.Sorting.CategorySortCatalogueTests.Slugs_MatchTheSharedVocabulary",
+      "TheShop.Web.Tests.Common.Sorting.CategorySortCatalogueTests.Options_CoverEveryMemberOfTheEnum",
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.SortLabel_ForEveryKey_IsAvailableInEnglishAndFrench",
+      "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.ChangeSort_WhenStaffChoosesNewest_ReQueriesWithNewestFromPageOne"
+    ] }
+  ]
+}

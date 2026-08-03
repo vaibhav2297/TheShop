@@ -9,4 +9,5 @@ public enum StorageArea
 {
     ProductImages,
     BrandLogos,
+    CategoryImages,
 }

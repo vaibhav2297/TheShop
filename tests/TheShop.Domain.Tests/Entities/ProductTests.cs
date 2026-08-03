@@ -14,7 +14,7 @@ namespace TheShop.Domain.Tests.Entities;
 public class ProductTests
 {
     private static Category ExampleCategory() =>
-        Category.Create(Guid.NewGuid(), "Disposables", "disposables");
+        Category.Rehydrate(Guid.NewGuid(), "Disposables");
 
     private static Brand ExampleBrand() =>
         Brand.Rehydrate(Guid.NewGuid(), "Elf Bar", "elf-bar");

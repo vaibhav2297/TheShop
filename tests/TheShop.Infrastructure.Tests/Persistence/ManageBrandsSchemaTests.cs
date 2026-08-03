@@ -501,8 +501,13 @@ public sealed class ManageBrandsSchemaTests : IAsyncLifetime
             ALTER TABLE brands   ENABLE ROW LEVEL SECURITY;
             ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 
+            -- brands_read is USING (true) — Decision 13 (.specs/manage-categories/plan.md §5):
+            -- restricting SELECT to is_active nulls out ProductRecord's embedded BrandRecord for
+            -- any published product whose brand is later deactivated, and ProductMapper.ToDomain
+            -- throws on a null embed. Inactive brands are hidden from customers by the
+            -- get_catalogue_filters() facet filter instead, not by RLS.
             CREATE POLICY "brands_read" ON brands
-                FOR SELECT USING (is_active OR (SELECT public.authorize('brands.view')));
+                FOR SELECT USING (true);
 
             CREATE POLICY "brands_admin_insert" ON brands
                 FOR INSERT WITH CHECK ((SELECT public.authorize('brands.create')));
