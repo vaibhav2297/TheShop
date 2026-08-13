@@ -17,6 +17,13 @@
 #                                     lists (transitively building the layers they
 #                                     reference); emits each compiler error tagged
 #                                     [tests]/[src] by the failing file's location
+#   e2e       -Feature x              e2e-manifest.json: every spec AC classified exactly
+#                                     once as e2e|unit|manual, e2e evidence resolves to a
+#                                     real AC{n}_ method in a listed journey, unit evidence
+#                                     resolves through test-manifest.json, manual carries a
+#                                     reason; plus the data-testid resolution check - fatal
+#                                     for this feature's journeys/pages and the shared
+#                                     harness, a warning for other features' files
 #   scope     -Phase p -Files f,...   newly changed files confined to the layer the
 #                                     sub-agent owns (domain|application|infra|web|infra+web)
 #   snapshot  -Snapshot dir           save every currently-changed file aside (baseline
@@ -35,7 +42,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory, Position = 0)]
-    [ValidateSet('spec', 'plan', 'manifest', 'compile', 'scope', 'snapshot', 'doc-only', 'status', 'ship-ready')]
+    [ValidateSet('spec', 'plan', 'manifest', 'compile', 'e2e', 'scope', 'snapshot', 'doc-only', 'status', 'ship-ready')]
     [string]$Mode,
 
     [string]$Feature,
@@ -59,7 +66,19 @@ $WARN = [string][char]0x26A0                # warning   (risk)
 $violations = [System.Collections.Generic.List[string]]::new()
 function Fail([string]$Msg) { $script:violations.Add($Msg) }
 
+# Findings that are real but belong to a different feature than the one under test.
+# Reported, never fatal - one feature's pending work must not block another's gate.
+$warnings = [System.Collections.Generic.List[string]]::new()
+function Warn([string]$Msg) { $script:warnings.Add($Msg) }
+
+function Write-Warnings {
+    if ($script:warnings.Count -eq 0) { return }
+    Write-Output "[sdd-gates] $($script:warnings.Count) warning(s) - outside this feature's scope, not blocking:"
+    foreach ($w in $script:warnings) { Write-Output "  ! $w" }
+}
+
 function Complete-Run([string]$Label) {
+    Write-Warnings
     if ($script:violations.Count -gt 0) {
         Write-Output "[sdd-gates] $Label - $($script:violations.Count) violation(s):"
         foreach ($v in $script:violations) { Write-Output "  - $v" }
@@ -342,6 +361,162 @@ function Test-CompileGate([string]$F) {
     }
 }
 
+# ------------------------------------------------------------------ e2e gate --
+# The E2E counterpart of the manifest gate, and the pipeline's defence against a
+# thin browser suite. The unit manifest forces every AC to be *listed*; this one
+# forces every AC to be *classified* - proven in the browser, proven below it, or
+# consciously handed to a human with a written reason. A journey that quietly
+# covers 11 of 32 ACs stops being indistinguishable from one that covers them all.
+function Test-E2eGate([string]$F) {
+    $raw = Read-Doc ".specs/$F/e2e-manifest.json"
+    if (-not $raw) { Fail ".specs/$F/e2e-manifest.json not found - /theshop.e2e writes it before any journey runs"; return }
+    try { $m = $raw | ConvertFrom-Json } catch { Fail "e2e-manifest.json is not valid JSON: $($_.Exception.Message)"; return }
+
+    if ($m.feature -ne $F) { Fail "e2e-manifest 'feature' is '$($m.feature)' - expected '$F'" }
+    if ($m.trait -ne $F)   { Fail "e2e-manifest 'trait' is '$($m.trait)' - must equal the feature name (the runner filters on it)" }
+
+    # -- journeys: on disk, stamped with both traits, and honest about their test count.
+    $methodRx   = '(?m)^\s*public\s+(?:async\s+)?Task\s+(AC(\d+)_\w+)\s*\('
+    $catTraitRx = '\[Trait\(\s*"Category"\s*,\s*"E2E"\s*\)\]'
+    $ftTraitRx  = '\[Trait\(\s*"Feature"\s*,\s*"' + [regex]::Escape($F) + '"\s*\)\]'
+
+    $journeyFqns    = @(@($m.journeys) | ForEach-Object { $_.fqn })
+    $journeyMethods = @{}   # "Fqn.Method" -> claimed by an AC entry yet?
+
+    foreach ($j in @($m.journeys)) {
+        $fp = Join-Path $repoRoot $j.file
+        if (-not (Test-Path -LiteralPath $fp)) { Fail "listed journey file missing on disk: $($j.file)"; continue }
+        $fc = Get-Content -Raw -LiteralPath $fp
+        if ($fc -notmatch $catTraitRx) { Fail "$($j.file) has no [Trait(""Category"", ""E2E"")] stamp - /theshop.e2e's filter will not find its tests" }
+        if ($fc -notmatch $ftTraitRx)  { Fail "$($j.file) has no [Trait(""Feature"", ""$F"")] stamp - /theshop.e2e's filter will not find its tests" }
+
+        $found = @([regex]::Matches($fc, $methodRx) | ForEach-Object { $_.Groups[1].Value })
+        if ($j.tests -ne $found.Count) {
+            Fail "$($j.file) declares tests: $($j.tests) but defines $($found.Count) AC-prefixed test method(s)"
+        }
+        foreach ($name in $found) { $journeyMethods["$($j.fqn).$name"] = $false }
+    }
+
+    # -- classification: every spec AC, exactly once, in exactly one bucket.
+    if (-not $m.acceptanceCriteria) { Fail "e2e-manifest has no 'acceptanceCriteria' array - nothing classifies the spec's ACs"; return }
+
+    $spec = Read-Doc ".specs/$F/spec.md"
+    if (-not $spec) { Fail "spec.md not found - cannot cross-check acceptanceCriteria ids" }
+    else {
+        $specIds = @(Get-SpecAcIds $spec | ForEach-Object { "AC-$_" })
+        $mfIds   = @($m.acceptanceCriteria | ForEach-Object { $_.id })
+        foreach ($id in $specIds) { if ($id -notin $mfIds) { Fail "spec $id is not classified in the e2e-manifest (every AC needs coverage e2e|unit|manual)" } }
+        foreach ($id in $mfIds)   { if ($id -notin $specIds) { Fail "e2e-manifest classifies $id which does not exist in the spec" } }
+        foreach ($g in @($mfIds | Group-Object | Where-Object Count -gt 1)) { Fail "$($g.Name) is classified $($g.Count) times - each AC belongs in exactly one bucket" }
+    }
+
+    # Unit-covered ACs are only credible if the unit manifest really maps that AC to that test.
+    $unitMap = @{}
+    $unitRaw = Read-Doc ".specs/$F/test-manifest.json"
+    if ($unitRaw) {
+        try {
+            $um = $unitRaw | ConvertFrom-Json
+            foreach ($ac in @($um.acceptanceCriteria)) { $unitMap[$ac.id] = @($ac.tests) }
+        } catch { Fail "test-manifest.json is not valid JSON - cannot corroborate unit-covered ACs" }
+    }
+
+    foreach ($ac in @($m.acceptanceCriteria)) {
+        switch -Regex ("$($ac.coverage)") {
+            '^e2e$' {
+                if (-not $ac.evidence) { Fail "$($ac.id) is coverage 'e2e' with no evidence - name the journey test that proves it"; break }
+                $owner = @($journeyFqns | Where-Object { "$($ac.evidence)".StartsWith("$_.") }) | Select-Object -First 1
+                if (-not $owner) { Fail "$($ac.id) maps to '$($ac.evidence)' which is not under any journey fqn listed in the e2e-manifest"; break }
+                if (-not $journeyMethods.ContainsKey("$($ac.evidence)")) { Fail "$($ac.id) maps to '$($ac.evidence)' but no such AC-prefixed test method exists in $owner"; break }
+                $journeyMethods["$($ac.evidence)"] = $true
+                $num = "$($ac.id)".Substring(3)
+                $method = "$($ac.evidence)".Substring($owner.Length + 1)
+                if ($method -notmatch "^AC$num`_") { Fail "$($ac.id) maps to '$method' - an E2E test must be named AC$num`_ so its result maps back to this AC unambiguously" }
+            }
+            '^unit$' {
+                if (-not $ac.evidence) { Fail "$($ac.id) is coverage 'unit' with no evidence - name the test that covers it below the browser"; break }
+                if (-not $unitRaw) { Fail "$($ac.id) is coverage 'unit' but .specs/$F/test-manifest.json does not exist to corroborate it"; break }
+                if ("$($ac.evidence)" -notin @($unitMap["$($ac.id)"])) {
+                    Fail "$($ac.id) claims unit coverage by '$($ac.evidence)' but test-manifest.json does not map $($ac.id) to that test"
+                }
+            }
+            '^manual$' {
+                $reason = "$($ac.reason)".Trim()
+                if ($reason.Length -lt 15) { Fail "$($ac.id) is coverage 'manual' with no substantive reason - state why it cannot be machine-proven" }
+            }
+            default { Fail "$($ac.id) has coverage '$($ac.coverage)' - must be one of e2e, unit, manual" }
+        }
+    }
+
+    # -- no orphan journey tests: a written AC{n}_ test that no AC claims is a stale
+    #    or misnamed test whose result would silently map to nothing.
+    foreach ($k in $journeyMethods.Keys) {
+        if (-not $journeyMethods[$k]) { Fail "$k is an AC-prefixed journey test that no acceptanceCriteria entry claims - map it or rename it" }
+    }
+
+    # -- data-testid resolution: every literal hook a journey reaches for must exist in the
+    #    Web layer. This is the single largest cause of E2E failure, and it is knowable
+    #    without starting a browser.
+    #
+    #    The scan is repo-wide, but the VERDICT is feature-scoped. /theshop.e2e deliberately
+    #    leaves a journey on disk that reaches for a hook src/ does not define yet, then halts
+    #    so the Web layer adds it. A repo-wide failure would let that one parked journey block
+    #    every other feature's gate. So: this feature's own files fail, everyone else's warn.
+    $e2eRoot = Join-Path $repoRoot 'tests/TheShop.E2E.Tests'
+    if (Test-Path -LiteralPath $e2eRoot) {
+        # NB: loop variables here must not be named $f - PowerShell variable names are
+        # case-insensitive, so $f would clobber this function's $F feature parameter.
+        $defined = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+        foreach ($webFile in @(Get-ChildItem -Path (Join-Path $repoRoot 'src/TheShop.Web') -Recurse -Include *.razor, *.cs -File -ErrorAction SilentlyContinue)) {
+            $c = Get-Content -Raw -LiteralPath $webFile.FullName
+            if (-not $c) { continue }   # -Raw yields $null for an empty file
+            # Plain HTML attribute and MudBlazor UserAttributes dictionary form alike.
+            foreach ($mm in [regex]::Matches($c, 'data-testid"?\]?\s*=\s*"([^"]+)"')) { [void]$defined.Add($mm.Groups[1].Value) }
+        }
+
+        # Only per-feature test code can be warned about. Everything else under the E2E
+        # project - Auth/, Fixtures/, the shared sign-in flow - is harness that /theshop.e2e
+        # is forbidden to edit and that every feature depends on, so it always fails hard.
+        #
+        # Out of scope = a Journeys/ file this manifest does not list, or a Pages/ file none
+        # of those journeys names. Page objects hold most locators, so a page object this
+        # feature actually drives has to be in scope or the check would prove nothing.
+        $ownJourneys = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+        $journeyText = ''
+        foreach ($j in @($m.journeys)) {
+            $jp = Join-Path $repoRoot $j.file
+            if (-not (Test-Path -LiteralPath $jp)) { continue }
+            [void]$ownJourneys.Add((Resolve-Path -LiteralPath $jp).Path)
+            $journeyText += (Get-Content -Raw -LiteralPath $jp)
+        }
+
+        foreach ($e2eFile in @(Get-ChildItem -Path $e2eRoot -Recurse -Include *.cs -File -ErrorAction SilentlyContinue |
+                               Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' })) {
+            $c = Get-Content -Raw -LiteralPath $e2eFile.FullName
+            if (-not $c) { continue }
+
+            $mine = $true
+            if ($e2eFile.FullName -match '[\\/]Journeys[\\/]') {
+                $mine = $ownJourneys.Contains($e2eFile.FullName)
+            } elseif ($e2eFile.FullName -match '[\\/]Pages[\\/]') {
+                # Class name == file name by convention here; a journey that mentions the
+                # identifier is the journey that drives that page.
+                $mine = [bool]($journeyText -match ('\b' + [regex]::Escape($e2eFile.BaseName) + '\b'))
+            }
+            foreach ($mm in [regex]::Matches($c, 'GetByTestId\(\s*"([^"]+)"\s*\)')) {
+                $id = $mm.Groups[1].Value
+                if (-not $defined.Contains($id)) {
+                    $rel = $e2eFile.FullName.Substring($repoRoot.Length).TrimStart('\', '/') -replace '\\', '/'
+                    if ($mine) {
+                        Fail "$rel reaches for data-testid '$id' which no file under src/TheShop.Web defines - the locator will not resolve at run time"
+                    } else {
+                        Warn "$rel reaches for data-testid '$id' which no file under src/TheShop.Web defines - not this feature's journey, but it will fail when its own gate runs"
+                    }
+                }
+            }
+        }
+    }
+}
+
 # --------------------------------------------------------------- scope gate --
 function Test-ScopeGate {
     if (-not $Phase) { throw 'scope mode requires -Phase' }
@@ -507,6 +682,7 @@ switch ($Mode) {
     'plan'     { if (-not $Feature) { throw 'plan mode requires -Feature' };     Test-PlanGate $Feature }
     'manifest' { if (-not $Feature) { throw 'manifest mode requires -Feature' }; Test-ManifestGate $Feature }
     'compile'  { if (-not $Feature) { throw 'compile mode requires -Feature' };  Test-CompileGate $Feature }
+    'e2e'      { if (-not $Feature) { throw 'e2e mode requires -Feature' };      Test-E2eGate $Feature }
     'status'   { if (-not $Feature) { throw 'status mode requires -Feature' };   Test-StatusGate $Feature }
     'ship-ready' { if (-not $Feature) { throw 'ship-ready mode requires -Feature' }; Test-ShipReadyGate $Feature }
     'scope'    { Test-ScopeGate }
