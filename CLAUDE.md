@@ -52,7 +52,8 @@ The end-to-end flow for a new feature. Each step is one slash command, run in th
 | 4. Resolve | `/theshop.resolve <feature>` | Resolves the **plan's** open questions / risks / assumptions (Section 11), one decision at a time → flips plan Status to `Resolved` |
 | 5. Implement | `/theshop.implement <feature>` | Orchestrates four layer-scoped sub-agents (Domain → Application → Infra ‖ Web) with build gates and API handoff between phases |
 | 6. Test | `/theshop.test <feature>` | `shop-test-writer` generates tests from spec → `shop-test-runner` executes them |
-| 7. Verify (E2E) | `/theshop.verify <feature>` | Builds and runs the app, then smoke-checks each acceptance criterion against the running feature. **User-facing features only** — skipped for backend-only work. |
+| 7. E2E | `/theshop.e2e <feature>` | Classifies **every** AC as browser-proven / unit-proven / human-only, writes the Playwright journey, starts the local stack, runs it, repairs its locators, and reports → `.specs/{feature}/e2e-manifest.json` + `e2e-report.md`. **User-facing features only** — skipped for backend-only work. Writes the `5. Verify` ledger row. |
+| ~~7b. Verify~~ | ~~`/theshop.verify <feature>`~~ | **Deprecated** — superseded by `/theshop.e2e`, which owns writing *and* running the journey in one feedback loop. Kept only until its remaining callers are retired. |
 | 8. Review | `/theshop.review <feature>` | Parallel security + quality review (includes a French-localization completeness gate) with approval-gated fix-up |
 | 9. Document | `/theshop.document` | Adds XML doc comments to the current diff. **Run manually** when you're ready to document the finished code — it does not auto-run. |
 | 10. Ship | `/theshop.ship <feature>` | **Git post-bookend.** Commits the work, pushes the branch, and opens a PR against `dev`, then — confirming at each step — merges it, deletes the branch, and returns you to an up-to-date `dev`. Run after review. |
@@ -61,7 +62,7 @@ The two git bookends (**Start** / **Ship**) wrap the document pipeline: `/thesho
 
 Formatting is automatic: a `Stop` hook in `.claude/settings.json` runs `dotnet format` whenever a turn ended with `.cs` or `.razor` changes in the diff. No manual step.
 
-**Verification gates are scripted, not asserted.** `.claude/scripts/check-sdd-gates.ps1` deterministically validates each step's output (spec/plan template conformance, AC coverage, test-manifest integrity, layer scope, doc-only diffs, status drift, ship-readiness); the commands above run it at entry/exit. `status.md` is the **gate ledger**: every step reads it on entry to verify the upstream rows, and records its own State + Gate + Evidence on exit. A gate the user chooses to skip is recorded as `⚠️ waived: {reason}` — never silently. Do not report a pipeline step as done while its gate fails.
+**Verification gates are scripted, not asserted.** `.claude/scripts/check-sdd-gates.ps1` deterministically validates each step's output (spec/plan template conformance, AC coverage, test-manifest integrity, E2E AC classification + `data-testid` resolution, layer scope, doc-only diffs, status drift, ship-readiness); the commands above run it at entry/exit. `status.md` is the **gate ledger**: every step reads it on entry to verify the upstream rows, and records its own State + Gate + Evidence on exit. A gate the user chooses to skip is recorded as `⚠️ waived: {reason}` — never silently. Do not report a pipeline step as done while its gate fails.
 
 ---
 
