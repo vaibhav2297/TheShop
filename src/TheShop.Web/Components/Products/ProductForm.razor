@@ -1,0 +1,248 @@
+@* Components/Products/ProductForm.razor *@
+@inherits MudComponentBase
+
+@using Microsoft.AspNetCore.Components.Routing
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<NavigationLock ConfirmExternalNavigation="@_dirty" OnBeforeInternalNavigation="OnBeforeInternalNavigationAsync" />
+
+<MudForm @ref="_form" @bind-IsValid="_isFormValid" Class="@Classname" Style="@Stylename" SuppressImplicitSubmission="true">
+
+    <BusyFor Key="@BusyKeys.Products.SaveProduct" Context="busy">
+
+        <MudStack Spacing="0">
+
+            @* General Info *@
+            <MudExpansionPanels Elevation="0" Outlined="true">
+
+                <MudExpansionPanel Icon="@ShopIcons.Outlined.Caret_Down_MD" Expanded="true" Class="mud-transparent">
+
+                    <TitleContent>
+                        <MudText Typo="Typo.h4"
+                                 Class="text-transform-uppercase">@Strings.ProductForm_GeneralInfoHeading</MudText>
+                    </TitleContent>
+
+                    <ChildContent>
+
+                        <MudGrid Spacing="6">
+
+                            <MudItem xs="12" sm="4" xl="3">
+
+                                @* Gallery order is the source of truth: whichever image the staff member
+                                   picks first becomes the product's primary image — there is no reorder. *@
+                                <ShopImageUpload Files="@_galleryImages"
+                                                 FilesChanged="OnGalleryImagesChanged"
+                                                 Multiple="true"
+                                                 MaxFileCount="int.MaxValue"
+                                                 ShowPrimaryBadge="true"
+                                                 Disabled="@busy"
+                                                 UploadText="@Strings.AddProduct_ImageUploadButton"
+                                                 RemoveLabel="@Strings.AddProduct_ImageRemove"
+                                                 PreviewAlt="@Strings.AddProduct_ImageLabel"
+                                                 InvalidTypeError="@Strings.Product_ImageInvalidType"
+                                                 MaxFileSizeError="@Strings.Product_ImageTooLarge"
+                                                 PrimaryLabel="@Strings.AddProduct_ImagePrimary"
+                                                 FileSizeFormat="@Strings.AddProduct_ImageFileSize" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="8" xl="9">
+
+                                <MudStack Spacing="4">
+
+                                    <MudTextField T="string"
+                                                  Value="@_name"
+                                                  ValueChanged="@((string v) => OnNameChanged(v))"
+                                                  Variant="Variant.Outlined"
+                                                  Typo="Typo.body1"
+                                                  FullWidth="true"
+                                                  Label="@Strings.AddProduct_NameLabel"
+                                                  Required="true"
+                                                  Disabled="@busy"
+                                                  OnlyValidateIfDirty="true"
+                                                  Validation="@_nameValidation"
+                                                  RequiredError="@Strings.Product_NameRequired"
+                                                  Immediate="true"
+                                                  UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "product-name" })" />
+
+                                    <MudTextField T="string"
+                                                  Value="@_description"
+                                                  ValueChanged="@((string v) => OnDescriptionChanged(v))"
+                                                  Variant="Variant.Outlined"
+                                                  Label="@Strings.AddProduct_DescriptionLabel"
+                                                  Typo="Typo.body1"
+                                                  FullWidth="true"
+                                                  Lines="3"
+                                                  Disabled="@busy"
+                                                  Validation="@_descriptionValidation"
+                                                  Immediate="true" />
+
+                                    <MudStack Spacing="1">
+                                        <MudTextField T="string"
+                                                      Value="@_sku"
+                                                      Variant="Variant.Outlined"
+                                                      Label="@Strings.AddProduct_SkuLabel"
+                                                      Typo="Typo.body1"
+                                                      FullWidth="true"
+                                                      Required="true"
+                                                      ReadOnly="true"
+                                                      Disabled="@busy"
+                                                      RequiredError="@Strings.Product_SkuRequired"
+                                                      UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "product-sku" })" />
+
+                                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                                            <MudIcon Icon="@ShopIcons.Outlined.Info" Size="Size.Small" Color="Color.Secondary" />
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">@Strings.AddProduct_SkuHelperText</MudText>
+                                        </MudStack>
+                                    </MudStack>
+
+                                    <MudGrid Spacing="4">
+
+                                        <MudItem xs="12" sm="6">
+
+                                            <MudSelect T="Guid?"
+                                                       Value="@_categoryId"
+                                                       ValueChanged="@((Guid? v) => OnCategoryChanged(v))"
+                                                       Variant="Variant.Outlined"
+                                                       Label="@Strings.AddProduct_CategoryLabel"
+                                                       Typo="Typo.body1"
+                                                       FullWidth="true"
+                                                       Required="true"
+                                                       Disabled="@busy"
+                                                       AdornmentIcon="@ShopIcons.Outlined.Caret_Down_MD"
+                                                       RequiredError="@Strings.Product_CategoryRequired">
+                                                @foreach (var category in DisplayCategories)
+                                                {
+                                                    <MudSelectItem T="Guid?" Value="@((Guid?)category.Id)">@category.Name</MudSelectItem>
+                                                }
+                                            </MudSelect>
+
+                                        </MudItem>
+
+                                        <MudItem xs="12" sm="6">
+
+                                            <MudSelect T="Guid?"
+                                                       Value="@_brandId"
+                                                       ValueChanged="@((Guid? v) => OnBrandChanged(v))"
+                                                       Variant="Variant.Outlined"
+                                                       Label="@Strings.AddProduct_BrandLabel"
+                                                       Typo="Typo.body1"
+                                                       FullWidth="true"
+                                                       Required="true"
+                                                       Disabled="@busy"
+                                                       AdornmentIcon="@ShopIcons.Outlined.Caret_Down_MD"
+                                                       RequiredError="@Strings.Product_BrandRequired">
+                                                @foreach (var brand in DisplayBrands)
+                                                {
+                                                    <MudSelectItem T="Guid?" Value="@((Guid?)brand.Id)">@brand.Name</MudSelectItem>
+                                                }
+                                            </MudSelect>
+
+                                        </MudItem>
+
+                                    </MudGrid>
+
+                                    @if (HasVariants)
+                                    {
+                                        <MudAlert Severity="Severity.Info">
+                                            @(LowestVariantPrice is { } min
+                                                ? string.Format(Strings.AddProduct_PriceRangeNoteWithValue, CurrencyFormatter.Format(min))
+                                                : Strings.AddProduct_PriceRangeNote)
+                                        </MudAlert>
+                                    }
+                                    else
+                                    {
+                                        <MudGrid Spacing="4">
+
+                                            <MudItem xs="12" sm="6">
+
+                                                <ShopMoneyField Value="@_originalPrice"
+                                                                ValueChanged="@((decimal? v) => OnOriginalPriceChanged(v))"
+                                                                Label="@Strings.AddProduct_PriceLabel"
+                                                                Required="true"
+                                                                RequiredError="@Strings.Product_PriceRequired"
+                                                                Disabled="@busy" />
+
+                                            </MudItem>
+
+                                            <MudItem xs="12" sm="6">
+                                                <ShopMoneyField Value="@_salePrice"
+                                                                ValueChanged="@((decimal? v) => OnSalePriceChanged(v))"
+                                                                Label="@Strings.AddProduct_SalePriceLabel"
+                                                                Disabled="@busy" />
+                                            </MudItem>
+                                        </MudGrid>
+                                    }
+
+                                    <MudDivider />
+
+                                    <MudStack Spacing="1">
+                                        <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Strings.AddProduct_StatusLabel</MudText>
+                                        <MudChipSet T="bool"
+                                                    SelectionMode="SelectionMode.SingleSelection"
+                                                    SelectedValue="@_isPublished"
+                                                    SelectedValueChanged="@((bool v) => OnPublishedChangedAsync(v))"
+                                                    CheckMark="false">
+                                            <MudChip Value="true" Disabled="@busy" SelectedColor="Color.Primary" Color="Color.Default" Variant="Variant.Outlined">
+                                                @Strings.AddProduct_StatusActive
+                                            </MudChip>
+                                            <MudChip Value="false" Disabled="@busy" SelectedColor="Color.Primary" Color="Color.Default" Variant="Variant.Outlined">
+                                                @Strings.AddProduct_StatusInactive
+                                            </MudChip>
+                                        </MudChipSet>
+                                    </MudStack>
+                                </MudStack>
+                            </MudItem>
+                        </MudGrid>
+
+                    </ChildContent>
+
+                </MudExpansionPanel>
+
+            </MudExpansionPanels>
+
+            @* Variants *@
+            <ProductVariantsCard ProductSku="@_sku"
+                                 GalleryImages="@_galleryPreview"
+                                 InitialOptionTypes="@(InitialData?.OptionTypes ?? [])"
+                                 InitialVariants="@(InitialData?.Variants ?? [])"
+                                 StateChanged="OnVariantsStateChanged"
+                                 RequirePrices="@(_isPublished && HasVariants)"
+                                 FlaggedVariantIds="@FlaggedVariantIds"
+                                 Disabled="@busy" />
+
+            @if (PublishBlockedByVariantPrices)
+            {
+                <MudAlert Severity="Severity.Error" Class="mt-4">
+                    @string.Format(Strings.ProductVariants_MissingPrice, UnpricedVariantIds.Count, _variants.Count)
+                </MudAlert>
+            }
+
+            @* Actions *@
+            <MudStack Row="true"
+                      Spacing="3"
+                      Class="py-6">
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Disabled="@(!_isFormValid || busy || PublishBlockedByVariantPrices)"
+                           OnClick="SaveAsync"
+                           UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "product-save" })">
+                    @if (busy)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @(Mode == ProductFormMode.Create ? Strings.AddProduct_SaveButton : Strings.EditProduct_SaveButton)
+                </MudButton>
+
+                <MudButton Variant="Variant.Outlined" Disabled="@busy" Href="@Routes.Admin.ManageProducts">
+                    @Strings.AddProduct_CancelButton
+                </MudButton>
+
+            </MudStack>
+
+        </MudStack>
+
+    </BusyFor>
+
+</MudForm>

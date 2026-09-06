@@ -1,0 +1,27 @@
+@* Components/Common/ShopMoneyField.razor *@
+@inherits MudComponentBase
+
+@using TheShop.Web.Common
+
+<MudNumericField T="decimal?"
+                 Value="@Value"
+                 ValueChanged="@ValueChanged"
+                 Variant="Variant.Outlined"
+                 Label="@Label"
+                 Format="@MoneyFormat"
+                 Culture="@CurrencyFormatter.Culture"
+                 Min="0"
+                 HideSpinButtons="true"
+                 Adornment="@SymbolPlacement"
+                 AdornmentText="@CurrencyFormatter.Symbol"
+                 Typo="@Typo"
+                 Margin="@Margin"
+                 FullWidth="@FullWidth"
+                 Required="@Required"
+                 RequiredError="@RequiredError"
+                 Error="@Error"
+                 ErrorText="@ErrorText"
+                 Disabled="@Disabled"
+                 Class="@Class"
+                 Style="@Style"
+                 UserAttributes="@UserAttributes" />

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using MudBlazor.Utilities;
 using TheShop.Application.Features.Products.DTOs;
+using TheShop.Web.Common;
+using TheShop.Web.Resources;
 
 namespace TheShop.Web.Components.Products;
 
@@ -48,6 +50,18 @@ public partial class ProductCard : MudComponentBase
             .AddClass("white")
             .AddClass(Class)
             .Build();
+
+    /// <summary>
+    /// The headline price. A variant product's figure is the lowest of its variants, not a price
+    /// anyone pays outright, so it reads as a "from" — and a product with nothing priced yet says
+    /// so instead of showing zero.
+    /// </summary>
+    private string PriceLabel =>
+        Product.OriginalPrice is not decimal price
+            ? Strings.NotAvailable
+            : Product.MinVariantPrice is not null
+                ? string.Format(Strings.ManageProducts_PriceFrom, CurrencyFormatter.Format(price, Product.Currency))
+                : CurrencyFormatter.Format(price, Product.Currency);
 
     private Task OnAddToCartAsync() => OnAddToCart.InvokeAsync();
 

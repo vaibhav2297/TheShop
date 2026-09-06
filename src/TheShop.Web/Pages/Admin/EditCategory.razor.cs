@@ -102,8 +102,10 @@ public partial class EditCategory : ComponentBase
 
         await BusyState.RunAsync(BusyKeys.Categories.EditCategory, async () =>
         {
-            var newImage = _newCategoryImages.Count > 0
-                ? new CategoryImageUpload(_newCategoryImages[0].Bytes, _newCategoryImages[0].FileName, _newCategoryImages[0].ContentType)
+            // A row still showing a validation error (wrong type / too large) never leaves the client.
+            var validNewCategoryImages = _newCategoryImages.Where(image => image.Error is null).ToList();
+            var newImage = validNewCategoryImages.Count > 0
+                ? new CategoryImageUpload(validNewCategoryImages[0].Bytes, validNewCategoryImages[0].FileName, validNewCategoryImages[0].ContentType)
                 : null;
 
             // The user removed the existing image and did not pick a replacement in this save.

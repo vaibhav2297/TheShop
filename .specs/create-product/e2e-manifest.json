@@ -1,0 +1,64 @@
+{
+  "feature": "create-product",
+  "trait": "create-product",
+  "writtenAt": "2026-09-05",
+  "journeys": [
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/CreateProductJourneyTests.cs",
+      "persona": "admin",
+      "tests": 20
+    },
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.CreateProductViewOnlyJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/CreateProductViewOnlyJourneyTests.cs",
+      "persona": "support",
+      "tests": 1
+    },
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.CreateProductAccessDeniedJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/CreateProductAccessDeniedJourneyTests.cs",
+      "persona": "customer",
+      "tests": 1
+    }
+  ],
+  "acceptanceCriteria": [
+    { "id": "AC-1", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC1_Admin_sees_published_and_unpublished_products_with_pagination_and_no_search_controls" },
+    { "id": "AC-2", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC2_Moving_to_the_next_page_shows_the_next_set_in_the_same_order" },
+    { "id": "AC-3", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductViewOnlyJourneyTests.AC3_View_only_staff_see_no_add_or_edit_controls_and_direct_links_are_denied" },
+    { "id": "AC-4", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC4_Admin_creates_a_published_product_and_it_appears_in_the_catalogue" },
+    { "id": "AC-5", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.AddProductTests.Render_Always_PassesCreateModeAndNoInitialDataToTheForm" },
+    { "id": "AC-6", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC6_Edit_form_opens_prefilled_with_everything_saved" },
+    { "id": "AC-7", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC7_Gallery_images_can_be_ordered_and_removed_and_a_removed_image_stops_being_offered" },
+    { "id": "AC-8", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC8_An_invalid_image_is_refused_while_a_large_batch_of_valid_images_is_accepted" },
+    { "id": "AC-9", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC9_Two_option_types_generate_exactly_four_labelled_variants_with_skus" },
+    { "id": "AC-10", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC10_Variant_rows_show_price_sale_price_pinned_image_and_unavailable_status" },
+    { "id": "AC-11", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC11_Product_and_variant_skus_regenerate_live_with_no_editable_sku_control" },
+    { "id": "AC-12", "coverage": "unit", "evidence": "TheShop.Domain.Tests.Entities.ProductTests.ApplyVariantConfiguration_WhenAValueIsAdded_KeepsEveryExistingVariantsConfiguration" },
+    { "id": "AC-13", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC13_Removing_an_option_value_confirms_the_discard_count_and_leaves_the_gallery_untouched" },
+    { "id": "AC-14", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC14_Removing_the_last_option_type_restores_the_product_level_price_field" },
+    { "id": "AC-15", "coverage": "unit", "evidence": "TheShop.Domain.Tests.Entities.ProductTests.ApplyVariantConfiguration_WithTwoOptionTypesOfTwoValuesEach_GeneratesFourVariants" },
+    { "id": "AC-16", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests.ToDomain_WithNoMinVariantPriceColumnAndNoEmbeddedVariants_MapsHasVariantsFalse" },
+    { "id": "AC-17", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC17_The_form_states_customers_pay_the_lowest_variant_price_once_variants_exist" },
+    { "id": "AC-18", "coverage": "unit", "evidence": "TheShop.Domain.Tests.Entities.ProductTests.Product_CarriesNoDedicatedFlavourOrNicotineProperty" },
+    { "id": "AC-19", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC19_A_minimal_draft_saves_as_unpublished_and_reopens_exactly_as_left" },
+    { "id": "AC-20", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC20_Publishing_an_incomplete_product_is_refused_listing_what_is_missing" },
+    { "id": "AC-21", "coverage": "unit", "evidence": "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithBlankName_HasNameRequiredError" },
+    { "id": "AC-22", "coverage": "unit", "evidence": "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WithADuplicateName_FailsWithNameAlreadyExists" },
+    { "id": "AC-23", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.AddProductTests.Render_LoadsActiveCategoriesAndBrandsIntoTheForm" },
+    { "id": "AC-24", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.EditProductTests.Render_WhenTheAssignedCategoryHasSinceBeenDeactivated_StillOffersItInTheForm" },
+    { "id": "AC-25", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC25_A_sale_price_at_or_above_the_price_is_refused_and_a_valid_one_shows_the_discount" },
+    { "id": "AC-26", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC26_No_stock_quantity_control_exists_on_the_product_or_variant_rows" },
+    { "id": "AC-27", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.InsertSkuRegistryRow_WithASkuAlreadyUsedByAnotherProduct_ThrowsUniqueViolation" },
+    { "id": "AC-28", "coverage": "unit", "evidence": "TheShop.Domain.Tests.Entities.ProductOptionTypeTests.Create_WithDuplicateValuesIgnoringCaseAndSpaces_ThrowsDuplicateOptionValueException" },
+    { "id": "AC-29", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC29_A_published_product_whose_every_variant_is_unavailable_shows_out_of_stock" },
+    { "id": "AC-30", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC30_Unpublishing_hides_a_product_from_customers_while_keeping_it_listed_for_staff" },
+    { "id": "AC-31", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC31_Leaving_the_form_with_unsaved_changes_warns_before_discarding_them" },
+    { "id": "AC-32", "coverage": "unit", "evidence": "TheShop.Web.Tests.Components.Products.ProductFormTests.Save_WhenTheSaveFailsForATechnicalReason_ShowsAnErrorSnackbarAndDoesNotNavigate" },
+    { "id": "AC-33", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductAccessDeniedJourneyTests.AC33_A_user_without_the_view_permission_cannot_reach_the_list" },
+    { "id": "AC-34", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC34_A_stale_edit_link_shows_not_found_while_a_renamed_products_link_still_opens_it" },
+    { "id": "AC-35", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenNoProductsExistYet_ShowsTheEmptyStateMessage" },
+    { "id": "AC-36", "coverage": "manual", "reason": "Exhaustive EN/FR text-parity across the list, both forms, the gallery, the option/variant tables, and every confirmation/validation/empty-state/access-denied message is the job of /theshop.review's French-localization completeness gate, not a browser journey." },
+    { "id": "AC-37", "coverage": "manual", "reason": "Full keyboard/screen-reader operability (focus order, ARIA announcements, focus return on dialog dismissal) needs a human with assistive technology to judge; Playwright can drive keyboard events but cannot judge announcement quality." }
+  ]
+}

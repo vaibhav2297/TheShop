@@ -4,74 +4,135 @@
 
 <MudStack Class="@Classname"
           Style="@Stylename"
-          Spacing="2"
+          Spacing="4"
           UserAttributes="@UserAttributes">
 
-    @* Only the dropzone lives inside the file upload; previews and the remove button are rendered
-       as siblings below so a remove click never re-triggers the picker. *@
-    <MudFileUpload @ref="_fileUpload"
-                   T="IReadOnlyList<IBrowserFile>"
-                   FilesChanged="OnFilesChangedAsync"
-                   Accept="@Accept"
-                   MaximumFileCount="@EffectiveMaxFileCount"
-                   Disabled="@Disabled"
-                   AppendMultipleFiles=@(Multiple)>
+    <BusyFor Key="@_busyKey" Context="picking">
 
-        <CustomContent Context="upload">
+        <MudFileUpload @ref="_fileUpload"
+                       T="IReadOnlyList<IBrowserFile>"
+                       FilesChanged="OnFilesChangedAsync"
+                       Accept="@Accept"
+                       MaximumFileCount="@EffectiveMaxFileCount"
+                       Disabled="@Disabled"
+                       AppendMultipleFiles=@(Multiple)>
 
-            @* CustomContent is not auto-wired like ActivatorContent, so the dropzone opens the
-               picker explicitly through the MudFileUpload context on click. *@
-            <MudStack Style="@DropzoneStyle"
-                      Class="border-dashed rounded-0 border cursor-pointer mud-border-lines-default"
-                      AlignItems="AlignItems.Center"
-                      Justify="Justify.Center"
-                      Spacing="4"
-                      @onclick="@(() => OpenPickerAsync(upload))">
+            <CustomContent Context="upload">
 
-                <MudIcon Icon="@ShopIcons.Outlined.Add_Plus" Color="Color.Primary" />
-
-                <MudText Typo="Typo.subtitle2">@UploadText</MudText>
-
-            </MudStack>
-
-        </CustomContent>
-
-    </MudFileUpload>
-
-    @* Previews are only rendered once at least one image is present. *@
-    @if (Files.Count > 0)
-    {
-        <MudStack Row
-                  Class="previews"
-                  Spacing="4">
-            @foreach (var image in Files)
-            {
-                <MudStack Class="preview mud-tertiary"
-                          Style="@PreviewStyle"
+                @* CustomContent is not auto-wired like ActivatorContent, so the dropzone opens the
+                   picker explicitly through the MudFileUpload context on click. *@
+                <MudStack Style="@DropzoneStyle"
+                          Class="border-dashed rounded-0 border cursor-pointer mud-border-lines-default"
                           AlignItems="AlignItems.Center"
-                          Justify="Justify.Center">
+                          Justify="Justify.Center"
+                          Spacing="4"
+                          @onclick="@(() => OpenPickerAsync(upload, picking))">
 
-                    <MudImage Src="@image.PreviewUrl"
-                              Alt="@PreviewAlt"
-                              ObjectFit="ObjectFit.Cover"
-                              Class="image" />
+                    <MudIcon Icon="@ShopIcons.Outlined.Add_Plus" Color="Color.Primary" />
 
-                    <MudIconButton Icon="@ShopIcons.Outlined.Close_SM"
-                                   Class="remove"
-                                   Size="Size.Small"
-                                   Color="Color.Secondary"
-                                   OnClick="@(() => RemoveAsync(image))"
-                                   aria-label="@RemoveLabel"
-                                   Disabled="@Disabled" />
+                    <MudText Typo="Typo.subtitle1">@UploadText</MudText>
 
                 </MudStack>
-            }
-        </MudStack>
-    }
 
-    @if (!string.IsNullOrEmpty(_error))
-    {
-        <MudText Typo="Typo.caption" Color="Color.Error">@_error</MudText>
-    }
+            </CustomContent>
+
+            @* SelectedTemplate replaces MudFileUpload's own chip-list rendering of the selected files;
+               its context is the raw browser FileList, which we ignore in favour of our own Files —
+               the persistent, byte-carrying selection — so a remove click never re-opens the picker
+               (this slot isn't part of the activator). Order is fixed at selection time: the first
+               image picked is always the primary one; there is no drag-to-reorder. *@
+            <SelectedTemplate Context="_">
+
+                @if (Files.Count > 0 || _pendingCount > 0)
+                {
+                    @* MudFileUpload renders CustomContent and SelectedTemplate as flat siblings, outside
+                       the root MudStack's Spacing, so the gap from the dropzone has to come from here. *@
+                    <MudStack Spacing="3" Class="mt-4">
+
+                        @foreach (var image in Files)
+                        {
+                            <MudStack @key="image"
+                                      Row="true"
+                                      Class="@PreviewClassname"
+                                      AlignItems="AlignItems.Center"
+                                      Spacing="4">
+
+                                <MudImage Src="@image.PreviewUrl"
+                                          Alt="@PreviewAlt"
+                                          ObjectFit="ObjectFit.Cover"
+                                          Style="@ThumbnailStyle" />
+
+                                <MudStack Spacing="1" Class="info flex-grow-1">
+
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="name-row">
+
+                                        <MudText Typo="Typo.caption" Class="filename text-truncate">@image.FileName</MudText>
+
+                                        @* The sequence itself carries the meaning: whatever sits first is the primary. *@
+                                        @if (ShowPrimaryBadge && IsPrimary(image))
+                                        {
+                                            <MudChip T="string"
+                                                     Class="primary"
+                                                     Size="Size.Small"
+                                                     Color="Color.Default"
+                                                     Variant="Variant.Outlined">@PrimaryLabel</MudChip>
+                                        }
+
+                                    </MudStack>
+
+                                    @* A row's own error replaces its size caption — invalid files are never mixed
+                                       with a size reading, so there is never more than one caption per row. *@
+                                    @{ var size = FormatFileSize(image); }
+                                    @if (image.Error is not null)
+                                    {
+                                        <MudText Typo="Typo.caption" Color="Color.Error">@image.Error</MudText>
+                                    }
+                                    else if (size is not null)
+                                    {
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">@size</MudText>
+                                    }
+
+                                </MudStack>
+
+                                <MudIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
+                                               Class="remove"
+                                               Size="Size.Small"
+                                               Color="Color.Primary"
+                                               OnClick="@(() => RemoveAsync(image))"
+                                               aria-label="@RemoveLabel"
+                                               Disabled="@(Disabled || picking)" />
+
+                            </MudStack>
+                        }
+
+                        @* One skeleton row per file still being read from the current pick — a
+                           multi-file selection shows its own progress instead of appearing to do
+                           nothing until every file in the batch finishes at once. *@
+                        @for (var i = 0; i < _pendingCount; i++)
+                        {
+                            <MudStack @key="@($"pending-{i}")"
+                                      Row="true"
+                                      Class="@PreviewClassname"
+                                      AlignItems="AlignItems.Center"
+                                      Spacing="4">
+
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Style="@ThumbnailStyle" />
+
+                                <MudStack Spacing="1" Class="info flex-grow-1">
+                                    <MudSkeleton SkeletonType="SkeletonType.Text" Width="60%" />
+                                    <MudSkeleton SkeletonType="SkeletonType.Text" Width="30%" />
+                                </MudStack>
+
+                            </MudStack>
+                        }
+
+                    </MudStack>
+                }
+
+            </SelectedTemplate>
+
+        </MudFileUpload>
+
+    </BusyFor>
 
 </MudStack>

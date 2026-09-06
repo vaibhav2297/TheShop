@@ -4,31 +4,17 @@
 // Child selectors are scoped under the root so their names can stay short.
 .shop-image-upload {
 
-    // Horizontal preview strip. Scrolls when multiple thumbnails overflow the row.
-    .previews {
-        overflow-x: auto;
+    // Flex items default to a min-width of their content size, which defeats text-truncate on the
+    // filename below; overriding it at every level the filename sits under lets it actually shrink.
+    .info,
+    .name-row {
+        min-width: 0;
     }
 
-    // Each thumbnail is the positioning context for its remove button and must keep
-    // its parameter-driven size instead of shrinking to fit the scrolling row.
-    .preview {
-        position: relative;
-        flex: 0 0 auto;
-        overflow: hidden;
-    }
-
-    // Fill the thumbnail frame; ObjectFit="Cover" on MudImage handles cropping.
-    .image {
-        width: 100%;
-        height: 100%;
-        display: block;
-    }
-
-    // Pinned to the top-right corner of its thumbnail; the surface token keeps the
-    // icon legible over any image.
-    .remove {
-        position: absolute;
-        top: 0;
-        right: 0;
+    // Keeps a long filename on one line with an ellipsis instead of pushing the primary chip
+    // and remove button out of the row.
+    .filename {
+        flex-grow: 1;
+        min-width: 0;
     }
 }

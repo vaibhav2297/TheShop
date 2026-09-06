@@ -171,8 +171,6 @@ public class GetProductCataloguePageQueryValidatorTests
     [Theory]
     [InlineData(ProductFilterKeys.Category)]
     [InlineData(ProductFilterKeys.Brand)]
-    [InlineData(ProductFilterKeys.Flavour)]
-    [InlineData(ProductFilterKeys.Nicotine)]
     [Trait("Feature", "product-catalogue")]
     public void Validate_WhenSelectedFilterKeyIsSelectable_HasNoFilterError(string key)
     {

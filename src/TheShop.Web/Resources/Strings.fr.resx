@@ -135,6 +135,10 @@
   <data name="Loading" xml:space="preserve">
     <value>Chargement…</value>
   </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>—</value>
+    <comment>Placeholder shown in place of a value the record does not carry.</comment>
+  </data>
   <data name="Nav_Home" xml:space="preserve">
     <value>Accueil</value>
   </data>
@@ -242,12 +246,6 @@
   </data>
   <data name="Filter_Brand" xml:space="preserve">
     <value>Marque</value>
-  </data>
-  <data name="Filter_Flavour" xml:space="preserve">
-    <value>Saveur</value>
-  </data>
-  <data name="Filter_NicotineStrength" xml:space="preserve">
-    <value>Taux de nicotine</value>
   </data>
   <data name="Filter_Clear" xml:space="preserve">
     <value>Effacer les filtres</value>
@@ -609,8 +607,250 @@
   <data name="ManageProducts_Heading" xml:space="preserve">
     <value>Gestion des produits</value>
   </data>
-  <data name="ManageProducts_ShellNotice" xml:space="preserve">
-    <value>La gestion complète des produits arrive bientôt.</value>
+  <data name="ManageProducts_ColumnName" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="ManageProducts_ColumnSku" xml:space="preserve">
+    <value>UGS</value>
+  </data>
+  <data name="ManageProducts_ColumnBrand" xml:space="preserve">
+    <value>Marque</value>
+  </data>
+  <data name="ManageProducts_ColumnCategory" xml:space="preserve">
+    <value>Catégorie</value>
+  </data>
+  <data name="ManageProducts_ColumnPrice" xml:space="preserve">
+    <value>Prix</value>
+  </data>
+  <data name="ManageProducts_PriceFrom" xml:space="preserve">
+    <value>À partir de {0}</value>
+    <comment>{0} is the lowest variant price, already formatted in the shop's currency.</comment>
+  </data>
+  <data name="ManageProducts_ColumnStatus" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="ManageProducts_ColumnActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="ManageProducts_StatusActive" xml:space="preserve">
+    <value>Actif</value>
+  </data>
+  <data name="ManageProducts_StatusInactive" xml:space="preserve">
+    <value>Inactif</value>
+  </data>
+  <data name="ManageProducts_EditAria" xml:space="preserve">
+    <value>Modifier {0}</value>
+  </data>
+  <data name="ManageProducts_EmptyTitle" xml:space="preserve">
+    <value>Aucun produit pour le moment</value>
+  </data>
+  <data name="ManageProducts_EmptyDescription" xml:space="preserve">
+    <value>Les produits que vous ajoutez apparaîtront ici.</value>
+  </data>
+  <data name="AddProduct_PageTitle" xml:space="preserve">
+    <value>Ajouter un produit — Admin — The Vape Shop Sarnia</value>
+  </data>
+  <data name="AddProduct_Heading" xml:space="preserve">
+    <value>Ajouter un produit</value>
+  </data>
+  <data name="AddProduct_ImageUploadButton" xml:space="preserve">
+    <value>Téléverser des images</value>
+  </data>
+  <data name="AddProduct_ImageRemove" xml:space="preserve">
+    <value>Supprimer l'image</value>
+  </data>
+  <data name="AddProduct_ImageLabel" xml:space="preserve">
+    <value>Image du produit</value>
+  </data>
+  <data name="AddProduct_ImagePrimary" xml:space="preserve">
+    <value>Principale</value>
+  </data>
+  <data name="AddProduct_ImageFileSize" xml:space="preserve">
+    <value>{0} Ko</value>
+  </data>
+  <data name="AddProduct_NameLabel" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="AddProduct_DescriptionLabel" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="AddProduct_SkuLabel" xml:space="preserve">
+    <value>UGS</value>
+  </data>
+  <data name="AddProduct_SkuHelperText" xml:space="preserve">
+    <value>Généré automatiquement à partir du nom du produit.</value>
+  </data>
+  <data name="AddProduct_CategoryLabel" xml:space="preserve">
+    <value>Catégorie</value>
+  </data>
+  <data name="AddProduct_BrandLabel" xml:space="preserve">
+    <value>Marque</value>
+  </data>
+  <data name="AddProduct_PriceRangeNote" xml:space="preserve">
+    <value>[TODO] Customers will see a price range starting from the lowest variant price you set below.</value>
+  </data>
+  <data name="AddProduct_PriceRangeNoteWithValue" xml:space="preserve">
+    <value>[TODO] Customers will see a price starting from {0}, the lowest variant price you've set.</value>
+    <comment>{0} is the lowest variant price, already formatted in the shop's currency.</comment>
+  </data>
+  <data name="AddProduct_PriceLabel" xml:space="preserve">
+    <value>Prix</value>
+  </data>
+  <data name="AddProduct_SalePriceLabel" xml:space="preserve">
+    <value>Prix soldé</value>
+  </data>
+  <data name="AddProduct_StatusLabel" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="AddProduct_StatusActive" xml:space="preserve">
+    <value>Actif</value>
+  </data>
+  <data name="AddProduct_StatusInactive" xml:space="preserve">
+    <value>Inactif</value>
+  </data>
+  <data name="AddProduct_SaveButton" xml:space="preserve">
+    <value>Créer</value>
+  </data>
+  <data name="AddProduct_CancelButton" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="EditProduct_PageTitle" xml:space="preserve">
+    <value>Modifier le produit — Admin — The Vape Shop Sarnia</value>
+  </data>
+  <data name="EditProduct_Heading" xml:space="preserve">
+    <value>Modifier le produit</value>
+  </data>
+  <data name="EditProduct_SaveButton" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="EditProduct_NotFoundTitle" xml:space="preserve">
+    <value>Produit introuvable</value>
+  </data>
+  <data name="EditProduct_NotFoundDescription" xml:space="preserve">
+    <value>Ce produit a peut-être été renommé ou supprimé.</value>
+  </data>
+  <data name="EditProduct_BackToList" xml:space="preserve">
+    <value>Retour aux produits</value>
+  </data>
+  <data name="ProductForm_UnsavedChangesTitle" xml:space="preserve">
+    <value>Quitter sans enregistrer?</value>
+  </data>
+  <data name="ProductForm_UnsavedChangesBody" xml:space="preserve">
+    <value>Vous avez des modifications non enregistrées. Si vous quittez maintenant, elles seront perdues.</value>
+  </data>
+  <data name="ProductForm_LeaveAnyway" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="ProductForm_GeneralInfoHeading" xml:space="preserve">
+    <value>Informations générales</value>
+  </data>
+  <data name="ProductVariants_Heading" xml:space="preserve">
+    <value>Variantes</value>
+  </data>
+  <data name="ProductVariants_HeadingEmpty" xml:space="preserve">
+    <value>Variantes</value>
+  </data>
+  <data name="ProductVariants_EmptyStateTitle" xml:space="preserve">
+    <value>Aucune variante configurée</value>
+  </data>
+  <data name="ProductVariants_EmptyStateDescription" xml:space="preserve">
+    <value>Ajoutez des options de variante pour créer des combinaisons de produits, comme la saveur, la taille ou la concentration.</value>
+  </data>
+  <data name="ProductVariants_AddVariant" xml:space="preserve">
+    <value>Ajouter une variante</value>
+  </data>
+  <data name="ProductVariants_OptionNamePlaceholder" xml:space="preserve">
+    <value>Nom de l'option (p. ex. Saveur)</value>
+  </data>
+  <data name="ProductVariants_OptionNameLabel" xml:space="preserve">
+    <value>Nom de l'option</value>
+  </data>
+  <data name="ProductVariants_OptionValuesLabel" xml:space="preserve">
+    <value>Valeurs de l'option</value>
+  </data>
+  <data name="ProductVariants_VariantNumber" xml:space="preserve">
+    <value>Variante {0}</value>
+  </data>
+  <data name="ProductVariants_RemoveOptionType" xml:space="preserve">
+    <value>Supprimer le type d'option</value>
+  </data>
+  <data name="ProductVariants_RemoveOptionValue" xml:space="preserve">
+    <value>Supprimer la valeur de l'option</value>
+  </data>
+  <data name="ProductVariants_AddValuePlaceholder" xml:space="preserve">
+    <value>Ajouter une valeur</value>
+  </data>
+  <data name="ProductVariants_AddValue" xml:space="preserve">
+    <value>Ajouter une option</value>
+  </data>
+  <data name="ProductVariants_ColumnVariant" xml:space="preserve">
+    <value>Variante</value>
+  </data>
+  <data name="ProductVariants_ColumnSku" xml:space="preserve">
+    <value>UGS</value>
+  </data>
+  <data name="ProductVariants_ColumnPrice" xml:space="preserve">
+    <value>Prix</value>
+  </data>
+  <data name="ProductVariants_ColumnSalePrice" xml:space="preserve">
+    <value>Prix soldé</value>
+  </data>
+  <data name="ProductVariants_ColumnStatus" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="ProductVariants_ColumnImage" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="ProductVariants_StatusAvailable" xml:space="preserve">
+    <value>Disponible</value>
+  </data>
+  <data name="ProductVariants_StatusUnavailable" xml:space="preserve">
+    <value>Indisponible</value>
+  </data>
+  <data name="ProductVariants_PinImage" xml:space="preserve">
+    <value>Épingler l'image</value>
+  </data>
+  <data name="ProductVariants_ChangeImage" xml:space="preserve">
+    <value>Changer l'image</value>
+  </data>
+  <data name="ProductVariants_RemoveOptionConfirmTitle" xml:space="preserve">
+    <value>Abandonner les variantes configurées?</value>
+  </data>
+  <data name="ProductVariants_RemoveOptionConfirmBody" xml:space="preserve">
+    <value>[TODO] This will discard {0} configured variant(s). This cannot be undone.</value>
+  </data>
+  <data name="ProductVariants_RemoveOptionConfirm" xml:space="preserve">
+    <value>Abandonner</value>
+  </data>
+  <data name="ProductVariants_CopyToAll" xml:space="preserve">
+    <value>Copier pour tout</value>
+  </data>
+  <data name="ProductVariants_MissingPrice" xml:space="preserve">
+    <value>{0} variantes sur {1} n'ont pas encore de prix. Ajoutez-en un à chacune, ou passez le statut à Inactif pour enregistrer ce produit comme brouillon.</value>
+  </data>
+  <data name="VariantImage_NoImages" xml:space="preserve">
+    <value>Ajoutez d'abord une image à ce produit — une variante ne peut être associée qu'à une image du produit lui-même.</value>
+  </data>
+  <data name="VariantImage_Title" xml:space="preserve">
+    <value>Choisir l'image de la variante</value>
+  </data>
+  <data name="VariantImage_VariantFieldLabel" xml:space="preserve">
+    <value>Variante du produit</value>
+  </data>
+  <data name="VariantImage_ApplyToLabel" xml:space="preserve">
+    <value>Appliquer à</value>
+  </data>
+  <data name="VariantImage_ThisVariantOnly" xml:space="preserve">
+    <value>Cette variante seulement</value>
+  </data>
+  <data name="VariantImage_ApplyToAllSharing" xml:space="preserve">
+    <value>Les {0} variantes avec {1}</value>
+  </data>
+  <data name="VariantImage_Save" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fermer</value>
   </data>
   <data name="Customer" xml:space="preserve">
     <value>Client</value>
@@ -842,6 +1082,9 @@
   </data>
   <data name="AddBrand_LogoRemove" xml:space="preserve">
     <value>Supprimer le logo</value>
+  </data>
+  <data name="AddBrand_LogoFileSize" xml:space="preserve">
+    <value>{0} Ko</value>
   </data>
   <data name="AddBrand_StatusLabel" xml:space="preserve">
     <value>Statut</value>
@@ -1104,6 +1347,9 @@
   <data name="AddCategory_ImageRemove" xml:space="preserve">
     <value>Supprimer l'image</value>
   </data>
+  <data name="AddCategory_ImageFileSize" xml:space="preserve">
+    <value>{0} Ko</value>
+  </data>
   <data name="AddCategory_StatusLabel" xml:space="preserve">
     <value>Statut</value>
   </data>
@@ -1220,5 +1466,101 @@
   </data>
   <data name="EditCategory_Success" xml:space="preserve">
     <value>Catégorie mise à jour.</value>
+  </data>
+  <data name="Product_NameRequired" xml:space="preserve">
+    <value>Le nom du produit est requis.</value>
+  </data>
+  <data name="Product_NameTooLong" xml:space="preserve">
+    <value>Le nom du produit ne peut pas dépasser 150 caractères.</value>
+  </data>
+  <data name="Product_DescriptionTooLong" xml:space="preserve">
+    <value>La description ne peut pas dépasser 2000 caractères.</value>
+  </data>
+  <data name="Product_SkuRequired" xml:space="preserve">
+    <value>Un UGS est requis.</value>
+  </data>
+  <data name="Product_SkuDuplicatedInRequest" xml:space="preserve">
+    <value>L'UGS {0} est utilisé plus d'une fois sur ce produit.</value>
+  </data>
+  <data name="Product_SkuAlreadyExists" xml:space="preserve">
+    <value>L'UGS {0} est déjà utilisé.</value>
+  </data>
+  <data name="Product_NameAlreadyExists" xml:space="preserve">
+    <value>Un produit nommé {0} existe déjà.</value>
+  </data>
+  <data name="Product_CategoryRequired" xml:space="preserve">
+    <value>Sélectionnez une catégorie pour ce produit.</value>
+  </data>
+  <data name="Product_BrandRequired" xml:space="preserve">
+    <value>Sélectionnez une marque pour ce produit.</value>
+  </data>
+  <data name="Product_PriceRequired" xml:space="preserve">
+    <value>Un prix est requis.</value>
+  </data>
+  <data name="Product_PriceInvalid" xml:space="preserve">
+    <value>Entrez un prix supérieur à zéro, avec au plus deux décimales.</value>
+  </data>
+  <data name="Product_SalePriceTooHigh" xml:space="preserve">
+    <value>Le prix soldé doit être inférieur au prix régulier.</value>
+  </data>
+  <data name="Product_ImageInvalidType" xml:space="preserve">
+    <value>Les images doivent être au format PNG, JPG ou WebP.</value>
+  </data>
+  <data name="Product_ImageTooLarge" xml:space="preserve">
+    <value>Chaque image doit faire 2 Mo ou moins.</value>
+  </data>
+  <data name="Product_PrimaryImageRequired" xml:space="preserve">
+    <value>Choisissez l'image principale du produit.</value>
+  </data>
+  <data name="Product_OptionNameRequired" xml:space="preserve">
+    <value>Chaque type d'option doit avoir un nom.</value>
+  </data>
+  <data name="Product_OptionValueRequired" xml:space="preserve">
+    <value>Chaque type d'option doit avoir au moins une valeur.</value>
+  </data>
+  <data name="Product_OptionNameDuplicated" xml:space="preserve">
+    <value>Ce produit possède déjà un type d'option nommé {0}.</value>
+  </data>
+  <data name="Product_OptionValueDuplicated" xml:space="preserve">
+    <value>Ce type d'option possède déjà la valeur {0}.</value>
+  </data>
+  <data name="Product_VariantImageNotInGallery" xml:space="preserve">
+    <value>[TODO] A variant can only be pinned to one of this product's own images.</value>
+  </data>
+  <data name="Product_NotPublishable" xml:space="preserve">
+    <value>[TODO] This product cannot be published yet — the following are missing: {0}.</value>
+  </data>
+  <data name="Product_NotPublishable_Price" xml:space="preserve">
+    <value>le prix du produit</value>
+  </data>
+  <data name="Product_NotPublishable_VariantPrice" xml:space="preserve">
+    <value>le prix de {0}</value>
+  </data>
+  <data name="Product_ModifiedElsewhere" xml:space="preserve">
+    <value>[TODO] This product has changed since you opened it. Review the current version before saving.</value>
+  </data>
+  <data name="Product_NotFound" xml:space="preserve">
+    <value>Ce produit est introuvable.</value>
+  </data>
+  <data name="Product_CreateFailed" xml:space="preserve">
+    <value>Le produit n'a pas été enregistré. Veuillez réessayer.</value>
+  </data>
+  <data name="Product_UpdateFailed" xml:space="preserve">
+    <value>Les modifications n'ont pas été enregistrées. Veuillez réessayer.</value>
+  </data>
+  <data name="Product_PageInvalid" xml:space="preserve">
+    <value>[TODO] That page of products does not exist.</value>
+  </data>
+  <data name="Product_Created" xml:space="preserve">
+    <value>[TODO] {0} was saved as Unpublished and is not visible to customers.</value>
+  </data>
+  <data name="Product_CreatedPublished" xml:space="preserve">
+    <value>[TODO] {0} was published.</value>
+  </data>
+  <data name="Product_Updated" xml:space="preserve">
+    <value>[TODO] {0} was updated.</value>
+  </data>
+  <data name="ProductVariants_With_Args" xml:space="preserve">
+    <value>{0} Variante</value>
   </data>
 </root>

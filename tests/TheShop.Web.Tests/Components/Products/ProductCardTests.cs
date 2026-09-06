@@ -39,7 +39,7 @@ public class ProductCardTests : TestContext
         bool isInStock = true) =>
         new(
             Guid.NewGuid(), name, imageUrl, originalPrice, salePrice, isDiscounted, "CAD",
-            isInStock, "Elf Bar", "Blue Razz Ice", 50);
+            isInStock, "Elf Bar", null, isInStock);
 
     // =========================================================================
     // Happy path — image, name, price (AC-1, AC-2)
