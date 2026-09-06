@@ -1,0 +1,30 @@
+@* Components/Common/ShopFieldLabel.razor *@
+@inherits MudComponentBase
+
+<MudStack Row="true"
+          Spacing="1"
+          AlignItems="AlignItems.Center"
+          Class="@Class"
+          Style="@Style"
+          UserAttributes="@UserAttributes">
+
+    <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Text</MudText>
+
+    @if (Required)
+    {
+        <MudText Typo="Typo.subtitle1" Color="Color.Error">*</MudText>
+    }
+
+</MudStack>
+
+@code {
+    /// <summary>
+    /// The label text displayed above the associated field.
+    /// </summary>
+    [Parameter, EditorRequired] public string Text { get; set; } = string.Empty;
+
+    /// <summary>
+    /// When <c>true</c>, appends a required-field marker after the label text.
+    /// </summary>
+    [Parameter] public bool Required { get; set; }
+}

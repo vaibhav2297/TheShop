@@ -119,10 +119,10 @@ public class CatalogueQueryStateTests
     public void FromQuery_RepeatedFilterValues_ParseIntoOneGroup()
     {
         var state = CatalogueQueryState.FromQuery(
-            Query((ProductFilterKeys.Flavour, ["vanilla", "menthol", "berry"])));
+            Query((ProductFilterKeys.Brand, ["vanilla", "menthol", "berry"])));
 
         var flavour = state.Filters.Should().ContainSingle().Subject;
-        flavour.Key.Should().Be(ProductFilterKeys.Flavour);
+        flavour.Key.Should().Be(ProductFilterKeys.Brand);
         flavour.Values.Should().BeEquivalentTo(["vanilla", "menthol", "berry"]);
     }
 
@@ -159,10 +159,10 @@ public class CatalogueQueryStateTests
     public void ToggleFilter_AppliedInSequenceWithinAGroup_AccumulatesValues()
     {
         var state = CatalogueQueryState.Default
-            .ToggleFilter(ProductFilterKeys.Flavour, "vanilla", isSelected: true)
-            .ToggleFilter(ProductFilterKeys.Flavour, "menthol", isSelected: true);
+            .ToggleFilter(ProductFilterKeys.Brand, "vanilla", isSelected: true)
+            .ToggleFilter(ProductFilterKeys.Brand, "menthol", isSelected: true);
 
-        state.Filters.Should().ContainSingle(f => f.Key == ProductFilterKeys.Flavour)
+        state.Filters.Should().ContainSingle(f => f.Key == ProductFilterKeys.Brand)
             .Which.Values.Should().BeEquivalentTo(["vanilla", "menthol"]);
     }
 

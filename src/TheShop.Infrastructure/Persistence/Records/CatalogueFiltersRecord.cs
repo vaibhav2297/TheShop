@@ -3,9 +3,11 @@ using Newtonsoft.Json;
 namespace TheShop.Infrastructure.Persistence.Records;
 
 /// <summary>
-/// Deserialization target for the <c>get_catalogue_filters()</c> RPC — the entire catalogue
-/// filter sidebar (category, brand, flavour, nicotine options plus the price range) in one JSON
-/// payload. Not a table model; mapped to <c>FilterGroupDto</c>s by
+/// Deserialization target for the <c>get_catalogue_filters()</c> RPC — the catalogue filter
+/// sidebar's category/brand lookups and price range, plus the generic per-product option types
+/// published products carry (Decision 3 — replaces the retired flavour/nicotine facets; the
+/// product-catalogue feature builds its dynamic filter controls from <see cref="OptionTypes"/>).
+/// Not a table model; mapped to <c>FilterGroupDto</c>s by
 /// <see cref="Repositories.SupabaseProductRepository"/> via <see cref="Filtering.ProductFilterDefinitions"/>.
 /// </summary>
 internal sealed class CatalogueFiltersRecord
@@ -16,11 +18,8 @@ internal sealed class CatalogueFiltersRecord
     [JsonProperty("brands")]
     public IReadOnlyList<FilterLookupRecord> Brands { get; set; } = [];
 
-    [JsonProperty("flavours")]
-    public IReadOnlyList<string> Flavours { get; set; } = [];
-
-    [JsonProperty("nicotine_strengths")]
-    public IReadOnlyList<int> NicotineStrengths { get; set; } = [];
+    [JsonProperty("option_types")]
+    public IReadOnlyList<OptionTypeLookupRecord> OptionTypes { get; set; } = [];
 
     [JsonProperty("price_min")]
     public decimal PriceMin { get; set; }
@@ -37,4 +36,14 @@ internal sealed class FilterLookupRecord
 
     [JsonProperty("name")]
     public string Name { get; set; } = string.Empty;
+}
+
+/// <summary>An <c>{ name, values[] }</c> option type row from <c>get_catalogue_filters()</c>.</summary>
+internal sealed class OptionTypeLookupRecord
+{
+    [JsonProperty("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [JsonProperty("values")]
+    public IReadOnlyList<string> Values { get; set; } = [];
 }

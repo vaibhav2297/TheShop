@@ -69,8 +69,10 @@ public partial class AddBrand : ComponentBase
 
         await BusyState.RunAsync(BusyKeys.Brands.AddBrand, async () =>
         {
-            var logo = _logoImages.Count > 0
-                ? new BrandLogoUpload(_logoImages[0].Bytes, _logoImages[0].FileName, _logoImages[0].ContentType)
+            // A row still showing a validation error (wrong type / too large) never leaves the client.
+            var validLogoImages = _logoImages.Where(image => image.Error is null).ToList();
+            var logo = validLogoImages.Count > 0
+                ? new BrandLogoUpload(validLogoImages[0].Bytes, validLogoImages[0].FileName, validLogoImages[0].ContentType)
                 : null;
 
             var result = await Mediator.Send(new CreateBrandCommand(

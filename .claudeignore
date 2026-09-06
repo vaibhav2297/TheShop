@@ -1,0 +1,5 @@
+# Knowledge-graph artifacts (graphify).
+# Excluded to preserve the prompt cache: graph.json alone is ~12 MB.
+# Query the graph through the CLI instead — `graphify query|path|explain|affected`.
+graph.json
+graphify-out/

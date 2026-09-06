@@ -33,12 +33,12 @@ public class GetProductCataloguePageHandlerTests
 
     private static Product BuildProduct(
         string name = "Elf Bar BC5000",
-        ProductPricing? pricing = null,
-        int stockQuantity = 10) =>
+        ProductPricing? pricing = null) =>
         Product.Create(
             name, "desc", "https://example.com/photo.webp",
+            Sku.Suggest(name),
             pricing ?? ProductPricing.Create(Money.Create(24.99m)),
-            stockQuantity, true, ExampleCategory(), ExampleBrand(), null, null);
+            true, ExampleCategory(), ExampleBrand());
 
     private static GetProductCataloguePageQuery DefaultQuery(
         IReadOnlyList<AppliedFilterDto>? selectedFilters = null,
@@ -101,7 +101,7 @@ public class GetProductCataloguePageHandlerTests
     }
 
     // =========================================================================
-    // Discount / stock mapping carried through (AC-2, AC-11)
+    // Discount mapping carried through (AC-2)
     // =========================================================================
 
     [Fact]
@@ -119,19 +119,6 @@ public class GetProductCataloguePageHandlerTests
         dto.IsDiscounted.Should().BeTrue();
         dto.SalePrice.Should().Be(19.99m);
         dto.OriginalPrice.Should().Be(24.99m);
-    }
-
-    [Fact]
-    [Trait("Feature", "product-catalogue")]
-    public async Task Handle_WithOutOfStockProduct_MapsIsInStockFalse()
-    {
-        var product = BuildProduct(stockQuantity: 0);
-        _products.GetPageAsync(Arg.Any<ProductCatalogueCriteria>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<Product>([product], 1, 12, 1));
-
-        var result = await CreateSut().Handle(DefaultQuery(), CancellationToken.None);
-
-        result.Value.Items.Single().IsInStock.Should().BeFalse();
     }
 
     // =========================================================================
@@ -226,4 +213,3 @@ public class GetProductCataloguePageHandlerTests
 //        Handle_WhenPageSizeExceedsMax_ClampsPageSizeBeforeQueryingRepository,
 //        Handle_ForwardsRequestedPageToRepositoryCriteria
 // AC-10: Handle_WhenRepositoryReturnsNoMatches_ReturnsEmptyPagedResult
-// AC-11: Handle_WithOutOfStockProduct_MapsIsInStockFalse

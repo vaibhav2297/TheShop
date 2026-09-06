@@ -68,8 +68,10 @@ public partial class AddCategory : ComponentBase
 
         await BusyState.RunAsync(BusyKeys.Categories.AddCategory, async () =>
         {
-            var image = _categoryImages.Count > 0
-                ? new CategoryImageUpload(_categoryImages[0].Bytes, _categoryImages[0].FileName, _categoryImages[0].ContentType)
+            // A row still showing a validation error (wrong type / too large) never leaves the client.
+            var validCategoryImages = _categoryImages.Where(image => image.Error is null).ToList();
+            var image = validCategoryImages.Count > 0
+                ? new CategoryImageUpload(validCategoryImages[0].Bytes, validCategoryImages[0].FileName, validCategoryImages[0].ContentType)
                 : null;
 
             var result = await Mediator.Send(new CreateCategoryCommand(

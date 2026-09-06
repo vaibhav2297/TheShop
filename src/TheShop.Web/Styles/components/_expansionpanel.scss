@@ -12,4 +12,12 @@
     &:last-child {
         border-bottom: 1px solid var(--mud-palette-lines-default);
     }
+
+    & .mud-expand-panel-header {
+        padding: 24px 0px;
+    }
+
+    & .mud-expand-panel-content {
+        padding-bottom: 24px;
+    }
 }

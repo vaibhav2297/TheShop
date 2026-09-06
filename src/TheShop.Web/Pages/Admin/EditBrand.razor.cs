@@ -102,8 +102,10 @@ public partial class EditBrand : ComponentBase
 
         await BusyState.RunAsync(BusyKeys.Brands.EditBrand, async () =>
         {
-            var newLogo = _newLogoImages.Count > 0
-                ? new BrandLogoUpload(_newLogoImages[0].Bytes, _newLogoImages[0].FileName, _newLogoImages[0].ContentType)
+            // A row still showing a validation error (wrong type / too large) never leaves the client.
+            var validNewLogoImages = _newLogoImages.Where(image => image.Error is null).ToList();
+            var newLogo = validNewLogoImages.Count > 0
+                ? new BrandLogoUpload(validNewLogoImages[0].Bytes, validNewLogoImages[0].FileName, validNewLogoImages[0].ContentType)
                 : null;
 
             // The user removed the existing logo and did not pick a replacement in this save.

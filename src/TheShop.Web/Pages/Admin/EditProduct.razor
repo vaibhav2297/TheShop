@@ -1,0 +1,30 @@
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Products
+
+<PageTitle>@Strings.EditProduct_PageTitle</PageTitle>
+
+@if (!_loaded)
+{
+    <MudStack Class="pa-8" Spacing="2">
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="200px" />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="200px" />
+    </MudStack>
+}
+else if (_notFound)
+{
+    <MudStack Class="pa-8" AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4">
+        <MudText Typo="Typo.h4">@Strings.EditProduct_NotFoundTitle</MudText>
+        <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.EditProduct_NotFoundDescription</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@Routes.Admin.ManageProducts">
+            @Strings.EditProduct_BackToList
+        </MudButton>
+    </MudStack>
+}
+else
+{
+    <MudStack Class="pa-8" Spacing="6">
+        <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.EditProduct_Heading</MudText>
+
+        <ProductForm Mode="ProductFormMode.Edit" InitialData="@_product" Categories="@_categories" Brands="@_brands" />
+    </MudStack>
+}

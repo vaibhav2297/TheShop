@@ -1,0 +1,223 @@
+@* Components/Products/ProductVariantsCard.razor *@
+@inherits MudComponentBase
+
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Theme
+
+<MudExpansionPanels Class="@Classname" Style="@Stylename" Elevation="0" Outlined="true">
+    <MudExpansionPanel Icon="@ShopIcons.Outlined.Caret_Down_MD" Expanded="true" Class="mud-transparent">
+
+        <TitleContent>
+
+            <MudStack Row
+                      AlignItems="AlignItems.Center"
+                      Justify="Justify.SpaceBetween"
+                      Spacing="2">
+
+                <MudText Typo="Typo.h4"
+                         Class="text-transform-uppercase">@(Strings.ProductVariants_Heading)</MudText>
+
+                @if (_variants.Count > 0)
+                {
+                    <MudText Typo="Typo.subtitle1"
+                             Color="Color.Secondary">@string.Format(Strings.ProductVariants_With_Args, _variants.Count)</MudText>
+                }
+
+            </MudStack>
+
+        </TitleContent>
+
+        <ChildContent>
+            <MudStack Spacing="4">
+
+                @* No Variant Message *@
+                @if (_optionTypes.Count == 0)
+                {
+                    <MudStack AlignItems="AlignItems.Center" Class="py-10" Spacing="3">
+                        <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                            <MudText Typo="Typo.h5">@Strings.ProductVariants_EmptyStateTitle</MudText>
+                            <MudText Typo="Typo.subtitle1" Color="Color.Secondary" Align="Align.Center">@Strings.ProductVariants_EmptyStateDescription</MudText>
+                        </MudStack>
+                        <MudButton Variant="Variant.Outlined"
+                                   StartIcon="@ShopIcons.Outlined.Add_Plus"
+                                   Disabled="@Disabled"
+                                   OnClick="AddOptionTypeAsync">
+                            @Strings.ProductVariants_AddVariant
+                        </MudButton>
+                    </MudStack>
+                }
+                else
+                {
+                    @foreach (var (type, index) in _optionTypes.Select((t, i) => (t, i)))
+                    {
+                        <MudPaper Outlined="true" Class="pa-4">
+                            <MudStack Spacing="4">
+
+                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                    <MudText Typo="Typo.h6"
+                                             Class="text-transform-uppercase">@string.Format(Strings.ProductVariants_VariantNumber, index + 1)</MudText>
+                                    <MudIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
+                                                   Color="Color.Primary"
+                                                   Disabled="@Disabled"
+                                                   OnClick="@(() => RemoveOptionTypeAsync(type))"
+                                                   aria-label="@Strings.ProductVariants_RemoveOptionType" />
+                                </MudStack>
+
+                                <MudGrid Spacing="6">
+
+                                    <MudItem xs="12" sm="4">
+                                        <MudTextField T="string"
+                                                      Value="@type.Name"
+                                                      ValueChanged="@((string v) => OnOptionTypeNameChangedAsync(type, v))"
+                                                      Variant="Variant.Outlined"
+                                                      Placeholder="@Strings.ProductVariants_OptionNameLabel"
+                                                      Typo="Typo.body1"
+                                                      FullWidth="true"
+                                                      Disabled="@Disabled" />
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="8">
+                                        <MudStack Spacing="1">
+                                            <MudStack Spacing="2">
+                                                @foreach (var value in type.Values)
+                                                {
+                                                    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                                                        <MudTextField T="string"
+                                                                      Value="@value.Value"
+                                                                      ValueChanged="@((string v) => OnOptionValueChangedAsync(value, v))"
+                                                                      Variant="Variant.Outlined"
+                                                                      Placeholder="@Strings.ProductVariants_OptionValuesLabel"
+                                                                      Typo="Typo.body1"
+                                                                      FullWidth="true"
+                                                                      Disabled="@Disabled" />
+                                                        <MudIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
+                                                                       Color="Color.Primary"
+                                                                       Disabled="@Disabled"
+                                                                       OnClick="@(() => RemoveOptionValueAsync(type, value))"
+                                                                       aria-label="@Strings.ProductVariants_RemoveOptionValue" />
+                                                    </MudStack>
+                                                }
+                                            </MudStack>
+
+                                            <MudStack AlignItems="AlignItems.Start">
+                                                <MudButton Variant="Variant.Text"
+                                                           StartIcon="@ShopIcons.Outlined.Add_Plus"
+                                                           Disabled="@Disabled"
+                                                           OnClick="@(() => AddOptionValueAsync(type))">
+                                                    @Strings.ProductVariants_AddValue
+                                                </MudButton>
+                                            </MudStack>
+                                        </MudStack>
+                                    </MudItem>
+
+                                </MudGrid>
+
+                            </MudStack>
+                        </MudPaper>
+                    }
+
+                    <MudStack AlignItems="AlignItems.Start">
+                        <MudButton Variant="Variant.Outlined"
+                                   StartIcon="@ShopIcons.Outlined.Add_Plus"
+                                   Disabled="@Disabled"
+                                   OnClick="AddOptionTypeAsync">
+                            @Strings.ProductVariants_AddVariant
+                        </MudButton>
+                    </MudStack>
+
+                    @if (_variants.Count > 0)
+                    {
+                        <MudTable T="VariantRow"
+                                  Items="@_variants"
+                                  Hover="true"
+                                  Dense="true"
+                                  Elevation="0"
+                                  Outlined="true"
+                                  Virtualize="true"
+                                  HeaderClass="mud-tertiary">
+
+                            <HeaderContent>
+                                <MudTh>@Strings.ProductVariants_ColumnVariant</MudTh>
+                                <MudTh>@Strings.ProductVariants_ColumnSku</MudTh>
+                                <MudTh>
+                                    <MudStack Row
+                                              Spacing="1"
+                                              AlignItems="AlignItems.Center">
+                                        @Strings.ProductVariants_ColumnPrice
+                                        <MudIconButton Variant="Variant.Text"
+                                                       Size="Size.Small"
+                                                       Color="Color.Primary"
+                                                       Icon="@ShopIcons.Outlined.Copy"
+                                                       Disabled="@(Disabled || !CanCopyPriceToAll)"
+                                                       OnClick="CopyPriceToAllVariantsAsync">
+                                            @Strings.ProductVariants_CopyToAll
+                                        </MudIconButton>
+                                    </MudStack>
+                                </MudTh>
+                                <MudTh>
+                                    <MudStack Row
+                                              Spacing="1"
+                                              AlignItems="AlignItems.Center">
+                                        @Strings.ProductVariants_ColumnSalePrice
+                                        <MudIconButton Variant="Variant.Text"
+                                                       Size="Size.Small"
+                                                       Color="Color.Primary"
+                                                       Icon="@ShopIcons.Outlined.Copy"
+                                                       Disabled="@(Disabled || !CanCopySalePriceToAll)"
+                                                       OnClick="CopySalePriceToAllVariantsAsync">
+                                            @Strings.ProductVariants_CopyToAll
+                                        </MudIconButton>
+                                    </MudStack>
+                                </MudTh>
+                                <MudTh>@Strings.ProductVariants_ColumnStatus</MudTh>
+                                <MudTh>@Strings.ProductVariants_ColumnImage</MudTh>
+                            </HeaderContent>
+
+                            <RowTemplate Context="variant">
+                                <MudTd>@variant.Label</MudTd>
+                                <MudTd>@variant.Sku</MudTd>
+                                <MudTd>
+                                    <ShopMoneyField Value="@variant.OriginalPrice"
+                                                    ValueChanged="@((decimal? v) => OnVariantOriginalPriceChangedAsync(variant, v))"
+                                                    Typo="Typo.body2"
+                                                    Margin="Margin.Dense"
+                                                    Required="@RequirePrices"
+                                                    RequiredError="@Strings.Product_PriceRequired"
+                                                    Error="@IsFlagged(variant)"
+                                                    ErrorText="@Strings.Product_PriceRequired"
+                                                    Disabled="@Disabled" />
+                                </MudTd>
+                                <MudTd>
+                                    <ShopMoneyField Value="@variant.SalePrice"
+                                                    ValueChanged="@((decimal? v) => OnVariantSalePriceChangedAsync(variant, v))"
+                                                    Typo="Typo.body2"
+                                                    Margin="Margin.Dense"
+                                                    Disabled="@Disabled" />
+                                </MudTd>
+                                <MudTd>
+                                    <MudChip T="string"
+                                             Color="@(variant.IsAvailable ? Color.Primary : Color.Default)"
+                                             Variant="Variant.Outlined"
+                                             OnClick="@(() => OnVariantAvailableChangedAsync(variant, !variant.IsAvailable))"
+                                             Disabled="@Disabled">
+                                        @(variant.IsAvailable ? Strings.AddProduct_StatusActive : Strings.AddProduct_StatusInactive)
+                                    </MudChip>
+                                </MudTd>
+                                <MudTd>
+                                    <MudButton Variant="Variant.Outlined"
+                                               Size="Size.Small"
+                                               Color="@(variant.PinnedImageId is null ? Color.Default : Color.Primary)"
+                                               StartIcon="@ShopIcons.Outlined.ImagePlaceHoler"
+                                               Disabled="@Disabled"
+                                               OnClick="@(() => OpenPinDialogAsync(variant))">
+                                        @(variant.PinnedImageId is null ? Strings.ProductVariants_PinImage : Strings.ProductVariants_ChangeImage)
+                                    </MudButton>
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                }
+            </MudStack>
+        </ChildContent>
+    </MudExpansionPanel>
+</MudExpansionPanels>

@@ -135,19 +135,6 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
 
     [Fact]
     [Trait("Feature", "product-catalogue")]
-    public async Task InsertProduct_WhenStockQuantityIsNegative_ThrowsPostgresException()
-    {
-        await using var conn = await OpenAsync();
-        var (categoryId, brandId) = await SeedCategoryAndBrandAsync(conn);
-
-        var act = () => InsertProductAsync(conn, categoryId, brandId, stockQuantity: -1);
-
-        await act.Should().ThrowAsync<PostgresException>()
-            .Where(ex => ex.SqlState == "23514");
-    }
-
-    [Fact]
-    [Trait("Feature", "product-catalogue")]
     public async Task InsertProduct_WhenNicotineStrengthIsNegative_ThrowsPostgresException()
     {
         await using var conn = await OpenAsync();
@@ -237,18 +224,6 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
         ((bool)isPublished!).Should().BeTrue();
     }
 
-    [Fact]
-    [Trait("Feature", "product-catalogue")]
-    public async Task InsertProduct_WithoutExplicitStockQuantity_DefaultsToZero()
-    {
-        await using var conn = await OpenAsync();
-        var (categoryId, brandId) = await SeedCategoryAndBrandAsync(conn);
-        var id = await InsertProductAsync(conn, categoryId, brandId, stockQuantity: null);
-
-        var stock = await ScalarAsync(conn, $"SELECT stock_quantity FROM products WHERE id = '{id}'");
-        ((int)stock!).Should().Be(0);
-    }
-
     // =========================================================================
     // Happy-path round-trip: insert and select back (AC-1)
     // =========================================================================
@@ -261,11 +236,11 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
         var (categoryId, brandId) = await SeedCategoryAndBrandAsync(conn);
         var id = await InsertProductAsync(
             conn, categoryId, brandId, name: "Elf Bar BC5000",
-            originalPrice: 24.99m, salePrice: 19.99m, stockQuantity: 40, nicotineStrengthMg: 50);
+            originalPrice: 24.99m, salePrice: 19.99m, nicotineStrengthMg: 50);
 
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = $"""
-            SELECT name, original_price, sale_price, stock_quantity, nicotine_strength_mg
+            SELECT name, original_price, sale_price, nicotine_strength_mg
             FROM products WHERE id = '{id}'
             """;
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -275,8 +250,7 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
         reader.GetString(0).Should().Be("Elf Bar BC5000");
         reader.GetDecimal(1).Should().Be(24.99m);
         reader.GetDecimal(2).Should().Be(19.99m);
-        reader.GetInt32(3).Should().Be(40);
-        reader.GetInt32(4).Should().Be(50);
+        reader.GetInt32(3).Should().Be(50);
     }
 
     // =========================================================================
@@ -403,7 +377,6 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
         string name = "Elf Bar BC5000",
         decimal originalPrice = 24.99m,
         decimal? salePrice = null,
-        int? stockQuantity = 10,
         int? nicotineStrengthMg = null,
         bool? isPublished = null)
     {
@@ -414,12 +387,6 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
         {
             columns.Add("sale_price");
             values.Add(salePrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
-        }
-
-        if (stockQuantity is not null)
-        {
-            columns.Add("stock_quantity");
-            values.Add(stockQuantity.Value.ToString());
         }
 
         if (nicotineStrengthMg is not null)
@@ -476,7 +443,6 @@ public sealed class SupabaseProductRepositorySchemaTests : IAsyncLifetime
                 brand_id                UUID NOT NULL REFERENCES brands(id),
                 flavour                 TEXT,
                 nicotine_strength_mg    INTEGER CHECK (nicotine_strength_mg IS NULL OR nicotine_strength_mg >= 0),
-                stock_quantity          INTEGER NOT NULL DEFAULT 0 CHECK (stock_quantity >= 0),
                 is_published            BOOLEAN NOT NULL DEFAULT TRUE,
                 created_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
                 effective_price         NUMERIC(10,2) GENERATED ALWAYS AS (COALESCE(sale_price, original_price)) STORED,

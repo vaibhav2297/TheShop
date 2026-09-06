@@ -30,16 +30,18 @@ if ($relevant) {
 
 # --- graphify refresh (non-fatal) -------------------------------------------
 # Keep the knowledge graph current so agents can query it instead of grepping.
-# Runs only when something changed, the graph exists, and graphify is on PATH.
+# Gated on $relevant (.cs / .razor), not $changed: a full `graphify update` costs
+# ~38s even when nothing moved, so doc-only turns (.md / .json / .specs) skip it.
+# For doc/paper/image changes, refresh the graph manually via /graphify --update.
 $graphExists = Test-Path (Join-Path $repoRoot 'graphify-out/graph.json')
 $graphifyCmd = Get-Command graphify -ErrorAction SilentlyContinue
-if ($changed -and $graphExists -and $graphifyCmd) {
-    Write-Host "[format-on-stop] Changes detected - running graphify update (AST-only)..."
+if ($relevant -and $graphExists -and $graphifyCmd) {
+    Write-Host "[format-on-stop] Code changes detected - running graphify update (AST-only)..."
     & graphify update .
     if ($LASTEXITCODE -ne 0) {
         Write-Host "[format-on-stop] graphify update exited with code $LASTEXITCODE (non-fatal)."
     }
-} elseif ($changed -and $graphExists) {
+} elseif ($relevant -and $graphExists) {
     Write-Host "[format-on-stop] graphify not found on PATH - skipping graph refresh."
 }
 
