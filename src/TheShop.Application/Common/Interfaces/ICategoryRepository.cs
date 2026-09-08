@@ -66,4 +66,10 @@ public interface ICategoryRepository
     /// <paramref name="categoryIds"/>.
     /// </summary>
     Task<IReadOnlyDictionary<Guid, int>> GetProductCountsAsync(IReadOnlyList<Guid> categoryIds, CancellationToken ct);
+
+    /// <summary>
+    /// Returns every Active category as a minimal <c>{ id, name }</c> lookup, name-ordered, for
+    /// picker controls (AC-23). Unpaginated — category counts are small reference data.
+    /// </summary>
+    Task<IReadOnlyList<CategoryLookupDto>> GetActiveLookupAsync(CancellationToken ct);
 }

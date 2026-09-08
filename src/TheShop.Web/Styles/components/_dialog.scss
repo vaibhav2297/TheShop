@@ -1,0 +1,20 @@
+// ─── Dialog chrome ────────────────────────────────────────────────────────────
+// Styles for ShopDialog (Figma node 2680:14477). MudDialog's own defaults use
+// asymmetric padding with no section dividers; the design calls for a uniform
+// 24px padding on title/content/actions, each separated by a hairline border.
+.shop-dialog {
+
+    .mud-dialog-title {
+        padding: 16px;
+        border-bottom: 1px solid var(--mud-palette-lines-default);
+    }
+
+    .mud-dialog-content {
+        padding: 16px;
+    }
+
+    .mud-dialog-actions {
+        padding: 16px;
+        border-top: 1px solid var(--mud-palette-lines-default);
+    }
+}

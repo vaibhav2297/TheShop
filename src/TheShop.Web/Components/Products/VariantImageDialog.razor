@@ -1,0 +1,65 @@
+@* Components/Products/VariantImageDialog.razor *@
+
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Theme
+
+<ShopDialog Title="@Strings.VariantImage_Title" CloseLabel="@Strings.Close">
+    <ChildContent>
+        <MudStack Spacing="8">
+
+            <MudStack Spacing="1">
+                <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.VariantImage_VariantFieldLabel</MudText>
+                <MudText Typo="Typo.h6">@VariantLabel</MudText>
+            </MudStack>
+
+            @if (GalleryImages.Count == 0)
+            {
+                <MudText Typo="Typo.body1" Color="Color.Secondary">@Strings.VariantImage_NoImages</MudText>
+            }
+
+            <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="4">
+                @foreach (var image in GalleryImages)
+                {
+                    var selected = _selectedImageId == image.Id;
+
+                    <MudPaper Elevation="0"
+                              Class="@ThumbnailClassname(selected)"
+                              Style="position: relative;"
+                              @onclick="@(() => SelectImage(image.Id))">
+
+                        <MudImage Src="@image.Url" Alt="@VariantLabel" Width="120" Height="120" ObjectFit="ObjectFit.Cover" />
+
+                        @if (selected)
+                        {
+                            <MudIcon Icon="@ShopIcons.Outlined.Circle_Check" Color="Color.Primary" Style="position: absolute; top: 4px; right: 4px;" />
+                        }
+                    </MudPaper>
+                }
+            </MudStack>
+
+            @if (ShowScopeChoice)
+            {
+                <MudStack Spacing="1">
+                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.VariantImage_ApplyToLabel</MudText>
+                    <MudStack Spacing="1">
+                        <MudCheckBox T="bool"
+                                     Value="@_applyToAllSharing"
+                                     ValueChanged="@((bool v) => _applyToAllSharing = v)"
+                                     Color="Color.Primary"
+                                     Label="@string.Format(Strings.VariantImage_ApplyToAllSharing, SharedScopeCount, SharedScopeLabel)" />
+                        <MudCheckBox T="bool"
+                                     Value="@(!_applyToAllSharing)"
+                                     ValueChanged="@((bool v) => _applyToAllSharing = !v)"
+                                     Color="Color.Primary"
+                                     Label="@Strings.VariantImage_ThisVariantOnly" />
+                    </MudStack>
+                </MudStack>
+            }
+
+        </MudStack>
+    </ChildContent>
+    <Actions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Confirm">@Strings.VariantImage_Save</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="Cancel">@Strings.Cancel</MudButton>
+    </Actions>
+</ShopDialog>

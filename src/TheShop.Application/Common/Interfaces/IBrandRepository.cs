@@ -62,4 +62,10 @@ public interface IBrandRepository
     /// <paramref name="brandIds"/>.
     /// </summary>
     Task<IReadOnlyDictionary<Guid, int>> GetProductCountsAsync(IReadOnlyList<Guid> brandIds, CancellationToken ct);
+
+    /// <summary>
+    /// Returns every Active brand as a minimal <c>{ id, name }</c> lookup, name-ordered, for
+    /// picker controls (AC-23). Unpaginated — brand counts are small reference data.
+    /// </summary>
+    Task<IReadOnlyList<BrandLookupDto>> GetActiveLookupAsync(CancellationToken ct);
 }

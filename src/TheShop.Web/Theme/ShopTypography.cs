@@ -3,8 +3,8 @@ namespace TheShop.Web.Theme;
 public static class ShopTypography
 {
     // Font families — two typefaces from Figma text styles
-    public const string FontFamilyHeading = "Barlow Condensed"; // H1–H4
-    public const string FontFamilyPrimary = "Space Grotesk";    // H5–Overline + Default
+    public const string FontFamilyHeading = "Barlow Condensed"; // H1–H5
+    public const string FontFamilyPrimary = "Space Grotesk";    // H6–Overline + Default
 
     // Font weights (string — matches MudBlazor 9 BaseTypography.FontWeight)
     public const string WeightRegular = "400";
@@ -12,33 +12,38 @@ public static class ShopTypography
     public const string WeightBold = "700";
     public const string WeightExtraBold = "800";
 
-    // Letter spacing — all Figma text styles use 0.25 px (uniform across the scale)
+    // Letter spacing — all Figma text styles use 0.25 px, except H1–H4 (overridden below)
     public const string LetterSpacing = "0.25px";
 
     // H1 — Barlow Condensed ExtraBold 96px
     public const string H1_Size = "6rem";
     public const string H1_Weight = WeightExtraBold;
     public const string H1_LineHeight = "1.167";
+    public const string H1_LetterSpacing = "3px";
 
     // H2 — Barlow Condensed ExtraBold 60px
     public const string H2_Size = "3.75rem";
     public const string H2_Weight = WeightExtraBold;
     public const string H2_LineHeight = "1.2";
+    public const string H2_LetterSpacing = "3px";
 
     // H3 — Barlow Condensed ExtraBold 48px
     public const string H3_Size = "3rem";
     public const string H3_Weight = WeightExtraBold;
     public const string H3_LineHeight = "1.167";
+    public const string H3_LetterSpacing = "3px";
 
     // H4 — Barlow Condensed Bold 34px
     public const string H4_Size = "2.125rem";
     public const string H4_Weight = WeightBold;
     public const string H4_LineHeight = "1.235";
+    public const string H4_LetterSpacing = "2px";
 
     // H5 — Space Grotesk Regular 24px
     public const string H5_Size = "1.5rem";
-    public const string H5_Weight = WeightRegular;
+    public const string H5_Weight = WeightBold;
     public const string H5_LineHeight = "1.334";
+    public const string H5_LetterSpacing = "2px";
 
     // H6 — Space Grotesk Medium 20px
     public const string H6_Size = "1.25rem";

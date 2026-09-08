@@ -21,11 +21,14 @@ public static class BusyKeys
         public const string ResendOtp = "auth.resend-otp";
     }
 
-    /// <summary>Keys for product-catalogue operations.</summary>
+    /// <summary>Keys for product-catalogue and product-admin operations.</summary>
     public static class Products
     {
         public const string Catalogue = "products.catalogue";
         public const string Filters = "products.filters";
+        public const string ManageList = "products.manage-list";
+        public const string LoadProduct = "products.load";
+        public const string SaveProduct = "products.save";
     }
 
     /// <summary>Keys for brand admin operations.</summary>

@@ -526,9 +526,9 @@ function Test-ScopeGate {
         'application' = @('src/TheShop.Application/',
                           'src/TheShop.Web/Resources/Strings.resx',
                           'src/TheShop.Web/Resources/Strings.fr.resx')
-        'infra'       = @('src/TheShop.Infrastructure/')
+        'infra'       = @('src/TheShop.Infrastructure/', 'supabase/migrations/', 'supabase/seed.sql')
         'web'         = @('src/TheShop.Web/')
-        'infra+web'   = @('src/TheShop.Infrastructure/', 'src/TheShop.Web/')
+        'infra+web'   = @('src/TheShop.Infrastructure/', 'supabase/migrations/', 'supabase/seed.sql', 'src/TheShop.Web/')
     }[$Phase]
 
     foreach ($f in @($Files)) {

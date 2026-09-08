@@ -78,7 +78,7 @@ public class ProductCatalogueTests : TestContext
             [new FilterOptionDto("cat-1", "Disposables", null)], null);
 
     private static ProductSummaryDto BuildDto(string name) =>
-        new(Guid.NewGuid(), name, "https://example.com/photo.webp", 24.99m, null, false, "CAD", true, "Elf Bar", null, null);
+        new(Guid.NewGuid(), name, "https://example.com/photo.webp", 24.99m, null, false, "CAD", true, "Elf Bar", null, true);
 
     private static PagedResult<ProductSummaryDto> BuildPage(PaginationRequest pagination, int totalCount, int itemCount)
     {

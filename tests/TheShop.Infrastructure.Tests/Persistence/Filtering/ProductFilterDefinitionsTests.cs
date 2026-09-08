@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Newtonsoft.Json;
 using TheShop.Application.Features.Products;
 using TheShop.Infrastructure.Persistence.Filtering;
 using TheShop.Infrastructure.Persistence.Records;
@@ -34,8 +35,6 @@ public class ProductFilterDefinitionsTests
     [Theory]
     [InlineData(ProductFilterKeys.Category)]
     [InlineData(ProductFilterKeys.Brand)]
-    [InlineData(ProductFilterKeys.Flavour)]
-    [InlineData(ProductFilterKeys.Nicotine)]
     [Trait("Feature", "product-catalogue")]
     public void FindByKey_WithKnownKey_ReturnsMatchingDefinition(string key)
     {
@@ -85,35 +84,6 @@ public class ProductFilterDefinitionsTests
 
     [Fact]
     [Trait("Feature", "product-catalogue")]
-    public void ProjectOptions_ForFlavour_MapsDistinctFlavourStringsToFilterOptions()
-    {
-        var facets = new CatalogueFiltersRecord { Flavours = ["Blue Razz Ice", "Mango"] };
-
-        var definition = ProductFilterDefinitions.FindByKey(ProductFilterKeys.Flavour)!;
-        var options = definition.ProjectOptions(facets);
-
-        options.Should().Contain(o => o.Value == "Blue Razz Ice" && o.Label == "Blue Razz Ice");
-        options.Should().Contain(o => o.Value == "Mango" && o.Label == "Mango");
-    }
-
-    [Fact]
-    [Trait("Feature", "product-catalogue")]
-    public void ProjectOptions_ForNicotine_MapsEachDistinctStrengthToAnOption()
-    {
-        var facets = new CatalogueFiltersRecord { NicotineStrengths = [50, 30] };
-
-        var definition = ProductFilterDefinitions.FindByKey(ProductFilterKeys.Nicotine)!;
-        var options = definition.ProjectOptions(facets);
-
-        // The exact label format (e.g. "50 mg") is a presentation detail not pinned down by the
-        // spec or plan; this only asserts the echoed Value round-trips the strength and the
-        // option carries a non-empty display label.
-        options.Should().Contain(o => o.Value == "50" && !string.IsNullOrWhiteSpace(o.Label));
-        options.Should().Contain(o => o.Value == "30" && !string.IsNullOrWhiteSpace(o.Label));
-    }
-
-    [Fact]
-    [Trait("Feature", "product-catalogue")]
     public void ProjectOptions_WhenFacetsAreEmpty_ReturnsEmptyOptions()
     {
         // Edge case: catalogue has no products at all → no filter options.
@@ -124,11 +94,51 @@ public class ProductFilterDefinitionsTests
             definition.ProjectOptions(facets).Should().BeEmpty();
         }
     }
+
+    // =========================================================================
+    // create-product — get_catalogue_filters() supplies the generic option_types payload that
+    // replaces the retired Flavour/Nicotine facets (Decision 3, AC-18). Building the catalogue's
+    // dynamic filter controls from it belongs to the product-catalogue feature; this feature's
+    // job is only to supply the data, which this test proves the record actually carries.
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "create-product")]
+    public void CatalogueFiltersRecord_DeserializesOptionTypesFromTheRpcPayload()
+    {
+        var json = """
+            {
+                "categories": [],
+                "brands": [],
+                "option_types": [
+                    { "name": "Flavour", "values": ["Mango", "Mint"] }
+                ],
+                "price_min": 6.99,
+                "price_max": 54.99
+            }
+            """;
+
+        var record = JsonConvert.DeserializeObject<CatalogueFiltersRecord>(json)!;
+
+        record.OptionTypes.Should().ContainSingle();
+        record.OptionTypes[0].Name.Should().Be("Flavour");
+        record.OptionTypes[0].Values.Should().BeEquivalentTo(["Mango", "Mint"]);
+    }
+
+    [Fact]
+    [Trait("Feature", "create-product")]
+    public void CatalogueFiltersRecord_WithNoOptionTypesInThePayload_DefaultsToAnEmptyList()
+    {
+        var json = """{ "categories": [], "brands": [], "price_min": 0, "price_max": 0 }""";
+
+        var record = JsonConvert.DeserializeObject<CatalogueFiltersRecord>(json)!;
+
+        record.OptionTypes.Should().BeEmpty();
+    }
 }
 
 // =============================================================================
 // AC → Test mapping
 // =============================================================================
 // AC-6: All_ContainsExactlyOneEntryPerSelectableFilterKey, FindByKey_WithKnownKey_ReturnsMatchingDefinition,
-//        ProjectOptions_ForCategory_MapsLookupRowsToFilterOptions, ProjectOptions_ForFlavour_*,
-//        ProjectOptions_ForNicotine_*
+//        ProjectOptions_ForCategory_MapsLookupRowsToFilterOptions

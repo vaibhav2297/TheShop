@@ -73,16 +73,16 @@
 
             @if (Product.IsDiscounted)
             {
-                <MudText Typo="Typo.h6">@CurrencyFormatter.Format(Product.SalePrice!.Value)</MudText>
+                <MudText Typo="Typo.h6">@CurrencyFormatter.Format(Product.SalePrice!.Value, Product.Currency)</MudText>
 
                 <MudText Typo="Typo.subtitle1"
                          Class="mud-secondary-text text-decoration-line-through">
-                    @CurrencyFormatter.Format(Product.OriginalPrice)
+                    @CurrencyFormatter.Format(Product.OriginalPrice!.Value, Product.Currency)
                 </MudText>
             }
             else
             {
-                <MudText Typo="Typo.h6">@CurrencyFormatter.Format(Product.OriginalPrice)</MudText>
+                <MudText Typo="Typo.h6">@PriceLabel</MudText>
             }
 
         </MudStack>

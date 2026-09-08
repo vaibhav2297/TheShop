@@ -22,19 +22,16 @@ public class ProductDtoMapperTests
 
     private static Product BuildProduct(
         ProductPricing? pricing = null,
-        int stockQuantity = 10,
         string? imageUrl = "https://example.com/photo.webp") =>
         Product.Create(
             "Elf Bar BC5000",
             "A long-lasting disposable vape.",
             imageUrl,
+            Sku.Create("ELF-BAR-BC5000"),
             pricing ?? ProductPricing.Create(Money.Create(24.99m)),
-            stockQuantity,
             true,
             ExampleCategory(),
-            ExampleBrand(),
-            "Blue Razz Ice",
-            50);
+            ExampleBrand());
 
     // =========================================================================
     // Field mapping — happy path (AC-1)
@@ -42,7 +39,7 @@ public class ProductDtoMapperTests
 
     [Fact]
     [Trait("Feature", "product-catalogue")]
-    public void ToSummaryDto_MapsIdNameImageUrlBrandFlavourAndNicotineStrength()
+    public void ToSummaryDto_MapsIdNameImageUrlAndBrand()
     {
         var product = BuildProduct();
 
@@ -52,8 +49,6 @@ public class ProductDtoMapperTests
         dto.Name.Should().Be("Elf Bar BC5000");
         dto.ImageUrl.Should().Be("https://example.com/photo.webp");
         dto.BrandName.Should().Be("Elf Bar");
-        dto.Flavour.Should().Be("Blue Razz Ice");
-        dto.NicotineStrengthMg.Should().Be(50);
     }
 
     // =========================================================================
@@ -101,25 +96,14 @@ public class ProductDtoMapperTests
     }
 
     // =========================================================================
-    // Stock availability (AC-11 out-of-stock edge case)
+    // Sellability — no stock tracking (RULE-16 revision, AC-11 out-of-stock edge case superseded)
     // =========================================================================
 
     [Fact]
     [Trait("Feature", "product-catalogue")]
-    public void ToSummaryDto_WhenOutOfStock_MapsIsInStockFalse()
+    public void ToSummaryDto_WithNoVariants_MapsIsInStockTrue()
     {
-        var product = BuildProduct(stockQuantity: 0);
-
-        var dto = ProductDtoMapper.ToSummaryDto(product);
-
-        dto.IsInStock.Should().BeFalse();
-    }
-
-    [Fact]
-    [Trait("Feature", "product-catalogue")]
-    public void ToSummaryDto_WhenInStock_MapsIsInStockTrue()
-    {
-        var product = BuildProduct(stockQuantity: 5);
+        var product = BuildProduct();
 
         var dto = ProductDtoMapper.ToSummaryDto(product);
 
@@ -145,8 +129,8 @@ public class ProductDtoMapperTests
 // =============================================================================
 // AC → Test mapping
 // =============================================================================
-// AC-1: ToSummaryDto_MapsIdNameImageUrlBrandFlavourAndNicotineStrength
+// AC-1: ToSummaryDto_MapsIdNameImageUrlAndBrand
 // AC-2: ToSummaryDto_WithDiscountedProduct_MapsSalePriceAndIsDiscountedTrue,
 //        ToSummaryDto_WithoutDiscount_MapsSalePriceNullAndIsDiscountedFalse
-// AC-11: ToSummaryDto_WhenOutOfStock_MapsIsInStockFalse, ToSummaryDto_WhenInStock_MapsIsInStockTrue
+// AC-11: ToSummaryDto_WithNoVariants_MapsIsInStockTrue (stock is not tracked — RULE-16 revision)
 // AC-12: ToSummaryDto_WhenProductHasNoImage_MapsImageUrlAsNull

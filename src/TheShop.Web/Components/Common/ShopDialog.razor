@@ -1,0 +1,31 @@
+@* Components/Common/ShopDialog.razor *@
+@inherits MudComponentBase
+
+@using TheShop.Web.Theme
+
+<MudDialog Class="@Classname" Style="@Stylename">
+    <TitleContent>
+        <MudStack Row
+                  AlignItems="AlignItems.Center"
+                  Justify="Justify.SpaceBetween">
+
+            <MudText Typo="Typo.h5"
+                     Class="text-transform-uppercase">@Title</MudText>
+
+            @if (ShowCloseButton)
+            {
+                <MudIconButton Icon="@ShopIcons.Outlined.Close_MD"
+                               Size="Size.Small"
+                               OnClick="Close"
+                               Color="Color.Primary"
+                               aria-label="@CloseLabel" />
+            }
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        @ChildContent
+    </DialogContent>
+    <DialogActions>
+        @Actions
+    </DialogActions>
+</MudDialog>

@@ -67,7 +67,7 @@ public class ShopTheme
             FontSize = ShopTypography.H1_Size,
             FontWeight = ShopTypography.H1_Weight,
             LineHeight = ShopTypography.H1_LineHeight,
-            LetterSpacing = ShopTypography.LetterSpacing,
+            LetterSpacing = ShopTypography.H1_LetterSpacing,
             TextTransform = "uppercase"
         },
         H2 = new H2Typography
@@ -76,7 +76,7 @@ public class ShopTheme
             FontSize = ShopTypography.H2_Size,
             FontWeight = ShopTypography.H2_Weight,
             LineHeight = ShopTypography.H2_LineHeight,
-            LetterSpacing = ShopTypography.LetterSpacing,
+            LetterSpacing = ShopTypography.H2_LetterSpacing,
             TextTransform = "uppercase"
         },
         H3 = new H3Typography
@@ -85,7 +85,7 @@ public class ShopTheme
             FontSize = ShopTypography.H3_Size,
             FontWeight = ShopTypography.H3_Weight,
             LineHeight = ShopTypography.H3_LineHeight,
-            LetterSpacing = ShopTypography.LetterSpacing,
+            LetterSpacing = ShopTypography.H3_LetterSpacing,
         },
         H4 = new H4Typography
         {
@@ -93,11 +93,11 @@ public class ShopTheme
             FontSize = ShopTypography.H4_Size,
             FontWeight = ShopTypography.H4_Weight,
             LineHeight = ShopTypography.H4_LineHeight,
-            LetterSpacing = ShopTypography.LetterSpacing,
+            LetterSpacing = ShopTypography.H4_LetterSpacing,
         },
         H5 = new H5Typography
         {
-            FontFamily = [ShopTypography.FontFamilyPrimary, "sans-serif"],
+            FontFamily = [ShopTypography.FontFamilyHeading, "sans-serif"],
             FontSize = ShopTypography.H5_Size,
             FontWeight = ShopTypography.H5_Weight,
             LineHeight = ShopTypography.H5_LineHeight,

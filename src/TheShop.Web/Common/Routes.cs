@@ -55,6 +55,24 @@ public static class Routes
         public const string ManageProducts = "/admin/products";
 
         /// <summary>
+        /// The add-product form. Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>products.create</c> on the
+        /// page itself.
+        /// </summary>
+        public const string AddProduct = "/admin/products/new";
+
+        /// <summary>
+        /// The edit-product form, id-keyed. Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>products.edit</c> on the page
+        /// itself — <c>GetProductForEditQuery</c> only requires <c>products.view</c>, so the
+        /// page-level gate is what denies a view-only admin's direct link.
+        /// </summary>
+        public const string EditProductPattern = "/admin/products/{id:guid}/edit";
+
+        /// <summary>Builds the edit-product URL for a specific product.</summary>
+        public static string EditProduct(Guid id) => $"/admin/products/{id}/edit";
+
+        /// <summary>
         /// The Manage Brands admin harness shell and AddBrand's post-save return target.
         /// Requires a signed-in user via <c>Pages/Admin/_Imports.razor</c> and is gated on
         /// <c>brands.view</c> on the page itself.
