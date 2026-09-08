@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "sdd-cavecrew-reviewer",
+  "kind": "agent",
+  "description": "Standalone Cavecrew review of supplied diff or files. Read-only findings; does not replace the SDD review gate.",
+  "invocation": "automatic",
+  "placement": "standalone",
+  "scope": {
+    "readOnly": true,
+    "writes": []
+  },
+  "upstream": {
+    "url": "https://github.com/JuliusBrussee/caveman",
+    "revision": "5184b3d11ac6a1acb7d44b9bfaa31698157cff97",
+    "license": "MIT",
+    "entry": "cavecrew-reviewer.md",
+    "files": {
+      "cavecrew-reviewer.md": "e302fce4e8012b25031427fb076ced3c79b03438c8e0f01cb6fb10f1f5857086",
+      "LICENSE": "94fe75d355887f84ee7eefca68e06d8d082a23dad47a8e1f58a94d98900edf5b"
+    }
+  },
+  "capabilities": [
+    "files.read",
+    "files.search",
+    "git.diff"
+  ],
+  "adapters": {
+    "claude": {
+      "supported": true,
+      "bindings": {
+        "files.read": "Read",
+        "files.search": "Grep",
+        "git.diff": "Bash"
+      }
+    },
+    "codex": {
+      "supported": true,
+      "bindings": {
+        "files.read": "Native file reading or permitted shell read",
+        "files.search": "Native search or permitted shell search",
+        "git.diff": "Native shell restricted to git diff, git log -p, git show"
+      }
+    }
+  },
+  "adaptations": "Shared full/lite/off policy overrides upstream ultra. Inherit authorized runtime model instead of upstream haiku. Keep read-only scope and findings semantics. No SDD stage replacement."
+}

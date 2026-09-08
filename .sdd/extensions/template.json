@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "my-extension",
+  "kind": "skill",
+  "description": "REPLACE with precise capability and activation context.",
+  "invocation": "automatic",
+  "placement": "standalone",
+  "scope": { "readOnly": true, "writes": [] },
+  "upstream": {
+    "url": "https://github.com/OWNER/REPOSITORY",
+    "revision": "REPLACE_WITH_IMMUTABLE_COMMIT_HASH",
+    "license": "REPLACE_WITH_LICENSE_IDENTIFIER",
+    "entry": "SKILL.md",
+    "files": { "SKILL.md": "REPLACE_WITH_SHA256", "LICENSE": "REPLACE_WITH_SHA256" }
+  },
+  "capabilities": ["files.read"],
+  "adapters": {
+    "claude": { "supported": true, "bindings": { "files.read": "Read" } },
+    "codex": { "supported": true, "bindings": { "files.read": "Native file reading or permitted shell read" } }
+  },
+  "adaptations": "REPLACE with reviewed scope, runtime, and behavior adaptations."
+}

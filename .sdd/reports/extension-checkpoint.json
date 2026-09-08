@@ -1,0 +1,13 @@
+{
+  "checkedUtc": "2026-09-06T10:21:30.0007253Z",
+  "passed": true,
+  "error": "",
+  "checks": {
+    "previewOnly": true,
+    "phase6BytesRestored": true,
+    "independentEditRejected": true
+  },
+  "fixture": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extension-rollback-da6b5b2ccd1f45ed9a9d165084af7796",
+  "output": "[extension-checkpoint] restore 276 phase 6 files; remove 34 Extension-owned files.\n[extension-checkpoint] restored phase 6; unrelated files and migration evidence retained.\n",
+  "restoredFiles": 276
+}

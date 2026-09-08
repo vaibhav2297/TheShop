@@ -1,0 +1,13 @@
+{
+  "checkedUtc": "2026-09-05T18:10:31.7405134Z",
+  "codex": {
+    "version": "codex-cli 0.153.4",
+    "executable": "C:\\Users\\vaibh\\AppData\\Roaming\\npm\\codex.ps1",
+    "available": true
+  },
+  "claude": {
+    "version": "2.1.220 (Claude Code)",
+    "executable": "C:\\Users\\vaibh\\AppData\\Roaming\\npm\\claude.ps1",
+    "available": true
+  }
+}

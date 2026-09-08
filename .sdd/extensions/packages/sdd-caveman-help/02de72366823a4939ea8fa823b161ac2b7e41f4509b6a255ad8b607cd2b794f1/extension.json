@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "sdd-caveman-help",
+  "kind": "skill",
+  "description": "Explain this project's Caveman levels, scoped overrides, and off switch. Use for SDD Caveman help.",
+  "invocation": "automatic",
+  "placement": "standalone",
+  "scope": {
+    "readOnly": true,
+    "writes": []
+  },
+  "upstream": {
+    "url": "https://github.com/JuliusBrussee/caveman",
+    "revision": "5184b3d11ac6a1acb7d44b9bfaa31698157cff97",
+    "license": "MIT",
+    "entry": "SKILL.md",
+    "files": {
+      "LICENSE": "94fe75d355887f84ee7eefca68e06d8d082a23dad47a8e1f58a94d98900edf5b",
+      "SKILL.md": "e704f9504ebe9da3b527d5df3ca5a940efc34a18c61854102da5fe69e8f24b98"
+    }
+  },
+  "capabilities": [
+    "files.read"
+  ],
+  "adapters": {
+    "claude": {
+      "supported": true,
+      "bindings": {
+        "files.read": "Read"
+      }
+    },
+    "codex": {
+      "supported": true,
+      "bindings": {
+        "files.read": "Native file reading or permitted shell read"
+      }
+    }
+  },
+  "adaptations": "Project policy controls modes. Explain natural-language requests; upstream config and command installation do not apply automatically. Help never changes mode."
+}

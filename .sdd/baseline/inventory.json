@@ -1,0 +1,500 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-09-05T13:52:03.2315313Z",
+  "gitCommit": "253433f08949d788e9774e7b2cd02ea5206a7fd7",
+  "archiveSha256": "ada37e6f44b2187fd5bce9e0913668503a8b2a57ad0da0db4ca25395845b4020",
+  "sourceFiles": [
+    {
+      "path": ".claude/agents/shop-application-implementer.md",
+      "sha256": "8235f149b10c510d1667a31f3c28a4d772b066f2a273388cdcf0a2fe5cd8a9f1"
+    },
+    {
+      "path": ".claude/agents/shop-code-documenter.md",
+      "sha256": "a84ebaa91b136798ce4c6bee66c2ab5047289462112060818928cdd9fbd7477d"
+    },
+    {
+      "path": ".claude/agents/shop-code-quality-review.md",
+      "sha256": "67c1c7d824464de0e9ee1d7022284cb95efd594a2eedca4329eff4d899f44155"
+    },
+    {
+      "path": ".claude/agents/shop-code-security-reviewer.md",
+      "sha256": "fbb80634e57d49ca852d57fd768692adc370559f37cdec08e306efb59d70a38e"
+    },
+    {
+      "path": ".claude/agents/shop-domain-implementer.md",
+      "sha256": "d981065a1ffa07094c997c3ed7032b6f06d60ba14f1baea9d9881f4e97181786"
+    },
+    {
+      "path": ".claude/agents/shop-infra-implementer.md",
+      "sha256": "c7c0bb5a07be2e9e611e98bc99e13e4339ebc29857ac2d0a5f2b9ef24a57a8df"
+    },
+    {
+      "path": ".claude/agents/shop-test-runner.md",
+      "sha256": "2f7e307b88b8bc10df1e1999c5d2a6c0879a03376e5b5821773070448462ff35"
+    },
+    {
+      "path": ".claude/agents/shop-test-writer.md",
+      "sha256": "3836903a38765354d460abe588470514a86bd2ddb23f46f92d4ef1b5d1658330"
+    },
+    {
+      "path": ".claude/agents/shop-ui-implementer.md",
+      "sha256": "439662873be2f3df0fb5e6c72282c32400975e4d48dcd4ee9298f74fe102171d"
+    },
+    {
+      "path": ".claude/commands/theshop.document.md",
+      "sha256": "116974d944a6e4d7b8ae6451039da3ecf988fff49aa89fc9c0b25575680e5370"
+    },
+    {
+      "path": ".claude/commands/theshop.e2e.md",
+      "sha256": "10cae86d4fb176a1ff1d84820a445f00d20a707676d7bb1f5b34b76b6a0bf9c0"
+    },
+    {
+      "path": ".claude/commands/theshop.implement.md",
+      "sha256": "f8b533fedee684056920d7f9905288f2064f45be7f5b0d7fec361b888729ab7e"
+    },
+    {
+      "path": ".claude/commands/theshop.review.md",
+      "sha256": "6eedbd3350e0b6f6d6458a1d4125f5eb4f704a8cce5de555ad1c1ab1eb00b92f"
+    },
+    {
+      "path": ".claude/commands/theshop.ship.md",
+      "sha256": "b5d398f31c9a9e391be78268dbce2fad78be9d99c5bbfa29a3d9559dc2a96b97"
+    },
+    {
+      "path": ".claude/commands/theshop.start.md",
+      "sha256": "f2729137566b4cbf63c6485981b1602b83c85bfb15f052a069b3b856c87aa601"
+    },
+    {
+      "path": ".claude/commands/theshop.test-merged.md",
+      "sha256": "2cf47cdbd78e6eef0b2d4b7cca67f8ab3a6da5f542b3e99f3e24020258407953"
+    },
+    {
+      "path": ".claude/commands/theshop.test.md",
+      "sha256": "73e80296aa939227553ea7a61dfbe6fbb1c09dc35eb044397890797909d8e679"
+    },
+    {
+      "path": ".claude/commands/theshop.verify.md",
+      "sha256": "32b2cb52b8bfcbed0d764ed3c761122fbae636370c9aa0f1df1c5b059339c393"
+    },
+    {
+      "path": ".claude/scripts/check-design-rules.ps1",
+      "sha256": "8d74eafdba22ab1edf01da51c98a16585407b5b1cfa03d06cf783b978be117c7"
+    },
+    {
+      "path": ".claude/scripts/check-sdd-gates.ps1",
+      "sha256": "7f2baca2e149eab6e2c533ad9ab410dae6d1a813193102cf24835e5c25ec84fa"
+    },
+    {
+      "path": ".claude/scripts/format-on-stop.ps1",
+      "sha256": "201ba6e70c86ed8de9df2b010fd34a5cb18a3e608bc57ffe305cee448aff05b2"
+    },
+    {
+      "path": ".claude/settings.json",
+      "sha256": "b0a8e781408728a53462bc56a1791ca0e01b24d4bf06a2de719a6be88936a16c"
+    },
+    {
+      "path": ".claude/skills/graphify/.graphify_version",
+      "sha256": "792980a6c7fe3f657ae53d7a3e2cf052fae73de30fb81adbefc982052ac1f669"
+    },
+    {
+      "path": ".claude/skills/graphify/references/add-watch.md",
+      "sha256": "b89fbc907f3c7f00420c3fd3a18a093246c7c73dea58fc2274ccfd7951a3e57b"
+    },
+    {
+      "path": ".claude/skills/graphify/references/exports.md",
+      "sha256": "c2c631a81458163bd480cd9d1ea5cf266878cc82f7053812947ad4c211d875ea"
+    },
+    {
+      "path": ".claude/skills/graphify/references/extraction-spec.md",
+      "sha256": "eaadb51001b87ee45220ed72ffa788d5e0968c7640d4d111b85394739a1c3c86"
+    },
+    {
+      "path": ".claude/skills/graphify/references/github-and-merge.md",
+      "sha256": "1b36d67bd92de0f5ea76ec3b84d1c1103a197c6093b9954995cbaf0abac9fac3"
+    },
+    {
+      "path": ".claude/skills/graphify/references/hooks.md",
+      "sha256": "2720dc0a15ab66ba57e2eea48d57d62aeebe63d0ed268b403cbcad3d2a887fe1"
+    },
+    {
+      "path": ".claude/skills/graphify/references/query.md",
+      "sha256": "28d57a4b75feadbe85456e3e68b50b6080c1a0227a486d056d68cddb4dbebd2f"
+    },
+    {
+      "path": ".claude/skills/graphify/references/transcribe.md",
+      "sha256": "dbdd2b2733734f46c369cfe98322a9a53a77fa56b6728cb2e76f1452a7b71103"
+    },
+    {
+      "path": ".claude/skills/graphify/references/update.md",
+      "sha256": "37ddd550244e79191019229de119d07734d2e0eb2a8425e428a3cb7aa5aea65b"
+    },
+    {
+      "path": ".claude/skills/graphify/SKILL.md",
+      "sha256": "a14ffac1f256a60ddf364eab1170ff03b8d849300962d2ad2218477fc3519646"
+    },
+    {
+      "path": ".claude/skills/theshop.clarify/SKILL.md",
+      "sha256": "03bc90442c61433de886ee7b78ed998acaba7d03a6e4171982e8fc865d2a36fa"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/checklists/code-generation.md",
+      "sha256": "f47fa241acd77a13ea885d7f70ad1b1da703155af614e446ae4b545647e0b87b"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/checklists/design.md",
+      "sha256": "e65e6842f47a75a782ed10b2cbb0068dcc75253b2c22cb73c61600f849159924"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/examples/application-handler.md",
+      "sha256": "32370f282a42d21291e7a7fbfef6225359e1ec83a4ec84d6ace549173b7d6164"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/examples/domain-entity.md",
+      "sha256": "bdb823993b6166afcbf236ad82a94288445276ad97b06e36b8cd98bbf0070af6"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/examples/infrastructure-repository.md",
+      "sha256": "bd134aa61ca960b81a99610aa80a7f86fa9e753c84818f0e3c3e50f69364ed53"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/examples/web-component.md",
+      "sha256": "4cd1e35d5b797cc1d946b5cc0c5927be74aa4d77726b815fc04371041dfc1b5c"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/examples/web-page.md",
+      "sha256": "12df6eab1d58726f181ff3753a66df275f837f2f58e924efcfb0081693a59f12"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/architecture-admin.md",
+      "sha256": "98adf4c73d4f4630b18aae9a004990ca2062fb9bb5aab06c89ace95f85c95bf2"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/architecture-core.md",
+      "sha256": "7f1c011ea451bcd1ae946cee3146db8243aadb5699cb94d94f40a9a7be9c0249"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/architecture-patterns.md",
+      "sha256": "46ff9b47336cd6d6b5d3241fb583275fd5d39d2b0e8c1ffb8377d3e493032ea8"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/design-components.md",
+      "sha256": "4fd6833774ebd10b2fda81a34bcd5d500691ae3d6839a131d7ba7c41078b507f"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/design-strings.md",
+      "sha256": "60bd40e0eecf86ca9be284dc484ad3d69f045f84969ad0776f9309a68348f3db"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/design-styles.md",
+      "sha256": "d587bd7568641c8a5b470132cc4564b1cb106a848e823878925be2814f367b56"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/design-theme-setup.md",
+      "sha256": "b009565acbacfde5e8cb60481f89a645c5e9ad0ae82dfdc42024f287f8439fba"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/design-theme.md",
+      "sha256": "b398ecc7a7787e17adb116e13b925e1dc9b7a0b0b2d8c71840753aaa48add06f"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/documentation.md",
+      "sha256": "69a0a50eab71f35b318e6143715bf19160a3301356345d27c5d687be1b28ed35"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/SKILL.md",
+      "sha256": "c46431bddf44f6e8edcf3f5fb788e34ca7700323a2ea4f1f595d78ee277c01b0"
+    },
+    {
+      "path": ".claude/skills/theshop.execute/SKILL.md",
+      "sha256": "9bd205be703883f7464966d2708731bfa6281027d9116640e94f7be55f058ec8"
+    },
+    {
+      "path": ".claude/skills/theshop.plan/SKILL.md",
+      "sha256": "fabe30b64f2b53e3a51b2030fd3873f1319eb9b477580cdfcfe1659708187519"
+    },
+    {
+      "path": ".claude/skills/theshop.plan/templates/plan-template.md",
+      "sha256": "9c63ecaa13d60be8474d308c54ea9dff9dc82f528406f638d242a7b6d5ac2cd2"
+    },
+    {
+      "path": ".claude/skills/theshop.resolve/SKILL.md",
+      "sha256": "b25cd31304e2097fff445234af0dd683b51203ae72daf9ec839e352091b36e9a"
+    },
+    {
+      "path": ".claude/skills/theshop.spec/SKILL.md",
+      "sha256": "1a4a24fdfcd0290192618dac49c637ad3a0f5eae4ae88e51fd1d96184ade9425"
+    },
+    {
+      "path": ".claude/skills/theshop.spec/templates/spec-template.md",
+      "sha256": "a9803ab515d8d13c41c3d39a30dc6b49705affa9a0bf16b4260bb5c26e1842a8"
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "7feedc83cffb9039ccd49030125ea135f34a59c34c60cfca9df12cb2a2d6a32a"
+    }
+  ],
+  "featureArtifacts": [
+    {
+      "path": ".specs/add-brand/plan.md",
+      "sha256": "ee659dd1e49738b2ae47dc9683e3639f674fc49669f7ab09b4834f8da874067b"
+    },
+    {
+      "path": ".specs/add-brand/spec.md",
+      "sha256": "ece51e5bc57b7346f22e16656646694e21350cb19f7268fd4c04a173f04c1ab3"
+    },
+    {
+      "path": ".specs/add-brand/status.md",
+      "sha256": "20e1c5da690a4fc7b865e57f37072cbf3d760efff22969d22bc2f56b55b73212"
+    },
+    {
+      "path": ".specs/add-brand/test-manifest.json",
+      "sha256": "51edddfc375bb6a8288d30ee129d32e2ce551e8a09d27676102c11f7cd6beef5"
+    },
+    {
+      "path": ".specs/add-brand/test-report.md",
+      "sha256": "08426c0a0e5824073a3b8ae0bd9df919ad8f826a9784afa5358a626afe81519f"
+    },
+    {
+      "path": ".specs/admin-console/plan.md",
+      "sha256": "751007cb6c40130ff0df58d5b06099856f59ff4b5906842d597dc2f530a96593"
+    },
+    {
+      "path": ".specs/admin-console/spec.md",
+      "sha256": "745d37db6eb66e3fe6fbbbbaae7718c50cd21d748462dca636260b67d190674c"
+    },
+    {
+      "path": ".specs/admin-console/status.md",
+      "sha256": "418bb93b7f6257ef58327daea401cd6b4734e9a6d81a891f1e699c10c8c5abef"
+    },
+    {
+      "path": ".specs/admin-console/test-manifest.json",
+      "sha256": "b4eadd6ce485d7689a6f161aa4aa3fb2f3b401543890b0cfb2e7812ffdb011c1"
+    },
+    {
+      "path": ".specs/admin-console/test-report.md",
+      "sha256": "e9307c1bea0d7337c89913dfe6e3785b99424b65e028986ae9238a388ed9ca6c"
+    },
+    {
+      "path": ".specs/authentication/plan.md",
+      "sha256": "cefcf40606ffeda9be06943ada7019039c31c76e8a7705248fb57d3ce9df0067"
+    },
+    {
+      "path": ".specs/authentication/spec.md",
+      "sha256": "2c524055ff15596cd432b014ee1a07c39ebad2c1602ada23712cad63b81d068d"
+    },
+    {
+      "path": ".specs/authentication/status.md",
+      "sha256": "4fb3ca67fee74ae1b35bac8f4de4a7b157355e6e052426a82aee11f53bfd0b27"
+    },
+    {
+      "path": ".specs/authentication/test-manifest.json",
+      "sha256": "eae22fc4b1dabef029325840f4f1764f97b017a2faf30d2fd996626e5d98f7a9"
+    },
+    {
+      "path": ".specs/breadcrumbs/plan.md",
+      "sha256": "3b823901187504826f6681042e7fb2f917c4e502d7bbcc3c643c3c5a5e8e9779"
+    },
+    {
+      "path": ".specs/breadcrumbs/spec.md",
+      "sha256": "617261e82fa58153708eec4c24cbbc3ff05ed294506a8d7a17df370d93aa8c29"
+    },
+    {
+      "path": ".specs/breadcrumbs/status.md",
+      "sha256": "c3520b5266de3126fc75d8c2886af1527f1ac76186be48a9fe8bd0803c41ee88"
+    },
+    {
+      "path": ".specs/breadcrumbs/test-manifest.json",
+      "sha256": "f5d24d172e0106a6ae0447d77892fa3cbbb56cfcf2e4ed4f1e9f5e406f9fb5d3"
+    },
+    {
+      "path": ".specs/e2e-test/e2e-automation-plan.md",
+      "sha256": "32b942f887282a46d9f363a7b2e78b016e01f5f60e79b6fc909c86ffd79771ec"
+    },
+    {
+      "path": ".specs/manage-brands/plan.md",
+      "sha256": "4258bed4cd6a308a0365825e48aad70a7e85c8cbb1fbeb5063852a47630c0380"
+    },
+    {
+      "path": ".specs/manage-brands/spec.md",
+      "sha256": "46c4b1fa7d7a49d48bd32d7d517b97455ad8d55dd4cdea226811908985a0ccd2"
+    },
+    {
+      "path": ".specs/manage-brands/status.md",
+      "sha256": "241e634563e6c247427aa61358b545c727d6e5be3f80f2d14848cc5bd459c0eb"
+    },
+    {
+      "path": ".specs/manage-brands/test-manifest.json",
+      "sha256": "adfa55fc04c157c5dea355fdc4503791e47eccee32e3605820855a01ae894e8e"
+    },
+    {
+      "path": ".specs/manage-brands/test-report.md",
+      "sha256": "9b743ac01c3ea1fc45731b98941a3b84de03a8ec795ecf194ae42589dc0fa4be"
+    },
+    {
+      "path": ".specs/manage-categories/plan.md",
+      "sha256": "ece3822be094c01e539758178f73fc3391a9abb7a708281b6ca0166ac253e416"
+    },
+    {
+      "path": ".specs/manage-categories/spec.md",
+      "sha256": "58121547ed504839fa753ed80b5c29b6a373e0a1c413b60a594da9dfbc79a926"
+    },
+    {
+      "path": ".specs/manage-categories/status.md",
+      "sha256": "a33180554c3db0d89f74f06ebb808f12e86a322b050a034a9ef28d43f97b347e"
+    },
+    {
+      "path": ".specs/manage-categories/test-manifest.json",
+      "sha256": "01e64ee0f13837d5876434ed58632fd995092097b6ae61c0e8b85185dac9528a"
+    },
+    {
+      "path": ".specs/manage-categories/test-report.md",
+      "sha256": "ef0aeada5044ef6af994952c7d9846b740c8a4fd616f8b7bca45346a331bc8fc"
+    },
+    {
+      "path": ".specs/product-catalogue/plan.md",
+      "sha256": "80ad2cfaf90789af343dfdfc515bfa7f27c47a46eaa3c501bfae9628def19ba8"
+    },
+    {
+      "path": ".specs/product-catalogue/spec.md",
+      "sha256": "ed2f53bbb3b47c7f4f71339dec8215d5af870263393600614dd7ce9df97c3fb8"
+    },
+    {
+      "path": ".specs/product-catalogue/status.md",
+      "sha256": "ea655e37a8524e1abd6888fc9305e8708e507fa8c3b4982c51f2f83ec7ac7920"
+    },
+    {
+      "path": ".specs/product-catalogue/test-manifest.json",
+      "sha256": "8c09af3bb6a727b3859783af142c819a8bf44f8637f32351fee43fb6b2eaaf6b"
+    },
+    {
+      "path": ".specs/role-based-access-control/plan.md",
+      "sha256": "b1824bd93b8018000a3394b9fcbfe92a1ad239ce99d95c31f2ab92ad65050bbc"
+    },
+    {
+      "path": ".specs/role-based-access-control/spec.md",
+      "sha256": "2bfd3af05a3ea80cfb99b52fb59a1fa44819a72e47160cf8e8ea85ea4aaf70ad"
+    },
+    {
+      "path": ".specs/role-based-access-control/status.md",
+      "sha256": "9aecced6318177aa2024822ff413276f488ab9a1326e94fb087b340122b5cd2b"
+    },
+    {
+      "path": ".specs/role-based-access-control/test-manifest.json",
+      "sha256": "c964b236515ada70a07ea6526920ce83af9ad1f06e2d2994be4d375327d66b3d"
+    },
+    {
+      "path": ".specs/role-based-access-control/test-report.md",
+      "sha256": "08cefd91b6bbc3a2ca0d04f025b0e59563569451963135ff5d8a6345cd7b0512"
+    }
+  ],
+  "gates": [
+    {
+      "feature": "breadcrumbs",
+      "mode": "spec",
+      "result": {
+        "exitCode": 1,
+        "stdout": "[sdd-gates] spec:breadcrumbs - 13 violation(s):\n  - Section 1 missing the '### Scope' sub-section\n  - Section 1 missing the '### Actors & Access' sub-section\n  - Section 4 missing the '### Business Rules' sub-section\n  - AC not phrased 'Given ..., when ..., then ...': - [ ] **AC-1:** On any storefront page below the home level, a breadcrumb trail ...\n  - AC not phrased 'Given ..., when ..., then ...': - [ ] **AC-2:** On any admin page below the dashboard level, a breadcrumb trail ...\n  - AC not phrased 'Given ..., when ..., then ...': - [ ] **AC-3:** Clicking any non-final level in a trail navigates to that level'...\n  - AC not phrased 'Given ..., when ..., then ...': - [ ] **AC-4:** The final item in every trail is the current page and is not a l...\n  - AC not phrased 'Given ..., when ..., then ...': - [ ] **AC-5:** The trail shown for a given page is identical whether the user n...\n  - AC not phrased 'Given ..., when ..., then ...': - [ ] **AC-6:** A trail level that represents a specific item displays that item...\n  - AC not phrased 'Given ..., when ..., then ...': - [ ] **AC-7:** No breadcrumb trail appears on the Home page, the admin Dashboar...\n  - AC not phrased 'Given ..., when ..., then ...': - [ ] **AC-8:** Every breadcrumb label appears in both English and French, match...\n  - AC not phrased 'Given ..., when ..., then ...': - [ ] **AC-9:** A very long label is shortened so the trail does not break or ov...\n  - AC not phrased 'Given ..., when ..., then ...': - [ ] **AC-10:** The breadcrumb trail can be navigated by keyboard, is announced...\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "breadcrumbs",
+      "mode": "plan",
+      "result": {
+        "exitCode": 1,
+        "stdout": "[sdd-gates] plan:breadcrumbs - 11 violation(s):\n  - Section 7 contains no **TASK-n:** items\n  - AC-1 is mapped in plan Section 8 but names no TASK id\n  - AC-2 is mapped in plan Section 8 but names no TASK id\n  - AC-3 is mapped in plan Section 8 but names no TASK id\n  - AC-4 is mapped in plan Section 8 but names no TASK id\n  - AC-5 is mapped in plan Section 8 but names no TASK id\n  - AC-6 is mapped in plan Section 8 but names no TASK id\n  - AC-7 is mapped in plan Section 8 but names no TASK id\n  - AC-8 is mapped in plan Section 8 but names no TASK id\n  - AC-9 is mapped in plan Section 8 but names no TASK id\n  - AC-10 is mapped in plan Section 8 but names no TASK id\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "breadcrumbs",
+      "mode": "manifest",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] manifest:breadcrumbs - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "breadcrumbs",
+      "mode": "status",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] status:breadcrumbs - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "manage-brands",
+      "mode": "spec",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] spec:manage-brands - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "manage-brands",
+      "mode": "plan",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] plan:manage-brands - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "manage-brands",
+      "mode": "manifest",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] manifest:manage-brands - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "manage-brands",
+      "mode": "status",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] status:manage-brands - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "manage-categories",
+      "mode": "spec",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] spec:manage-categories - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "manage-categories",
+      "mode": "plan",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] plan:manage-categories - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "manage-categories",
+      "mode": "manifest",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] manifest:manage-categories - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "feature": "manage-categories",
+      "mode": "status",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] status:manage-categories - clean.\n",
+        "stderr": ""
+      }
+    }
+  ]
+}

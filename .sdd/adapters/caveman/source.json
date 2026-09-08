@@ -1,0 +1,25 @@
+{
+    "schemaVersion":  1,
+    "upstream":  "https://github.com/JuliusBrussee/caveman/blob/main/skills/caveman/SKILL.md",
+    "snapshot":  "upstream-skill.md",
+    "sha256":  "c4d7354b4b063d54601fcdd5097a5b1713d1a1a2e386ac39efa438aa1ffef8ce",
+    "capturedUtc":  "2026-09-05T19:20:11.7094251Z",
+    "provenance":  "Installed Caveman skill, inspected against upstream instructions; content pinned by SHA-256, not a claimed release version.",
+    "license":  "MIT",
+    "effectivePolicy":  ".sdd/contracts/communication.md",
+    "overrides":  [
+                      "Full applies to all persisted prose as explicitly authorized.",
+                      "Host-required progress updates remain required."
+                  ],
+    "preserved":  [
+                      "Official six levels and off.",
+                      "Explicit mode selection and language preservation.",
+                      "Auto-clarity with resumption of selected mode.",
+                      "Exact technical literals and substantive facts."
+                  ],
+    "excluded":  [
+                     "Cavekit grammar and workflow.",
+                     "Proxy, cloud, telemetry, memory, and model routing."
+                 ],
+    "updatePolicy":  "Review upstream diff, update snapshot/hash deliberately, rerun behavior and portability checks. Never fetch at workflow startup."
+}

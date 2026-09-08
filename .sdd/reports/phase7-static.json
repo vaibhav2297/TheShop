@@ -1,0 +1,225 @@
+{
+  "testedUtc": "2026-09-06T12:01:42.0616242Z",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Phase 7 archive hash matches inventory",
+      "passed": true,
+      "evidence": "before-valid.zip"
+    },
+    {
+      "name": "Core catalog and invocation/ownership metadata unchanged",
+      "passed": true,
+      "evidence": "16 workflows; 9 roles."
+    },
+    {
+      "name": "Application, tests, feature records, and historical checkpoints preserved",
+      "passed": true,
+      "evidence": "543 protected files; changed: "
+    },
+    {
+      "name": "Policies, adapters, extensions, templates, gates, and formatter unchanged",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "Every existing workflow and role has an authored refactor",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "Exact command, API, schema, and report fences remain reachable",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "New conditional references resolve",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "Combined entry definitions are smaller",
+      "passed": true,
+      "evidence": "365148 to 267449 UTF-8 bytes; not token or billing measurements."
+    },
+    {
+      "name": "All numbered constitution rules preserved verbatim",
+      "passed": true,
+      "evidence": "30 rules."
+    },
+    {
+      "name": "Reference traversal handles cycles and reports missing files",
+      "passed": true,
+      "evidence": ".sdd/skills/probe/references/missing.md"
+    },
+    {
+      "name": "New missing references fail regardless of filename",
+      "passed": true,
+      "evidence": ".sdd/skills/probe/references/required-context.md"
+    },
+    {
+      "name": "Archive recovery recreates every original managed file",
+      "passed": true,
+      "evidence": "342 files restored in isolated fixture."
+    },
+    {
+      "name": "Recovered pre-phase-7 adapters remain internally consistent",
+      "passed": true,
+      "evidence": "[sdd-adapters] clean: 198 files.\n"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "graphify-windows",
+      "beforeEntryBytes": 2885,
+      "afterEntryBytes": 2761,
+      "reachableFiles": 11
+    },
+    {
+      "id": "theshop-clarify",
+      "beforeEntryBytes": 9739,
+      "afterEntryBytes": 4251,
+      "reachableFiles": 3
+    },
+    {
+      "id": "theshop-constitution",
+      "beforeEntryBytes": 14279,
+      "afterEntryBytes": 14126,
+      "reachableFiles": 11
+    },
+    {
+      "id": "theshop-document",
+      "beforeEntryBytes": 4293,
+      "afterEntryBytes": 3932,
+      "reachableFiles": 1
+    },
+    {
+      "id": "theshop-e2e",
+      "beforeEntryBytes": 23284,
+      "afterEntryBytes": 19648,
+      "reachableFiles": 4
+    },
+    {
+      "id": "theshop-execute",
+      "beforeEntryBytes": 12825,
+      "afterEntryBytes": 12630,
+      "reachableFiles": 1
+    },
+    {
+      "id": "theshop-implement",
+      "beforeEntryBytes": 15958,
+      "afterEntryBytes": 15287,
+      "reachableFiles": 1
+    },
+    {
+      "id": "theshop-plan",
+      "beforeEntryBytes": 19215,
+      "afterEntryBytes": 7062,
+      "reachableFiles": 6
+    },
+    {
+      "id": "theshop-resolve",
+      "beforeEntryBytes": 10760,
+      "afterEntryBytes": 4972,
+      "reachableFiles": 3
+    },
+    {
+      "id": "theshop-review",
+      "beforeEntryBytes": 16922,
+      "afterEntryBytes": 13690,
+      "reachableFiles": 2
+    },
+    {
+      "id": "theshop-ship",
+      "beforeEntryBytes": 10386,
+      "afterEntryBytes": 9946,
+      "reachableFiles": 1
+    },
+    {
+      "id": "theshop-spec",
+      "beforeEntryBytes": 16280,
+      "afterEntryBytes": 6628,
+      "reachableFiles": 4
+    },
+    {
+      "id": "theshop-start",
+      "beforeEntryBytes": 5041,
+      "afterEntryBytes": 4630,
+      "reachableFiles": 1
+    },
+    {
+      "id": "theshop-test",
+      "beforeEntryBytes": 19838,
+      "afterEntryBytes": 12687,
+      "reachableFiles": 2
+    },
+    {
+      "id": "theshop-test-merged",
+      "beforeEntryBytes": 23949,
+      "afterEntryBytes": 15563,
+      "reachableFiles": 4
+    },
+    {
+      "id": "theshop-verify",
+      "beforeEntryBytes": 9994,
+      "afterEntryBytes": 8109,
+      "reachableFiles": 2
+    },
+    {
+      "id": "shop-application-implementer",
+      "beforeEntryBytes": 10321,
+      "afterEntryBytes": 7186,
+      "reachableFiles": 14
+    },
+    {
+      "id": "shop-code-documenter",
+      "beforeEntryBytes": 6516,
+      "afterEntryBytes": 4914,
+      "reachableFiles": 3
+    },
+    {
+      "id": "shop-code-quality-review",
+      "beforeEntryBytes": 13129,
+      "afterEntryBytes": 11703,
+      "reachableFiles": 14
+    },
+    {
+      "id": "shop-code-security-reviewer",
+      "beforeEntryBytes": 18041,
+      "afterEntryBytes": 16491,
+      "reachableFiles": 13
+    },
+    {
+      "id": "shop-domain-implementer",
+      "beforeEntryBytes": 8485,
+      "afterEntryBytes": 5828,
+      "reachableFiles": 14
+    },
+    {
+      "id": "shop-infra-implementer",
+      "beforeEntryBytes": 9732,
+      "afterEntryBytes": 7276,
+      "reachableFiles": 14
+    },
+    {
+      "id": "shop-test-runner",
+      "beforeEntryBytes": 31576,
+      "afterEntryBytes": 20762,
+      "reachableFiles": 3
+    },
+    {
+      "id": "shop-test-writer",
+      "beforeEntryBytes": 39177,
+      "afterEntryBytes": 27835,
+      "reachableFiles": 7
+    },
+    {
+      "id": "shop-ui-implementer",
+      "beforeEntryBytes": 12523,
+      "afterEntryBytes": 9532,
+      "reachableFiles": 16
+    }
+  ],
+  "beforeEntryBytes": 365148.0,
+  "afterEntryBytes": 267449.0
+}

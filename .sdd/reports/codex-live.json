@@ -1,0 +1,28 @@
+{
+  "stdoutPath": "codex-events.txt",
+  "artifactStateMatches": true,
+  "fixture": ".sdd/.test-work/native-397d90381afe4508a4839e32b8c405b2",
+  "gates": [
+    {
+      "mode": "spec",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] spec:sdd-portability-probe - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "mode": "status",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] status:sdd-portability-probe - clean.\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "runtime": "codex",
+  "passed": true,
+  "stderrPath": "codex-errors.txt",
+  "processExitCode": 0,
+  "checkedUtc": "2026-09-05T18:21:45.6110092Z"
+}

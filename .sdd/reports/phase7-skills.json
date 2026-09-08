@@ -1,0 +1,166 @@
+{
+  "checkedUtc": "2026-09-06T11:57:01.4609448Z",
+  "passed": true,
+  "checks": [
+    {
+      "path": ".sdd\\skills\\graphify-windows",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/graphify-windows",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-clarify",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-clarify",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-constitution",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-document",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-document",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-e2e",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-e2e",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-execute",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-execute",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-implement",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-implement",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-plan",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-plan",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-resolve",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-resolve",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-review",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-review",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-ship",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-ship",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-spec",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-spec",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-start",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-start",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-test",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-test",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-test-merged",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-test-merged",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-verify",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-verify",
+      "passed": true,
+      "output": "Skill is valid!"
+    }
+  ]
+}

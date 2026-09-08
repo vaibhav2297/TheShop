@@ -1,0 +1,69 @@
+{
+  "checkedUtc": "2026-09-06T11:36:57.3670005Z",
+  "variant": "candidate",
+  "runtime": "claude",
+  "case": "decisions",
+  "repeat": 1,
+  "passed": true,
+  "checks": {
+    "product": true,
+    "plan": true,
+    "domain": true,
+    "handoff": true,
+    "tests": true,
+    "review": true,
+    "literals": true,
+    "modeSelection": true,
+    "summaryExists": true,
+    "processExit": true
+  },
+  "processExitCode": 0,
+  "elapsedSeconds": 96.25,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-sdd-eval-db33e10db2a942a29c44e31f442fff0e",
+  "logs": ".sdd/.test-work/caveman-native/phase7-candidate-claude-decisions-1-90fe845dc5314fad87277687c3c4eb19",
+  "models": [
+    "claude-sonnet-5"
+  ],
+  "usage": [
+    {
+      "usage": {
+        "input_tokens": 16,
+        "cache_creation_input_tokens": 79724,
+        "cache_read_input_tokens": 498881,
+        "output_tokens": 8492,
+        "output_tokens_details": {
+          "thinking_tokens": 3458
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 79724,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 753,
+            "cache_read_input_tokens": 101173,
+            "cache_creation_input_tokens": 432,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 432
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "event": "result"
+    }
+  ],
+  "measurement": "Native runtime-reported usage; baseline/candidate compared within runtime only. Decision exercises do not claim production execution.",
+  "styleValidation": "Mode fields establish recognition only. Human review of actual artifacts assesses compression, completeness, and auto-clarity separately.",
+  "baselineArchive": ".sdd/baseline/phase7/before-valid.zip",
+  "reportPrefix": "phase7"
+}

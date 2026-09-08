@@ -1,0 +1,246 @@
+{
+  "checkedUtc": "2026-09-06T11:38:30.1973390Z",
+  "passed": false,
+  "checks": [
+    {
+      "path": ".sdd\\skills\\graphify-windows",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/graphify-windows",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/graphify-windows",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-clarify",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-clarify",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-clarify",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint, disable-model-invocation. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-constitution",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-document",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-document",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-document",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint, disable-model-invocation. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-e2e",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-e2e",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-e2e",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-execute",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-execute",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-execute",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint, disable-model-invocation. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-implement",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-implement",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-implement",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-plan",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-plan",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-plan",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint, disable-model-invocation. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-resolve",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-resolve",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-resolve",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint, disable-model-invocation. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-review",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-review",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-review",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-ship",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-ship",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-ship",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint, disable-model-invocation. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-spec",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-spec",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-spec",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint, disable-model-invocation. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-start",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-start",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-start",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint, disable-model-invocation. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-test",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-test",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-test",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-test-merged",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-test-merged",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-test-merged",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name"
+    },
+    {
+      "path": ".sdd\\skills\\theshop-verify",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".agents/skills/theshop-verify",
+      "passed": true,
+      "output": "Skill is valid!"
+    },
+    {
+      "path": ".claude/skills/theshop-verify",
+      "passed": false,
+      "output": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "checkedUtc": "2026-09-06T12:03:09.3701531Z",
+  "variant": "candidate",
+  "runtime": "claude",
+  "case": "spec",
+  "repeat": 3,
+  "passed": true,
+  "checks": {
+    "spec": true,
+    "status": true,
+    "state": true,
+    "processExit": true
+  },
+  "processExitCode": 0,
+  "elapsedSeconds": 127.0,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-sdd-eval-bf2246d764e8482a8b13aa75e5d39c43",
+  "logs": ".sdd/.test-work/caveman-native/phase7-candidate-claude-spec-3-94fd7447e0da407aa2b04f2cfef3d2c0",
+  "models": [
+    "claude-sonnet-5"
+  ],
+  "usage": [
+    {
+      "usage": {
+        "input_tokens": 26,
+        "cache_creation_input_tokens": 44942,
+        "cache_read_input_tokens": 757339,
+        "output_tokens": 10637,
+        "output_tokens_details": {
+          "thinking_tokens": 4970
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 44942,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 415,
+            "cache_read_input_tokens": 66587,
+            "cache_creation_input_tokens": 236,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 236
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "event": "result"
+    }
+  ],
+  "measurement": "Native runtime-reported usage; baseline/candidate compared within runtime only. Decision exercises do not claim production execution.",
+  "styleValidation": "Mode fields establish recognition only. Human review of actual artifacts assesses compression, completeness, and auto-clarity separately.",
+  "baselineArchive": ".sdd/baseline/phase7/before-valid.zip",
+  "reportPrefix": "phase7"
+}

@@ -1,0 +1,37 @@
+{
+  "checkedUtc": "2026-09-06T06:11:01.4935058Z",
+  "variant": "baseline",
+  "runtime": "codex",
+  "case": "decisions",
+  "repeat": 1,
+  "passed": true,
+  "checks": {
+    "product": true,
+    "plan": true,
+    "domain": true,
+    "handoff": true,
+    "tests": true,
+    "review": true,
+    "literals": true,
+    "summaryExists": true,
+    "processExit": true
+  },
+  "processExitCode": 0,
+  "elapsedSeconds": 290.84,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-sdd-eval-75e5b9faf9cc4498a593be787aa7a862",
+  "logs": ".sdd/.test-work/caveman-native/baseline-codex-decisions-1-44e4edbc5573408695fff1acbbb8e1f8",
+  "models": [],
+  "usage": [
+    {
+      "usage": {
+        "input_tokens": 1229649,
+        "cached_input_tokens": 1134464,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8836,
+        "reasoning_output_tokens": 4592
+      },
+      "event": "turn.completed"
+    }
+  ],
+  "measurement": "Native runtime-reported usage; baseline/candidate compared within runtime only. Decision exercises do not claim production execution."
+}

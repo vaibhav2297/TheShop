@@ -1,0 +1,68 @@
+{
+  "checkedUtc": "2026-09-06T11:34:40.6136619Z",
+  "variant": "baseline",
+  "runtime": "claude",
+  "case": "decisions",
+  "repeat": 1,
+  "passed": true,
+  "checks": {
+    "product": true,
+    "plan": true,
+    "domain": true,
+    "handoff": true,
+    "tests": true,
+    "review": true,
+    "literals": true,
+    "summaryExists": true,
+    "processExit": true
+  },
+  "processExitCode": 0,
+  "elapsedSeconds": 109.95,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-sdd-eval-3a61bdf9f29b4a82968ed43426d76b75",
+  "logs": ".sdd/.test-work/caveman-native/phase7-baseline-claude-decisions-1-fbba75514c034476bade563ae74e743b",
+  "models": [
+    "claude-sonnet-5"
+  ],
+  "usage": [
+    {
+      "usage": {
+        "input_tokens": 12,
+        "cache_creation_input_tokens": 97167,
+        "cache_read_input_tokens": 400907,
+        "output_tokens": 9169,
+        "output_tokens_details": {
+          "thinking_tokens": 4572
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 97167,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 650,
+            "cache_read_input_tokens": 118531,
+            "cache_creation_input_tokens": 517,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 517
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "event": "result"
+    }
+  ],
+  "measurement": "Native runtime-reported usage; baseline/candidate compared within runtime only. Decision exercises do not claim production execution.",
+  "styleValidation": "Mode fields establish recognition only. Human review of actual artifacts assesses compression, completeness, and auto-clarity separately.",
+  "baselineArchive": ".sdd/baseline/phase7/before-valid.zip",
+  "reportPrefix": "phase7"
+}

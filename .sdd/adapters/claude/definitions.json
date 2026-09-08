@@ -1,0 +1,154 @@
+{
+  "skills": {
+    "theshop-document": {
+      "description": "Add XML doc comments to the current diff using the shop-code-documenter sub-agent. Standalone wrapper for users who want to document existing changes without running the full /theshop.implement flow.",
+      "argument-hint": "[feature-name (optional, for status tracking)]"
+    },
+    "theshop-e2e": {
+      "description": "The full E2E gate for one feature in a single context — classify every acceptance criterion, write the browser journey, start the local stack, run it, repair its locators, and report. Supersedes /theshop.verify.",
+      "argument-hint": "<feature-name>"
+    },
+    "theshop-implement": {
+      "description": "Implement a feature across all four layers using a sequence of layer-scoped sub-agents (Domain → Application → Infrastructure ‖ Web), with build gates between layers and produced-API handoff so each layer builds on the literal output of the previous one.",
+      "argument-hint": "<feature-name>"
+    },
+    "theshop-review": {
+      "description": "Run security and quality review on the current diff in parallel for a feature, produce a unified action plan, and (only after approval) implement the fixes.",
+      "argument-hint": "<feature-name>"
+    },
+    "theshop-ship": {
+      "description": "Ship a finished feature — commit the work, push the feature branch, open a PR against dev, and (with explicit confirmation at each step) merge it, delete the branch, and return to dev. The git \"post\" bookend of the SDD pipeline; run it after /theshop.review.",
+      "argument-hint": "<feature-name>"
+    },
+    "theshop-start": {
+      "description": "Start a new feature — pull the latest dev and cut a feature/{feature-name} branch off it, so every spec artifact and code change lands on the right branch from the first commit. The git \"pre\" bookend of the SDD pipeline; run it before /theshop.spec.",
+      "argument-hint": "<feature-name>"
+    },
+    "theshop-test-merged": {
+      "description": "Write, validate, compile, and run spec-driven unit/component tests for one feature in a single context. Produces the feature manifest, durable report, and status update without invoking test sub-agents. E2E journeys are out of scope — see /theshop.e2e.",
+      "argument-hint": "<feature-name>"
+    },
+    "theshop-test": {
+      "description": "Write and run unit/component tests for a specific feature. Invokes shop-test-writer to generate test cases from the spec, then shop-test-runner to execute them, and produces a combined verdict. E2E journeys are out of scope — see /theshop.e2e.",
+      "argument-hint": "<feature-name>"
+    },
+    "theshop-verify": {
+      "description": "Build and run the app, then smoke-check a feature's acceptance criteria against the running build. A user-facing E2E gate — skipped for backend-only features. Read-only with respect to source; it runs and observes, never edits code.",
+      "argument-hint": "<feature-name>"
+    },
+    "graphify-windows": {
+      "name": "graphify-windows",
+      "description": "\"Use for any question about a codebase, its architecture, file relationships, or project content — especially when graphify-out/ exists, where the question should be treated as a graphify query first. Turns any input (code, docs, papers, images, videos) into a persistent knowledge graph with god nodes, community detection, and query/path/explain tools.\""
+    },
+    "theshop-clarify": {
+      "name": "theshop.clarify",
+      "description": "Resolve the open assumptions and questions in a feature spec. Reads `.specs/{feature_name}/spec.md`, walks each 📌 Assumption and ❓ Open question (plus any inline `(Assumption: …)` markers), asks the user one product-level question at a time with the logged default offered as the recommended answer, folds every confirmed decision back into the relevant spec section, empties the Assumptions & Open Questions appendix, and flips the Status footer from `Draft — N open assumption(s)` to `Confirmed`. Stays strictly product-level (WHAT/WHY) — never introduces HOW. This is the second step of the spec pipeline, between `/theshop.spec` and `/theshop.plan`. Manually invoked only; requires a feature name.",
+      "argument-hint": "<feature-name>",
+      "disable-model-invocation": "true"
+    },
+    "theshop-constitution": {
+      "name": "theshop.constitution",
+      "description": "Architecture and design rules for \"The Shop\" — a .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend e-commerce app. USE WHEN writing, editing, or reviewing any code in this repo (`src/TheShop.*`, `tests/`, any `.razor` / SCSS / resource strings / `Shop*` theme class) or making any layer-placement or design decision for it. SKIP for general .NET/Blazor/MudBlazor/Supabase questions not tied to this repo, and for DNS/Azure portal/CI-CD setup."
+    },
+    "theshop-execute": {
+      "name": "theshop.execute",
+      "description": "Single-agent implementation of a feature across all four layers (Domain → Application → Infrastructure → Web) in one context — the merged, sub-agent-free equivalent of /theshop.implement, created to test the merge before migration. Same contract - plan-driven, per-layer build + scope gates, Supabase migration, Figma parity, status-tracker update - but shared context is loaded once and layer handoffs are internal. Manually invoked only.",
+      "argument-hint": "<feature-name>",
+      "disable-model-invocation": "true"
+    },
+    "theshop-plan": {
+      "name": "theshop.plan",
+      "description": "Read a feature spec from `.specs/{feature_name}/spec.md` and generate a technical implementation plan (design doc) saved to `.specs/{feature_name}/plan.md`. The plan's structure comes from `templates/plan-template.md` and covers architecture, data model, design decisions, validators, error handling, RLS policies, and an agent-aligned execution plan with sequential TASK ids — focused on HOW the feature will be built. The companion spec stays non-technical (WHAT/WHY); this plan is fully technical. Optional `--desc <description>` lets the user supply technical direction up front; optional `--figma <url|nodeId>` pins the design frames. Manually invoked only.",
+      "argument-hint": "<feature-name> [--desc <description>] [--figma <url|nodeId>]",
+      "disable-model-invocation": "true"
+    },
+    "theshop-resolve": {
+      "name": "theshop.resolve",
+      "description": "Resolve the open questions, risks, and assumptions in a feature's technical implementation plan. Reads `.specs/{feature_name}/plan.md`, walks every ❓ Open question, ⚠️ Risk, and 📌 Assumption in Section 11 (plus any inline `📌` markers in the body), asks the user one technical question at a time with the logged default offered as the recommended answer, folds every confirmed decision back into the relevant plan section (Data Model, Design Decisions, Validation, Schema/RLS, Development Plan), records a mitigation or explicit acceptance for each risk, empties Section 11 of everything that's now settled, and flips the Status footer from `Draft` to `Resolved`. Stays at technical (HOW) altitude — this is the plan, not the spec. This is the fourth step of the SDD pipeline, between `/theshop.plan` and `/theshop.implement`. Manually invoked only; requires a feature name.",
+      "argument-hint": "<feature-name>",
+      "disable-model-invocation": "true"
+    },
+    "theshop-spec": {
+      "name": "theshop.spec",
+      "description": "Generate a non-technical specification document for a single feature and save it to `.specs/{feature_name}/spec.md`. The spec is product-level only — focused on WHAT the feature does and WHY it matters, never on HOW it's built. Its structure comes from `templates/spec-template.md` — six fixed numbered sections (problem statement, functional requirements, functional behaviors, constraints, edge cases and error handling, acceptance criteria), Scope and Actors & Access sub-sections inside Section 1, a Business Rules table inside Section 4, Given/When/Then acceptance criteria, and an Assumptions & Open Questions appendix that the `/theshop.clarify` skill later resolves. Blocking, load-bearing questions are asked up front; only cheap-to-change defaults are assumed and logged. This skill is manually invoked only (typically via slash command) and requires a feature name from the user; an optional `--desc <description>` may follow the name to seed the spec's content.",
+      "argument-hint": "<feature-name> [--desc <description>]",
+      "disable-model-invocation": "true"
+    }
+  },
+  "roles": {
+    "shop-application-implementer": {
+      "name": "shop-application-implementer",
+      "description": "Implement the Application-layer slice of a feature in The Shop. Use when asked to \"implement the application layer\", \"build the use cases\", or \"wire up the MediatR handlers\" for a feature with a plan at `.specs/{feature_name}/plan.md`, building against the upstream Domain API summary. Writes Commands/Queries/Handlers, validators, DTOs, mapping profiles, and interfaces under `src/TheShop.Application/`. Does not implement other layers, write tests, or modify anything outside `src/TheShop.Application/` (resx error keys excepted).",
+      "tools": "Glob, Grep, Read, Edit, Write, Bash",
+      "model": "sonnet",
+      "color": "blue"
+    },
+    "shop-code-documenter": {
+      "name": "shop-code-documenter",
+      "description": "Add XML doc comments to recently changed C# code in The Shop. Use when asked to \"document\", \"add doc comments\", or \"write XML docs\" — typically after `/theshop.implement`. Diff-scoped only; adds `<summary>` / `<param>` / `<returns>` to public types and members per the project's documentation conventions. Does not change behavior, refactor, add inline comments, or document private members.",
+      "tools": "Glob, Grep, Read, Edit, Bash",
+      "model": "sonnet",
+      "color": "cyan"
+    },
+    "shop-code-quality-review": {
+      "name": "shop-code-quality-review",
+      "description": "Code quality review for The Shop. Use when asked to review, audit, or check recently changed code — e.g. \"review my changes\", \"code review the cart feature\". Diff-scoped only; checks compliance against the `theshop.constitution` rules and checklists plus everyday code craft (function size, duplication, leftover cruft). Reports findings as \"Worth improving / Polish ideas / Doing well\". Does not fix code, run tests, or cover security.",
+      "tools": "Bash, Read, Glob, Grep",
+      "model": "sonnet",
+      "color": "purple"
+    },
+    "shop-code-security-reviewer": {
+      "name": "shop-code-security-reviewer",
+      "description": "Security review for The Shop. Use when asked to security-review, audit, or check security on recently changed code — e.g. \"security check my changes\", \"is this safe to ship\". Diff-scoped only; focuses on the risks that matter in a Blazor WASM + Supabase + Stripe stack — secrets in client code, RLS policies, server-side authorization, input handling, PII/payment data, auth flows. Does not cover code quality (the quality reviewer's job), fix code, or run tests.",
+      "tools": "Bash, Read, Glob, Grep",
+      "model": "sonnet",
+      "color": "purple"
+    },
+    "shop-domain-implementer": {
+      "name": "shop-domain-implementer",
+      "description": "Implement the Domain-layer slice of a feature in The Shop. Use when asked to \"implement the domain\", \"build the domain layer\", or \"scaffold the entities\" for a feature with a plan at `.specs/{feature_name}/plan.md`. Writes entities, value objects, enums, and domain exceptions in `src/TheShop.Domain/`, and reports the produced public API for downstream layers. Does not implement other layers, write tests, or modify anything outside `src/TheShop.Domain/`.",
+      "tools": "Glob, Grep, Read, Edit, Write, Bash",
+      "model": "sonnet",
+      "color": "blue"
+    },
+    "shop-infra-implementer": {
+      "name": "shop-infra-implementer",
+      "description": "Implement the Infrastructure-layer slice of a feature in The Shop. Use when asked to \"implement the infrastructure\", \"wire up Supabase\", or \"build the repositories\" for a feature with a plan at `.specs/{feature_name}/plan.md` and Application interfaces already declared. Writes Supabase repositories, Stripe/Resend adapters, record types, and DI registrations under `src/TheShop.Infrastructure/`; applies migrations and RLS policies via the Supabase MCP. Does not implement other layers, write tests, or modify anything outside `src/TheShop.Infrastructure/`.",
+      "tools": "Glob, Grep, Read, Edit, Write, Bash, mcp__claude_ai_Supabase__list_tables, mcp__claude_ai_Supabase__apply_migration, mcp__claude_ai_Supabase__execute_sql, mcp__claude_ai_Supabase__list_migrations, mcp__claude_ai_Supabase__get_advisors, mcp__claude_ai_Supabase__get_logs",
+      "model": "sonnet",
+      "color": "blue"
+    },
+    "shop-test-runner": {
+      "name": "shop-test-runner",
+      "description": "Run a feature's tests in The Shop and deliver a structured diagnostic report. Use when the user asks to run, execute, check, or verify tests for a feature — e.g. \"run the tests for add-to-cart\", \"did the cart tests pass?\". Runs exactly the tests recorded in `.specs/{feature}/test-manifest.json` (by feature trait), reconciles the discovered count against the manifest to prove completeness, classifies failures, and gives a clear ready / not-ready verdict. Does not write or fix code, does not install packages.",
+      "tools": "Bash, Read, Glob, Grep",
+      "model": "sonnet",
+      "color": "yellow"
+    },
+    "shop-test-writer": {
+      "name": "shop-test-writer",
+      "description": "Write spec-driven unit/component tests for a feature in The Shop. Use when the user asks to write, generate, or scaffold tests for a feature with a spec at `.specs/{feature_name}/spec.md` — e.g. \"write tests for X\", \"generate test cases from the spec\". Derives assertions from the spec (never from production code) and structure from the plan, writes runnable feature-trait-stamped test files under `tests/TheShop.{Layer}.Tests/`, and writes the `.specs/{feature}/test-manifest.json` that shop-test-runner reconciles against. Does not write E2E journeys — /theshop.e2e owns E2E entirely. Does not implement features; modifies nothing outside `tests/` except that manifest.",
+      "tools": "Glob, Grep, Read, TaskStop, WebFetch, WebSearch, Edit, NotebookEdit, Write",
+      "model": "sonnet",
+      "color": "yellow"
+    },
+    "shop-ui-implementer": {
+      "name": "shop-ui-implementer",
+      "description": "Implement the Web (Blazor + MudBlazor) slice of a feature in The Shop, matching the Figma design exactly. Use when asked to \"implement the UI\", \"build the pages\", or \"create the Blazor components\" for a feature with a plan at `.specs/{feature_name}/plan.md` and Application DTOs/Commands already declared. Re-fetches the feature's Figma nodes and writes pages, components, state stores, routes, and resource strings under `src/TheShop.Web/`. Does not implement other layers, write tests, or modify anything outside `src/TheShop.Web/`.",
+      "tools": "Glob, Grep, Read, Edit, Write, Bash, mcp__figma-console__figma_get_design_system_kit, mcp__figma-console__figma_get_component, mcp__figma-console__figma_get_component_for_development, mcp__figma-console__figma_get_component_for_development_deep, mcp__figma-console__figma_get_variables, mcp__figma-console__figma_get_styles, mcp__figma-console__figma_get_text_styles, mcp__figma-console__figma_take_screenshot, mcp__mudblazor__search_components, mcp__mudblazor__get_component_detail, mcp__mudblazor__get_component_parameters, mcp__mudblazor__get_component_examples",
+      "model": "sonnet",
+      "color": "blue"
+    }
+  },
+  "tools": {
+    "mudblazor.get_component_detail": "mcp__mudblazor__get_component_detail",
+    "claude_ai_Supabase.list_tables": "mcp__claude_ai_Supabase__list_tables",
+    "claude_ai_Supabase.list_migrations": "mcp__claude_ai_Supabase__list_migrations",
+    "claude_ai_Supabase.apply_migration": "mcp__claude_ai_Supabase__apply_migration",
+    "claude_ai_Supabase.get_advisors": "mcp__claude_ai_Supabase__get_advisors",
+    "figma-console.figma_get_component_for_development": "mcp__figma-console__figma_get_component_for_development",
+    "figma-console.figma_get_variables": "mcp__figma-console__figma_get_variables",
+    "figma-console.figma_get_text_styles": "mcp__figma-console__figma_get_text_styles",
+    "figma-console.figma_take_screenshot": "mcp__figma-console__figma_take_screenshot"
+  }
+}

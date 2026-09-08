@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "exitCode": 0,
+      "suite": "test-portability",
+      "log": ".sdd/.test-work/release-validation/test-portability.log"
+    },
+    {
+      "exitCode": 0,
+      "suite": "test-caveman",
+      "log": ".sdd/.test-work/release-validation/test-caveman.log"
+    },
+    {
+      "exitCode": 1,
+      "suite": "test-extensions",
+      "log": ".sdd/.test-work/release-validation/test-extensions.log"
+    },
+    {
+      "exitCode": 0,
+      "suite": "test-evidence",
+      "log": ".sdd/.test-work/release-validation/test-evidence.log"
+    },
+    {
+      "exitCode": 0,
+      "suite": "test-release-contracts",
+      "log": ".sdd/.test-work/release-validation/test-release-contracts.log"
+    }
+  ],
+  "passed": false,
+  "checkedUtc": "2026-09-06T16:19:57.4431136Z",
+  "fixture": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\release-3005bde3aa674e39b81cc4739b9b1043",
+  "scope": "Local clean candidate checkout; remote CI not run."
+}

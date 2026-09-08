@@ -1,0 +1,152 @@
+[
+  {
+    "source": ".sdd/skills/theshop-document/SKILL.md",
+    "original": ".claude/commands/theshop.document.md",
+    "originalBodySha256": "4fb8f6849138714b2ed56c012b43cd72f57d2d35ab95242cd0c270b1d84997ff",
+    "portableBodySha256": "019711b6c3e2ac37b0ef791d71c9af7b69486247f009e03a3138d83e6ce0fa3a"
+  },
+  {
+    "source": ".sdd/skills/theshop-e2e/SKILL.md",
+    "original": ".claude/commands/theshop.e2e.md",
+    "originalBodySha256": "b7b7d46639cbd54d1d9be30ac35a306f259eb969c924420517cef845c7e37529",
+    "portableBodySha256": "105c01066494c5805bbb8ad321caa50814166402b739e2e16b2aed31880e256b"
+  },
+  {
+    "source": ".sdd/skills/theshop-implement/SKILL.md",
+    "original": ".claude/commands/theshop.implement.md",
+    "originalBodySha256": "9354dcc1988ec19a362fe1a242c4183a966777c9ab88595e05329014be2700af",
+    "portableBodySha256": "2e547ca5dbcd18b92218ca0c51be847aebc08d6a69302e9b63cae8f20623ee2b"
+  },
+  {
+    "source": ".sdd/skills/theshop-review/SKILL.md",
+    "original": ".claude/commands/theshop.review.md",
+    "originalBodySha256": "30c146b590f69b341c99e0c33a1a0f8780d3e7312e4de96c6302590ccd8ae249",
+    "portableBodySha256": "997bb445be44129bd57b6f6507575809f653973849fcd03fae4379b8eefbb652"
+  },
+  {
+    "source": ".sdd/skills/theshop-ship/SKILL.md",
+    "original": ".claude/commands/theshop.ship.md",
+    "originalBodySha256": "8060e1221d2b94350f24a50907adb9ecff122d0a69da46ab1e4e04ddd514f2da",
+    "portableBodySha256": "a9c4b1ed2c8187e66278a8c595fafdf459bb29f10ca2c3350a1634fec9e9d25e"
+  },
+  {
+    "source": ".sdd/skills/theshop-start/SKILL.md",
+    "original": ".claude/commands/theshop.start.md",
+    "originalBodySha256": "bcb6c6100cfdac4f8f93c097665065d7489173b22763881285cc21a618e82286",
+    "portableBodySha256": "fb643505f80c60c6009b6be89dc989de5e677d70a56c43db45daae9c26e7a018"
+  },
+  {
+    "source": ".sdd/skills/theshop-test-merged/SKILL.md",
+    "original": ".claude/commands/theshop.test-merged.md",
+    "originalBodySha256": "d0c341c580e3b2a5851d55cd2bbdd6dfac32bba31adafbd1fcf2d5f9aae71d70",
+    "portableBodySha256": "575da9b012416729db977a7506bfa80e40c49c6f9606030279a2815df1654e97"
+  },
+  {
+    "source": ".sdd/skills/theshop-test/SKILL.md",
+    "original": ".claude/commands/theshop.test.md",
+    "originalBodySha256": "f0b730aa0f075ce3c0c38e3589b609fd2f8789b5a346ce13f4444acf14c2d187",
+    "portableBodySha256": "d3f428d5a62a412dd6182dad68cbd2a4d577eb8ce7215be476d3fff8a346f607"
+  },
+  {
+    "source": ".sdd/skills/theshop-verify/SKILL.md",
+    "original": ".claude/commands/theshop.verify.md",
+    "originalBodySha256": "2b3200dc8eeda77471a4f774a13befcbd06da8e94099cbf3647e8a573948935b",
+    "portableBodySha256": "ed16b2d4f2e4fbde960d9866bdf6ee9dd6b136693f02fc8c3014e4d0a51200f2"
+  },
+  {
+    "source": ".sdd/skills/graphify-windows/SKILL.md",
+    "original": ".claude/skills/graphify/SKILL.md",
+    "originalBodySha256": "567a108f2df37d206995fa399782a9884858f121e2b859937942b6bf16157b9a",
+    "portableBodySha256": "4de98805a6cf821b0b20a474d605faf6aae9e93b782fc4f940319ddbda2fbb4d"
+  },
+  {
+    "source": ".sdd/skills/theshop-clarify/SKILL.md",
+    "original": ".claude/skills/theshop.clarify/SKILL.md",
+    "originalBodySha256": "0e920c7e251ff42f6c4de204feb4c827f8bf1b6646298db73da49df723e0eaeb",
+    "portableBodySha256": "1891c9c3353dc507f025a6aafe40c1e1bcee09424ac1a6928ff791f43db9d7f1"
+  },
+  {
+    "source": ".sdd/skills/theshop-constitution/SKILL.md",
+    "original": ".claude/skills/theshop.constitution/SKILL.md",
+    "originalBodySha256": "29e5b31928e7caf99df6cee7e9eedbd9da5f152ad1de09f8ef3ed0046d9fbef1",
+    "portableBodySha256": "29e5b31928e7caf99df6cee7e9eedbd9da5f152ad1de09f8ef3ed0046d9fbef1"
+  },
+  {
+    "source": ".sdd/skills/theshop-execute/SKILL.md",
+    "original": ".claude/skills/theshop.execute/SKILL.md",
+    "originalBodySha256": "9534c3af9106c5386fd75ce921813d2abfe93bf8ee0fe996704c7d30b059ff5f",
+    "portableBodySha256": "3373dbe22a4ada083078637dda48cc171995b9dbcc1e2623e321025c269c4227"
+  },
+  {
+    "source": ".sdd/skills/theshop-plan/SKILL.md",
+    "original": ".claude/skills/theshop.plan/SKILL.md",
+    "originalBodySha256": "af4b92e818f94e30dc8a35a0628e984b6a96c1e4564df03a73d47c9bb6479fdd",
+    "portableBodySha256": "8a8aaf3ea320c012cf1dcc3219a6f6dd1926bc18c82d610de8f4376c7229a019"
+  },
+  {
+    "source": ".sdd/skills/theshop-resolve/SKILL.md",
+    "original": ".claude/skills/theshop.resolve/SKILL.md",
+    "originalBodySha256": "38f58b253f6731dcfd5ac63b40f472498746e14b3f0370f0b01c7415af5b0094",
+    "portableBodySha256": "4a352cbf1e82477bfcabfd53665daa9fa73664ec056aa4a2a77f8b65dd4edfef"
+  },
+  {
+    "source": ".sdd/skills/theshop-spec/SKILL.md",
+    "original": ".claude/skills/theshop.spec/SKILL.md",
+    "originalBodySha256": "28f352ffcd1ad834f1a5b012a9aeb05359314cd4851c1955bff679fbbacfdb4a",
+    "portableBodySha256": "d341e93b8236b8dd3a8622c4f3407fc9b892d9f2ab6167b60dd9e5033f0397e1"
+  },
+  {
+    "source": ".sdd/roles/shop-application-implementer.md",
+    "original": ".claude/agents/shop-application-implementer.md",
+    "originalBodySha256": "de55e1b46c7ad4a188938240cd74a5bd71e6b7a0f35ab9ff8057fc8d5d9d99e1",
+    "portableBodySha256": "4f8bfdb33293f61ea989cecdca261e0a8f4d7155ba97ba25577ceb03ba8854ac"
+  },
+  {
+    "source": ".sdd/roles/shop-code-documenter.md",
+    "original": ".claude/agents/shop-code-documenter.md",
+    "originalBodySha256": "6354e4345fc79675df3004fb0b5ada61960fabca333a9078b762e7d1c05328d4",
+    "portableBodySha256": "5ad3528b6752d23241d69a72e65e6f96fb3e4cfba0af95ed6c1672859284cf85"
+  },
+  {
+    "source": ".sdd/roles/shop-code-quality-review.md",
+    "original": ".claude/agents/shop-code-quality-review.md",
+    "originalBodySha256": "dbb4a8cba93ace2b0d67cff63c084bcc15609e59e437d1f34edf48c49ae86b18",
+    "portableBodySha256": "f9f0e4656aefef7da57a27629355cfd0c63782ec73199a05dee37d5a0e591756"
+  },
+  {
+    "source": ".sdd/roles/shop-code-security-reviewer.md",
+    "original": ".claude/agents/shop-code-security-reviewer.md",
+    "originalBodySha256": "58792754b7067b5a66ec85f79c03bb10e28ae8ad554bae4be908e1cbb602c0e3",
+    "portableBodySha256": "70c5f9a826d022882fcd3f35c60e7699a413b844a0d5872dcf0fa251b77274d7"
+  },
+  {
+    "source": ".sdd/roles/shop-domain-implementer.md",
+    "original": ".claude/agents/shop-domain-implementer.md",
+    "originalBodySha256": "d81a1bb41a0852200224f26a50cb3937a8fd883e1ebe104005ba1fc5584d1356",
+    "portableBodySha256": "27ae79b761e7e3375db5a49ee4d6b4655340eb122dbb6932e0ea6d772ae7371e"
+  },
+  {
+    "source": ".sdd/roles/shop-infra-implementer.md",
+    "original": ".claude/agents/shop-infra-implementer.md",
+    "originalBodySha256": "c67955e5855ccc825e8dfaad7dc0b94987d6ffc477064ae9076b06f0c9871c30",
+    "portableBodySha256": "997ff050444362fee2c50cf5f5b3edb0e77fffb882361a7f4f84de48347defb5"
+  },
+  {
+    "source": ".sdd/roles/shop-test-runner.md",
+    "original": ".claude/agents/shop-test-runner.md",
+    "originalBodySha256": "9af01b84052e370827f05919fee8322779c2c1ee34ee8c82573e42aef5f0ccf4",
+    "portableBodySha256": "381ec263fa6785ed44d765d580edbb4276b0eddf19a9cdfc375fd135d6cf5a82"
+  },
+  {
+    "source": ".sdd/roles/shop-test-writer.md",
+    "original": ".claude/agents/shop-test-writer.md",
+    "originalBodySha256": "17d9a4ab343a880d9344e498d33b6ecc718955f965c73d1112e148715b15ea2a",
+    "portableBodySha256": "05269cd5bd4ba4d51272a11e8c25f5316bd104f1b9dde06c43e258b48de33ee7"
+  },
+  {
+    "source": ".sdd/roles/shop-ui-implementer.md",
+    "original": ".claude/agents/shop-ui-implementer.md",
+    "originalBodySha256": "e56685c5593e01491096b2ff62a05a30864327bbb5cdf1217aa04deb47a2e6a1",
+    "portableBodySha256": "5d426b8eae922821d178a518189ea6d5de9f34abc3234c4abf8a9f5e3ce364e1"
+  }
+]

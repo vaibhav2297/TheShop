@@ -1,0 +1,28 @@
+{
+  "checkedUtc": "2026-09-05T18:24:07.7780474Z",
+  "gates": [
+    {
+      "mode": "spec",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] spec:sdd-portability-probe - clean.\n",
+        "stderr": ""
+      }
+    },
+    {
+      "mode": "status",
+      "result": {
+        "exitCode": 0,
+        "stdout": "[sdd-gates] status:sdd-portability-probe - clean.\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "artifactStateMatches": true,
+  "fixture": ".sdd/.test-work/native-397d90381afe4508a4839e32b8c405b2",
+  "runtime": "claude",
+  "stderrPath": "claude-errors.txt",
+  "stdoutPath": "claude-events.txt",
+  "processExitCode": 0,
+  "passed": true
+}

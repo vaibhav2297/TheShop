@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "checkedUtc": "2026-09-06T15:09:14.2572448Z",
+  "runtime": "claude",
+  "case": "layered",
+  "repeat": 1,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-strategy-claude-layered-1-8632c920a92448dfac3ec37ce96e3938",
+  "logs": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\strategy\\claude-layered-1-8632c920a92448dfac3ec37ce96e3938",
+  "passed": true,
+  "checks": {
+    "Domain.js": true,
+    "Application.js": true,
+    "Infrastructure.js": true,
+    "Web.js": true,
+    "oracle": true
+  },
+  "calls": [
+    {
+      "scopeViolations": [],
+      "elapsedSeconds": 34.5038917,
+      "usage": [
+        {
+          "usage": {
+            "input_tokens": 10,
+            "cache_creation_input_tokens": 15923,
+            "cache_read_input_tokens": 116664,
+            "output_tokens": 1554,
+            "output_tokens_details": {
+              "thinking_tokens": 332
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 15923,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "not_available",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 195,
+                "cache_read_input_tokens": 28586,
+                "cache_creation_input_tokens": 535,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 535
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard"
+          },
+          "type": "result"
+        }
+      ],
+      "models": [
+        "claude-opus-5",
+        "claude-haiku-4-5-20251001"
+      ],
+      "name": "Domain.js",
+      "exitCode": 0
+    },
+    {
+      "scopeViolations": [],
+      "elapsedSeconds": 22.9074212,
+      "usage": [
+        {
+          "usage": {
+            "input_tokens": 8,
+            "cache_creation_input_tokens": 12546,
+            "cache_read_input_tokens": 95087,
+            "output_tokens": 795,
+            "output_tokens_details": {
+              "thinking_tokens": 39
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 12546,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "not_available",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 118,
+                "cache_read_input_tokens": 28272,
+                "cache_creation_input_tokens": 420,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 420
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard"
+          },
+          "type": "result"
+        }
+      ],
+      "models": [
+        "claude-opus-5",
+        "claude-haiku-4-5-20251001"
+      ],
+      "name": "Application.js",
+      "exitCode": 0
+    },
+    {
+      "scopeViolations": [],
+      "elapsedSeconds": 24.4139647,
+      "usage": [
+        {
+          "usage": {
+            "input_tokens": 8,
+            "cache_creation_input_tokens": 12817,
+            "cache_read_input_tokens": 95490,
+            "output_tokens": 776,
+            "output_tokens_details": {
+              "thinking_tokens": 0
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 12817,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "not_available",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 88,
+                "cache_read_input_tokens": 28629,
+                "cache_creation_input_tokens": 334,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 334
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard"
+          },
+          "type": "result"
+        }
+      ],
+      "models": [
+        "claude-opus-5",
+        "claude-haiku-4-5-20251001"
+      ],
+      "name": "Infrastructure.js",
+      "exitCode": 0
+    },
+    {
+      "scopeViolations": [],
+      "elapsedSeconds": 26.1414587,
+      "usage": [
+        {
+          "usage": {
+            "input_tokens": 8,
+            "cache_creation_input_tokens": 13063,
+            "cache_read_input_tokens": 95817,
+            "output_tokens": 863,
+            "output_tokens_details": {
+              "thinking_tokens": 0
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 13063,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "not_available",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 101,
+                "cache_read_input_tokens": 28924,
+                "cache_creation_input_tokens": 285,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 285
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard"
+          },
+          "type": "result"
+        }
+      ],
+      "models": [
+        "claude-opus-5",
+        "claude-haiku-4-5-20251001"
+      ],
+      "name": "Web.js",
+      "exitCode": 0
+    }
+  ],
+  "elapsedSeconds": 107.9667363,
+  "retries": 0,
+  "humanCorrections": 0,
+  "limitation": "Bounded synthetic CommonJS pilot. Layered contexts sequential, not full SDD agents or parallel Infrastructure/Web. Native reported usage retained raw; compare within runtime only. No production default justified by this sample."
+}
