@@ -40,4 +40,12 @@ public static class ProductErrorKeys
     public const string CreateFailed = "Product_CreateFailed";
     public const string UpdateFailed = "Product_UpdateFailed";
     public const string PageInvalid = "Product_PageInvalid";
+    public const string PriceRangeInvalid = "Product_PriceRangeInvalid";
+    public const string ProductIdsRequired = "Product_ProductIdsRequired";
+    public const string StatusChangeFailed = "Product_StatusChangeFailed";
+    public const string DeleteFailed = "Product_DeleteFailed";
+    public const string InUse = "Product_InUse";
+    public const string BulkDeleteAllBlocked = "Product_BulkDeleteAllBlocked";
+    public const string BulkDeletePartial = "Product_BulkDeletePartial";
+    public const string ActivateNotPublishable = "Product_ActivateNotPublishable";
 }

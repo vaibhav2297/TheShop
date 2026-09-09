@@ -1,0 +1,50 @@
+{
+  "feature": "manage-product",
+  "trait": "manage-product",
+  "writtenAt": "2026-09-09",
+  "journeys": [
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageProductsJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageProductsJourneyTests.cs",
+      "persona": "admin",
+      "tests": 3
+    },
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageProductsAccessDeniedJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageProductsAccessDeniedJourneyTests.cs",
+      "persona": "customer",
+      "tests": 1
+    }
+  ],
+  "acceptanceCriteria": [
+    { "id": "AC-1", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithElevenProducts_ReturnsFirstTenNameAscendingWithTheFullTotal" },
+    { "id": "AC-2", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ChangePage_AfterFilteringAndSorting_KeepsBothCriteriaOnTheNewPage" },
+    { "id": "AC-3", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_SearchWithSurroundingSpacesAndMixedCase_MatchesContainingNames" },
+    { "id": "AC-4", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithStatusAndBrandAndCategoryFilters_ReturnsOnlyProductsSatisfyingAll" },
+    { "id": "AC-5", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_SortedNameDescending_ReturnsReverseAlphabeticalOrder" },
+    { "id": "AC-6", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ChangeSort_WithProductsSelected_ClearsTheSelectionAndHidesTheBulkBar" },
+    { "id": "AC-7", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.SelectAll_OnAPageWithMoreProductsThanFit_SelectsOnlyTheCurrentPagesProducts" },
+    { "id": "AC-8", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageProductsJourneyTests.AC8_Creating_a_product_through_the_add_flow_appears_in_subsequent_matching_results" },
+    { "id": "AC-9", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageProductsJourneyTests.AC9_Editing_a_product_through_the_edit_flow_shows_saved_changes_in_subsequent_matching_results" },
+    { "id": "AC-10", "coverage": "unit", "evidence": "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusHandlerTests.Handle_WhenActivatingAPricedProduct_ReturnsChangedCountOfOneAndNoSkips" },
+    { "id": "AC-11", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.StatusToggle_WhenDeactivatingAnActiveProduct_AsksForConfirmationBeforeSending" },
+    { "id": "AC-12", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageProductsJourneyTests.AC12_Deactivating_a_published_product_removes_it_from_the_catalogue_while_staff_still_see_it_and_reactivating_restores_it" },
+    { "id": "AC-13", "coverage": "unit", "evidence": "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests.Handle_WhenTheProductIsDeletable_ReturnsSuccessWithDeletedCountOfOne" },
+    { "id": "AC-14", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.DeleteSingle_WhenCancelled_DoesNotSendTheCommand" },
+    { "id": "AC-15", "coverage": "unit", "evidence": "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests.Handle_WhenTheProductIsReferenced_ReturnsZeroDeletedAndTheBlockedProductWithItsReferenceCount" },
+    { "id": "AC-16", "coverage": "unit", "evidence": "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests.Handle_WithFiveSelectedOfWhichTwoAreReferenced_ReturnsThreeDeletedAndTheTwoBlocked" },
+    { "id": "AC-17", "coverage": "unit", "evidence": "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests.Handle_WhenEverySelectedProductIsReferenced_ReturnsZeroDeletedAndEveryProductBlocked" },
+    { "id": "AC-18", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageProductsAccessDeniedJourneyTests.AC18_A_user_without_products_view_cannot_reach_the_list_by_direct_link" },
+    { "id": "AC-19", "coverage": "manual", "reason": "No language-switch mechanism is reachable from the running app in this E2E harness (no UI locale picker, no culture cookie/query hook), so a French render cannot be driven through a browser journey. CAD locale formatting is covered generically by CurrencyFormatterTests; French-string completeness for every manage-product resource key is gated at the review stage's French-localization completeness check." },
+    { "id": "AC-20", "coverage": "manual", "reason": "Exhaustive keyboard reachability, visible-focus-indicator, and dialog focus-management proof across every listing control has no precedent anywhere in this suite (including create-product's own equivalent accessibility AC), and a partial/representative Playwright check would risk a false failure from test technique rather than a real defect. Needs a dedicated accessibility pass." },
+    { "id": "AC-21", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenNoProductsExistYet_ShowsTheEmptyStateMessageAndHidesTheFilterPanel" },
+    { "id": "AC-22", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.DeleteSingle_WhenItEmptiesTheLastPage_RecoversToTheNewLastPage" },
+    { "id": "AC-23", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.DeleteSingle_WhenTheCommandFails_ShowsTheErrorMessageAndNeverClaimsSuccess" },
+    { "id": "AC-24", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WhenAVariantHasASalePrice_UsesTheSalePriceForTheRange" },
+    { "id": "AC-25", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithNoVariants_UsesItsOwnEffectivePriceForBothEnds" },
+    { "id": "AC-26", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithPriceFilterBetweenTwoVariantPrices_ExcludesTheProduct" },
+    { "id": "AC-27", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithPriceFilterMatchingAMiddleVariant_KeepsTheFullRangeAndCount" },
+    { "id": "AC-28", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_SortedByLowestVariantPriceUnderAFilter_OrdersOnTheUnfilteredLowestPrice" },
+    { "id": "AC-29", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_ADeletedVariantContributesNeitherPriceNorCount" }
+  ]
+}

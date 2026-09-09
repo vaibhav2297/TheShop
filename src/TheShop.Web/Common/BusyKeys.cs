@@ -29,6 +29,8 @@ public static class BusyKeys
         public const string ManageList = "products.manage-list";
         public const string LoadProduct = "products.load";
         public const string SaveProduct = "products.save";
+        public const string ProductStatus = "products.status";
+        public const string DeleteProducts = "products.delete";
     }
 
     /// <summary>Keys for brand admin operations.</summary>

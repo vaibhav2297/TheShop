@@ -1,11 +1,14 @@
+@inherits QueryStatePageBase<ProductQueryState>
+
 @using TheShop.Application.Features.Products.DTOs
+@using TheShop.Domain.Enums
 @using TheShop.Domain.ValueObjects
 @using TheShop.Web.Common
 @using TheShop.Web.Components.Common
 
 <PageTitle>@Strings.ManageProducts_PageTitle</PageTitle>
 
-<MudStack Class="pa-8" Spacing="6">
+<MudStack Class="@BodyClass" Spacing="6">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
         <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.ManageProducts_Heading</MudText>
         <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Create.Code)" Context="createAuth">
@@ -20,88 +23,271 @@
         </AuthorizeView>
     </MudStack>
 
-    <BusyFor Key="@BusyKeys.Products.ManageList" Context="busy">
-        @if (busy && !_products.HasLoaded)
-        {
-            <MudStack Spacing="2">
-                @for (var i = 0; i < 10; i++)
-                {
-                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="56px" />
-                }
-            </MudStack>
-        }
-        else if (_products.Items.Count > 0)
-        {
-            <MudTable T="ProductListItemDto"
-                      Items="@_products.Items"
-                      Hover="true"
-                      Class="mud-width-full"
-                      Elevation="0"
-                      HeaderClass="mud-tertiary-lighten"
-                      Outlined="true">
+    @if (!ShowEmptyState)
+    {
+        <MudGrid Spacing="8">
 
-                <HeaderContent>
-                    <MudTh>@Strings.ManageProducts_ColumnName</MudTh>
-                    <MudTh>@Strings.ManageProducts_ColumnSku</MudTh>
-                    <MudTh>@Strings.ManageProducts_ColumnBrand</MudTh>
-                    <MudTh>@Strings.ManageProducts_ColumnCategory</MudTh>
-                    <MudTh>@Strings.ManageProducts_ColumnPrice</MudTh>
-                    <MudTh>@Strings.ManageProducts_ColumnStatus</MudTh>
-                    <MudTh>@Strings.ManageProducts_ColumnActions</MudTh>
-                </HeaderContent>
+            <MudItem xs="12" md="3" xl="2">
+                <ShopFilterPanel Groups="@FilterGroups"
+                                 SelectedFilters="@SelectedFilters"
+                                 SingleSelectChanged="OnSingleSelectChangedAsync"
+                                 FilterToggled="OnFilterToggledAsync"
+                                 SelectedRanges="@SelectedRanges"
+                                 RangeChanged="OnRangeChangedAsync"
+                                 RangeFormatter="FormatRange"
+                                 OnClearFilters="OnClearFiltersAsync" />
+            </MudItem>
 
-                <RowTemplate Context="product">
-                    <MudTd>
-                        <MudStack Row AlignItems="AlignItems.Center" Spacing="3">
-                            <MudAvatar Rounded="true">
-                                <MudImage Src="@product.PrimaryImageUrl" Alt="@product.Name" ObjectFit="ObjectFit.Cover" />
-                            </MudAvatar>
-                            <MudText Typo="Typo.body2">@product.Name</MudText>
-                        </MudStack>
-                    </MudTd>
-                    <MudTd>
-                        <MudText Typo="Typo.body2" Color="Color.Secondary">@product.Sku</MudText>
-                    </MudTd>
-                    <MudTd>
-                        <MudText Typo="Typo.body2">@product.BrandName</MudText>
-                    </MudTd>
-                    <MudTd>
-                        <MudText Typo="Typo.body2">@product.CategoryName</MudText>
-                    </MudTd>
-                    <MudTd>
-                        <MudText Typo="Typo.body2">@FormatPrice(product)</MudText>
-                    </MudTd>
-                    <MudTd>
-                        <MudChip T="string" Color="@(product.IsPublished ? Color.Primary : Color.Default)" Variant="Variant.Outlined">
-                            <MudText Typo="Typo.body2">
-                                @(product.IsPublished ? Strings.ManageProducts_StatusActive : Strings.ManageProducts_StatusInactive)
-                            </MudText>
-                        </MudChip>
-                    </MudTd>
-                    <MudTd>
-                        <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Edit.Code)" Context="editRowAuth">
-                            <Authorized>
-                                <MudIconButton Icon="@ShopIcons.Outlined.Edit_Pencil_02"
-                                               Href="@Routes.Admin.EditProduct(product.Id)"
-                                               Color="Color.Primary"
-                                               aria-label="@string.Format(Strings.ManageProducts_EditAria, product.Name)" />
-                            </Authorized>
-                        </AuthorizeView>
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
+            <MudItem xs="12" md="9" xl="10">
+                <MudStack Spacing="6" AlignItems="AlignItems.Stretch">
 
-            <ShopPagination Page="@_products.Page"
-                            TotalPages="@_products.TotalPages"
-                            PageChanged="OnPageChangedAsync"
-                            Class="align-self-center" />
-        }
-        else
-        {
-            <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4" Class="py-20">
-                <MudText Typo="Typo.h4">@Strings.ManageProducts_EmptyTitle</MudText>
-                <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.ManageProducts_EmptyDescription</MudText>
-            </MudStack>
-        }
-    </BusyFor>
+                    <MudStack Row
+                              AlignItems="AlignItems.End"
+                              Spacing="8">
+
+                        <MudTextField T="string"
+                                      Value="@_search"
+                                      ValueChanged="OnSearchChangedAsync"
+                                      DebounceInterval="300"
+                                      Immediate="true"
+                                      Variant="Variant.Filled"
+                                      Typo="Typo.body2"
+                                      Placeholder="@Strings.ManageProducts_SearchPlaceholder"
+                                      Adornment="Adornment.Start"
+                                      FullWidth
+                                      Clearable
+                                      AdornmentIcon="@ShopIcons.Outlined.Search_Magnifying_Glass" />
+
+                        <ShopSortSelect TSort="AdminProductSortOption"
+                                        Sort="@_sort"
+                                        Options="@SortOptions"
+                                        SortChanged="OnSortChangedAsync" />
+                    </MudStack>
+
+                    <BusyFor Key="@BusyKeys.Products.ManageList" Context="busy">
+                        @if (busy)
+                        {
+                            <MudStack Spacing="2">
+                                @for (var i = 0; i < 10; i++)
+                                {
+                                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="56px" />
+                                }
+                            </MudStack>
+                        }
+                        else if (_products.Items.Count > 0)
+                        {
+                            <BusyFor Keys="@MutationBusyKeys" Context="mutating">
+                                <MudTable T="ProductListItemDto"
+                                          Items="@_products.Items"
+                                          MultiSelection="true"
+                                          SelectedItems="@_selectedItems"
+                                          SelectOnRowClick="false"
+                                          SelectedItemsChanged="OnSelectedItemsChanged"
+                                          Hover="true"
+                                          Class="mud-width-full"
+                                          Elevation="0"
+                                          HeaderClass="mud-tertiary-lighten"
+                                          Outlined="true">
+
+                                    <HeaderContent>
+                                        <MudTh>@Strings.ManageProducts_ColumnName</MudTh>
+                                        <MudTh>@Strings.ManageProducts_ColumnSku</MudTh>
+                                        <MudTh>@Strings.ManageProducts_ColumnBrand</MudTh>
+                                        <MudTh>@Strings.ManageProducts_ColumnCategory</MudTh>
+                                        <MudTh>@Strings.ManageProducts_ColumnPrice</MudTh>
+                                        <MudTh>@Strings.ManageProducts_ColumnStatus</MudTh>
+                                        <MudTh>@Strings.ManageProducts_ColumnActions</MudTh>
+                                    </HeaderContent>
+
+                                    <RowTemplate Context="product">
+                                        <MudTd>
+                                            <MudStack Row AlignItems="AlignItems.Center" Spacing="3">
+                                                <MudAvatar Rounded="true">
+                                                    <MudImage Src="@product.PrimaryImageUrl" Alt="@product.Name" ObjectFit="ObjectFit.Cover" />
+                                                </MudAvatar>
+                                                <MudStack Spacing="0">
+                                                    <MudText Typo="Typo.body2">@product.Name</MudText>
+
+                                                    @if (product.VariantCount > 0)
+                                                    {
+                                                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                            @FormatVariantCount(product.VariantCount)
+                                                        </MudText>
+                                                    }
+
+                                                    @if (_referencedIds.TryGetValue(product.Id, out var referenceCount))
+                                                    {
+                                                        <MudText Typo="Typo.caption" Color="Color.Warning">
+                                                            @string.Format(Strings.Product_InUse, product.Name, referenceCount)
+                                                        </MudText>
+                                                    }
+                                                </MudStack>
+                                            </MudStack>
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudText Typo="Typo.body2" Color="Color.Secondary">@product.Sku</MudText>
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudText Typo="Typo.body2">@product.BrandName</MudText>
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudText Typo="Typo.body2">@product.CategoryName</MudText>
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudText Typo="Typo.body2">@FormatPrice(product)</MudText>
+                                        </MudTd>
+                                        <MudTd>
+                                            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Edit.Code)" Context="statusAuth">
+                                                <Authorized>
+
+                                                    @* The spinner takes the chip's place rather than sitting beside it: the
+                                                       user just clicked here, so this is the one spot guaranteed to be in
+                                                       view — unlike the table's progress bar up under the header. *@
+                                                    @if (IsRowPending(product.Id, RowMutation.Status))
+                                                    {
+                                                        <MudProgressCircular Color="Color.Primary"
+                                                                             Size="Size.Small"
+                                                                             Indeterminate="true" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <MudChip T="string"
+                                                                 Color="@(product.IsPublished ? Color.Primary : Color.Default)"
+                                                                 Variant="Variant.Outlined"
+                                                                 Disabled="@mutating"
+                                                                 OnClick="@(() => OnStatusToggledAsync(product, !product.IsPublished))">
+                                                            <MudText Typo="Typo.body2">
+                                                                @(product.IsPublished ? Strings.ManageProducts_StatusActive : Strings.ManageProducts_StatusInactive)
+                                                            </MudText>
+                                                        </MudChip>
+                                                    }
+
+                                                </Authorized>
+                                                <NotAuthorized>
+                                                    <MudText Typo="Typo.body2">
+                                                        @(product.IsPublished ? Strings.ManageProducts_StatusActive : Strings.ManageProducts_StatusInactive)
+                                                    </MudText>
+                                                </NotAuthorized>
+                                            </AuthorizeView>
+                                        </MudTd>
+                                        <MudTd>
+                                            @* A deletion replaces the whole action group, not just the trash button:
+                                               leaving Edit live next to a spinner would invite a navigation away from
+                                               the row mid-delete. *@
+                                            @if (IsRowPending(product.Id, RowMutation.Delete))
+                                            {
+                                                <MudProgressCircular Color="Color.Error"
+                                                                     Size="Size.Small"
+                                                                     Indeterminate="true" />
+                                            }
+                                            else
+                                            {
+                                                <MudStack Row Spacing="1">
+                                                    <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Edit.Code)" Context="editRowAuth">
+                                                        <Authorized>
+
+                                                            <MudIconButton Icon="@ShopIcons.Outlined.Edit_Pencil_02"
+                                                                           Href="@Routes.Admin.EditProduct(product.Id)"
+                                                                           Color="Color.Primary"
+                                                                           Disabled="@mutating"
+                                                                           aria-label="@string.Format(Strings.ManageProducts_EditAria, product.Name)" />
+
+                                                        </Authorized>
+                                                    </AuthorizeView>
+                                                    <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Delete.Code)" Context="deleteRowAuth">
+                                                        <Authorized>
+
+                                                            <MudIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
+                                                                           Color="Color.Error"
+                                                                           Disabled="@mutating"
+                                                                           OnClick="@(() => DeleteSingleAsync(product))"
+                                                                           aria-label="@string.Format(Strings.ManageProducts_DeleteAria, product.Name)" />
+
+                                                        </Authorized>
+                                                    </AuthorizeView>
+                                                </MudStack>
+                                            }
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </BusyFor>
+
+                            <ShopPagination Page="@_products.Page"
+                                            TotalPages="@_products.TotalPages"
+                                            PageChanged="OnPageChangedAsync"
+                                            Class="align-self-center" />
+                        }
+                        else
+                        {
+                            <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4" Class="py-20">
+                                <MudText Typo="Typo.h4">@Strings.ManageProducts_NoMatchTitle</MudText>
+                                <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.ManageProducts_NoMatchDescription</MudText>
+                            </MudStack>
+                        }
+                    </BusyFor>
+                </MudStack>
+            </MudItem>
+
+        </MudGrid>
+    }
+    else
+    {
+        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4" Class="py-20">
+            <MudText Typo="Typo.h4">@Strings.ManageProducts_EmptyTitle</MudText>
+            <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.ManageProducts_EmptyDescription</MudText>
+        </MudStack>
+    }
 </MudStack>
+
+@* Mounted outside the padded page stack and the grid so it spans the full viewport
+   width, matching manage-brands (plan §5 Decision 8's shared shape). *@
+<ShopBulkActionBar Visible="@HasSelection"
+                   SelectedCount="@_selectedItems.Count"
+                   OnClose="OnCloseBulkActions">
+    <Actions>
+        @* The bar sits over the table, so the table's own progress bar can be out of view
+           while a bulk action runs — this spinner keeps the feedback where the user just
+           clicked. Every action is disabled meanwhile so a second one can't overlap. *@
+        <BusyFor Keys="@MutationBusyKeys" Context="mutating">
+            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Edit.Code)"
+                           Context="bulkEditAuth">
+
+                <Authorized>
+
+                    <MudButton Variant="Variant.Text"
+                               Color="Color.Inherit"
+                               StartIcon="@ShopIcons.Outlined.Show"
+                               Disabled="@mutating"
+                               OnClick="BulkActivateAsync">
+                        @Strings.ManageProducts_BulkSetActive
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Text"
+                               Color="Color.Inherit"
+                               StartIcon="@ShopIcons.Outlined.Hide"
+                               Disabled="@mutating"
+                               OnClick="BulkDeactivateAsync">
+                        @Strings.ManageProducts_BulkSetInactive
+                    </MudButton>
+                </Authorized>
+
+            </AuthorizeView>
+
+            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Delete.Code)" Context="bulkDeleteAuth">
+
+                <Authorized>
+
+                    <MudButton Variant="Variant.Text"
+                               Color="Color.Error"
+                               StartIcon="@ShopIcons.Outlined.Trash_Empty"
+                               Disabled="@mutating"
+                               OnClick="BulkDeleteAsync">
+                        @Strings.ManageProducts_BulkDelete
+                    </MudButton>
+
+                </Authorized>
+
+            </AuthorizeView>
+        </BusyFor>
+    </Actions>
+</ShopBulkActionBar>

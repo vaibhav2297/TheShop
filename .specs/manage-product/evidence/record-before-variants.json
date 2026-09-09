@@ -1,0 +1,10 @@
+{
+  "outcome": "Confirmed spec baseline validated before user-approved variant amendment.",
+  "checks": [{
+    "id": "spec-before-variants",
+    "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 spec -Feature manage-product",
+    "exitCode": 0,
+    "logPath": ".specs/manage-product/evidence/logs/spec-before-variants.log"
+  }],
+  "sourcePaths": []
+}

@@ -16,6 +16,19 @@ public sealed class ManageProductsPage(IPage page) : ShopPage(page)
     /// <summary>Navigates to the add-product form via the "Add Product" link.</summary>
     public async Task GotoAddProductAsync() => await AddProductLink.ClickAsync();
 
+    /// <summary>
+    /// Searches the product list by name (FR-3). The field debounces 300ms before pushing the
+    /// query-state URL, so this also waits for that push — a caller that only waits for a matching
+    /// row can be satisfied by a stale (pre-search) render and then race the debounced navigation
+    /// with its very next action.
+    /// </summary>
+    public async Task SearchAsync(string term)
+    {
+        await Page.GetByPlaceholder(Strings.ManageProducts_SearchPlaceholder).FillAsync(term);
+        await Page.WaitForURLAsync(url => url.Contains("search=", StringComparison.Ordinal),
+            new() { Timeout = 15_000 });
+    }
+
     /// <summary>Locator for a product row's edit link — absent for staff without products.edit.</summary>
     public ILocator EditLink(string productName) =>
         Page.GetByRole(AriaRole.Link, new() { Name = string.Format(Strings.ManageProducts_EditAria, productName) });

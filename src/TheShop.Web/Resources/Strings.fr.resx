@@ -642,10 +642,88 @@
     <value>Modifier {0}</value>
   </data>
   <data name="ManageProducts_EmptyTitle" xml:space="preserve">
-    <value>Aucun produit pour le moment</value>
+    <value>Aucun produit trouvé</value>
   </data>
   <data name="ManageProducts_EmptyDescription" xml:space="preserve">
-    <value>Les produits que vous ajoutez apparaîtront ici.</value>
+    <value>Ajoutez vos premiers produits pour organiser votre catalogue et le gérer plus facilement.</value>
+  </data>
+  <data name="ManageProducts_SearchPlaceholder" xml:space="preserve">
+    <value>Rechercher des produits</value>
+  </data>
+  <data name="ManageProducts_PriceRange" xml:space="preserve">
+    <value>{0} – {1}</value>
+  </data>
+  <data name="ManageProducts_VariantCountOne" xml:space="preserve">
+    <value>1 variante</value>
+  </data>
+  <data name="ManageProducts_VariantCountMany" xml:space="preserve">
+    <value>{0} variantes</value>
+  </data>
+  <data name="ManageProducts_NoMatchTitle" xml:space="preserve">
+    <value>Aucun produit ne correspond à votre recherche</value>
+  </data>
+  <data name="ManageProducts_NoMatchDescription" xml:space="preserve">
+    <value>Essayez un autre nom ou effacez vos filtres.</value>
+  </data>
+  <data name="ManageProducts_DeleteAria" xml:space="preserve">
+    <value>Supprimer {0}</value>
+  </data>
+  <data name="ManageProducts_BulkSetActive" xml:space="preserve">
+    <value>Actif</value>
+  </data>
+  <data name="ManageProducts_BulkSetInactive" xml:space="preserve">
+    <value>Inactif</value>
+  </data>
+  <data name="ManageProducts_BulkDeactivate" xml:space="preserve">
+    <value>Désactiver</value>
+  </data>
+  <data name="ManageProducts_BulkDelete" xml:space="preserve">
+    <value>Supprimer</value>
+  </data>
+  <data name="ManageProducts_DeactivateConfirmTitle" xml:space="preserve">
+    <value>Désactiver le produit?</value>
+  </data>
+  <data name="ManageProducts_DeactivateConfirmBody" xml:space="preserve">
+    <value>{0} sera masqué aux clients jusqu'à sa réactivation.</value>
+  </data>
+  <data name="ManageProducts_BulkDeactivateConfirmTitle" xml:space="preserve">
+    <value>Désactiver {0} produits?</value>
+  </data>
+  <data name="ManageProducts_BulkDeactivateConfirmBody" xml:space="preserve">
+    <value>{0} produit(s) seront masqués aux clients jusqu'à leur réactivation.</value>
+  </data>
+  <data name="ManageProducts_DeleteConfirmTitle" xml:space="preserve">
+    <value>Supprimer le produit?</value>
+  </data>
+  <data name="ManageProducts_DeleteConfirmBody" xml:space="preserve">
+    <value>Cette action supprimera définitivement {0}. Cette action est irréversible.</value>
+  </data>
+  <data name="ManageProducts_BulkDeleteConfirmTitle" xml:space="preserve">
+    <value>Supprimer {0} produits?</value>
+  </data>
+  <data name="ManageProducts_BulkDeleteConfirmBody" xml:space="preserve">
+    <value>Cette action supprimera définitivement {0} produit(s). Cette action est irréversible.</value>
+  </data>
+  <data name="ManageProducts_ActivatedSuccess" xml:space="preserve">
+    <value>{0} produit(s) activé(s).</value>
+  </data>
+  <data name="ManageProducts_DeactivatedSuccess" xml:space="preserve">
+    <value>{0} produit(s) désactivé(s).</value>
+  </data>
+  <data name="ManageProducts_ActivateSkipped" xml:space="preserve">
+    <value>{0} produit(s) ignoré(s) car il leur manque un prix.</value>
+  </data>
+  <data name="ManageProducts_DeletedSuccess" xml:space="preserve">
+    <value>Produit supprimé.</value>
+  </data>
+  <data name="ManageProducts_BulkDeletedSuccess" xml:space="preserve">
+    <value>{0} produit(s) supprimé(s).</value>
+  </data>
+  <data name="Sort_LowestVariantPriceAsc" xml:space="preserve">
+    <value>Prix : croissant</value>
+  </data>
+  <data name="Sort_LowestVariantPriceDesc" xml:space="preserve">
+    <value>Prix : décroissant</value>
   </data>
   <data name="AddProduct_PageTitle" xml:space="preserve">
     <value>Ajouter un produit — Admin — The Vape Shop Sarnia</value>
@@ -1562,5 +1640,29 @@
   </data>
   <data name="ProductVariants_With_Args" xml:space="preserve">
     <value>{0} Variante</value>
+  </data>
+  <data name="Product_PriceRangeInvalid" xml:space="preserve">
+    <value>Entrez une plage de prix valide.</value>
+  </data>
+  <data name="Product_ProductIdsRequired" xml:space="preserve">
+    <value>Sélectionnez au moins un produit.</value>
+  </data>
+  <data name="Product_StatusChangeFailed" xml:space="preserve">
+    <value>Le statut n'a pas pu être mis à jour. Réessayez.</value>
+  </data>
+  <data name="Product_DeleteFailed" xml:space="preserve">
+    <value>Le produit n'a pas pu être supprimé. Réessayez.</value>
+  </data>
+  <data name="Product_InUse" xml:space="preserve">
+    <value>{0} est utilisé par {1} autre(s) enregistrement(s) et n'a pas été supprimé. Désactivez-le plutôt.</value>
+  </data>
+  <data name="Product_BulkDeleteAllBlocked" xml:space="preserve">
+    <value>Aucun produit n'a été supprimé — chaque produit sélectionné est encore utilisé. Désactivez-les plutôt.</value>
+  </data>
+  <data name="Product_BulkDeletePartial" xml:space="preserve">
+    <value>{0} produit(s) supprimé(s), {1} encore utilisé(s) et conservé(s).</value>
+  </data>
+  <data name="Product_ActivateNotPublishable" xml:space="preserve">
+    <value>{0} produit(s) ignoré(s) car il leur manque un prix.</value>
   </data>
 </root>

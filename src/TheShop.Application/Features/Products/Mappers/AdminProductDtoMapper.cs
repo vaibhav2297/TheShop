@@ -34,6 +34,7 @@ public static class AdminProductDtoMapper
     public static ProductListItemDto ToListItemDto(Product product, IFileStorage fileStorage)
     {
         var primary = product.Images.FirstOrDefault(i => i.IsPrimary) ?? product.Images.FirstOrDefault();
+        var (minPrice, maxPrice) = ResolvePriceRange(product);
 
         return new ProductListItemDto(
             product.Id,
@@ -42,20 +43,43 @@ public static class AdminProductDtoMapper
             primary is not null ? fileStorage.GetPublicUrl(StorageArea.ProductImages, primary.ObjectKey) : null,
             product.Brand.Name,
             product.Category.Name,
-            product.HasVariants ? null : product.Pricing?.Effective.Amount,
-            product.MinVariantPrice?.Amount,
-            product.HasVariants,
-            ResolveCurrency(product),
+            minPrice?.Amount,
+            maxPrice?.Amount,
+            product.Variants.Count,
+            ResolveCurrency(minPrice),
             product.IsPublished);
     }
 
     /// <summary>
-    /// The currency the row's displayed price is denominated in — taken from whichever price the
-    /// row actually shows, falling back to the storefront default for an unpriced product.
+    /// The row's displayed price range (plan §5 Decision 13): the lowest/highest priced variant
+    /// when the product has variants, or its own effective price for both ends when it has none.
     /// </summary>
-    private static string ResolveCurrency(Product product) =>
-        (product.HasVariants ? product.MinVariantPrice : product.Pricing?.Effective)?.Currency
-        ?? Money.DefaultCurrency;
+    private static (Money? Min, Money? Max) ResolvePriceRange(Product product)
+    {
+        if (product.Variants.Count == 0)
+        {
+            var effective = product.Pricing?.Effective;
+            return (effective, effective);
+        }
+
+        var prices = product.Variants
+            .Select(v => v.Pricing?.Effective)
+            .Where(price => price is not null)
+            .Select(price => price!)
+            .ToList();
+
+        if (prices.Count == 0)
+            return (null, null);
+
+        return (prices.MinBy(p => p.Amount), prices.MaxBy(p => p.Amount));
+    }
+
+    /// <summary>
+    /// The currency the row's displayed price range is denominated in, falling back to the
+    /// storefront default for an unpriced product.
+    /// </summary>
+    private static string ResolveCurrency(Money? minPrice) =>
+        minPrice?.Currency ?? Money.DefaultCurrency;
 
     private static ProductImageDto ToImageDto(ProductImage image, IFileStorage fileStorage) =>
         new(image.Id, fileStorage.GetPublicUrl(StorageArea.ProductImages, image.ObjectKey), image.Position, image.IsPrimary);
