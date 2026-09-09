@@ -19,7 +19,7 @@ jobs:
   adapters:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Validate generated adapters and reversible compatibility
         shell: pwsh
         run: pwsh -NoProfile -File .sdd/scripts/test-portability.ps1 -Published

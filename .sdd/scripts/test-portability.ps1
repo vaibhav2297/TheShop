@@ -9,6 +9,7 @@ $results=[Collections.Generic.List[object]]::new()
 function Assert-Check([string]$Name,[bool]$Condition,[string]$Evidence) {
     $results.Add([ordered]@{ name=$Name; passed=$Condition; evidence=$Evidence })
     Write-Output "[$(if($Condition){'PASS'}else{'FAIL'})] $Name"
+    if (-not $Condition -and $Evidence) { Write-Output $Evidence }
 }
 function Run-Script([string]$Script,[string[]]$Arguments,[string]$WorkingDirectory=$root) {
     return Invoke-Captured $pwsh (@('-NoProfile','-File',$Script) + $Arguments) $WorkingDirectory
@@ -101,6 +102,20 @@ $missing=Run-Script (Join-Path $work '.sdd/scripts/check-sdd-gates.ps1') @('spec
 Assert-Check 'Missing required artifact fails the shared gate' ($missing.exitCode -ne 0) $missing.stdout
 $scope=Run-Script (Join-Path $work '.sdd/scripts/check-sdd-gates.ps1') @('scope','-Phase','domain','-Files','src/TheShop.Web/Page.razor') $work
 Assert-Check 'Layer escape fails the shared scope gate' ($scope.exitCode -ne 0) $scope.stdout
+$scopeResults=@(foreach ($entry in @('.sdd/scripts/check-sdd-gates.ps1','.claude/scripts/check-sdd-gates.ps1')) {
+    foreach ($phase in @('infra','infra+web')) {
+        foreach ($path in @('supabase/migrations/probe.sql','supabase/seed.sql')) {
+            Run-Script (Join-Path $work $entry) @('scope','-Phase',$phase,'-Files',$path) $work
+        }
+    }
+})
+Assert-Check 'Both runtimes allow Infrastructure migrations and seed data' (@($scopeResults | Where-Object { $_.exitCode -ne 0 }).Count -eq 0) (($scopeResults | ForEach-Object { $_.stdout+$_.stderr }) -join "`n")
+$scopeResults=@(foreach ($entry in @('.sdd/scripts/check-sdd-gates.ps1','.claude/scripts/check-sdd-gates.ps1')) {
+    Run-Script (Join-Path $work $entry) @('scope','-Phase','domain','-Files','supabase/migrations/probe.sql') $work
+    Run-Script (Join-Path $work $entry) @('scope','-Phase','infra','-Files','supabase/config.toml') $work
+    Run-Script (Join-Path $work $entry) @('scope','-Phase','infra','-Files','src/TheShop.Web/Page.razor') $work
+})
+Assert-Check 'Both runtimes reject unrelated files outside Infrastructure scope' (@($scopeResults | Where-Object { $_.exitCode -ne 1 }).Count -eq 0) (($scopeResults | ForEach-Object { $_.stdout+$_.stderr }) -join "`n")
 Write-Utf8 (Join-Path $work 'src/TheShop.Domain/Probe.cs') "using Supabase;`npublic class Probe { }`n"
 $direct=Run-Script (Join-Path $work '.sdd/scripts/check-design-rules.ps1') @('-Path','src/TheShop.Domain/Probe.cs') $work
 $legacy=Run-Script (Join-Path $work '.claude/scripts/check-design-rules.ps1') @('-Path','src/TheShop.Domain/Probe.cs') $work

@@ -1,5 +1,5 @@
 {
-  "testedUtc": "2026-09-06T15:58:36.8835974Z",
+  "testedUtc": "2026-09-09T05:53:58.8011969Z",
   "passed": true,
   "checks": [
     {
@@ -19,11 +19,6 @@
     },
     {
       "name": "Executable examples and literal API blocks survive refactoring",
-      "passed": true,
-      "evidence": ""
-    },
-    {
-      "name": "Existing gate functions, design checks, and formatter preserved",
       "passed": true,
       "evidence": ""
     },
@@ -101,7 +96,7 @@
       "descriptionBeforeBytes": 260,
       "descriptionAfterBytes": 144,
       "entryBeforeBytes": 16260,
-      "entryAfterBytes": 16477
+      "entryAfterBytes": 16540
     },
     {
       "id": "theshop-plan",
@@ -150,14 +145,14 @@
       "descriptionBeforeBytes": 256,
       "descriptionAfterBytes": 157,
       "entryBeforeBytes": 20049,
-      "entryAfterBytes": 12971
+      "entryAfterBytes": 11547
     },
     {
       "id": "theshop-test-merged",
       "descriptionBeforeBytes": 265,
       "descriptionAfterBytes": 139,
       "entryBeforeBytes": 24149,
-      "entryAfterBytes": 15961
+      "entryAfterBytes": 16074
     },
     {
       "id": "theshop-verify",
@@ -213,7 +208,7 @@
       "descriptionBeforeBytes": 514,
       "descriptionAfterBytes": 141,
       "entryBeforeBytes": 31748,
-      "entryAfterBytes": 21079
+      "entryAfterBytes": 21186
     },
     {
       "id": "shop-test-writer",

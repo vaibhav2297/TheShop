@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "testedUtc": "2026-09-06T15:59:19.2197770Z",
+  "testedUtc": "2026-09-09T05:53:44.4907941Z",
   "migrationAudit": false,
   "published": true,
   "passed": true,
@@ -48,7 +48,7 @@
     {
       "name": "Independent generated edits block publication without partial writes",
       "passed": true,
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\sync-adapters.ps1:150\nLine |\n 150 |  … ts.Count) { throw \"Refusing independently changed or unowned files:`n …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Refusing independently changed or unowned files:\n     | .agents/skills/theshop-plan/SKILL.md\n"
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\sync-adapters.ps1:150\nLine |\n 150 |  … ts.Count) { throw \"Refusing independently changed or unowned files:`n …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Refusing independently changed or unowned files: .agents/skills/theshop-plan/SKILL.md\n"
     },
     {
       "name": "Generated paths cannot escape the workspace",
@@ -64,6 +64,16 @@
       "name": "Layer escape fails the shared scope gate",
       "passed": true,
       "evidence": "[sdd-gates] scope:domain - 1 violation(s):\n  - 'src/TheShop.Web/Page.razor' is outside the domain agent's allowed scope (allowed: src/TheShop.Domain/)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n"
+    },
+    {
+      "name": "Both runtimes allow Infrastructure migrations and seed data",
+      "passed": true,
+      "evidence": "[sdd-gates] scope:infra - clean.\n\n[sdd-gates] scope:infra - clean.\n\n[sdd-gates] scope:infra+web - clean.\n\n[sdd-gates] scope:infra+web - clean.\n\n[sdd-gates] scope:infra - clean.\n\n[sdd-gates] scope:infra - clean.\n\n[sdd-gates] scope:infra+web - clean.\n\n[sdd-gates] scope:infra+web - clean.\n"
+    },
+    {
+      "name": "Both runtimes reject unrelated files outside Infrastructure scope",
+      "passed": true,
+      "evidence": "[sdd-gates] scope:domain - 1 violation(s):\n  - 'supabase/migrations/probe.sql' is outside the domain agent's allowed scope (allowed: src/TheShop.Domain/)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n\n[sdd-gates] scope:infra - 1 violation(s):\n  - 'supabase/config.toml' is outside the infra agent's allowed scope (allowed: src/TheShop.Infrastructure/, supabase/migrations/, supabase/seed.sql)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n\n[sdd-gates] scope:infra - 1 violation(s):\n  - 'src/TheShop.Web/Page.razor' is outside the infra agent's allowed scope (allowed: src/TheShop.Infrastructure/, supabase/migrations/, supabase/seed.sql)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n\n[sdd-gates] scope:domain - 1 violation(s):\n  - 'supabase/migrations/probe.sql' is outside the domain agent's allowed scope (allowed: src/TheShop.Domain/)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n\n[sdd-gates] scope:infra - 1 violation(s):\n  - 'supabase/config.toml' is outside the infra agent's allowed scope (allowed: src/TheShop.Infrastructure/, supabase/migrations/, supabase/seed.sql)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n\n[sdd-gates] scope:infra - 1 violation(s):\n  - 'src/TheShop.Web/Page.razor' is outside the infra agent's allowed scope (allowed: src/TheShop.Infrastructure/, supabase/migrations/, supabase/seed.sql)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n"
     },
     {
       "name": "Both runtimes reject a Domain SDK dependency",
@@ -83,7 +93,7 @@
     {
       "name": "Rollback preserves independent edits",
       "passed": true,
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\rollback-adapters.ps1:27\nLine |\n  27 |  … ts.Count) { throw \"Rollback blocked by independent edits:`n$($conflic …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Rollback blocked by independent edits:\n     | .agents/skills/theshop-plan/SKILL.md\n"
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\rollback-adapters.ps1:27\nLine |\n  27 |  … ts.Count) { throw \"Rollback blocked by independent edits:`n$($conflic …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Rollback blocked by independent edits: .agents/skills/theshop-plan/SKILL.md\n"
     },
     {
       "name": "Rollback restores all original bytes and leaves unrelated files",

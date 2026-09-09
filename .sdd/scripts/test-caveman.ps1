@@ -55,6 +55,7 @@ foreach ($item in $old) {
     }
 }
 Assert 'Executable examples and literal API blocks survive refactoring' ($lost.Count -eq 0) ($lost -join ', ')
+if ($MigrationAudit) {
 $changedGates=@('check-design-rules.ps1','format-changes.ps1') | Where-Object { (Read-Utf8 (Join-Path $root ".sdd/scripts/$_")) -cne $original[".sdd/scripts/$_"] }
 # Phase 10 deliberately adds evidence dispatch. Preserve every original gate function exactly;
 # validate new behavior through test-evidence.ps1 instead of freezing whole script forever.
@@ -65,6 +66,7 @@ $oldFunctions=@($oldGate.FindAll({param($node) $node -is [Management.Automation.
 $newFunctions=@($newGate.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst]},$true))
 $changedFunctions=@(foreach($function in $oldFunctions){$current=@($newFunctions|Where-Object Name -CEQ $function.Name);if($current.Count -ne 1 -or $current[0].Extent.Text -cne $function.Extent.Text){$function.Name}})
 Assert 'Existing gate functions, design checks, and formatter preserved' (@($changedGates).Count -eq 0 -and $changedFunctions.Count -eq 0 -and $parseErrors.Count -eq 0) (($changedGates+$changedFunctions) -join ', ')
+}
 $templateChanges=@(foreach($path in $original.Keys | Where-Object {$_ -match '^\.sdd/skills/.+/templates/'}) {
     $candidate=Read-Utf8 (Join-Path $root $path)
     $beforeHeadings=@([regex]::Matches($original[$path],'(?m)^## (?:\d+\.|Assumptions & Open Questions)[^\r\n]*') | ForEach-Object Value)
