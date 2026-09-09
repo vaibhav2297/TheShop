@@ -42,11 +42,13 @@ Check 'Receipt carries actual gate output' ($state.stages.spec.gateReceipts[0].s
 Check 'Caller check log automatically fingerprinted' ($state.stages.spec.sources.Contains('spec-gate.log'))
 foreach ($dependency in @('Test-Proof.ps1','check-worker-scope.ps1','format-changes.ps1')) {
     $dependencyPath=Join-Path $work ".sdd/scripts/$dependency"
-    $savedDependency=Read-Utf8 $dependencyPath
-    Write-Utf8 $dependencyPath ($savedDependency+"`n# Changed verification dependency.`n")
+    $savedDependency=[IO.File]::ReadAllBytes($dependencyPath)
+    Write-Utf8 $dependencyPath ((Read-Utf8 $dependencyPath)+"`n# Changed verification dependency.`n")
     $r=Run 'check' @('-Stage','spec')
     Check "Changed $dependency invalidates stage evidence" ($r.exitCode -ne 0)
-    Write-Utf8 $dependencyPath $savedDependency
+    [IO.File]::WriteAllBytes($dependencyPath,$savedDependency)
+    $r=Run 'check' @('-Stage','spec')
+    Check "Restoring $dependency bytes restores fresh evidence" ($r.exitCode -eq 0) $r.stderr
 }
 $savedGateLog=Read-Utf8 (Join-Path $work 'spec-gate.log')
 Write-Utf8 (Join-Path $work 'spec-gate.log') 'Replaced execution evidence.'

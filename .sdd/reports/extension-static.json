@@ -1,227 +1,227 @@
 {
-  "fixture": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extensions-78beaa7148b949699e5abc87da15e81a\\repo",
+  "checkedUtc": "2026-09-09T05:58:16.3995800Z",
   "checks": [
     {
-      "name": "Existing catalog generates before onboarding",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Existing catalog generates before onboarding"
     },
     {
-      "name": "Install preview leaves managed state unchanged",
-      "evidence": "[extensions] Install extension-probe; revision=bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c; changed files=13.\n  previous revision=; staged review=D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extensions-78beaa7148b949699e5abc87da15e81a\\repo\\.sdd\\.stage\\extension-c990bf1ae404460e915e47fc0a8b121a\n  write .agents/skills/extension-probe/agents/openai.yaml\n  write .agents/skills/extension-probe/SKILL.md\n  write .claude/skills/extension-probe/SKILL.md\n  write .claude/skills/theshop-spec/SKILL.md\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/extension.json\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/SKILL.md\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/upstream/asset.bin\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/upstream/LICENSE\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/upstream/source.md\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/upstream/nested/SKILL.md\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/.package-lock.json\n  write .sdd/extensions/registry.json\n  write .sdd/generated-files.json\nPreview only. Add -Apply to publish this change.\n",
-      "passed": true
+      "evidence": "[extensions] Install extension-probe; revision=f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c; changed files=13.\n  previous revision=; staged review=D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extensions-68c20be3b2ae495c83389a5640ed764b\\repo\\.sdd\\.stage\\extension-d3e43764ec874883bf163e58ea0ad9b2\n  write .agents/skills/extension-probe/agents/openai.yaml\n  write .agents/skills/extension-probe/SKILL.md\n  write .claude/skills/extension-probe/SKILL.md\n  write .claude/skills/theshop-spec/SKILL.md\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/extension.json\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/SKILL.md\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/upstream/asset.bin\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/upstream/LICENSE\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/upstream/source.md\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/upstream/nested/SKILL.md\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/.package-lock.json\n  write .sdd/extensions/registry.json\n  write .sdd/generated-files.json\nPreview only. Add -Apply to publish this change.\n",
+      "passed": true,
+      "name": "Install preview leaves managed state unchanged"
     },
     {
-      "name": "Alias-free skill installs into both clients",
-      "evidence": "[extensions] Install extension-probe; revision=bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c; changed files=13.\n  previous revision=; staged review=D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extensions-78beaa7148b949699e5abc87da15e81a\\repo\\.sdd\\.stage\\extension-7393cbffbc2f4a47be18e7437f46e2d7\n  write .agents/skills/extension-probe/agents/openai.yaml\n  write .agents/skills/extension-probe/SKILL.md\n  write .claude/skills/extension-probe/SKILL.md\n  write .claude/skills/theshop-spec/SKILL.md\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/extension.json\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/SKILL.md\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/upstream/asset.bin\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/upstream/LICENSE\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/upstream/source.md\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/upstream/nested/SKILL.md\n  write .sdd/extensions/packages/extension-probe/bb883409128c8fadf0d199f1782523a8c1e76a8e96a81a70944022acc6b00a9c/.package-lock.json\n  write .sdd/extensions/registry.json\n  write .sdd/generated-files.json\n[extensions] published; transaction=18d32e5b7a584d50b0c5236c8f1717f5. Retained packages support version rollback.\n",
-      "passed": true
+      "evidence": "[extensions] Install extension-probe; revision=f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c; changed files=13.\n  previous revision=; staged review=D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extensions-68c20be3b2ae495c83389a5640ed764b\\repo\\.sdd\\.stage\\extension-5ddaec3fbf0f44198b860ad4156742b7\n  write .agents/skills/extension-probe/agents/openai.yaml\n  write .agents/skills/extension-probe/SKILL.md\n  write .claude/skills/extension-probe/SKILL.md\n  write .claude/skills/theshop-spec/SKILL.md\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/extension.json\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/SKILL.md\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/upstream/asset.bin\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/upstream/LICENSE\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/upstream/source.md\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/upstream/nested/SKILL.md\n  write .sdd/extensions/packages/extension-probe/f4eeb6b69bcb9bba4ea6e18d7043a9b1a5ab3c09735909cb924c4898718d385c/.package-lock.json\n  write .sdd/extensions/registry.json\n  write .sdd/generated-files.json\n[extensions] published; transaction=be2d48a64ee44d439eb16fb6ee2fff47. Retained packages support version rollback.\n",
+      "passed": true,
+      "name": "Alias-free skill installs into both clients"
     },
     {
-      "name": "Legacy manifest migrates to versioned text/asset ownership",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Legacy manifest migrates to versioned text/asset ownership"
     },
     {
-      "name": "Vendor multiline YAML, literals, and binary assets survive byte-for-byte",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Vendor multiline YAML, literals, and binary assets survive byte-for-byte"
     },
     {
-      "name": "Vendor files stay outside discovery root: .agents/skills",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Vendor files stay outside discovery root: .agents/skills"
     },
     {
-      "name": "Only wrapper is discoverable and points to pinned entry: .agents/skills",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Only wrapper is discoverable and points to pinned entry: .agents/skills"
     },
     {
-      "name": "Vendor files stay outside discovery root: .claude/skills",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Vendor files stay outside discovery root: .claude/skills"
     },
     {
-      "name": "Only wrapper is discoverable and points to pinned entry: .claude/skills",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Only wrapper is discoverable and points to pinned entry: .claude/skills"
     },
     {
-      "name": "Vendor nested skill and its relative dependency remain intact",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Vendor nested skill and its relative dependency remain intact"
     },
     {
-      "name": "Repeated install is idempotent",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Repeated install is idempotent"
     },
     {
-      "name": "Independent vendor edit blocks retirement before writes",
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:152\nLine |\n 152 |  … s[$path]) { throw \"Independent generated edit blocks extension change …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Independent generated edit blocks extension change:\n     | .agents/skills/extension-probe/upstream/SKILL.md\n",
-      "passed": true
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:152\nLine |\n 152 |  … s[$path]) { throw \"Independent generated edit blocks extension change …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Independent generated edit blocks extension change: .agents/skills/extension-probe/upstream/SKILL.md\n",
+      "passed": true,
+      "name": "Independent vendor edit blocks retirement before writes"
     },
     {
-      "name": "Same-revision retirement preview preserves working state",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Same-revision retirement preview preserves working state"
     },
     {
-      "name": "Same-revision update retires owned copies and preserves unrelated files and pin",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Same-revision update retires owned copies and preserves unrelated files and pin"
     },
     {
-      "name": "Agent installs with read-only scope and shared communication",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Agent installs with read-only scope and shared communication"
     },
     {
-      "name": "Independent generated edit blocks update before writes",
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:152\nLine |\n 152 |  … s[$path]) { throw \"Independent generated edit blocks extension change …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Independent generated edit blocks extension change:\n     | .agents/skills/extension-probe/SKILL.md\n",
-      "passed": true
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:152\nLine |\n 152 |  … s[$path]) { throw \"Independent generated edit blocks extension change …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Independent generated edit blocks extension change: .agents/skills/extension-probe/SKILL.md\n",
+      "passed": true,
+      "name": "Independent generated edit blocks update before writes"
     },
     {
-      "name": "Update publishes changed vendor content",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Update publishes changed vendor content"
     },
     {
-      "name": "Version rollback restores original vendor bytes",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Version rollback restores original vendor bytes"
     },
     {
-      "name": "Removal retires owned native files and keeps unrelated files and retained revision",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Removal retires owned native files and keeps unrelated files and retained revision"
     },
     {
-      "name": "Removed extension can be restored",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Removed extension can be restored"
     },
     {
-      "name": "Removal refuses a referenced pipeline dependency",
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:90\nLine |\n  90 |  … 0-9-])')) { throw \"Reconcile caller before removal: $($caller.source) …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Reconcile caller before removal:\n     | .sdd/skills/theshop-spec/SKILL.md\n",
-      "passed": true
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:90\nLine |\n  90 |  … 0-9-])')) { throw \"Reconcile caller before removal: $($caller.source) …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Reconcile caller before removal: .sdd/skills/theshop-spec/SKILL.md\n",
+      "passed": true,
+      "name": "Removal refuses a referenced pipeline dependency"
     },
     {
-      "name": "Unowned native definition cannot be overwritten",
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:153\nLine |\n 153 |  …  ($null -ne $before) { throw \"Unowned native path collision: $path\" }\n     |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Unowned native path collision:\n     | .agents/skills/extension-collision/SKILL.md\n",
-      "passed": true
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:153\nLine |\n 153 |  …  ($null -ne $before) { throw \"Unowned native path collision: $path\" }\n     |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Unowned native path collision: .agents/skills/extension-collision/SKILL.md\n",
+      "passed": true,
+      "name": "Unowned native definition cannot be overwritten"
     },
     {
-      "name": "Pipeline registration requires a real caller reference",
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:140\nLine |\n 140 |  if ($result.exitCode -ne 0) { throw ($result.stdout+$result.stderr) }\n     |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Exception:\n     | D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extensions-78beaa7148b949699e5abc87da15e81a\\repo\\.sdd\\.stage\\extension-0bddd131135f44d986ec2925ca1f9c78\\.sdd\\scripts\\Extensions.ps1:96 Line |   96 |  … ontains($id)) { throw \"Pipeline caller must explicitly invoke $id.\" }      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      | Pipeline caller must explicitly invoke extension-pipeline.\n",
-      "passed": true
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:140\nLine |\n 140 |  if ($result.exitCode -ne 0) { throw ($result.stdout+$result.stderr) }\n     |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Exception:\n     | D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extensions-68c20be3b2ae495c83389a5640ed764b\\repo\\.sdd\\.stage\\extension-d84ba26a19af40c581dc2a25db3a3cd5\\.sdd\\scripts\\Extensions.ps1:96 Line |   96 |  … ontains($id)) { throw \"Pipeline caller must explicitly invoke $id.\" }      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      | Pipeline caller must explicitly invoke extension-pipeline.\n",
+      "passed": true,
+      "name": "Pipeline registration requires a real caller reference"
     },
     {
-      "name": "Mixed-case extension IDs rejected before publication",
       "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\Extensions.ps1:21\nLine |\n  21 |  … anifest.id.Length -gt 63) { throw 'Invalid extension schema or ID.' }\n     |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Invalid extension schema or ID.\n",
-      "passed": true
+      "passed": true,
+      "name": "Mixed-case extension IDs rejected before publication"
     },
     {
-      "name": "Newline-containing extension IDs rejected before publication",
       "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\Extensions.ps1:21\nLine |\n  21 |  … anifest.id.Length -gt 63) { throw 'Invalid extension schema or ID.' }\n     |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Invalid extension schema or ID.\n",
-      "passed": true
+      "passed": true,
+      "name": "Newline-containing extension IDs rejected before publication"
     },
     {
-      "name": "Unsupported runtime blocks activation with evidence",
       "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\Extensions.ps1:59\nLine |\n  59 |  … ne $true) { throw \"Unsupported runtime: $runtime for $($manifest.id)\" …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Unsupported runtime: codex for extension-bad\n",
-      "passed": true
+      "passed": true,
+      "name": "Unsupported runtime blocks activation with evidence"
     },
     {
-      "name": "Missing capability binding rejected",
       "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\Extensions.ps1:61\nLine |\n  61 |  … '[\\r\\n]') { throw \"Missing $runtime capability binding: $capability\"  …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Missing claude capability binding: files.read\n",
-      "passed": true
+      "passed": true,
+      "name": "Missing capability binding rejected"
     },
     {
-      "name": "Unadapted hooks cannot silently enter runtime settings",
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\Extensions.ps1:20\nLine |\n  20 |  … $allowed) { throw \"Unsupported extension field: $key. Adapt hooks/set …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Unsupported extension field: hooks. Adapt hooks/settings\n     | explicitly.\n",
-      "passed": true
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\Extensions.ps1:20\nLine |\n  20 |  … $allowed) { throw \"Unsupported extension field: $key. Adapt hooks/set …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Unsupported extension field: hooks. Adapt hooks/settings explicitly.\n",
+      "passed": true,
+      "name": "Unadapted hooks cannot silently enter runtime settings"
     },
     {
-      "name": "Upstream hash mismatch rejected",
       "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\Extensions.ps1:49\nLine |\n  49 |  … tream.files[$relative]) { throw \"Upstream hash mismatch: $relative\" }\n     |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Upstream hash mismatch: source.md\n",
-      "passed": true
+      "passed": true,
+      "name": "Upstream hash mismatch rejected"
     },
     {
-      "name": "Existing workflow identity cannot be shadowed",
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:140\nLine |\n 140 |  if ($result.exitCode -ne 0) { throw ($result.stdout+$result.stderr) }\n     |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Exception:\n     | D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extensions-78beaa7148b949699e5abc87da15e81a\\repo\\.sdd\\.stage\\extension-ff6f91e99c774fe2a83321e67856e83d\\.sdd\\scripts\\Extensions.ps1:89 Line |   89 |  …  -or $id -in $ids) { throw \"Invalid or duplicate extension ID: $id\" }      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      | Invalid or duplicate extension ID: theshop-spec\n",
-      "passed": true
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:140\nLine |\n 140 |  if ($result.exitCode -ne 0) { throw ($result.stdout+$result.stderr) }\n     |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Exception:\n     | D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extensions-68c20be3b2ae495c83389a5640ed764b\\repo\\.sdd\\.stage\\extension-6896a9c9ccaf4b788cb4a32b65acf412\\.sdd\\scripts\\Extensions.ps1:89 Line |   89 |  …  -or $id -in $ids) { throw \"Invalid or duplicate extension ID: $id\" }      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      | Invalid or duplicate extension ID: theshop-spec\n",
+      "passed": true,
+      "name": "Existing workflow identity cannot be shadowed"
     },
     {
-      "name": "Retirement and recovery paths stay inside workspace",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Retirement and recovery paths stay inside workspace"
     },
     {
-      "name": "Interrupted transaction blocks later mutations",
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:71\nLine |\n  71 |  … quired')) { throw \"Recover incomplete transaction first: $($file.Base …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Recover incomplete transaction first:\n     | 17761ee9dd594767991cbc9c18aa3ed6\n",
-      "passed": true
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:71\nLine |\n  71 |  … quired')) { throw \"Recover incomplete transaction first: $($file.Base …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Recover incomplete transaction first: 37628a897d2d49e0b86a463afea38c48\n",
+      "passed": true,
+      "name": "Interrupted transaction blocks later mutations"
     },
     {
-      "name": "Recovery rejects independent edits",
-      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:32\nLine |\n  32 |  … ge.after) { throw \"Independent edit blocks recovery: $($change.path)\" …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Independent edit blocks recovery:\n     | .agents/skills/extension-probe/SKILL.md\n",
-      "passed": true
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\manage-extensions.ps1:32\nLine |\n  32 |  … ge.after) { throw \"Independent edit blocks recovery: $($change.path)\" …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Independent edit blocks recovery: .agents/skills/extension-probe/SKILL.md\n",
+      "passed": true,
+      "name": "Recovery rejects independent edits"
     },
     {
-      "name": "Recovery restores pre-transaction bytes",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Recovery restores pre-transaction bytes"
     },
     {
-      "name": "Updated registry remains compatible with normal generation",
       "evidence": "[sdd-adapters] clean: 247 files.\n",
-      "passed": true
+      "passed": true,
+      "name": "Updated registry remains compatible with normal generation"
     },
     {
-      "name": "Text ownership tolerates checkout line-ending conversion",
       "evidence": "[sdd-adapters] clean: 247 files.\n",
-      "passed": true
+      "passed": true,
+      "name": "Text ownership tolerates checkout line-ending conversion"
     },
     {
-      "name": "Git checkout fixture initializes in isolation",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Git checkout fixture initializes in isolation"
     },
     {
-      "name": "Windows Git checkout preserves pinned vendor and binary bytes",
-      "evidence": "warning: in the working copy of '.sdd/extensions/.gitattributes', LF will be replaced by CRLF the next time Git touches it\n",
-      "passed": true
-    },
-    {
-      "name": "Spawn request alone is not delegation completion",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Windows Git checkout preserves pinned vendor and binary bytes"
     },
     {
-      "name": "Matched native child return proves delegation",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Spawn request alone is not delegation completion"
     },
     {
-      "name": "Published upstream pin: sdd-caveman-help",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Matched native child return proves delegation"
     },
     {
-      "name": "Published discovery exposes wrapper only: .agents/skills/sdd-caveman-help",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Published upstream pin: sdd-caveman-help"
     },
     {
-      "name": "Published discovery exposes wrapper only: .claude/skills/sdd-caveman-help",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Published discovery exposes wrapper only: .agents/skills/sdd-caveman-help"
     },
     {
-      "name": "Published upstream pin: sdd-cavecrew-reviewer",
       "evidence": "",
-      "passed": true
+      "passed": true,
+      "name": "Published discovery exposes wrapper only: .claude/skills/sdd-caveman-help"
+    },
+    {
+      "evidence": "",
+      "passed": true,
+      "name": "Published upstream pin: sdd-cavecrew-reviewer"
     }
   ],
   "passed": true,
-  "checkedUtc": "2026-09-06T16:06:18.8909058Z"
+  "fixture": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\extensions-68c20be3b2ae495c83389a5640ed764b\\repo"
 }
