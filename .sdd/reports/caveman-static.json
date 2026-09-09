@@ -1,0 +1,229 @@
+{
+  "testedUtc": "2026-09-09T05:53:58.8011969Z",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Workflow identities, invocation settings, aliases, and role ownership preserved",
+      "passed": true,
+      "evidence": "Compare every catalog field except description against phase 5."
+    },
+    {
+      "name": "Caveman source is content pinned",
+      "passed": true,
+      "evidence": "Upstream snapshot SHA-256 matches recorded source; no startup download."
+    },
+    {
+      "name": "Discovery descriptions shrink while remaining distinct",
+      "passed": true,
+      "evidence": "11299 to 3553 UTF-8 bytes; bytes are not tokens."
+    },
+    {
+      "name": "Executable examples and literal API blocks survive refactoring",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "Artifact templates preserve mandatory numbered sections and appendix",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "Both runtime adapters generate successfully",
+      "passed": true,
+      "evidence": "[sdd-adapters] generated 247 files; changed 247.\n"
+    },
+    {
+      "name": "Rendered reference paths exist and contain no runtime macros",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "All workflows and workers reach shared communication policy",
+      "passed": true,
+      "evidence": "54 native entry points explicitly load policy; project guidance covers ordinary chat."
+    },
+    {
+      "name": "Published adapters match candidate",
+      "passed": true,
+      "evidence": "[sdd-adapters] clean: 247 files.\n"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "graphify-windows",
+      "descriptionBeforeBytes": 355,
+      "descriptionAfterBytes": 166,
+      "entryBeforeBytes": 39418,
+      "entryAfterBytes": 2761
+    },
+    {
+      "id": "theshop-clarify",
+      "descriptionBeforeBytes": 734,
+      "descriptionAfterBytes": 125,
+      "entryBeforeBytes": 11498,
+      "entryAfterBytes": 4471
+    },
+    {
+      "id": "theshop-constitution",
+      "descriptionBeforeBytes": 462,
+      "descriptionAfterBytes": 153,
+      "entryBeforeBytes": 14603,
+      "entryAfterBytes": 14126
+    },
+    {
+      "id": "theshop-document",
+      "descriptionBeforeBytes": 210,
+      "descriptionAfterBytes": 116,
+      "entryBeforeBytes": 4585,
+      "entryAfterBytes": 3932
+    },
+    {
+      "id": "theshop-e2e",
+      "descriptionBeforeBytes": 224,
+      "descriptionAfterBytes": 169,
+      "entryBeforeBytes": 23514,
+      "entryAfterBytes": 19932
+    },
+    {
+      "id": "theshop-execute",
+      "descriptionBeforeBytes": 458,
+      "descriptionAfterBytes": 172,
+      "entryBeforeBytes": 13231,
+      "entryAfterBytes": 13243
+    },
+    {
+      "id": "theshop-implement",
+      "descriptionBeforeBytes": 260,
+      "descriptionAfterBytes": 144,
+      "entryBeforeBytes": 16260,
+      "entryAfterBytes": 16540
+    },
+    {
+      "id": "theshop-plan",
+      "descriptionBeforeBytes": 664,
+      "descriptionAfterBytes": 137,
+      "entryBeforeBytes": 22565,
+      "entryAfterBytes": 7574
+    },
+    {
+      "id": "theshop-resolve",
+      "descriptionBeforeBytes": 909,
+      "descriptionAfterBytes": 139,
+      "entryBeforeBytes": 12782,
+      "entryAfterBytes": 5312
+    },
+    {
+      "id": "theshop-review",
+      "descriptionBeforeBytes": 156,
+      "descriptionAfterBytes": 125,
+      "entryBeforeBytes": 17096,
+      "entryAfterBytes": 13825
+    },
+    {
+      "id": "theshop-ship",
+      "descriptionBeforeBytes": 271,
+      "descriptionAfterBytes": 114,
+      "entryBeforeBytes": 10665,
+      "entryAfterBytes": 10081
+    },
+    {
+      "id": "theshop-spec",
+      "descriptionBeforeBytes": 988,
+      "descriptionAfterBytes": 142,
+      "entryBeforeBytes": 18592,
+      "entryAfterBytes": 7826
+    },
+    {
+      "id": "theshop-start",
+      "descriptionBeforeBytes": 262,
+      "descriptionAfterBytes": 85,
+      "entryBeforeBytes": 5418,
+      "entryAfterBytes": 4630
+    },
+    {
+      "id": "theshop-test",
+      "descriptionBeforeBytes": 256,
+      "descriptionAfterBytes": 157,
+      "entryBeforeBytes": 20049,
+      "entryAfterBytes": 11547
+    },
+    {
+      "id": "theshop-test-merged",
+      "descriptionBeforeBytes": 265,
+      "descriptionAfterBytes": 139,
+      "entryBeforeBytes": 24149,
+      "entryAfterBytes": 16074
+    },
+    {
+      "id": "theshop-verify",
+      "descriptionBeforeBytes": 234,
+      "descriptionAfterBytes": 160,
+      "entryBeforeBytes": 10361,
+      "entryAfterBytes": 8109
+    },
+    {
+      "id": "shop-application-implementer",
+      "descriptionBeforeBytes": 532,
+      "descriptionAfterBytes": 155,
+      "entryBeforeBytes": 10499,
+      "entryAfterBytes": 7186
+    },
+    {
+      "id": "shop-code-documenter",
+      "descriptionBeforeBytes": 404,
+      "descriptionAfterBytes": 123,
+      "entryBeforeBytes": 6743,
+      "entryAfterBytes": 4914
+    },
+    {
+      "id": "shop-code-quality-review",
+      "descriptionBeforeBytes": 438,
+      "descriptionAfterBytes": 154,
+      "entryBeforeBytes": 13244,
+      "entryAfterBytes": 11703
+    },
+    {
+      "id": "shop-code-security-reviewer",
+      "descriptionBeforeBytes": 467,
+      "descriptionAfterBytes": 145,
+      "entryBeforeBytes": 18164,
+      "entryAfterBytes": 16491
+    },
+    {
+      "id": "shop-domain-implementer",
+      "descriptionBeforeBytes": 457,
+      "descriptionAfterBytes": 135,
+      "entryBeforeBytes": 8666,
+      "entryAfterBytes": 5828
+    },
+    {
+      "id": "shop-infra-implementer",
+      "descriptionBeforeBytes": 558,
+      "descriptionAfterBytes": 154,
+      "entryBeforeBytes": 9968,
+      "entryAfterBytes": 7276
+    },
+    {
+      "id": "shop-test-runner",
+      "descriptionBeforeBytes": 514,
+      "descriptionAfterBytes": 141,
+      "entryBeforeBytes": 31748,
+      "entryAfterBytes": 21186
+    },
+    {
+      "id": "shop-test-writer",
+      "descriptionBeforeBytes": 687,
+      "descriptionAfterBytes": 151,
+      "entryBeforeBytes": 39314,
+      "entryAfterBytes": 28401
+    },
+    {
+      "id": "shop-ui-implementer",
+      "descriptionBeforeBytes": 534,
+      "descriptionAfterBytes": 152,
+      "entryBeforeBytes": 12704,
+      "entryAfterBytes": 9705
+    }
+  ],
+  "measurement": "UTF-8 byte counts, not tokenizer or billing measurements. Native usage recorded separately."
+}

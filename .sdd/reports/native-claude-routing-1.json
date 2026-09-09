@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "checkedUtc": "2026-09-06T15:05:27.2103966Z",
+  "runtime": "claude",
+  "case": "routing",
+  "repeat": 1,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-strategy-claude-routing-1-2438e27b58c14178ba2849fc787a6565",
+  "logs": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\strategy\\claude-routing-1-2438e27b58c14178ba2849fc787a6565",
+  "passed": true,
+  "checks": {
+    "native": true,
+    "feature": true,
+    "diagnosis": true,
+    "patch": true,
+    "refactor": true,
+    "migration": true,
+    "verification": true,
+    "review": true,
+    "missingHelper": true,
+    "missingDelegation": true,
+    "explicitOnly": true,
+    "staleHandoff": true,
+    "requirementGap": true
+  },
+  "calls": [
+    {
+      "exitCode": 0,
+      "name": "routing",
+      "elapsedSeconds": 56.5493009,
+      "usage": [
+        {
+          "type": "result",
+          "usage": {
+            "input_tokens": 14,
+            "cache_creation_input_tokens": 24697,
+            "cache_read_input_tokens": 201203,
+            "output_tokens": 3348,
+            "output_tokens_details": {
+              "thinking_tokens": 967
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 24697,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "not_available",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 651,
+                "cache_read_input_tokens": 36617,
+                "cache_creation_input_tokens": 1278,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 1278
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard"
+          }
+        }
+      ],
+      "models": [
+        "claude-opus-5",
+        "claude-haiku-4-5-20251001"
+      ],
+      "scopeViolations": []
+    }
+  ],
+  "elapsedSeconds": 56.5493009,
+  "retries": 0,
+  "humanCorrections": 0,
+  "limitation": "Bounded synthetic CommonJS pilot. Layered contexts sequential, not full SDD agents or parallel Infrastructure/Web. Native reported usage retained raw; compare within runtime only. No production default justified by this sample."
+}

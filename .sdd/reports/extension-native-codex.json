@@ -1,0 +1,25 @@
+{
+  "runtime": "codex",
+  "checkedUtc": "2026-09-06T10:04:39.455508Z",
+  "passed": true,
+  "processExitCode": 0,
+  "blocker": null,
+  "checks": {
+    "processExit": true,
+    "full.md": true,
+    "lite.md": true,
+    "off.md": true,
+    "review.md": true,
+    "evaluation.json": true,
+    "delegationTrace": true,
+    "modeRecognition": true,
+    "expiryFinding": true,
+    "readOnlyInputs": true
+  },
+  "elapsedSeconds": 172.48,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-extension-eval-3eb2a55b35bf491b9d1739e2ca937712",
+  "logs": ".sdd\\.test-work\\extension-native\\codex-e129d59a5f34446d86ed6c423dbb21e8",
+  "changedInputs": [],
+  "styleValidation": "Mode recognition and delegation evidence are mechanical. Inspect saved prose and actual child trace separately; no fixed style or savings guarantee.",
+  "delegationRecheckedUtc": "2026-09-06T10:07:28.8588535Z"
+}

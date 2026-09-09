@@ -1,0 +1,37 @@
+name: SDD portability
+
+on:
+  pull_request:
+    paths:
+      - '.sdd/**'
+      - '.claude/**'
+      - '.agents/skills/**'
+      - '.codex/agents/**'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - '.github/workflows/sdd-portability.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  adapters:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate generated adapters and reversible compatibility
+        shell: pwsh
+        run: pwsh -NoProfile -File .sdd/scripts/test-portability.ps1 -Published
+      - name: Validate Caveman contracts and preserved literals
+        shell: pwsh
+        run: pwsh -NoProfile -File .sdd/scripts/test-caveman.ps1 -Published
+      - name: Validate extension lifecycle and package provenance
+        shell: pwsh
+        run: pwsh -NoProfile -File .sdd/scripts/test-extensions.ps1 -Published
+      - name: Validate source freshness and failure feedback
+        shell: pwsh
+        run: pwsh -NoProfile -File .sdd/scripts/test-evidence.ps1
+      - name: Validate worker ownership and deferred acceptance proof
+        shell: pwsh
+        run: pwsh -NoProfile -File .sdd/scripts/test-release-contracts.ps1

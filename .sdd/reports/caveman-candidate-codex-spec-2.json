@@ -1,0 +1,33 @@
+{
+  "checkedUtc": "2026-09-06T06:41:50.9096622Z",
+  "variant": "candidate",
+  "runtime": "codex",
+  "case": "spec",
+  "repeat": 2,
+  "passed": true,
+  "checks": {
+    "spec": true,
+    "status": true,
+    "state": true,
+    "processExit": true
+  },
+  "processExitCode": 0,
+  "elapsedSeconds": 241.58,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-sdd-eval-b487ee85c16a4bfab76d131f291823e9",
+  "logs": ".sdd/.test-work/caveman-native/candidate-codex-spec-2-7f26909f0ab04cbeab5520aa06a12c45",
+  "models": [],
+  "usage": [
+    {
+      "usage": {
+        "input_tokens": 520331,
+        "cached_input_tokens": 486912,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8757,
+        "reasoning_output_tokens": 3149
+      },
+      "event": "turn.completed"
+    }
+  ],
+  "measurement": "Native runtime-reported usage; baseline/candidate compared within runtime only. Decision exercises do not claim production execution.",
+  "styleValidation": "Mode fields establish recognition only. Human review of actual artifacts assesses compression, completeness, and auto-clarity separately."
+}

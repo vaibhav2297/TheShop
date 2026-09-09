@@ -1,0 +1,20 @@
+{
+  "runtime": "claude",
+  "checkedUtc": "2026-09-06T09:56:40.0283059Z",
+  "passed": false,
+  "checks": {
+    "processExit": false,
+    "full.md": true,
+    "lite.md": true,
+    "off.md": true,
+    "review.md": false,
+    "evaluation.json": false,
+    "delegationTrace": false,
+    "readOnlyInputs": true
+  },
+  "elapsedSeconds": 84.4,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-extension-eval-33f912941d434e6396357bbd44f3d8fe",
+  "logs": ".sdd\\.test-work\\extension-native\\claude-2239e2403ef34f4ab5eede07584f5701",
+  "changedInputs": [],
+  "styleValidation": "Mode recognition and delegation evidence are mechanical. Inspect saved prose and actual child trace separately; no fixed style or savings guarantee."
+}

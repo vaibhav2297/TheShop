@@ -1,0 +1,67 @@
+{
+  "checkedUtc": "2026-09-06T06:36:09.9824505Z",
+  "variant": "candidate",
+  "runtime": "claude",
+  "case": "decisions",
+  "repeat": 2,
+  "passed": true,
+  "checks": {
+    "product": true,
+    "plan": true,
+    "domain": true,
+    "handoff": true,
+    "tests": true,
+    "review": true,
+    "literals": true,
+    "modeSelection": true,
+    "summaryExists": true,
+    "processExit": true
+  },
+  "processExitCode": 0,
+  "elapsedSeconds": 108.63,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-sdd-eval-16b14bce9f4f47a982ed9bde5c661046",
+  "logs": ".sdd/.test-work/caveman-native/candidate-claude-decisions-2-374db9e4142740f18103d8451d2ff953",
+  "models": [
+    "claude-sonnet-5"
+  ],
+  "usage": [
+    {
+      "event": "result",
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 92897,
+        "cache_read_input_tokens": 330973,
+        "output_tokens": 8629,
+        "output_tokens_details": {
+          "thinking_tokens": 4261
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 92897,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 510,
+            "cache_read_input_tokens": 114281,
+            "cache_creation_input_tokens": 497,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 497
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      }
+    }
+  ],
+  "measurement": "Native runtime-reported usage; baseline/candidate compared within runtime only. Decision exercises do not claim production execution.",
+  "styleValidation": "Mode fields establish recognition only. Human review of actual artifacts assesses compression, completeness, and auto-clarity separately."
+}

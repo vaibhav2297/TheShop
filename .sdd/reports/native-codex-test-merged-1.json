@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "checkedUtc": "2026-09-06T15:13:23.0793134Z",
+  "runtime": "codex",
+  "case": "test-merged",
+  "repeat": 1,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-strategy-codex-test-merged-1-d1bac6fc282c45239f754240697c1648",
+  "logs": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\strategy\\codex-test-merged-1-d1bac6fc282c45239f754240697c1648",
+  "passed": false,
+  "checks": {
+    "native": false,
+    "detectedSeededDefect": false,
+    "honestReport": false,
+    "correctedBehaviorPasses": false
+  },
+  "calls": [
+    {
+      "elapsedSeconds": 17.902368,
+      "usage": [],
+      "models": [],
+      "exitCode": 1,
+      "scopeViolations": [],
+      "name": "merged"
+    }
+  ],
+  "elapsedSeconds": 17.902368,
+  "retries": 0,
+  "humanCorrections": 0,
+  "limitation": "Bounded synthetic CommonJS pilot. Layered contexts sequential, not full SDD agents or parallel Infrastructure/Web. Native reported usage retained raw; compare within runtime only. No production default justified by this sample."
+}

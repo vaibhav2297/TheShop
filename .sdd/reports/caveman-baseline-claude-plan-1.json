@@ -1,0 +1,61 @@
+{
+  "checkedUtc": "2026-09-06T06:43:43.8058715Z",
+  "variant": "baseline",
+  "runtime": "claude",
+  "case": "plan",
+  "repeat": 1,
+  "passed": true,
+  "checks": {
+    "plan": true,
+    "status": true,
+    "state": true,
+    "processExit": true
+  },
+  "processExitCode": 0,
+  "elapsedSeconds": 363.07,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-sdd-eval-a127cd947baf44c4b8eb123810a6b122",
+  "logs": ".sdd/.test-work/caveman-native/baseline-claude-plan-1-5144a62677b247058aa1053a380cecf7",
+  "models": [
+    "claude-sonnet-5"
+  ],
+  "usage": [
+    {
+      "usage": {
+        "input_tokens": 30,
+        "cache_creation_input_tokens": 109377,
+        "cache_read_input_tokens": 1617718,
+        "output_tokens": 32403,
+        "output_tokens_details": {
+          "thinking_tokens": 15776
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 109377,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 847,
+            "cache_read_input_tokens": 135823,
+            "cache_creation_input_tokens": 1050,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1050
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "event": "result"
+    }
+  ],
+  "measurement": "Native runtime-reported usage; baseline/candidate compared within runtime only. Decision exercises do not claim production execution.",
+  "styleValidation": "Mode fields establish recognition only. Human review of actual artifacts assesses compression, completeness, and auto-clarity separately."
+}

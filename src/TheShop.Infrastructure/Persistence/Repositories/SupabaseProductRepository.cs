@@ -7,7 +7,6 @@ using TheShop.Application.Common.Models;
 using TheShop.Application.Common.Storage;
 using TheShop.Application.Features.Products;
 using TheShop.Application.Features.Products.DTOs;
-using TheShop.Application.Features.Products.Mappers;
 using TheShop.Domain.Entities;
 using TheShop.Infrastructure.Persistence.Filtering;
 using TheShop.Infrastructure.Persistence.Mappers;
@@ -41,12 +40,14 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
     private const string CreatedAtColumn = "created_at";
     private const string IdColumn = "id";
     private const string ProductIdColumn = "product_id";
-    private const string IsPrimaryColumn = "is_primary";
     private const string OptionTypeIdColumn = "option_type_id";
     private const string VariantIdColumn = "variant_id";
     private const string SkuNormalizedColumn = "sku_normalized";
     private const string CatalogueFiltersRpc = "get_catalogue_filters";
     private const string SaveProductRpc = "save_product";
+    private const string AdminProductsPageRpc = "admin_products_page";
+    private const string AdminProductFiltersRpc = "get_admin_product_filters";
+    private const string DeleteProductsRpc = "delete_products";
 
     // Matches the DB constraint names from migrations 0022/0023/0024 — the race-condition
     // backstop behind the FindConflictsAsync pre-check.
@@ -182,27 +183,119 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
     }
 
     /// <inheritdoc/>
-    public async Task<PagedResult<ProductListItemDto>> GetAdminPageAsync(PaginationRequest pagination, CancellationToken ct)
+    public async Task<PagedResult<ProductListItemDto>> GetAdminPageAsync(AdminProductCriteria criteria, CancellationToken ct)
     {
-        var recordPage = await PostgrestPaginationExtensions.GetPagedAsync(
-            () => client.From<ProductRecord>(),
-            query => query.Order(CreatedAtColumn, Ordering.Descending).Order(IdColumn, Ordering.Ascending),
-            pagination,
-            ct);
-
-        var productIds = recordPage.Items.Select(r => r.Id).ToList();
-        var primaryImagesByProduct = await GetPrimaryImagesAsync(productIds, ct);
-
-        return recordPage.MapItems(record =>
+        var args = new
         {
-            IReadOnlyList<ProductImage> images = primaryImagesByProduct.TryGetValue(record.Id, out var image)
-                ? [image.ToDomain()]
-                : [];
+            p_search = criteria.Search,
+            p_status = ResolveStatusArg(criteria.Status),
+            p_brand_ids = criteria.BrandIds,
+            p_category_ids = criteria.CategoryIds,
+            p_price_min = criteria.PriceMin,
+            p_price_max = criteria.PriceMax,
+            p_sort = ResolveSortArg(criteria.Sort),
+            p_limit = criteria.Pagination.PageSize,
+            p_offset = criteria.Pagination.Skip,
+        };
 
-            var product = record.ToDomain(ResolveImagePublicUrl, images);
-            return AdminProductDtoMapper.ToListItemDto(product, fileStorage);
-        });
+        var rows = await client.Rpc<List<AdminProductRowRecord>>(AdminProductsPageRpc, args) ?? [];
+        if (rows.Count == 0)
+            return PagedResult<ProductListItemDto>.Empty(criteria.Pagination);
+
+        var totalCount = (int)rows[0].TotalCount;
+        var items = rows.Select(row => row.ToDto(fileStorage)).ToList();
+        return new PagedResult<ProductListItemDto>(items, criteria.Pagination.Page, criteria.Pagination.PageSize, totalCount);
     }
+
+    /// <inheritdoc/>
+    public async Task<AdminProductFiltersDto> GetAdminFiltersAsync(CancellationToken ct)
+    {
+        var record = await client.Rpc<AdminProductFiltersRecord>(AdminProductFiltersRpc, EmptyRpcArgs)
+            ?? new AdminProductFiltersRecord();
+
+        return record.ToDto();
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<Product>> GetManyWithVariantsAsync(IReadOnlyList<Guid> ids, CancellationToken ct)
+    {
+        if (ids.Count == 0)
+            return [];
+
+        var idStrings = ids.Select(id => id.ToString()).ToList();
+
+        var productQuery = client.From<ProductRecord>();
+        productQuery.Filter(IdColumn, Operator.In, idStrings);
+        var productResponse = await productQuery.Get(ct);
+
+        var variantQuery = client.From<ProductVariantRecord>();
+        variantQuery.Filter(ProductIdColumn, Operator.In, idStrings);
+        var variantResponse = await variantQuery.Get(ct);
+
+        return [.. productResponse.Models.Select(record =>
+        {
+            var variants = variantResponse.Models
+                .Where(v => v.ProductId == record.Id)
+                .OrderBy(v => v.Position)
+                .Select(v => v.ToDomain((IReadOnlySet<Guid>)new HashSet<Guid>()))
+                .ToList();
+
+            return record.ToDomain(ResolveImagePublicUrl, variants: variants);
+        })];
+    }
+
+    /// <inheritdoc/>
+    public async Task<int> SetPublishedAsync(IReadOnlyList<Guid> ids, bool isPublished, CancellationToken ct)
+    {
+        if (ids.Count == 0)
+            return 0;
+
+        var response = await client.From<ProductRecord>()
+            .Filter(IdColumn, Operator.In, ids.Select(id => id.ToString()).ToList())
+            .Filter(IsPublishedColumn, Operator.Equals, isPublished ? "false" : "true")
+            .Set(x => x.IsPublished, isPublished)
+            .Set(x => x.UpdatedAt, DateTimeOffset.UtcNow)
+            .Update(cancellationToken: ct);
+
+        return response.Models.Count;
+    }
+
+    /// <inheritdoc/>
+    public async Task<(ProductDeletionOutcomeDto Outcome, IReadOnlyList<string> DeletedImageKeys)> DeleteManyAsync(
+        IReadOnlyList<Guid> ids, CancellationToken ct)
+    {
+        var args = new { product_ids = ids };
+        var rows = await client.Rpc<List<DeleteProductsResultRecord>>(DeleteProductsRpc, args) ?? [];
+
+        var deleted = rows.Where(r => r.Deleted).ToList();
+        var blocked = rows
+            .Where(r => !r.Deleted)
+            .Select(r => new ReferencedProductDto(r.Id, r.Name, (int)r.ReferenceCount))
+            .ToList();
+
+        var deletedImageKeys = deleted.SelectMany(r => r.ImageKeys).ToList();
+
+        return (new ProductDeletionOutcomeDto(deleted.Count, blocked), deletedImageKeys);
+    }
+
+    private static string? ResolveStatusArg(ProductStatusFilter? status) =>
+        status switch
+        {
+            ProductStatusFilter.Active => "active",
+            ProductStatusFilter.Inactive => "inactive",
+            _ => null,
+        };
+
+    private static string ResolveSortArg(AdminProductSortOption sort) =>
+        sort switch
+        {
+            AdminProductSortOption.NameZToA => "name-desc",
+            AdminProductSortOption.NewestFirst => "newest",
+            AdminProductSortOption.OldestFirst => "oldest",
+            AdminProductSortOption.LowestVariantPriceAsc => "price-asc",
+            AdminProductSortOption.LowestVariantPriceDesc => "price-desc",
+            _ => "name-asc",
+        };
 
     /// <inheritdoc/>
     public async Task<(Product Product, string RowVersion)?> GetForEditAsync(Guid id, CancellationToken ct)
@@ -283,19 +376,6 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
         {
             return Result.Fail<string>(ProductErrorKeys.NameAlreadyExists);
         }
-    }
-
-    private async Task<Dictionary<Guid, ProductImageRecord>> GetPrimaryImagesAsync(
-        IReadOnlyList<Guid> productIds, CancellationToken ct)
-    {
-        if (productIds.Count == 0)
-            return [];
-
-        var query = client.From<ProductImageRecord>();
-        query.Filter(ProductIdColumn, Operator.In, productIds.Select(id => id.ToString()).ToList());
-        query.Filter(IsPrimaryColumn, Operator.Equals, "true");
-        var response = await query.Get(ct);
-        return response.Models.ToDictionary(r => r.ProductId);
     }
 
     private async Task<List<ProductOptionValueRecord>> GetOptionValuesAsync(

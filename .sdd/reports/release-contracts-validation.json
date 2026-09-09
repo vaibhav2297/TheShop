@@ -1,0 +1,96 @@
+{
+  "checkedUtc": "2026-09-09T06:01:27.6633954Z",
+  "checks": [
+    {
+      "name": "Legacy empty unit mapping stays structurally valid; runner must report Not Covered",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Justified browser deferral accepted structurally",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Unexplained deferral rejected",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Unknown classification rejected",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Duplicate IDs rejected",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Supporting unit tests cannot discharge browser deferral",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Matching browser classification accepted",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Missing deferred browser ID rejected",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Human deferral may receive automated browser proof",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Byte snapshot created on dirty checkout",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Untouched dirty file permitted",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Owned edit permitted",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Already-dirty out-of-scope edit rejected",
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\check-worker-scope.ps1:43\nLine |\n  43 |  … ns.Count) { throw \"Worker scope escape ($Phase): $($violations -join  …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Worker scope escape (domain): src/TheShop.Web/Page.cs\n",
+      "passed": true
+    },
+    {
+      "name": "Layer worker test write rejected",
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\check-worker-scope.ps1:43\nLine |\n  43 |  … ns.Count) { throw \"Worker scope escape ($Phase): $($violations -join  …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Worker scope escape (domain): tests/ItemTests.cs\n",
+      "passed": true
+    },
+    {
+      "name": "Out-of-scope deletion rejected",
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\check-worker-scope.ps1:43\nLine |\n  43 |  … ns.Count) { throw \"Worker scope escape ($Phase): $($violations -join  …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Worker scope escape (domain): src/TheShop.Web/Page.cs\n",
+      "passed": true
+    },
+    {
+      "name": "Web cannot write Application-owned resources",
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\check-worker-scope.ps1:43\nLine |\n  43 |  … ns.Count) { throw \"Worker scope escape ($Phase): $($violations -join  …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Worker scope escape (web): src/TheShop.Domain/Item.cs, src/TheShop.Web/Resources/Strings.resx\n",
+      "passed": true
+    },
+    {
+      "name": "Application may supply resource keys",
+      "detail": "",
+      "passed": true
+    },
+    {
+      "name": "Existing snapshot cannot be overwritten",
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\check-worker-scope.ps1:22\nLine |\n  22 |  … shotFile) { throw 'Snapshot exists; use a distinct phase snapshot.' } …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Snapshot exists; use a distinct phase snapshot.\n",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "checkedUtc": "2026-09-06T15:12:24.6962121Z",
+  "runtime": "claude",
+  "case": "test-separate",
+  "repeat": 1,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-strategy-claude-test-separate-1-96ce26e2f1124a3e99ce883dad1d321f",
+  "logs": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\strategy\\claude-test-separate-1-96ce26e2f1124a3e99ce883dad1d321f",
+  "passed": false,
+  "checks": {
+    "writer": true,
+    "runner": true,
+    "detectedSeededDefect": false,
+    "honestReport": true,
+    "correctedBehaviorPasses": true
+  },
+  "calls": [
+    {
+      "exitCode": 0,
+      "models": [
+        "claude-opus-5",
+        "claude-haiku-4-5-20251001"
+      ],
+      "scopeViolations": [],
+      "name": "writer",
+      "elapsedSeconds": 74.7175752,
+      "usage": [
+        {
+          "type": "result",
+          "usage": {
+            "input_tokens": 8,
+            "cache_creation_input_tokens": 20927,
+            "cache_read_input_tokens": 93353,
+            "output_tokens": 6341,
+            "output_tokens_details": {
+              "thinking_tokens": 316
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 20927,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "not_available",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 365,
+                "cache_read_input_tokens": 28772,
+                "cache_creation_input_tokens": 5353,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 5353
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard"
+          }
+        }
+      ]
+    },
+    {
+      "exitCode": 0,
+      "models": [
+        "claude-opus-5",
+        "claude-haiku-4-5-20251001"
+      ],
+      "scopeViolations": [],
+      "name": "runner",
+      "elapsedSeconds": 48.051919,
+      "usage": [
+        {
+          "type": "result",
+          "usage": {
+            "input_tokens": 16,
+            "cache_creation_input_tokens": 15166,
+            "cache_read_input_tokens": 213870,
+            "output_tokens": 1969,
+            "output_tokens_details": {
+              "thinking_tokens": 83
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 15166,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "not_available",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 222,
+                "cache_read_input_tokens": 30705,
+                "cache_creation_input_tokens": 615,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 615
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard"
+          }
+        }
+      ]
+    }
+  ],
+  "elapsedSeconds": 122.7694942,
+  "retries": 0,
+  "humanCorrections": 0,
+  "limitation": "Bounded synthetic CommonJS pilot. Layered contexts sequential, not full SDD agents or parallel Infrastructure/Web. Native reported usage retained raw; compare within runtime only. No production default justified by this sample."
+}

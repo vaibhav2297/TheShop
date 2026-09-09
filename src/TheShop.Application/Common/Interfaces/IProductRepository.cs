@@ -35,10 +35,40 @@ public interface IProductRepository
         string name, IReadOnlyCollection<string> skus, Guid? excludeProductId, CancellationToken ct);
 
     /// <summary>
-    /// Returns a page of the admin product list, published and unpublished alike, newest first,
-    /// with no search/filter/sort (AC-1, AC-2).
+    /// Returns a filtered, sorted, paged slice of the admin product list — published and
+    /// unpublished alike — matching <paramref name="criteria"/>, each row carrying its variant
+    /// price range and count (AC-1..AC-5, FR-17).
     /// </summary>
-    Task<PagedResult<ProductListItemDto>> GetAdminPageAsync(PaginationRequest pagination, CancellationToken ct);
+    Task<PagedResult<ProductListItemDto>> GetAdminPageAsync(AdminProductCriteria criteria, CancellationToken ct);
+
+    /// <summary>
+    /// Returns the filter options for the admin product list: every brand and category that owns
+    /// a product, plus the variant-aware price bounds (plan §5 Decision 7).
+    /// </summary>
+    Task<AdminProductFiltersDto> GetAdminFiltersAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Returns the products matching <paramref name="ids"/> together with their variants, for
+    /// activation's <c>EnsurePublishable()</c> check (plan §5 Decision 3). Ids that no longer
+    /// exist are silently omitted.
+    /// </summary>
+    Task<IReadOnlyList<Product>> GetManyWithVariantsAsync(IReadOnlyList<Guid> ids, CancellationToken ct);
+
+    /// <summary>
+    /// Sets <c>is_published</c> to <paramref name="isPublished"/> for every id in
+    /// <paramref name="ids"/> currently in the opposite status, returning the number of rows
+    /// actually changed — a product already in the target status is a no-op (plan §5 Decision 4).
+    /// </summary>
+    Task<int> SetPublishedAsync(IReadOnlyList<Guid> ids, bool isPublished, CancellationToken ct);
+
+    /// <summary>
+    /// Deletes every product in <paramref name="ids"/> that has no referencing record, atomically
+    /// (RULE-3/RULE-4 partial success). Alongside the outcome, returns the image storage keys the
+    /// deleted products exclusively owned, so the caller can dispose them (RULE-8) — the rows are
+    /// already gone by the time this returns, so that disposal is best-effort.
+    /// </summary>
+    Task<(ProductDeletionOutcomeDto Outcome, IReadOnlyList<string> DeletedImageKeys)> DeleteManyAsync(
+        IReadOnlyList<Guid> ids, CancellationToken ct);
 
     /// <summary>
     /// Returns the full aggregate — gallery, option types, and variants included — for the admin

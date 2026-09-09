@@ -1,0 +1,193 @@
+{
+  "feature": "manage-product",
+  "trait": "manage-product",
+  "writtenAt": "2026-09-09",
+  "totalTests": 144,
+  "classes": [
+    { "fqn": "TheShop.Domain.Tests.Enums.AdminProductSortOptionTests", "file": "tests/TheShop.Domain.Tests/Enums/AdminProductSortOptionTests.cs", "tests": 8 },
+    { "fqn": "TheShop.Domain.Tests.Enums.ProductStatusFilterTests", "file": "tests/TheShop.Domain.Tests/Enums/ProductStatusFilterTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests", "file": "tests/TheShop.Application.Tests/Features/Products/Mappers/AdminProductDtoMapperTests.cs", "tests": 9 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetAdminProductsPageHandlerTests.cs", "tests": 7 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetAdminProductsPageQueryValidatorTests.cs", "tests": 9 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetAdminProductsPageQueryTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductFiltersHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetAdminProductFiltersHandlerTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductFiltersQueryTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetAdminProductFiltersQueryTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsCommandTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/DeleteProducts/DeleteProductsCommandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/DeleteProducts/DeleteProductsCommandValidatorTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/DeleteProducts/DeleteProductsHandlerTests.cs", "tests": 9 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusCommandTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/SetProductStatus/SetProductStatusCommandTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/SetProductStatus/SetProductStatusCommandValidatorTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/SetProductStatus/SetProductStatusHandlerTests.cs", "tests": 8 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.AdminProductMapperTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/AdminProductMapperTests.cs", "tests": 7 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ManageProductsSchemaTests.cs", "tests": 26 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageProductsTests.cs", "tests": 45 }
+  ],
+  "acceptanceCriteria": [
+    { "id": "AC-1", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_OnInitialize_QueriesTheFirstPageWithNoNarrowingAndNameAToZ",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenProductsExist_ShowsEachProductsNameSkuBrandCategoryAndStatus",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenAProductIsUnpublished_ShowsInactiveStatus",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenProductsSpanMultiplePages_ShowsPaginationControls",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageHandlerTests.Handle_ReturnsBothPublishedAndUnpublishedProducts",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageHandlerTests.Handle_WhenTheCallerRequestsADifferentPageSize_ClampsItToTheFixedTen",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithElevenProducts_ReturnsFirstTenNameAscendingWithTheFullTotal",
+      "TheShop.Domain.Tests.Enums.AdminProductSortOptionTests.AdminProductSortOption_NameAToZIsTheDefaultValue",
+      "TheShop.Domain.Tests.Enums.ProductStatusFilterTests.ProductStatusFilter_DefinesExactlyTwoOptions",
+      "TheShop.Infrastructure.Tests.Persistence.AdminProductMapperTests.ToDto_MapsEveryFieldVerbatim",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests.Validate_WithPageOneAndNoPriceRange_IsValid",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests.Validate_WithPageBelowOne_HasPageInvalidError"
+    ] },
+    { "id": "AC-2", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ChangePage_AfterFilteringAndSorting_KeepsBothCriteriaOnTheNewPage"
+    ] },
+    { "id": "AC-3", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Search_WhenStaffTypesATerm_ReQueriesWithThatTermFromPageOne",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageHandlerTests.Handle_WhenSearchIsBlank_BuildsCriteriaWithNullSearch",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageHandlerTests.Handle_WhenSearchHasSurroundingWhitespace_TrimsItInTheCriteria",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_SearchWithSurroundingSpacesAndMixedCase_MatchesContainingNames",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithBlankSearch_AppliesNoNarrowing"
+    ] },
+    { "id": "AC-4", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ChangeStatusFilter_WhenStaffFiltersByInactive_ReQueriesWithThatStatusFromPageOne",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ChangeBrandFilter_WhenStaffTogglesABrand_ReQueriesWithThatBrandIdFromPageOne",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ChangePriceRange_WhenStaffSettlesTheSlider_ReQueriesWithThoseBoundsFromPageOne",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageHandlerTests.Handle_BuildsCriteriaCarryingEveryFilterAndSortVerbatim",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithStatusAndBrandAndCategoryFilters_ReturnsOnlyProductsSatisfyingAll",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductFilters_ReturnsOnlyBrandsAndCategoriesThatOwnAProduct",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductFiltersHandlerTests.Handle_ReturnsTheRepositoriesFiltersVerbatim",
+      "TheShop.Domain.Tests.Enums.ProductStatusFilterTests.ProductStatusFilter_EachSpecOptionIsDefined",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests.Validate_WithAValidPriceRange_IsValid",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests.Validate_WithOnlyOneBoundSupplied_IsValid",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests.Validate_WhenPriceMinExceedsPriceMax_HasPriceRangeInvalidError",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests.Validate_WithANegativePriceMin_HasPriceRangeInvalidError",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests.Validate_WithANegativePriceMax_HasPriceRangeInvalidError"
+    ] },
+    { "id": "AC-5", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ChangeSort_WhenStaffReversesTheNameOrder_ReQueriesWithThatSortFromPageOne",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_SortedNameDescending_ReturnsReverseAlphabeticalOrder",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_SortedOldestFirst_ReturnsCreationOrderAscending",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithAnUnrecognizedSort_FallsBackToNameAscending",
+      "TheShop.Domain.Tests.Enums.AdminProductSortOptionTests.AdminProductSortOption_DefinesExactlySixOptions",
+      "TheShop.Domain.Tests.Enums.AdminProductSortOptionTests.AdminProductSortOption_EachSpecOptionIsDefined"
+    ] },
+    { "id": "AC-6", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ChangeSort_WithProductsSelected_ClearsTheSelectionAndHidesTheBulkBar",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.CloseBulkBar_WhenStaffDismissesIt_ClearsTheSelectionAndHidesTheBar"
+    ] },
+    { "id": "AC-7", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.SelectAll_OnAPageWithMoreProductsThanFit_SelectsOnlyTheCurrentPagesProducts"
+    ] },
+    { "id": "AC-8", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserHoldsProductsCreatePermission_ShowsTheAddProductButtonLinkedToTheAddRoute"
+    ], "proof": "e2e", "reason": "Unit/component tests only prove the Add button navigates to the existing Add-product route; completing that flow and confirming the created product appears in subsequent listing results is a cross-page, persisted round trip that requires a real browser journey." },
+    { "id": "AC-9", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_EditControl_LinksToTheProductsIdKeyedEditRoute"
+    ], "proof": "e2e", "reason": "Unit/component tests only prove the row's Edit control links to the id-keyed existing Edit route; completing that flow and confirming saved changes appear in subsequent listing results is a cross-page, persisted round trip that requires a real browser journey." },
+    { "id": "AC-10", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.StatusToggle_WhenActivatingAnInactiveProduct_SendsImmediatelyWithoutConfirmation",
+      "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusHandlerTests.Handle_WhenDeactivating_CallsSetPublishedAsyncWithFalseAndReturnsTheChangedCount",
+      "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusHandlerTests.Handle_WhenActivatingAPricedProduct_ReturnsChangedCountOfOneAndNoSkips",
+      "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusCommandTests.SetProductStatusCommand_Always_IsDecoratedWithTheProductsEditPermissionRequirement",
+      "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusCommandValidatorTests.Validate_WithOneOrMoreDistinctNonEmptyIds_IsValid"
+    ] },
+    { "id": "AC-11", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.StatusToggle_WhenDeactivatingAnActiveProduct_AsksForConfirmationBeforeSending",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.StatusToggle_WhenDeactivationIsCancelled_DoesNotSendTheCommand"
+    ] },
+    { "id": "AC-12", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusHandlerTests.Handle_WhenDeactivating_CallsSetPublishedAsyncWithFalseAndReturnsTheChangedCount"
+    ], "proof": "e2e", "reason": "Confirming a deactivated product actually disappears from the public storefront catalogue while remaining visible with intact details/history to staff spans the separate product-catalogue feature's own published-only filtering; that cross-feature visibility claim needs a real browser journey, not a manage-product-scoped unit test." },
+    { "id": "AC-13", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests.Handle_WhenTheProductIsDeletable_ReturnsSuccessWithDeletedCountOfOne",
+      "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests.Handle_WhenTheDeletedProductHadImages_DeletesEachImageObject",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.DeleteSingle_WhenConfirmed_SendsDeleteProductsCommandWithThatProductsId",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.DeleteProducts_WhenTheProductHasNoReferences_DeletesItAndReportsDeletedTrue",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.DeleteProducts_ReturnsTheDeletedProductsImageKeysForDisposal",
+      "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsCommandTests.DeleteProductsCommand_Always_IsDecoratedWithTheProductsDeletePermissionRequirement",
+      "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsCommandValidatorTests.Validate_WithOneOrMoreDistinctNonEmptyIds_IsValid"
+    ] },
+    { "id": "AC-14", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.DeleteSingle_WhenCancelled_DoesNotSendTheCommand",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.BulkDelete_WhenCancelled_DoesNotSendTheCommandAndKeepsTheSelection"
+    ] },
+    { "id": "AC-15", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests.Handle_WhenTheProductIsReferenced_ReturnsZeroDeletedAndTheBlockedProductWithItsReferenceCount",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.DeleteSingle_WhenTheProductIsReferenced_ShowsTheInUseMessageNamingItAndItsReferenceCount"
+    ] },
+    { "id": "AC-16", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests.Handle_WithFiveSelectedOfWhichTwoAreReferenced_ReturnsThreeDeletedAndTheTwoBlocked",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.BulkDelete_WhenConfirmed_SendsDeleteProductsCommandWithEverySelectedId",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.BulkDelete_WithAMixedOutcome_ReportsBothCountsAndKeepsOnlyTheReferencedProductsSelected",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.DeleteProducts_ForMultipleIds_DeletesEachOneInTheSameCall"
+    ] },
+    { "id": "AC-17", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests.Handle_WhenEverySelectedProductIsReferenced_ReturnsZeroDeletedAndEveryProductBlocked",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.BulkDelete_WhenEverySelectedProductIsReferenced_ShowsTheAllBlockedMessage"
+    ] },
+    { "id": "AC-18", "tests": [
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryTests.GetAdminProductsPageQuery_Always_IsDecoratedWithTheProductsViewPermissionRequirement",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductFiltersQueryTests.GetAdminProductFiltersQuery_Always_IsDecoratedWithTheProductsViewPermissionRequirement",
+      "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusCommandTests.SetProductStatusCommand_Always_IsDecoratedWithTheProductsEditPermissionRequirement",
+      "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsCommandTests.DeleteProductsCommand_Always_IsDecoratedWithTheProductsDeletePermissionRequirement",
+      "TheShop.Application.Tests.Features.Products.Commands.DeleteProducts.DeleteProductsHandlerTests.Handle_WhenTheRepositoryThrowsAnAccessDeniedException_ReturnsRbacAccessDeniedFailure",
+      "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusHandlerTests.Handle_WhenTheRepositoryThrowsAnAccessDeniedException_ReturnsRbacAccessDeniedFailure",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ManageProducts_Always_CarriesTheProductsViewAuthorizePolicy",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserHoldsOnlyProductsView_DoesNotShowTheAddProductButton",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserHoldsOnlyProductsView_DoesNotShowEditOrDeleteRowControls",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserHoldsOnlyProductsView_RendersStatusAsPlainTextNotAClickableToggle",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserHoldsEditButNotDelete_BulkBarOffersActivateAndDeactivateButNotDelete",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WhenCallerLacksProductsViewPermission_ThrowsAccessDeniedException",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductFilters_WhenCallerLacksProductsViewPermission_ThrowsAccessDeniedException",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.DeleteProducts_WhenCallerLacksProductsDeletePermission_ThrowsAccessDeniedException",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.DeleteProductRow_WhenCallerLacksProductsDeletePermission_TheDeleteAffectsNoRows"
+    ] },
+    { "id": "AC-19", "tests": [], "proof": "manual", "reason": "CAD locale formatting is verified generically by CurrencyFormatterTests (a different feature trait), and French-string completeness for every manage-product resource key is gated at the review stage's French-localization completeness check, not this Test stage. No manage-product-scoped test renders the page under an active French culture." },
+    { "id": "AC-20", "tests": [], "proof": "manual", "reason": "Keyboard operability, visible focus indicators, and focus entering/returning around a confirmation dialog require real browser focus and DOM APIs that bUnit's headless renderer does not simulate; needs an E2E or manual accessibility pass." },
+    { "id": "AC-21", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenNoProductsExistYet_ShowsTheEmptyStateMessageAndHidesTheFilterPanel",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhileTheFirstPageIsStillLoading_ShowsSkeletonsNotAFalseEmptyMessage",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenSearchMatchesNothing_ShowsTheNoMatchMessageAndKeepsTheFilterPanel",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ClearFilters_FromTheNoMatchState_RestoresUnrestrictedResults"
+    ] },
+    { "id": "AC-22", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.DeleteSingle_WhenItEmptiesTheLastPage_RecoversToTheNewLastPage"
+    ] },
+    { "id": "AC-23", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.BulkActivate_WhenSomeAreSkippedForMissingAPrice_ReportsBothTheChangedAndSkippedCounts",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.DeleteSingle_WhenTheCommandFails_ShowsTheErrorMessageAndNeverClaimsSuccess",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.BulkDelete_WithAMixedOutcome_ReportsBothCountsAndKeepsOnlyTheReferencedProductsSelected",
+      "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusHandlerTests.Handle_WhenActivatingAnUnpricedProduct_SkipsItAndReportsItAsNotPublishable",
+      "TheShop.Application.Tests.Features.Products.Commands.SetProductStatus.SetProductStatusHandlerTests.Handle_WithAMixOfPricedAndUnpricedProducts_ActivatesOnlyThePricedOnesAndReportsTheRest"
+    ] },
+    { "id": "AC-24", "tests": [
+      "TheShop.Infrastructure.Tests.Persistence.AdminProductMapperTests.ToDto_MapsEveryFieldVerbatim",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WhenAVariantHasASalePrice_UsesTheSalePriceForTheRange",
+      "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToListItemDto_WithVariants_MapsTheLowestAndHighestVariantPrice",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenPriceRangeDiffers_ShowsBothEndsFormattedAsARange"
+    ] },
+    { "id": "AC-25", "tests": [
+      "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToListItemDto_WithEquallyPricedVariants_CollapsesBothEndsToTheOneAmount",
+      "TheShop.Infrastructure.Tests.Persistence.AdminProductMapperTests.ToDto_WithEquallyPricedRange_KeepsBothEndsEqual",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithNoVariants_UsesItsOwnEffectivePriceForBothEnds",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenAProductHasExactlyOneVariant_ShowsSingularVariantCountWording",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenEveryVariantSharesThePrice_ShowsOneAmountNotARange"
+    ] },
+    { "id": "AC-26", "tests": [
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithPriceFilterBetweenTwoVariantPrices_ExcludesTheProduct",
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithPriceFilterMatchingAVariantPriceExactly_IncludesTheProductInclusively",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests.Validate_WithPriceMinEqualToPriceMax_IsValid"
+    ] },
+    { "id": "AC-27", "tests": [
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_WithPriceFilterMatchingAMiddleVariant_KeepsTheFullRangeAndCount"
+    ] },
+    { "id": "AC-28", "tests": [
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_SortedByLowestVariantPriceUnderAFilter_OrdersOnTheUnfilteredLowestPrice",
+      "TheShop.Domain.Tests.Enums.AdminProductSortOptionTests.AdminProductSortOption_EachSpecOptionIsDefined"
+    ] },
+    { "id": "AC-29", "tests": [
+      "TheShop.Infrastructure.Tests.Persistence.ManageProductsSchemaTests.AdminProductsPage_ADeletedVariantContributesNeitherPriceNorCount",
+      "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToListItemDto_WithUnpricedVariants_MapsBothPricesNullButKeepsTheVariantCount",
+      "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToListItemDto_WithOneUnpricedVariant_IgnoresItWhenComputingTheRange"
+    ] }
+  ]
+}

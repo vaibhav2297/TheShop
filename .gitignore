@@ -386,3 +386,10 @@ graphify-out/
 tests/TheShop.E2E.Tests/.e2e-env
 tests/TheShop.E2E.Tests/.auth-states/
 **/playwright-traces/
+
+# Portable SDD staging and isolated verification workspaces
+.sdd/.stage/
+.sdd/.test-work/
+
+# Pinned SDD extension sources are release inputs, not restored NuGet packages.
+!/.sdd/extensions/packages/**

@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "checks": [
+    {
+      "name": "Empty checks cannot publish stage evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Failed checks cannot publish stage evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Untyped checks cannot publish stage evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Missing check log rejected",
+      "passed": true,
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\evidence-dddd874852b241a9a7cebfe80c087efa\\.sdd\\scripts\\manage-sdd-evidence.ps1:33\nLine |\n  33 |  … ngth -eq 0) { throw \"Check log missing or empty: $($check.logPath)\" }\n     |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Check log missing or empty: missing.log\n"
+    },
+    {
+      "name": "Real spec gate captured before evidence publication",
+      "passed": true,
+      "detail": "Recorded spec hashes and gate receipts. Existing workflow gates and human approvals remain required.\n"
+    },
+    {
+      "name": "Fresh evidence accepted",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Receipt carries actual gate output",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Caller check log automatically fingerprinted",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Changed Test-Proof.ps1 invalidates stage evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Restoring Test-Proof.ps1 bytes restores fresh evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Changed check-worker-scope.ps1 invalidates stage evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Restoring check-worker-scope.ps1 bytes restores fresh evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Changed format-changes.ps1 invalidates stage evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Restoring format-changes.ps1 bytes restores fresh evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Replaced check log invalidates recorded stage",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Real plan gate captured for upstream baseline",
+      "passed": true,
+      "detail": "Recorded plan hashes and gate receipts. Existing workflow gates and human approvals remain required.\n"
+    },
+    {
+      "name": "Handoff created",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Cross-runtime handoff source check",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Stale downstream test does not deadlock implementation handoff",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "API text preserved exactly",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Implementation test writer accepts fresh Plan baseline",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Implementation test purpose survives persisted continuation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Implementation test runner accepts fresh Plan baseline",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Separate test runner still requires Implement evidence",
+      "passed": true,
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\evidence-dddd874852b241a9a7cebfe80c087efa\\.sdd\\scripts\\manage-sdd-evidence.ps1:71\nLine |\n  71 |  … ng.Count) { throw \"Missing upstream evidence: $($missing -join ', '). …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Missing upstream evidence: implement. Run producing checks and record before delegation.\n"
+    },
+    {
+      "name": "Implementation-test exception rejects other roles",
+      "passed": true,
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\evidence-dddd874852b241a9a7cebfe80c087efa\\.sdd\\scripts\\Sdd-Evidence.ps1:86\nLine |\n  86 |  … shop-test-runner')) { throw 'Unsupported handoff purpose for role.' }\n     |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Unsupported handoff purpose for role.\n"
+    },
+    {
+      "name": "Implementation-test purpose cannot satisfy Test stage",
+      "passed": true,
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\evidence-dddd874852b241a9a7cebfe80c087efa\\.sdd\\scripts\\manage-sdd-evidence.ps1:107\nLine |\n 107 |  … n-tests') { throw 'Implementation-test handoffs cannot record a workf …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Implementation-test handoffs cannot record a workflow stage. Run separate producing workflow checks.\n"
+    },
+    {
+      "name": "Implement fixture captures actual structural gates",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Separate test writer accepts Implement evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Writer additions permit normal runner handoff",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "E2E additions preserve unit/component Test fingerprint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Unit test changes invalidate Test fingerprint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Explicit bin log receives source hash",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Explicit bin log replacement invalidates evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "XML documentation edits require explicit upstream revalidation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Changed upstream API blocks continuation",
+      "passed": true,
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\evidence-dddd874852b241a9a7cebfe80c087efa\\.sdd\\scripts\\manage-sdd-evidence.ps1:89\nLine |\n  89 |  … paths)))) { throw 'Stale handoff. Reread changed sources, reconcile A …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Stale handoff. Reread changed sources, reconcile APIs, rerun affected checks, and create a new handoff.\n"
+    },
+    {
+      "name": "Uncommitted source edits invalidate evidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "New source file invalidates directory snapshot",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Matching source bytes regain freshness absent amendment",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Deleted source detected",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Traversal rejected",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Original spec retained byte-for-byte",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Deliberate amendment accepted with matching hashes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Reverting bytes cannot silently clear amendment invalidation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Real gate rerun clears target invalidation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Failure recorded: implementation-defect",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Failure recorded: test-defect",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Failure recorded: requirement-gap",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Failure recorded: environment-problem",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Failure blocks stale success",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Successful structural rerun cannot silently resolve failures",
+      "passed": true,
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\evidence-dddd874852b241a9a7cebfe80c087efa\\.sdd\\scripts\\manage-sdd-evidence.ps1:121\nLine |\n 121 |  … }).Count) { throw 'Unresolved stage failures require explicit resolve …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Unresolved stage failures require explicit resolveFailures entries and successful check evidence.\n"
+    },
+    {
+      "name": "Unknown failure-resolution check cannot clear failure",
+      "passed": true,
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\evidence-dddd874852b241a9a7cebfe80c087efa\\.sdd\\scripts\\manage-sdd-evidence.ps1:119\nLine |\n 119 |  … ecks.id)) { throw \"Unknown failure-resolution check ID: $checkId\" } } …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Unknown failure-resolution check ID: unrecorded-check\n"
+    },
+    {
+      "name": "Failed gate cannot refresh evidence or resolve failures",
+      "passed": true,
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\evidence-dddd874852b241a9a7cebfe80c087efa\\.sdd\\scripts\\manage-sdd-evidence.ps1:142\nLine |\n 142 |  … de -ne 0) { throw \"Gate $mode failed: $($run.stdout) $($run.stderr)\"  …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Gate spec failed: [sdd-gates] spec:probe - 9 violation(s):   - missing numbered section '## 1. Problem Statement'   - missing numbered\n     | section '## 2. Functional Requirements'   - missing numbered section '## 3. Functional Behaviors'   - missing numbered section '## 4.\n     | Constraints'   - missing numbered section '## 5. Edge Cases & Error Handling'   - missing numbered section '## 6. Acceptance Criteria'  \n     | - missing '**Status:**' footer line   - footer missing '**Created:** YYYY-MM-DD'   - missing '## Assumptions & Open Questions' appendix\n     | A failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run\n     | this gate. Do not report the step as done while this gate fails.\n"
+    },
+    {
+      "name": "Rejected record preserves unresolved failure history",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Explicit successful evidence resolves named failures",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Failure resolution retains reason and linked check IDs",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Historical state preserved",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Stale upstream blocks downstream recording",
+      "passed": true,
+      "detail": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\evidence-dddd874852b241a9a7cebfe80c087efa\\.sdd\\scripts\\manage-sdd-evidence.ps1:126\nLine |\n 126 |  … er.Count) { throw \"Revalidate upstream first: $($earlier -join ', '). …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Revalidate upstream first: spec.\n"
+    },
+    {
+      "name": "Canonical evidence gate fails stale sidecar",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Failure blocks completion even without earlier evidence record",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Nested directory link rejected before source hashing",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "checkedUtc": "2026-09-09T06:01:19.5113541Z",
+  "fixture": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\evidence-dddd874852b241a9a7cebfe80c087efa"
+}

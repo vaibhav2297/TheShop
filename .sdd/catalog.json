@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "skills": [
+    {
+      "source": ".sdd/skills/graphify-windows/SKILL.md",
+      "original": ".claude/skills/graphify/SKILL.md",
+      "legacyName": "graphify",
+      "legacyKind": "skill",
+      "explicitOnly": false,
+      "description": "Query project knowledge graphs for codebase questions, architecture, and file relationships. Build/update graphs from code, docs, and media; use existing graph first.",
+      "id": "graphify-windows"
+    },
+    {
+      "source": ".sdd/skills/theshop-clarify/SKILL.md",
+      "original": ".claude/skills/theshop.clarify/SKILL.md",
+      "legacyName": "theshop.clarify",
+      "legacyKind": "skill",
+      "explicitOnly": true,
+      "description": "Resolve product assumptions in one feature spec; incorporate confirmed decisions and update status. Explicit invocation only.",
+      "id": "theshop-clarify"
+    },
+    {
+      "source": ".sdd/skills/theshop-constitution/SKILL.md",
+      "original": ".claude/skills/theshop.constitution/SKILL.md",
+      "legacyName": "theshop.constitution",
+      "legacyKind": "skill",
+      "explicitOnly": false,
+      "description": "The Shop architecture/design rules for code, tests, Razor, SCSS, resources, and layer placement. Excludes generic stack questions and DNS/Azure/CI setup.",
+      "id": "theshop-constitution"
+    },
+    {
+      "source": ".sdd/skills/theshop-document/SKILL.md",
+      "original": ".claude/commands/theshop.document.md",
+      "legacyName": "theshop.document",
+      "legacyKind": "command",
+      "explicitOnly": true,
+      "description": "Add XML documentation to current C# diff through shop-code-documenter. Explicit standalone step; preserves behavior.",
+      "id": "theshop-document"
+    },
+    {
+      "source": ".sdd/skills/theshop-e2e/SKILL.md",
+      "original": ".claude/commands/theshop.e2e.md",
+      "legacyName": "theshop.e2e",
+      "legacyKind": "command",
+      "explicitOnly": false,
+      "description": "Prove user-facing feature acceptance criteria through browser journeys; classify coverage, run, repair, and report in one context. Supersedes {{command:theshop-verify}}.",
+      "id": "theshop-e2e"
+    },
+    {
+      "source": ".sdd/skills/theshop-execute/SKILL.md",
+      "original": ".claude/skills/theshop.execute/SKILL.md",
+      "legacyName": "theshop.execute",
+      "legacyKind": "skill",
+      "explicitOnly": true,
+      "description": "Implement four layers in one context with plan, scope/build gates, migration, Figma parity, and ledger. Explicit alternative to {{command:theshop-implement}}; no subagents.",
+      "id": "theshop-execute"
+    },
+    {
+      "source": ".sdd/skills/theshop-implement/SKILL.md",
+      "original": ".claude/commands/theshop.implement.md",
+      "legacyName": "theshop.implement",
+      "legacyKind": "command",
+      "explicitOnly": false,
+      "description": "Implement feature through Domain, Application, then parallel Infrastructure/Web specialists. Enforce scope/build gates and literal API handoffs.",
+      "id": "theshop-implement"
+    },
+    {
+      "source": ".sdd/skills/theshop-plan/SKILL.md",
+      "original": ".claude/skills/theshop.plan/SKILL.md",
+      "legacyName": "theshop.plan",
+      "legacyKind": "skill",
+      "explicitOnly": true,
+      "description": "Create technical implementation plan from feature spec, with AC/task mapping and optional --desc/--figma input. Explicit invocation only.",
+      "id": "theshop-plan"
+    },
+    {
+      "source": ".sdd/skills/theshop-resolve/SKILL.md",
+      "original": ".claude/skills/theshop.resolve/SKILL.md",
+      "legacyName": "theshop.resolve",
+      "legacyKind": "skill",
+      "explicitOnly": true,
+      "description": "Resolve technical questions, assumptions, and risks in one feature plan; incorporate decisions and update status. Explicit invocation only.",
+      "id": "theshop-resolve"
+    },
+    {
+      "source": ".sdd/skills/theshop-review/SKILL.md",
+      "original": ".claude/commands/theshop.review.md",
+      "legacyName": "theshop.review",
+      "legacyKind": "command",
+      "explicitOnly": false,
+      "description": "Review feature diff through independent parallel security/quality agents; unify findings and apply fixes only after approval.",
+      "id": "theshop-review"
+    },
+    {
+      "source": ".sdd/skills/theshop-ship/SKILL.md",
+      "original": ".claude/commands/theshop.ship.md",
+      "legacyName": "theshop.ship",
+      "legacyKind": "command",
+      "explicitOnly": true,
+      "description": "Ship reviewed feature: commit, push, PR, merge, branch cleanup. Explicit invocation; confirm each remote mutation.",
+      "id": "theshop-ship"
+    },
+    {
+      "source": ".sdd/skills/theshop-spec/SKILL.md",
+      "original": ".claude/skills/theshop.spec/SKILL.md",
+      "legacyName": "theshop.spec",
+      "legacyKind": "skill",
+      "explicitOnly": true,
+      "description": "Create product-level feature spec and status ledger; resolve blocking questions, log cheap defaults. Accepts --desc. Explicit invocation only.",
+      "id": "theshop-spec"
+    },
+    {
+      "source": ".sdd/skills/theshop-start/SKILL.md",
+      "original": ".claude/commands/theshop.start.md",
+      "legacyName": "theshop.start",
+      "legacyKind": "command",
+      "explicitOnly": true,
+      "description": "Start feature branch from updated dev before spec creation. Explicit invocation only.",
+      "id": "theshop-start"
+    },
+    {
+      "source": ".sdd/skills/theshop-test/SKILL.md",
+      "original": ".claude/commands/theshop.test.md",
+      "legacyName": "theshop.test",
+      "legacyKind": "command",
+      "explicitOnly": false,
+      "description": "Write and run feature unit/component tests through separate writer/runner agents. Reconcile manifest and AC coverage. E2E belongs to {{command:theshop-e2e}}.",
+      "id": "theshop-test"
+    },
+    {
+      "source": ".sdd/skills/theshop-test-merged/SKILL.md",
+      "original": ".claude/commands/theshop.test-merged.md",
+      "legacyName": "theshop.test-merged",
+      "legacyKind": "command",
+      "explicitOnly": false,
+      "description": "Write, compile, and run spec-driven feature unit/component tests in one context; produce manifest, report, and ledger. No subagents or E2E.",
+      "id": "theshop-test-merged"
+    },
+    {
+      "source": ".sdd/skills/theshop-verify/SKILL.md",
+      "original": ".claude/commands/theshop.verify.md",
+      "legacyName": "theshop.verify",
+      "legacyKind": "command",
+      "explicitOnly": false,
+      "description": "Deprecated user-facing smoke check: build, run, observe acceptance criteria without source edits. Backend-only features skipped; prefer {{command:theshop-e2e}}.",
+      "id": "theshop-verify"
+    }
+  ],
+  "roles": [
+    {
+      "source": ".sdd/roles/shop-application-implementer.md",
+      "original": ".claude/agents/shop-application-implementer.md",
+      "description": "Implement Application use cases/contracts from plan and literal Domain API. Own Application files plus permitted error resources; no tests or other layers.",
+      "id": "shop-application-implementer",
+      "readOnly": false
+    },
+    {
+      "source": ".sdd/roles/shop-code-documenter.md",
+      "original": ".claude/agents/shop-code-documenter.md",
+      "description": "Add XML docs to public C# APIs in current diff. No behavior changes, refactoring, private-member docs, or inline narrative.",
+      "id": "shop-code-documenter",
+      "readOnly": false
+    },
+    {
+      "source": ".sdd/roles/shop-code-quality-review.md",
+      "original": ".claude/agents/shop-code-quality-review.md",
+      "description": "Read-only quality review of current diff against constitution and checklists. Report improvements, polish, strengths; no fixes, tests, or security review.",
+      "id": "shop-code-quality-review",
+      "readOnly": true
+    },
+    {
+      "source": ".sdd/roles/shop-code-security-reviewer.md",
+      "original": ".claude/agents/shop-code-security-reviewer.md",
+      "description": "Read-only security review of current diff: WASM secrets, RLS, authorization, input, PII/payments, auth flows. No fixes, tests, or quality review.",
+      "id": "shop-code-security-reviewer",
+      "readOnly": true
+    },
+    {
+      "source": ".sdd/roles/shop-domain-implementer.md",
+      "original": ".claude/agents/shop-domain-implementer.md",
+      "description": "Implement Domain entities/value objects/enums/exceptions from feature plan. Own Domain files only; no tests. Return literal public API.",
+      "id": "shop-domain-implementer",
+      "readOnly": false
+    },
+    {
+      "source": ".sdd/roles/shop-infra-implementer.md",
+      "original": ".claude/agents/shop-infra-implementer.md",
+      "description": "Implement Infrastructure adapters/repositories from plan and frozen Application interfaces; apply Supabase schema/RLS. Own Infrastructure files; no tests.",
+      "id": "shop-infra-implementer",
+      "readOnly": false
+    },
+    {
+      "source": ".sdd/roles/shop-test-runner.md",
+      "original": ".claude/agents/shop-test-runner.md",
+      "description": "Run existing feature tests from manifest; reconcile discovered count and AC results. Report readiness. No code edits or package installation.",
+      "id": "shop-test-runner",
+      "readOnly": false
+    },
+    {
+      "source": ".sdd/roles/shop-test-writer.md",
+      "original": ".claude/agents/shop-test-writer.md",
+      "description": "Derive unit/component assertions from spec and structure from plan. Write feature-stamped tests and manifest only. No production implementation or E2E.",
+      "id": "shop-test-writer",
+      "readOnly": false
+    },
+    {
+      "source": ".sdd/roles/shop-ui-implementer.md",
+      "original": ".claude/agents/shop-ui-implementer.md",
+      "description": "Implement Web pages/components/stores/resources from plan and Application API; refetch Figma for visual parity. Own Web files; no tests or other layers.",
+      "id": "shop-ui-implementer",
+      "readOnly": false
+    }
+  ]
+}

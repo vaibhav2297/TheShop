@@ -1,0 +1,63 @@
+{
+  "checkedUtc": "2026-09-06T15:44:18.1323575Z",
+  "variant": "candidate",
+  "runtime": "claude",
+  "case": "spec",
+  "repeat": 1,
+  "passed": true,
+  "checks": {
+    "spec": true,
+    "status": true,
+    "state": true,
+    "processExit": true
+  },
+  "processExitCode": 0,
+  "elapsedSeconds": 141.87,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-sdd-eval-71bf6de1d5df4c449ef16a361b7def16",
+  "logs": ".sdd/.test-work/caveman-native/release-fidelity-candidate-claude-spec-1-520551e180a648899228567cfa4d90fa",
+  "models": [
+    "claude-opus-5"
+  ],
+  "usage": [
+    {
+      "event": "result",
+      "usage": {
+        "input_tokens": 28,
+        "cache_creation_input_tokens": 46959,
+        "cache_read_input_tokens": 701755,
+        "output_tokens": 9987,
+        "output_tokens_details": {
+          "thinking_tokens": 2236
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 46959,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 785,
+            "cache_read_input_tokens": 59882,
+            "cache_creation_input_tokens": 275,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 275
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      }
+    }
+  ],
+  "measurement": "Native runtime-reported usage; baseline/candidate compared within runtime only. Decision exercises do not claim production execution.",
+  "styleValidation": "Mode fields establish recognition only. Human review of actual artifacts assesses compression, completeness, and auto-clarity separately.",
+  "baselineArchive": ".sdd/baseline/caveman/phase5.zip",
+  "reportPrefix": "release-fidelity"
+}

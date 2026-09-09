@@ -1,48 +1,26 @@
-# format-on-stop.ps1
-# Stop hook for Claude Code on The Shop project.
-# Runs `dotnet format` on the solution when the current diff includes any
-# .cs or .razor files. No-ops otherwise so non-code turns are fast.
-# Also refreshes the graphify knowledge graph (AST-only, no API cost) when
-# any file changed, so agents always query an up-to-date graph next turn.
-
-$ErrorActionPreference = 'SilentlyContinue'
-
-# Locate the solution root (this script lives at .claude/scripts/ inside the repo).
-$repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..')
-Set-Location $repoRoot
-
-# Collect changed files: unstaged + staged. Added / Copied / Modified only.
-$changed = @()
-$changed += & git diff --name-only --diff-filter=ACM 2>$null
-$changed += & git diff --staged --name-only --diff-filter=ACM 2>$null
-
-$relevant = $changed | Where-Object { $_ -match '\.(cs|razor)$' }
-
-if ($relevant) {
-    Write-Host "[format-on-stop] $($relevant.Count) C# / Razor file(s) changed — running dotnet format..."
-    & dotnet format TheShop.slnx --no-restore --verbosity quiet
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "[format-on-stop] dotnet format exited with code $LASTEXITCODE (non-fatal - files may still need attention)."
+# Generated compatibility entry point; event placement is controlled by settings.json.
+# Format changed C#/Razor files before final verification; usable by either runtime.
+[CmdletBinding()]
+param([string]$RepositoryRoot = (Join-Path $PSScriptRoot '../..'))
+$ErrorActionPreference = 'Stop'
+$root = (Resolve-Path -LiteralPath $RepositoryRoot).Path
+Push-Location $root
+try {
+    $changed = @(& git diff --name-only --diff-filter=ACM)
+    if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect unstaged changes.' }
+    $changed += @(& git diff --staged --name-only --diff-filter=ACM)
+    if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect staged changes.' }
+    $changed += @(& git ls-files --others --exclude-standard)
+    if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect untracked files.' }
+    $changed = @($changed | Sort-Object -Unique)
+    $relevant = @($changed | Where-Object { $_ -match '\.(cs|razor)$' -and $_ -notmatch '^\.sdd/' })
+    if ($relevant.Count) {
+        & dotnet format TheShop.slnx --no-restore --verbosity quiet --include @relevant
+        if ($LASTEXITCODE -ne 0) { throw "dotnet format failed: $LASTEXITCODE" }
+        Write-Output "[sdd-format] formatted $($relevant.Count) changed C#/Razor files; rerun affected verification."
+    } else { Write-Output '[sdd-format] no C#/Razor changes.' }
+    if ($changed.Count -and (Test-Path 'graphify-out/graph.json') -and (Get-Command graphify -ErrorAction SilentlyContinue)) {
+        & graphify update .
+        if ($LASTEXITCODE -ne 0) { Write-Warning 'Graph refresh failed; graph evidence may be stale.' }
     }
-} else {
-    Write-Host "[format-on-stop] No .cs / .razor changes in diff - skipping format."
-}
-
-# --- graphify refresh (non-fatal) -------------------------------------------
-# Keep the knowledge graph current so agents can query it instead of grepping.
-# Gated on $relevant (.cs / .razor), not $changed: a full `graphify update` costs
-# ~38s even when nothing moved, so doc-only turns (.md / .json / .specs) skip it.
-# For doc/paper/image changes, refresh the graph manually via /graphify --update.
-$graphExists = Test-Path (Join-Path $repoRoot 'graphify-out/graph.json')
-$graphifyCmd = Get-Command graphify -ErrorAction SilentlyContinue
-if ($relevant -and $graphExists -and $graphifyCmd) {
-    Write-Host "[format-on-stop] Code changes detected - running graphify update (AST-only)..."
-    & graphify update .
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "[format-on-stop] graphify update exited with code $LASTEXITCODE (non-fatal)."
-    }
-} elseif ($relevant -and $graphExists) {
-    Write-Host "[format-on-stop] graphify not found on PATH - skipping graph refresh."
-}
-
-exit 0
+} finally { Pop-Location }

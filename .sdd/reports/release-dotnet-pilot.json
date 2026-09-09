@@ -1,0 +1,55 @@
+{
+  "passed": 126.0,
+  "checkedUtc": "2026-09-06T16:09:04.3237756Z",
+  "reconciled": false,
+  "scope": "Existing real .NET feature validation; does not prove a new layered implementation or complete browser acceptance.",
+  "expected": 130,
+  "discovered": 126.0,
+  "feature": "add-brand",
+  "build": {
+    "warnings": 42,
+    "errors": 0,
+    "log": ".sdd/.test-work/release-build-retry.log",
+    "exitCode": 0,
+    "recovery": "Initial parallel build crashed; single-worker build passed."
+  },
+  "fixture": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\release-03f04de3723f4491b92bc372bf922d63",
+  "runs": [
+    {
+      "notExecuted": 0,
+      "log": ".sdd/.test-work/add-brand-Domain.log",
+      "passed": 21,
+      "layer": "Domain",
+      "failed": 0,
+      "total": 21,
+      "exitCode": 0
+    },
+    {
+      "notExecuted": 0,
+      "log": ".sdd/.test-work/add-brand-Application.log",
+      "passed": 43,
+      "layer": "Application",
+      "failed": 0,
+      "total": 43,
+      "exitCode": 0
+    },
+    {
+      "notExecuted": 0,
+      "log": ".sdd/.test-work/add-brand-Infrastructure.log",
+      "passed": 19,
+      "layer": "Infrastructure",
+      "failed": 0,
+      "total": 19,
+      "exitCode": 0
+    },
+    {
+      "notExecuted": 0,
+      "log": ".sdd/.test-work/add-brand-Web.log",
+      "passed": 43,
+      "layer": "Web",
+      "failed": 0,
+      "total": 43,
+      "exitCode": 0
+    }
+  ]
+}

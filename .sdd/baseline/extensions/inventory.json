@@ -1,0 +1,3253 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-09-06T09:34:58.4899175Z",
+  "archiveSha256": "ecb1c3366ca49b86d5257135e892b7c9390e7784387217b3848ea2107f27994a",
+  "files": [
+    {
+      "path": ".agents/skills/graphify-windows/.graphify_version",
+      "sha256": "792980a6c7fe3f657ae53d7a3e2cf052fae73de30fb81adbefc982052ac1f669"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/agents/openai.yaml",
+      "sha256": "72540354e14c232375dad3ac9cce4c679270b4658c0a77a7369c82b0ded528ed"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/references/add-watch.md",
+      "sha256": "b3f67570240582689c2834b4831917550c2d1aaf042148868c39dcbf387ce3fd"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/references/exports.md",
+      "sha256": "ee47fae477f106d8aed38798c58493b5a7f060a0d9d2581ce6132302827bc14b"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/references/extraction-spec.md",
+      "sha256": "f72a6d2dfa67446f06f27a8f0053af1adc8d53b02e393c8472045f6740c6183e"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/references/full-pipeline.md",
+      "sha256": "5fff86e916f241ff1d59e874a0be66723c913d605c39b5b7217a833c660f9679"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/references/github-and-merge.md",
+      "sha256": "e5ebd90c7686f50363ff7a535556bc2f596d4c47ec1e6c8b95e11e36a0dfea2b"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/references/hooks.md",
+      "sha256": "b9a4e9f66813c6fc720589f1071d1a03c95756ab7101447e14e57291fe7844e5"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/references/query.md",
+      "sha256": "e563ddcb1e155aa230f107e5ef9380bc1249c5cd8241128de7ed8a7bd9c20cf5"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/references/transcribe.md",
+      "sha256": "676a1e39aa6d43cdfcc416ec56616e36f7bad74066a82bd33a9485515b9a865c"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/references/update.md",
+      "sha256": "c18fa98e608797d1c9dbe71f3ae01b4132e7517d07544cccf0c04e7c8172bd76"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/references/usage.md",
+      "sha256": "d373cda89e6dbd180bbdeffbf3e47f80875b9e3c42978e52517be2168680543c"
+    },
+    {
+      "path": ".agents/skills/graphify-windows/SKILL.md",
+      "sha256": "9237a9a578e2c867170e92d3b70f2e2e40e82ded31acd702c92154cc2a543cae"
+    },
+    {
+      "path": ".agents/skills/theshop-clarify/agents/openai.yaml",
+      "sha256": "a17f4c31ce2239ad60aab1125b37eecfa16c2716f6622d914b140983838880bb"
+    },
+    {
+      "path": ".agents/skills/theshop-clarify/references/invocation-examples.md",
+      "sha256": "e2c221ac802bfdf1f58a8faa0f2a363e6da869ecea24cb77dbf3048842a41ab5"
+    },
+    {
+      "path": ".agents/skills/theshop-clarify/SKILL.md",
+      "sha256": "bd7e2e7b0b4478291f8968183495d1b2016a051aa4d41c0702fe8d825fe7ba34"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/agents/openai.yaml",
+      "sha256": "72540354e14c232375dad3ac9cce4c679270b4658c0a77a7369c82b0ded528ed"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/checklists/code-generation.md",
+      "sha256": "ddbf6ec47f750e5438055cac64f5a39771d9cdb4242164091c9b6c817a9f75d3"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/checklists/design.md",
+      "sha256": "15ae6f4015a3cabfd68b25297c0fe210e539d0e194330956d041e5f1c1b9f111"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/examples/application-handler.md",
+      "sha256": "ccd6cbae239287918245dc4268985ddfee45c54c6d2718850ba1fe98813ff138"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/examples/domain-entity.md",
+      "sha256": "70e91fe4a37e02f0ce11e1b75b431a120e6d2c7bb4a3eea0176b713d24c269bd"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/examples/infrastructure-repository.md",
+      "sha256": "b524a94853d10351c5b7dcf1a1c8804c85cc4be6288605ec63b7b4005a16fe4b"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/examples/web-component.md",
+      "sha256": "31f73507df5180beac59b5eb4eb7d3939538736686ed79c059a970ac60082790"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/examples/web-page.md",
+      "sha256": "ee10b9fcf687b5c2df73eeea7b5d231d89b81ac4c8f5e3df4e85ddbafcf1c632"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/rules/architecture-admin.md",
+      "sha256": "ae210a095c6b499d30a653f4c7a6536997fdd90f96cc4944c24dea3484de3c5d"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/rules/architecture-core.md",
+      "sha256": "f5bb908d52270409286329320403a64fdc449aed968ee3652f20e32d4e665ea4"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/rules/architecture-patterns.md",
+      "sha256": "2e3bcf62ca724f8b23b4a3e2a9afcab24fd0033e87b24a195ef0413e50061b38"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/rules/design-components.md",
+      "sha256": "f27730b5342944c1fe6d06d82326724772a3b58c0544c9858d3a30946fbbbe38"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/rules/design-strings.md",
+      "sha256": "4530a020525fb65d175c8a2c80c605c4c757993a287354ef8ad3d7b8bc2c1919"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/rules/design-styles.md",
+      "sha256": "737315fcb20de71f0ab8e08d1cfc45fb368b08212d6a67a4bc50c589d97d84f7"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/rules/design-theme-setup.md",
+      "sha256": "11b866fc70d9dd073b6212cada1533573e3fbedba61856ef02cf30b69f570c69"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/rules/design-theme.md",
+      "sha256": "07d8e4c0cc4732014c78450fda6c58334f293319b53e2d5805a80f320579254b"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/references/rules/documentation.md",
+      "sha256": "771818bc8fd0ca0fd650488a117459a34fe16d7b2d69891a97c7761c7460e4ff"
+    },
+    {
+      "path": ".agents/skills/theshop-constitution/SKILL.md",
+      "sha256": "6a74fb3b2eb6f1664ee0a84f51b7e0fb86b1011b3a9d119c1b123dd75182410e"
+    },
+    {
+      "path": ".agents/skills/theshop-document/agents/openai.yaml",
+      "sha256": "a17f4c31ce2239ad60aab1125b37eecfa16c2716f6622d914b140983838880bb"
+    },
+    {
+      "path": ".agents/skills/theshop-document/SKILL.md",
+      "sha256": "a1325c09e1877d92c906e0a8bf99c41d93182594b6fb429c8e011a98184a31a8"
+    },
+    {
+      "path": ".agents/skills/theshop-e2e/agents/openai.yaml",
+      "sha256": "72540354e14c232375dad3ac9cce4c679270b4658c0a77a7369c82b0ded528ed"
+    },
+    {
+      "path": ".agents/skills/theshop-e2e/SKILL.md",
+      "sha256": "7cdd3e39786126d46ed92e1389c2919eb2bf65d44d9fc074bdc686e2584ba70d"
+    },
+    {
+      "path": ".agents/skills/theshop-execute/agents/openai.yaml",
+      "sha256": "a17f4c31ce2239ad60aab1125b37eecfa16c2716f6622d914b140983838880bb"
+    },
+    {
+      "path": ".agents/skills/theshop-execute/SKILL.md",
+      "sha256": "2b0ca6af0b8a1c4686478f9bfd93ee7087f011a9fead139c8dd07c3ed61d9ec3"
+    },
+    {
+      "path": ".agents/skills/theshop-implement/agents/openai.yaml",
+      "sha256": "72540354e14c232375dad3ac9cce4c679270b4658c0a77a7369c82b0ded528ed"
+    },
+    {
+      "path": ".agents/skills/theshop-implement/SKILL.md",
+      "sha256": "826c92790d0b3e61985059ff8bcf57ce374949bc94b68d5a1a340ce5d0bd51aa"
+    },
+    {
+      "path": ".agents/skills/theshop-plan/agents/openai.yaml",
+      "sha256": "a17f4c31ce2239ad60aab1125b37eecfa16c2716f6622d914b140983838880bb"
+    },
+    {
+      "path": ".agents/skills/theshop-plan/references/invocation-examples.md",
+      "sha256": "24c2ad959b69fa32e182dfcad10d7929fedee4cb4472bc83954d59f56cb677bb"
+    },
+    {
+      "path": ".agents/skills/theshop-plan/SKILL.md",
+      "sha256": "1f1750835cb9972d192af443fd69f74c469a76ec61cf4920394f094d6f7761ba"
+    },
+    {
+      "path": ".agents/skills/theshop-plan/templates/plan-template.md",
+      "sha256": "fd1a99a0191cd02edeea2d08954331bbb718df1b168cc161df2b69d192b862ca"
+    },
+    {
+      "path": ".agents/skills/theshop-resolve/agents/openai.yaml",
+      "sha256": "a17f4c31ce2239ad60aab1125b37eecfa16c2716f6622d914b140983838880bb"
+    },
+    {
+      "path": ".agents/skills/theshop-resolve/references/invocation-examples.md",
+      "sha256": "f0ee7d1242fadc771b8e041b8ff1271415eab872cf929560b61f3162ebbefc78"
+    },
+    {
+      "path": ".agents/skills/theshop-resolve/SKILL.md",
+      "sha256": "8d3065fd892c15ecf38c468f8f0df7d572d93551ffc17a277d3ae972455c03c1"
+    },
+    {
+      "path": ".agents/skills/theshop-review/agents/openai.yaml",
+      "sha256": "72540354e14c232375dad3ac9cce4c679270b4658c0a77a7369c82b0ded528ed"
+    },
+    {
+      "path": ".agents/skills/theshop-review/SKILL.md",
+      "sha256": "18ed03f98ad8c4379970783e7ab1d240a75be9d2566b8ad3a8d3c3b9cea13a7b"
+    },
+    {
+      "path": ".agents/skills/theshop-ship/agents/openai.yaml",
+      "sha256": "a17f4c31ce2239ad60aab1125b37eecfa16c2716f6622d914b140983838880bb"
+    },
+    {
+      "path": ".agents/skills/theshop-ship/SKILL.md",
+      "sha256": "f5717a53d1ac5402da20fffb1106c9043e1599167c82f3adb5b0ea2115d0858e"
+    },
+    {
+      "path": ".agents/skills/theshop-spec/agents/openai.yaml",
+      "sha256": "a17f4c31ce2239ad60aab1125b37eecfa16c2716f6622d914b140983838880bb"
+    },
+    {
+      "path": ".agents/skills/theshop-spec/references/invocation-examples.md",
+      "sha256": "b30e0a584b7f23313a5e4f0120e16694baf0ece1b3953017a8f35eac18b7239a"
+    },
+    {
+      "path": ".agents/skills/theshop-spec/SKILL.md",
+      "sha256": "0ede1290e04013706b2ef59ed3a6d030f8e8b7682c71e2fe246cd4544a2ed8c4"
+    },
+    {
+      "path": ".agents/skills/theshop-spec/templates/spec-template.md",
+      "sha256": "a623e3d08881ed1883314112ccdf1dd55e72885a27d762aa0af892ca9b8b70f1"
+    },
+    {
+      "path": ".agents/skills/theshop-start/agents/openai.yaml",
+      "sha256": "a17f4c31ce2239ad60aab1125b37eecfa16c2716f6622d914b140983838880bb"
+    },
+    {
+      "path": ".agents/skills/theshop-start/SKILL.md",
+      "sha256": "4231b168301b22d33c0a389bd93ea469ab8ca7f7dfa053e19f33027f3c7f1441"
+    },
+    {
+      "path": ".agents/skills/theshop-test-merged/agents/openai.yaml",
+      "sha256": "72540354e14c232375dad3ac9cce4c679270b4658c0a77a7369c82b0ded528ed"
+    },
+    {
+      "path": ".agents/skills/theshop-test-merged/SKILL.md",
+      "sha256": "d3e20d4ae3308558a53dd9be57c17eb1fa8eca919b29ef0d7506ea680d58d4a0"
+    },
+    {
+      "path": ".agents/skills/theshop-test/agents/openai.yaml",
+      "sha256": "72540354e14c232375dad3ac9cce4c679270b4658c0a77a7369c82b0ded528ed"
+    },
+    {
+      "path": ".agents/skills/theshop-test/SKILL.md",
+      "sha256": "f18fdf5592da4a1b6a4f500a2fcb8c63babaf9930f8455b3d2cb6c579a728b74"
+    },
+    {
+      "path": ".agents/skills/theshop-verify/agents/openai.yaml",
+      "sha256": "72540354e14c232375dad3ac9cce4c679270b4658c0a77a7369c82b0ded528ed"
+    },
+    {
+      "path": ".agents/skills/theshop-verify/SKILL.md",
+      "sha256": "9156f26799b212849acc171b2ebffa4970e90aea12b41dd828c462acc2e31b80"
+    },
+    {
+      "path": ".claude/agents/shop-application-implementer.md",
+      "sha256": "7d3fbf148865fa0ea4274d94e003225dac7c5f7ff46bd2a0acf3e65d3c3173c1"
+    },
+    {
+      "path": ".claude/agents/shop-code-documenter.md",
+      "sha256": "dfa17a5c44701c36c9218af2b26b26a474d1ad247f470482b61a74915c4496c4"
+    },
+    {
+      "path": ".claude/agents/shop-code-quality-review.md",
+      "sha256": "98d417696571b5d6e851a8a571e25edd3d043714a552fc7a7e7e859e076dd604"
+    },
+    {
+      "path": ".claude/agents/shop-code-security-reviewer.md",
+      "sha256": "cb2835df670a268940dfd003909664ef84baf89a1fd9b0a1a869ab670586fa99"
+    },
+    {
+      "path": ".claude/agents/shop-domain-implementer.md",
+      "sha256": "bd373ff9dab817659407ba98d6b6b8a726e7c56b6849689a83a27803d2604e8a"
+    },
+    {
+      "path": ".claude/agents/shop-infra-implementer.md",
+      "sha256": "a6c306f661973527c133a855c855b9eff7356bd59538210355fa6ded85adb361"
+    },
+    {
+      "path": ".claude/agents/shop-test-runner.md",
+      "sha256": "c0d516fbb17bae9dcb99727dde70baa975b73274ef08361abaa18a646646e4c1"
+    },
+    {
+      "path": ".claude/agents/shop-test-writer.md",
+      "sha256": "abef3b5739638b5d8bb1c2e65004871379cd1f9cd38df80242d117e7c046a930"
+    },
+    {
+      "path": ".claude/agents/shop-ui-implementer.md",
+      "sha256": "06ac539959353f7d81df9b409b9ab7850defae049aad5000557168efe39049c0"
+    },
+    {
+      "path": ".claude/commands/theshop.document.md",
+      "sha256": "f0ed1b2040293e5d105270a93340696d97e4735ed2a888423a26c26de82aeb5b"
+    },
+    {
+      "path": ".claude/commands/theshop.e2e.md",
+      "sha256": "ea121c5dce88931f34ad4e4d841c85edaf0cca1911ee5dc06229b698e8b2947f"
+    },
+    {
+      "path": ".claude/commands/theshop.implement.md",
+      "sha256": "05fa1f95333cc33068b7076d2ffb696bc80ea4b89102b027f0e98b374851abd0"
+    },
+    {
+      "path": ".claude/commands/theshop.review.md",
+      "sha256": "3338a2cc42a1f0e8b3e707e06e24e5b613b1b2172fcbd0aa4b97e296461e824b"
+    },
+    {
+      "path": ".claude/commands/theshop.ship.md",
+      "sha256": "3345d467810a0838780d5519bff5457aaf6baa94cfe2d3472816e2f64703f19c"
+    },
+    {
+      "path": ".claude/commands/theshop.start.md",
+      "sha256": "a0948edd10ef70fd60799ca2d16ce1de25999aade659a7ad45dcf16cbac33904"
+    },
+    {
+      "path": ".claude/commands/theshop.test-merged.md",
+      "sha256": "80064123cbef85d80ba84d997c7a44a52bc3d01338b6c915fc810227a8f2d1c0"
+    },
+    {
+      "path": ".claude/commands/theshop.test.md",
+      "sha256": "74955a85d50a73880ca02aa3b3a7bdcab3d0d1e249736fdb445840df6986acba"
+    },
+    {
+      "path": ".claude/commands/theshop.verify.md",
+      "sha256": "75cf6c7b8438408f75cebb800776b4dbf50fdcdcc13f224ca41f5142cde3123a"
+    },
+    {
+      "path": ".claude/scripts/check-design-rules.ps1",
+      "sha256": "dca3376a6447876dee247dd4f7b93d094cd6311c7e9a4c8d566eb5aac56d078f"
+    },
+    {
+      "path": ".claude/scripts/check-sdd-gates.ps1",
+      "sha256": "01c1dc8364530a16ad06e002127b96bff966449b56af8efac44b2fec97c21461"
+    },
+    {
+      "path": ".claude/scripts/format-on-stop.ps1",
+      "sha256": "9653ed558088aefb01581f05d6a488fd252172dc217e8dd8033fe05e300f31f9"
+    },
+    {
+      "path": ".claude/settings.json",
+      "sha256": "849c609ea58ecdb25089a8b777fc180b5026b70f141f5cde9195c43af490da0c"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/.graphify_version",
+      "sha256": "792980a6c7fe3f657ae53d7a3e2cf052fae73de30fb81adbefc982052ac1f669"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/references/add-watch.md",
+      "sha256": "b3f67570240582689c2834b4831917550c2d1aaf042148868c39dcbf387ce3fd"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/references/exports.md",
+      "sha256": "ee47fae477f106d8aed38798c58493b5a7f060a0d9d2581ce6132302827bc14b"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/references/extraction-spec.md",
+      "sha256": "f72a6d2dfa67446f06f27a8f0053af1adc8d53b02e393c8472045f6740c6183e"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/references/full-pipeline.md",
+      "sha256": "16081692de858eaff1ed1e8f292cfb266a6d360ee8b82ab96d17fd676d9f2e1f"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/references/github-and-merge.md",
+      "sha256": "e5ebd90c7686f50363ff7a535556bc2f596d4c47ec1e6c8b95e11e36a0dfea2b"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/references/hooks.md",
+      "sha256": "b9a4e9f66813c6fc720589f1071d1a03c95756ab7101447e14e57291fe7844e5"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/references/query.md",
+      "sha256": "e563ddcb1e155aa230f107e5ef9380bc1249c5cd8241128de7ed8a7bd9c20cf5"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/references/transcribe.md",
+      "sha256": "676a1e39aa6d43cdfcc416ec56616e36f7bad74066a82bd33a9485515b9a865c"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/references/update.md",
+      "sha256": "c18fa98e608797d1c9dbe71f3ae01b4132e7517d07544cccf0c04e7c8172bd76"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/references/usage.md",
+      "sha256": "d373cda89e6dbd180bbdeffbf3e47f80875b9e3c42978e52517be2168680543c"
+    },
+    {
+      "path": ".claude/skills/graphify-windows/SKILL.md",
+      "sha256": "cfd78743577dc0a87e830698d36cc77b5eb2ec002c514f6e2736a598250b34f8"
+    },
+    {
+      "path": ".claude/skills/graphify/.graphify_version",
+      "sha256": "792980a6c7fe3f657ae53d7a3e2cf052fae73de30fb81adbefc982052ac1f669"
+    },
+    {
+      "path": ".claude/skills/graphify/references/add-watch.md",
+      "sha256": "b89fbc907f3c7f00420c3fd3a18a093246c7c73dea58fc2274ccfd7951a3e57b"
+    },
+    {
+      "path": ".claude/skills/graphify/references/exports.md",
+      "sha256": "c2c631a81458163bd480cd9d1ea5cf266878cc82f7053812947ad4c211d875ea"
+    },
+    {
+      "path": ".claude/skills/graphify/references/extraction-spec.md",
+      "sha256": "eaadb51001b87ee45220ed72ffa788d5e0968c7640d4d111b85394739a1c3c86"
+    },
+    {
+      "path": ".claude/skills/graphify/references/full-pipeline.md",
+      "sha256": "16081692de858eaff1ed1e8f292cfb266a6d360ee8b82ab96d17fd676d9f2e1f"
+    },
+    {
+      "path": ".claude/skills/graphify/references/github-and-merge.md",
+      "sha256": "1b36d67bd92de0f5ea76ec3b84d1c1103a197c6093b9954995cbaf0abac9fac3"
+    },
+    {
+      "path": ".claude/skills/graphify/references/hooks.md",
+      "sha256": "2720dc0a15ab66ba57e2eea48d57d62aeebe63d0ed268b403cbcad3d2a887fe1"
+    },
+    {
+      "path": ".claude/skills/graphify/references/query.md",
+      "sha256": "28d57a4b75feadbe85456e3e68b50b6080c1a0227a486d056d68cddb4dbebd2f"
+    },
+    {
+      "path": ".claude/skills/graphify/references/transcribe.md",
+      "sha256": "dbdd2b2733734f46c369cfe98322a9a53a77fa56b6728cb2e76f1452a7b71103"
+    },
+    {
+      "path": ".claude/skills/graphify/references/update.md",
+      "sha256": "37ddd550244e79191019229de119d07734d2e0eb2a8425e428a3cb7aa5aea65b"
+    },
+    {
+      "path": ".claude/skills/graphify/references/usage.md",
+      "sha256": "d373cda89e6dbd180bbdeffbf3e47f80875b9e3c42978e52517be2168680543c"
+    },
+    {
+      "path": ".claude/skills/graphify/SKILL.md",
+      "sha256": "ca511e3b51ec7c4190d7d4a4a26809ca213a1c64a5345f4925b51bcd89998ff6"
+    },
+    {
+      "path": ".claude/skills/theshop-clarify/references/invocation-examples.md",
+      "sha256": "ff000fd23ff387ad858f64e15c79e47125f3b8fbabd6315236d68d995c929680"
+    },
+    {
+      "path": ".claude/skills/theshop-clarify/SKILL.md",
+      "sha256": "bb0e8575c1043ad11554d66f12f6d165073ca4059843de84999bc8fbb0839495"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/checklists/code-generation.md",
+      "sha256": "ddbf6ec47f750e5438055cac64f5a39771d9cdb4242164091c9b6c817a9f75d3"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/checklists/design.md",
+      "sha256": "15ae6f4015a3cabfd68b25297c0fe210e539d0e194330956d041e5f1c1b9f111"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/examples/application-handler.md",
+      "sha256": "ccd6cbae239287918245dc4268985ddfee45c54c6d2718850ba1fe98813ff138"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/examples/domain-entity.md",
+      "sha256": "70e91fe4a37e02f0ce11e1b75b431a120e6d2c7bb4a3eea0176b713d24c269bd"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/examples/infrastructure-repository.md",
+      "sha256": "b524a94853d10351c5b7dcf1a1c8804c85cc4be6288605ec63b7b4005a16fe4b"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/examples/web-component.md",
+      "sha256": "31f73507df5180beac59b5eb4eb7d3939538736686ed79c059a970ac60082790"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/examples/web-page.md",
+      "sha256": "ee10b9fcf687b5c2df73eeea7b5d231d89b81ac4c8f5e3df4e85ddbafcf1c632"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/rules/architecture-admin.md",
+      "sha256": "ae210a095c6b499d30a653f4c7a6536997fdd90f96cc4944c24dea3484de3c5d"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/rules/architecture-core.md",
+      "sha256": "f5bb908d52270409286329320403a64fdc449aed968ee3652f20e32d4e665ea4"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/rules/architecture-patterns.md",
+      "sha256": "2e3bcf62ca724f8b23b4a3e2a9afcab24fd0033e87b24a195ef0413e50061b38"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/rules/design-components.md",
+      "sha256": "f27730b5342944c1fe6d06d82326724772a3b58c0544c9858d3a30946fbbbe38"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/rules/design-strings.md",
+      "sha256": "4530a020525fb65d175c8a2c80c605c4c757993a287354ef8ad3d7b8bc2c1919"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/rules/design-styles.md",
+      "sha256": "737315fcb20de71f0ab8e08d1cfc45fb368b08212d6a67a4bc50c589d97d84f7"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/rules/design-theme-setup.md",
+      "sha256": "11b866fc70d9dd073b6212cada1533573e3fbedba61856ef02cf30b69f570c69"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/rules/design-theme.md",
+      "sha256": "07d8e4c0cc4732014c78450fda6c58334f293319b53e2d5805a80f320579254b"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/references/rules/documentation.md",
+      "sha256": "771818bc8fd0ca0fd650488a117459a34fe16d7b2d69891a97c7761c7460e4ff"
+    },
+    {
+      "path": ".claude/skills/theshop-constitution/SKILL.md",
+      "sha256": "ba7de4b5163770bafeafe32311fa2b044dd1bb24a3ab870d73a633671d329373"
+    },
+    {
+      "path": ".claude/skills/theshop-document/SKILL.md",
+      "sha256": "cee3e03a6fecca565e86a31818d418d56d58bb29fb258d216bf46bcd044483ec"
+    },
+    {
+      "path": ".claude/skills/theshop-e2e/SKILL.md",
+      "sha256": "2d4a5e13e3f866897ca4754167c2d858d29cc50bd103e30c748d167828975bd5"
+    },
+    {
+      "path": ".claude/skills/theshop-execute/SKILL.md",
+      "sha256": "be77618bd363d0e12f3ce533a0b23fc1e9c4a979e1527abf5fd3c8a7be62243e"
+    },
+    {
+      "path": ".claude/skills/theshop-implement/SKILL.md",
+      "sha256": "685ba98d78954ae2f7a42c472ede8d7fbc001a494ea3f0aa262238175ffb798f"
+    },
+    {
+      "path": ".claude/skills/theshop-plan/references/invocation-examples.md",
+      "sha256": "ad2d57786743181b570cac55b88cb683c891e38b387ac15cae4d7badfa7571cf"
+    },
+    {
+      "path": ".claude/skills/theshop-plan/SKILL.md",
+      "sha256": "d0a6b488b06b858aff17ed7e655f8106ad495327772174ec380c74c18fea427b"
+    },
+    {
+      "path": ".claude/skills/theshop-plan/templates/plan-template.md",
+      "sha256": "7e00b970a885f62429627cb8e50869bb60110d73ffbdf2f36b385b42632003f0"
+    },
+    {
+      "path": ".claude/skills/theshop-resolve/references/invocation-examples.md",
+      "sha256": "bc1b945b4a59ea9b3dd499e56bc5dcb9ed0c5f5f4cc20eaae3f5ed09a8374331"
+    },
+    {
+      "path": ".claude/skills/theshop-resolve/SKILL.md",
+      "sha256": "37f1ff26ce9c08fb1d9d270c9b085eb611ecc01b4c9e60079a409a15fc9fbc37"
+    },
+    {
+      "path": ".claude/skills/theshop-review/SKILL.md",
+      "sha256": "e29ebd295f477325d863661406f4231f348bf6b9e933f6c65094e02a0d24444e"
+    },
+    {
+      "path": ".claude/skills/theshop-ship/SKILL.md",
+      "sha256": "bca85014e71a928481e33531e9d1baacba69467a417dbeb6137cf15704bade70"
+    },
+    {
+      "path": ".claude/skills/theshop-spec/references/invocation-examples.md",
+      "sha256": "07eeb54efd890f627cf01fbb11c959a0f1465d2a26b5f964f360736bfb09197e"
+    },
+    {
+      "path": ".claude/skills/theshop-spec/SKILL.md",
+      "sha256": "89048083a43822188acae7fa1067ab0bca2c79b3cbb638703c6954c98a7907b5"
+    },
+    {
+      "path": ".claude/skills/theshop-spec/templates/spec-template.md",
+      "sha256": "e9344647fe4898f4818016f850e10f17e1dcc39fdf1bc46801ad95ea0636f027"
+    },
+    {
+      "path": ".claude/skills/theshop-start/SKILL.md",
+      "sha256": "a7ef16afbf736b47d98020496e3f16843df4ebb41529e6f6e876c696d01288b3"
+    },
+    {
+      "path": ".claude/skills/theshop-test-merged/SKILL.md",
+      "sha256": "141274bac82cb9685154c201844afec0651013a3a05814922b10afdc0716c5b0"
+    },
+    {
+      "path": ".claude/skills/theshop-test/SKILL.md",
+      "sha256": "c65e45664658a11d0c8ae2ccd35eadaf48867a49bb6534f167226c5c6f6ed80a"
+    },
+    {
+      "path": ".claude/skills/theshop-verify/SKILL.md",
+      "sha256": "fd66887699d5f17f968830741e5798ef85daed9b32234f5e0d9481ec9e297f74"
+    },
+    {
+      "path": ".claude/skills/theshop.clarify/references/invocation-examples.md",
+      "sha256": "ff000fd23ff387ad858f64e15c79e47125f3b8fbabd6315236d68d995c929680"
+    },
+    {
+      "path": ".claude/skills/theshop.clarify/SKILL.md",
+      "sha256": "c16caa76c2b6174da5ea1b691599e9d0ee730a3c92219683ee93429b0d86935a"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/checklists/code-generation.md",
+      "sha256": "f47fa241acd77a13ea885d7f70ad1b1da703155af614e446ae4b545647e0b87b"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/checklists/design.md",
+      "sha256": "e65e6842f47a75a782ed10b2cbb0068dcc75253b2c22cb73c61600f849159924"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/examples/application-handler.md",
+      "sha256": "32370f282a42d21291e7a7fbfef6225359e1ec83a4ec84d6ace549173b7d6164"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/examples/domain-entity.md",
+      "sha256": "bdb823993b6166afcbf236ad82a94288445276ad97b06e36b8cd98bbf0070af6"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/examples/infrastructure-repository.md",
+      "sha256": "bd134aa61ca960b81a99610aa80a7f86fa9e753c84818f0e3c3e50f69364ed53"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/examples/web-component.md",
+      "sha256": "4cd1e35d5b797cc1d946b5cc0c5927be74aa4d77726b815fc04371041dfc1b5c"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/examples/web-page.md",
+      "sha256": "12df6eab1d58726f181ff3753a66df275f837f2f58e924efcfb0081693a59f12"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/architecture-admin.md",
+      "sha256": "98adf4c73d4f4630b18aae9a004990ca2062fb9bb5aab06c89ace95f85c95bf2"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/architecture-core.md",
+      "sha256": "7f1c011ea451bcd1ae946cee3146db8243aadb5699cb94d94f40a9a7be9c0249"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/architecture-patterns.md",
+      "sha256": "46ff9b47336cd6d6b5d3241fb583275fd5d39d2b0e8c1ffb8377d3e493032ea8"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/design-components.md",
+      "sha256": "4fd6833774ebd10b2fda81a34bcd5d500691ae3d6839a131d7ba7c41078b507f"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/design-strings.md",
+      "sha256": "60bd40e0eecf86ca9be284dc484ad3d69f045f84969ad0776f9309a68348f3db"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/design-styles.md",
+      "sha256": "d587bd7568641c8a5b470132cc4564b1cb106a848e823878925be2814f367b56"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/design-theme-setup.md",
+      "sha256": "b009565acbacfde5e8cb60481f89a645c5e9ad0ae82dfdc42024f287f8439fba"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/design-theme.md",
+      "sha256": "b398ecc7a7787e17adb116e13b925e1dc9b7a0b0b2d8c71840753aaa48add06f"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/references/rules/documentation.md",
+      "sha256": "69a0a50eab71f35b318e6143715bf19160a3301356345d27c5d687be1b28ed35"
+    },
+    {
+      "path": ".claude/skills/theshop.constitution/SKILL.md",
+      "sha256": "eb3018b156e0d64dbab7e4bbf65fd5d265c258a849b740bb8fd59010169b7f69"
+    },
+    {
+      "path": ".claude/skills/theshop.execute/SKILL.md",
+      "sha256": "b0bd36a48df5e093004c321cb95ecbd36835bc256553e037a93f01138d5b51d7"
+    },
+    {
+      "path": ".claude/skills/theshop.plan/references/invocation-examples.md",
+      "sha256": "ad2d57786743181b570cac55b88cb683c891e38b387ac15cae4d7badfa7571cf"
+    },
+    {
+      "path": ".claude/skills/theshop.plan/SKILL.md",
+      "sha256": "352ce6c274d7b1997da040535e7cc7da1794857b925a06c3e3b017036f3126c4"
+    },
+    {
+      "path": ".claude/skills/theshop.plan/templates/plan-template.md",
+      "sha256": "7e00b970a885f62429627cb8e50869bb60110d73ffbdf2f36b385b42632003f0"
+    },
+    {
+      "path": ".claude/skills/theshop.resolve/references/invocation-examples.md",
+      "sha256": "bc1b945b4a59ea9b3dd499e56bc5dcb9ed0c5f5f4cc20eaae3f5ed09a8374331"
+    },
+    {
+      "path": ".claude/skills/theshop.resolve/SKILL.md",
+      "sha256": "cc231e0da959ebc28cff7377852f7530c99996878232bc0e8748df6a54b23d71"
+    },
+    {
+      "path": ".claude/skills/theshop.spec/references/invocation-examples.md",
+      "sha256": "07eeb54efd890f627cf01fbb11c959a0f1465d2a26b5f964f360736bfb09197e"
+    },
+    {
+      "path": ".claude/skills/theshop.spec/SKILL.md",
+      "sha256": "86ca0a8674ec80f53a9e1bc3167b10718a107fb2ae489cc4badeb9aa90d2fbc6"
+    },
+    {
+      "path": ".claude/skills/theshop.spec/templates/spec-template.md",
+      "sha256": "e9344647fe4898f4818016f850e10f17e1dcc39fdf1bc46801ad95ea0636f027"
+    },
+    {
+      "path": ".codex/agents/shop-application-implementer.toml",
+      "sha256": "3ae20ce07ef4ee4d1814c2eae14bab2797606b570ae9c7fdd41a9f7cea1082d2"
+    },
+    {
+      "path": ".codex/agents/shop-code-documenter.toml",
+      "sha256": "ed65db5f8426cde4841fd81f3d3ff239fdc004b26d7da48e6860498bfb2eac65"
+    },
+    {
+      "path": ".codex/agents/shop-code-quality-review.toml",
+      "sha256": "66ff9c8e4ff3bdaa49d1029a5211605975b2d59122627a0370301433a8940128"
+    },
+    {
+      "path": ".codex/agents/shop-code-security-reviewer.toml",
+      "sha256": "80c659fe9c9c6318211bbec9cdca33a6d9c0112715222107a3993458c298f3d0"
+    },
+    {
+      "path": ".codex/agents/shop-domain-implementer.toml",
+      "sha256": "add38df03a0e3fc1ba8080f8d414725838d13151915d3f2479087d681c5dac41"
+    },
+    {
+      "path": ".codex/agents/shop-infra-implementer.toml",
+      "sha256": "47d71defab260508ef4593c007e84fc7d45cdc04a7c6877d7432c556b19ea548"
+    },
+    {
+      "path": ".codex/agents/shop-test-runner.toml",
+      "sha256": "903629c26984d629153bd4a768dbf495052576e4fd3e2a8938b89574d55a3deb"
+    },
+    {
+      "path": ".codex/agents/shop-test-writer.toml",
+      "sha256": "a24dee58010e2f2afac66a64b3f3ae0bef33c63d542f67af5112c94d3da54896"
+    },
+    {
+      "path": ".codex/agents/shop-ui-implementer.toml",
+      "sha256": "8fa236470957098f9a03c34f8f6e09b6391e423a561648738d3f52b103a2d2cc"
+    },
+    {
+      "path": ".github/workflows/sdd-portability.yml",
+      "sha256": "53b964345e08073f5fc0d944fcfe9cb75ebd2cd193f01f5bb6fb2ee882f74f30"
+    },
+    {
+      "path": ".sdd/adapters/caveman/LICENSE",
+      "sha256": "5eb826cd03151bcc7cce3f80d40e87733237fedfc6c36d6908aca5fd650a0bdb"
+    },
+    {
+      "path": ".sdd/adapters/caveman/source.json",
+      "sha256": "880ca0bec516d6961f2a54172052eea946ba7acda601eff671824e447970c8f0"
+    },
+    {
+      "path": ".sdd/adapters/caveman/upstream-skill.md",
+      "sha256": "c4d7354b4b063d54601fcdd5097a5b1713d1a1a2e386ac39efa438aa1ffef8ce"
+    },
+    {
+      "path": ".sdd/adapters/claude/definitions.json",
+      "sha256": "5736d9423e82933d5fded9932a9ee37cb9149a50d63a85ff20b790268c28be64"
+    },
+    {
+      "path": ".sdd/adapters/claude/design-hook.ps1",
+      "sha256": "bcd0b5aef7cb5d3907d343f49be513afc9e161eb3e74c0e2d423428046eaba15"
+    },
+    {
+      "path": ".sdd/adapters/claude/runtime.md",
+      "sha256": "b8af8564760b0fea83e4c981b0911963226e1ea1beb5a4d598f96c4450df37f0"
+    },
+    {
+      "path": ".sdd/adapters/claude/settings.json",
+      "sha256": "849c609ea58ecdb25089a8b777fc180b5026b70f141f5cde9195c43af490da0c"
+    },
+    {
+      "path": ".sdd/adapters/codex/runtime.md",
+      "sha256": "a8df8db24379481a55f5b7e6044aed2ed877ccfa4ca245bfcb1f04048c38a450"
+    },
+    {
+      "path": ".sdd/catalog.json",
+      "sha256": "ac0750ae367c013d93ac035da19476c7a2c01ff0f3bba698f9ec652063eccc48"
+    },
+    {
+      "path": ".sdd/contracts/communication.md",
+      "sha256": "5f64176e004d381356718b49062848794c7d5abdbfcbf56dbce7abf9e0e4667a"
+    },
+    {
+      "path": ".sdd/contracts/execution.md",
+      "sha256": "095bb4ded0d768eb57aabf450eb182192928a651e49fffe68bd70a1efc88a7d6"
+    },
+    {
+      "path": ".sdd/contracts/project.md",
+      "sha256": "5e185f798995cddc5a049939ad38817115db90cbd8b5ea06ae440ab1f738a54d"
+    },
+    {
+      "path": ".sdd/evals/caveman-decisions.md",
+      "sha256": "80e8d5068423fea4e9882eaa09e38fa3456cdc069819c02247538f3d48fd7b15"
+    },
+    {
+      "path": ".sdd/generated-files.json",
+      "sha256": "72e0669b4b807738fcae83ccdee09965d842c88f3dec46971d2a88cbffb62888"
+    },
+    {
+      "path": ".sdd/README.md",
+      "sha256": "98b43a680edda24412c20ae2a13903179ab7f0d5711f9a51a155d0da59e3078a"
+    },
+    {
+      "path": ".sdd/roles/shop-application-implementer.md",
+      "sha256": "8335d3c6ec5cbee1636b54cfa4d569c5b13ea85f90199221887d8d7a1ac8e993"
+    },
+    {
+      "path": ".sdd/roles/shop-code-documenter.md",
+      "sha256": "11dc0e5ff26708f46bdffc52516dd46ef4ce00f643c183b854074bdaa6a734a0"
+    },
+    {
+      "path": ".sdd/roles/shop-code-quality-review.md",
+      "sha256": "493208f0dbbb9e31d419bee0af16d1ac1fd41d15cbcc5a6570fdb2c61c66d933"
+    },
+    {
+      "path": ".sdd/roles/shop-code-security-reviewer.md",
+      "sha256": "af6f0ad4f9dcd6923a939f97a1b4f82e213820afe2203d3ea5743eb3e330371d"
+    },
+    {
+      "path": ".sdd/roles/shop-domain-implementer.md",
+      "sha256": "e871186d2ccc1d152c8f40624e27d0d40e3203a112d6a9fe962f810b23594d71"
+    },
+    {
+      "path": ".sdd/roles/shop-infra-implementer.md",
+      "sha256": "e6a25a6ee77901ebdfc2db07c132664656643f0bcf9d87eb8902cd5d38295dbb"
+    },
+    {
+      "path": ".sdd/roles/shop-test-runner.md",
+      "sha256": "4e5b12bd0d365300571409f80675bfb2625a1ed148acdff10c41eaf9bdb3018f"
+    },
+    {
+      "path": ".sdd/roles/shop-test-writer.md",
+      "sha256": "c68560f79fd31d03fe031a6cd052ae2cc631e830b12e967b7341b406f18a99c9"
+    },
+    {
+      "path": ".sdd/roles/shop-ui-implementer.md",
+      "sha256": "a444a812c19e4aa59862e6592aa18bed821f9faf98d34448224cd30c144c7ba1"
+    },
+    {
+      "path": ".sdd/scripts/capture-baseline.ps1",
+      "sha256": "0edc4753a38ac308595279633a2001459299b1b96da891aef9bb4650c5fb1111"
+    },
+    {
+      "path": ".sdd/scripts/caveman-checkpoint.ps1",
+      "sha256": "c4bdf5273d4b45c0e5d371c8aeeba3ad7b961b0ef59267310834af72165f1903"
+    },
+    {
+      "path": ".sdd/scripts/check-design-rules.ps1",
+      "sha256": "f5bc54b51e5c51dcbd83f6f5b6903973c075320b56628f7f3af8a396e42b0e73"
+    },
+    {
+      "path": ".sdd/scripts/check-sdd-gates.ps1",
+      "sha256": "c4eebf8fb6f89253942c84c3689d3f61d98d6bdfeccd5c889779ec3fe2a09573"
+    },
+    {
+      "path": ".sdd/scripts/Common.ps1",
+      "sha256": "c4fafae2233b687bbe76b6f734ddf662c352033fde3759a892029415beef6ed0"
+    },
+    {
+      "path": ".sdd/scripts/extension-checkpoint.ps1",
+      "sha256": "03daa5f2a4e41232246ecc9988caeec23baf6ef0bd965e7b83bf936fa368ced5"
+    },
+    {
+      "path": ".sdd/scripts/format-changes.ps1",
+      "sha256": "927fca617cf3025a530a56a872ce7c609fcad902fba738d318e7badfbeba50c3"
+    },
+    {
+      "path": ".sdd/scripts/initialize-core.ps1",
+      "sha256": "dc990164f503624f4e53f2fdb0ecdc1396446575f9ac5a79a299b34035f98e78"
+    },
+    {
+      "path": ".sdd/scripts/prepare-runtime-fixture.ps1",
+      "sha256": "35b375d1e0cc27a8367dc65426dc60d894bafe7188e72eb51e9217c28afff36c"
+    },
+    {
+      "path": ".sdd/scripts/rollback-adapters.ps1",
+      "sha256": "38463738ebedc8ccc16a4655145f00d2d6bbfb396fad34019d2a3ad2c2af9ef9"
+    },
+    {
+      "path": ".sdd/scripts/sync-adapters.ps1",
+      "sha256": "64668f813c333843c4fad83bf72a3ffd2305a602aa9d39aec4c77d88f8d8a6de"
+    },
+    {
+      "path": ".sdd/scripts/test-caveman-runtime.ps1",
+      "sha256": "739529c7b44e81f348781288d38ebd809a481545a97332ee819d2c5a7f079cf9"
+    },
+    {
+      "path": ".sdd/scripts/test-caveman.ps1",
+      "sha256": "c825f994b791c469884dcdcc25907c353759304b61d2e74c0a432820a1323cc9"
+    },
+    {
+      "path": ".sdd/scripts/test-portability.ps1",
+      "sha256": "d2b295b28db37d2aa6adbef16230d35ddd6ff2d67c376d4acfc525dae06ead38"
+    },
+    {
+      "path": ".sdd/scripts/test-runtime.ps1",
+      "sha256": "44ba39ce4948b07fb7f8aface21c4034809a1728d510674ec4433ba278c67182"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/.graphify_version",
+      "sha256": "792980a6c7fe3f657ae53d7a3e2cf052fae73de30fb81adbefc982052ac1f669"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/references/add-watch.md",
+      "sha256": "b3f67570240582689c2834b4831917550c2d1aaf042148868c39dcbf387ce3fd"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/references/exports.md",
+      "sha256": "ee47fae477f106d8aed38798c58493b5a7f060a0d9d2581ce6132302827bc14b"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/references/extraction-spec.md",
+      "sha256": "f72a6d2dfa67446f06f27a8f0053af1adc8d53b02e393c8472045f6740c6183e"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/references/full-pipeline.md",
+      "sha256": "8e12c9dcb9ac0e477d2008a7b5c08de84f4dfeff3ef311c3828dc39d1a9e912c"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/references/github-and-merge.md",
+      "sha256": "e5ebd90c7686f50363ff7a535556bc2f596d4c47ec1e6c8b95e11e36a0dfea2b"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/references/hooks.md",
+      "sha256": "b9a4e9f66813c6fc720589f1071d1a03c95756ab7101447e14e57291fe7844e5"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/references/query.md",
+      "sha256": "e563ddcb1e155aa230f107e5ef9380bc1249c5cd8241128de7ed8a7bd9c20cf5"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/references/transcribe.md",
+      "sha256": "676a1e39aa6d43cdfcc416ec56616e36f7bad74066a82bd33a9485515b9a865c"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/references/update.md",
+      "sha256": "c18fa98e608797d1c9dbe71f3ae01b4132e7517d07544cccf0c04e7c8172bd76"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/references/usage.md",
+      "sha256": "d373cda89e6dbd180bbdeffbf3e47f80875b9e3c42978e52517be2168680543c"
+    },
+    {
+      "path": ".sdd/skills/graphify-windows/SKILL.md",
+      "sha256": "c89ade9ac683801f29fec269c9621619a006864b8f5417a9b6f741579cd7d190"
+    },
+    {
+      "path": ".sdd/skills/theshop-clarify/references/invocation-examples.md",
+      "sha256": "0a863fe2e0efcbddd9d6714cb8c181c3a43cce6d84edc78eb618b9311f67b3de"
+    },
+    {
+      "path": ".sdd/skills/theshop-clarify/SKILL.md",
+      "sha256": "c10adc0a8ca879e3d2df166abb061b89d84a7d16a68273217ba1d0b98325865c"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/checklists/code-generation.md",
+      "sha256": "ddbf6ec47f750e5438055cac64f5a39771d9cdb4242164091c9b6c817a9f75d3"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/checklists/design.md",
+      "sha256": "15ae6f4015a3cabfd68b25297c0fe210e539d0e194330956d041e5f1c1b9f111"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/examples/application-handler.md",
+      "sha256": "ccd6cbae239287918245dc4268985ddfee45c54c6d2718850ba1fe98813ff138"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/examples/domain-entity.md",
+      "sha256": "70e91fe4a37e02f0ce11e1b75b431a120e6d2c7bb4a3eea0176b713d24c269bd"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/examples/infrastructure-repository.md",
+      "sha256": "b524a94853d10351c5b7dcf1a1c8804c85cc4be6288605ec63b7b4005a16fe4b"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/examples/web-component.md",
+      "sha256": "31f73507df5180beac59b5eb4eb7d3939538736686ed79c059a970ac60082790"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/examples/web-page.md",
+      "sha256": "ee10b9fcf687b5c2df73eeea7b5d231d89b81ac4c8f5e3df4e85ddbafcf1c632"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/rules/architecture-admin.md",
+      "sha256": "ae210a095c6b499d30a653f4c7a6536997fdd90f96cc4944c24dea3484de3c5d"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/rules/architecture-core.md",
+      "sha256": "f5bb908d52270409286329320403a64fdc449aed968ee3652f20e32d4e665ea4"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/rules/architecture-patterns.md",
+      "sha256": "2e3bcf62ca724f8b23b4a3e2a9afcab24fd0033e87b24a195ef0413e50061b38"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/rules/design-components.md",
+      "sha256": "f27730b5342944c1fe6d06d82326724772a3b58c0544c9858d3a30946fbbbe38"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/rules/design-strings.md",
+      "sha256": "4530a020525fb65d175c8a2c80c605c4c757993a287354ef8ad3d7b8bc2c1919"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/rules/design-styles.md",
+      "sha256": "737315fcb20de71f0ab8e08d1cfc45fb368b08212d6a67a4bc50c589d97d84f7"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/rules/design-theme-setup.md",
+      "sha256": "11b866fc70d9dd073b6212cada1533573e3fbedba61856ef02cf30b69f570c69"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/rules/design-theme.md",
+      "sha256": "07d8e4c0cc4732014c78450fda6c58334f293319b53e2d5805a80f320579254b"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/references/rules/documentation.md",
+      "sha256": "771818bc8fd0ca0fd650488a117459a34fe16d7b2d69891a97c7761c7460e4ff"
+    },
+    {
+      "path": ".sdd/skills/theshop-constitution/SKILL.md",
+      "sha256": "135dbae62281a5923671520b5834290d8710dedf88b79790afb77edfaa4afffa"
+    },
+    {
+      "path": ".sdd/skills/theshop-document/SKILL.md",
+      "sha256": "77cb38da5e510c8965347edb8db35108554e4aef3a4d032dd06db95f7cc6df43"
+    },
+    {
+      "path": ".sdd/skills/theshop-e2e/SKILL.md",
+      "sha256": "6d12f1a06c780848b7af1939e173df8cb81b03a5c6e248793ce73fa42ac3046a"
+    },
+    {
+      "path": ".sdd/skills/theshop-execute/SKILL.md",
+      "sha256": "1c299eb8dda54b3f5ad01a51fc816e7982887904c76e5979fac0edd87128c07f"
+    },
+    {
+      "path": ".sdd/skills/theshop-implement/SKILL.md",
+      "sha256": "4da2e623687a0b98bd5b5f166920c9b97cd6949eff651ce69deab62fcf601716"
+    },
+    {
+      "path": ".sdd/skills/theshop-plan/references/invocation-examples.md",
+      "sha256": "4c6655648339f4e86810257b1dd08e90bdb43c546e8fa850e85e790a1b458955"
+    },
+    {
+      "path": ".sdd/skills/theshop-plan/SKILL.md",
+      "sha256": "9d2fd8178ea3de885548f2fd5526a347d9e58a61263f89b81215ef5cebda1516"
+    },
+    {
+      "path": ".sdd/skills/theshop-plan/templates/plan-template.md",
+      "sha256": "a33c8f609ad667d881fb95dc76b921c15c2c73e197e0fa295b673d817d42ed85"
+    },
+    {
+      "path": ".sdd/skills/theshop-resolve/references/invocation-examples.md",
+      "sha256": "9d646829359e531d3f602995ae1468f6d904269559d40c82e987eb655acae5d6"
+    },
+    {
+      "path": ".sdd/skills/theshop-resolve/SKILL.md",
+      "sha256": "092cd5957841dd29d04e42841ef9e770cda0fe558ba6dbc6ab5cf2f109fe0711"
+    },
+    {
+      "path": ".sdd/skills/theshop-review/SKILL.md",
+      "sha256": "08a6d710a153da10eeed74384f55c0500dce11c8f5a596cb72be13e65467ad85"
+    },
+    {
+      "path": ".sdd/skills/theshop-ship/SKILL.md",
+      "sha256": "cc9a32aad3112b6e5ab08de5f6701f8c05b4a401aef83212d0db0478099bfd66"
+    },
+    {
+      "path": ".sdd/skills/theshop-spec/references/invocation-examples.md",
+      "sha256": "d79771cf8a5140cdd221544a4cbdcbed35d32dfeb41c7cef69f54dc170546175"
+    },
+    {
+      "path": ".sdd/skills/theshop-spec/SKILL.md",
+      "sha256": "50ad853d7a329455145588cc12936ae59c5038149656a41d273c4c22b5903e82"
+    },
+    {
+      "path": ".sdd/skills/theshop-spec/templates/spec-template.md",
+      "sha256": "7cf95ac9e4523ebe65a3e1e284fb4ab0d682296a7648e33c7d9c4afdf544b32a"
+    },
+    {
+      "path": ".sdd/skills/theshop-start/SKILL.md",
+      "sha256": "e471f20b9dd0d24cc3fdf58c1fc0da351ef7bf3aa6ed2f155cadf7ce17c19978"
+    },
+    {
+      "path": ".sdd/skills/theshop-test-merged/SKILL.md",
+      "sha256": "140f27a854f844e600ebd65961544393ec332f38647bd5da614b725716c157d9"
+    },
+    {
+      "path": ".sdd/skills/theshop-test/SKILL.md",
+      "sha256": "5266f5b243d3a5fca5f514c30c7b3b162955ecf2b2bd690a42b29711483eb56e"
+    },
+    {
+      "path": ".sdd/skills/theshop-verify/SKILL.md",
+      "sha256": "e4c1705bd55d48fe071db129acc05ccb88669fa87bcf0dfff01ceca9473697d2"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "468bbcc9747d109dfe60fe255857a1bb3d1c1bd3c911f5526444e46edeb84cb5"
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "52ccc82619e5b2d43e25ef43a44f163636441bcb2eb57ce416f637d58eded6f2"
+    }
+  ],
+  "protectedFiles": [
+    {
+      "path": "src/TheShop.Application/DependencyInjection.cs",
+      "sha256": "df63934869e58303812e4140b6310afceb1e42b9074b5cf86d3d24e9070508c0"
+    },
+    {
+      "path": "src/TheShop.Application/TheShop.Application.csproj",
+      "sha256": "4c3a7618fa805e29c5141f54f3ead657749dce916d597a2a2e499cd3e00df13a"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Behaviors/AuthorizationBehavior.cs",
+      "sha256": "3cfb45fc43d129084229cd3ef16fa2fda46305aa84134d798f23d0b6409e294e"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Behaviors/ExceptionHandlingBehavior.cs",
+      "sha256": "63d3947298ebec1c813c2aa21931f7477a97ab859af53df62397bbefad4adf67"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Behaviors/RequiresPermissionAttribute.cs",
+      "sha256": "8082e7bfc3435a1eb8449678e0d6c7cff0c447e046e8cf0108c5c7cc3e90daf2"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Behaviors/ValidationBehavior.cs",
+      "sha256": "ff2a13ae4eb6bbe869b2e35a39ae8db9a6572f505c3c518129af1fa319e30540"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Filtering/AppliedFilterDto.cs",
+      "sha256": "bf7a867904694296d3cb2f68550d1628dc9efe6315eb5d9400a5e95aa7188d42"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Filtering/FilterGroupDto.cs",
+      "sha256": "ebedf900cc182bd5bcb73bdd7461eb13842da1092b71f327c3bd7dddbdcd210a"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Filtering/FilterOptionDto.cs",
+      "sha256": "23ce63141dc050e7b041f06cab648d82816ba187b55163c74d4541134320cba9"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Filtering/RangeFilterDto.cs",
+      "sha256": "4d17e7662ecd3d1d502e42ea8093cceb7c38968e55a43209a3ebe1808bb74490"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Interfaces/IAdminDashboardRepository.cs",
+      "sha256": "c25411d358ce9d5923088ee38ee6dcd13356575a8724e920e05d74dcf3e790cc"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Interfaces/IAuthService.cs",
+      "sha256": "31efbbc5f6bf9ddd53d23ecdfa5911d7704f5b36313ec74fed5ef491dd07e193"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Interfaces/IBrandRepository.cs",
+      "sha256": "2840e04688149998d87ff44fcc6064561452b391b6c60ffb226e7fe89277c831"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Interfaces/ICategoryRepository.cs",
+      "sha256": "fccb333503e588e96223aa3d84394669aab7383fba901907b693c4ed75be6d25"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Interfaces/ICurrentUserService.cs",
+      "sha256": "ea1c3502f1097fe9acd1b768f8b138d70b486b697bad80cfe945d1c0f0fbea28"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Interfaces/ICustomerRepository.cs",
+      "sha256": "0db749e382a4849d23a90bf7b3ac8ab6f44b9075c2b28cfdcc2a6e71dbffab65"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Interfaces/IFileStorage.cs",
+      "sha256": "abf9c81250a54609316bbb4645b6d00e3e6962654d29bcda6685fd6a4baa9ad2"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Interfaces/IProductRepository.cs",
+      "sha256": "a5c8883cc0af6808a12e3288fc22249cda78940fe4565659d3661b0ccec1b4aa"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Models/PagedResult.cs",
+      "sha256": "4b7b743625ac4a364b3a57d4777d72efd66bde69370c837899fb17f126cc434e"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Models/PaginationRequest.cs",
+      "sha256": "904f2b9402a0873126ad43009c28b4ab615c16512be8b77b1c3357cc3fa61c8d"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Models/Result.cs",
+      "sha256": "78ab68cc76bae473f5ac0be0212eff0f15d726c6bb8e6b7dfffbe512668928d5"
+    },
+    {
+      "path": "src/TheShop.Application/Common/Storage/StorageArea.cs",
+      "sha256": "dfadfdaf3c1a6ea26d307f10a9dac3c49ab64a3d7ff4b7f616a1f4912676829b"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Admin/AdminDashboardCatalogue.cs",
+      "sha256": "3c157c95a1ff9a9384d7b203384473a7045d485caf1b0b19ce3d769c94081511"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Admin/AdminModule.cs",
+      "sha256": "c1b97d4faa8734442cff66b3878fe97d2adacf551483b90eb6f324e812fbd5c7"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Admin/DTOs/AdminDashboardDto.cs",
+      "sha256": "62d4c129bd0b492b3a2283e691462bd7abbd54bf9c0b86b1fb706ffa637905b5"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Admin/DTOs/AdminModuleCardDto.cs",
+      "sha256": "26cbe6383983822b61a98927624e5b9cef13d08c3fa5e7abcff56c35cba65079"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Admin/Queries/GetAdminDashboard/GetAdminDashboardHandler.cs",
+      "sha256": "6b40c997731b18a5fda35ce5f732a532bcea5365f3d4e80455e042659bc0bd7f"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Admin/Queries/GetAdminDashboard/GetAdminDashboardQuery.cs",
+      "sha256": "18546eb02c0abe3b2793e5fd3b0e484278bff99c6e92f3942038ee9f6083099c"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/AuthErrorKeys.cs",
+      "sha256": "0acd8887fb425b3ada7e5ee4dde8e56fb005bbf29f0ce0f8bdc6c4121fbc2bbe"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/RequestSignInOtp/RequestSignInOtpCommand.cs",
+      "sha256": "05267df03a36158bf13e445bc5b7e17bfbe8509bb15c1eaf5e739249b1cae2a4"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/RequestSignInOtp/RequestSignInOtpCommandValidator.cs",
+      "sha256": "c0c8f0a48e69dee223db55f213beb60b1d31d423bb03d06669e26f3aa8e9aeeb"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/RequestSignInOtp/RequestSignInOtpHandler.cs",
+      "sha256": "8dad794b6ecdc2bce79f60326e817b975f702827bda60cde18257d4f3c7e6722"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/RequestSignUpOtp/RequestSignUpOtpCommand.cs",
+      "sha256": "7f93fdc46c8c8b8664472116fdb494e0c1aa41847456a412102f60a64030e790"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/RequestSignUpOtp/RequestSignUpOtpCommandValidator.cs",
+      "sha256": "0db5aaf2872f94d4cf81cbe37f0ed707db9dc617fe3d12f04a47cf7d44780843"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/RequestSignUpOtp/RequestSignUpOtpHandler.cs",
+      "sha256": "9d2935cc16eab4bcd9e4f4496326234a3697ed540439674aaf1f8c8a5e7367a4"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/ResendOtp/ResendOtpCommand.cs",
+      "sha256": "1f273eca1a8fec9d90ffbfaf32968b8479c178b45c2cf4346d1a57d97f678b69"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/ResendOtp/ResendOtpCommandValidator.cs",
+      "sha256": "b10f1aaad557cb28aa6d89ba18486eda478aebb089ba24c716c8b7fdeeee9490"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/ResendOtp/ResendOtpHandler.cs",
+      "sha256": "4b84d749a1b79094cf86be05b6bd48d04a881edd0293351c42c7da6bb8205d7a"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/SignOut/SignOutCommand.cs",
+      "sha256": "f76df207ee16554f3d503a7b7f878e6c6c3931b7e77e6f324d9e392d9933bddf"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/SignOut/SignOutHandler.cs",
+      "sha256": "2e2a089d0c52ed851a86273c19923e182fcf4dc0d3b9b6d3e8829bf04197862e"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/VerifySignInOtp/VerifySignInOtpCommand.cs",
+      "sha256": "cb4afc5ee872039bd8d72296a267aed7e8c96016fcecbb14ebe61ccad72dd3c2"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/VerifySignInOtp/VerifySignInOtpCommandValidator.cs",
+      "sha256": "6982a57f7b486c69364e740e68ec97ec3fca60192db54f1ae6d3f927e60ece09"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/VerifySignInOtp/VerifySignInOtpHandler.cs",
+      "sha256": "9033c4dbe401a361d1892fcab516257faaaff43353778efd835bfe667b0ee979"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/VerifySignUpOtp/VerifySignUpOtpCommand.cs",
+      "sha256": "7bb455c20cc13ead5718721054ae458ec8da5f82030d234eaa355b01c23cdc17"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/VerifySignUpOtp/VerifySignUpOtpCommandValidator.cs",
+      "sha256": "54267b5f1bcb49efceecac5ac3888ae88a8760b5ac55503bc6fd0bd5fe0a3acb"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/Commands/VerifySignUpOtp/VerifySignUpOtpHandler.cs",
+      "sha256": "d6b3a1cc46218b83845309e6d49f0b04f9fd6da7ac8b7749fc2092f6728ba502"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/DTOs/CustomerProfileDto.cs",
+      "sha256": "e2d092f0561b567c028d46ed2edbeb7d7d3ace11f5fcab88506e7ecfbbda9a1a"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/DTOs/OtpRequestedDto.cs",
+      "sha256": "623a8286005019140ea96c3275353b6069169993fbdc55df81927206cec3a2d0"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Auth/DTOs/SessionDto.cs",
+      "sha256": "b1975dff089ebf96b12044ca94d3be26b174481a7e31d5a34671e860987b0ed7"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/BrandErrorKeys.cs",
+      "sha256": "a5f1e4ffa3e71d82cefc9b3f8fbbb7fdc421b2fdad91f8753b7e09e0222648c0"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/CreateBrand/CreateBrandCommand.cs",
+      "sha256": "310c25b402454176225541653bc1ed858428f573dac4577aa6f412c30acf4378"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/CreateBrand/CreateBrandCommandValidator.cs",
+      "sha256": "eb5cb61f09f1f55e1f5853e9f77fa367bb43304e60f9ff75db2760a264188583"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/CreateBrand/CreateBrandHandler.cs",
+      "sha256": "b13348d21ad04a758d1ea9f2580927ffa09ed5832b65abb268787b24e015fab5"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/DeleteBrands/DeleteBrandsCommand.cs",
+      "sha256": "fc31591cc63ddc127e9f87d65f899256e7889a3c2b446a445ae4f2f18fe521d8"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/DeleteBrands/DeleteBrandsCommandValidator.cs",
+      "sha256": "066ad520a92d6486e31c21e87d9eb6b3c5255b9ad1caf73b6b3cc9bc9173c2d8"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/DeleteBrands/DeleteBrandsHandler.cs",
+      "sha256": "f7c1e2c561e934de4401b3d108126a73edf3384ce5ffc08ec68591e301a15c90"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/SetBrandStatus/SetBrandStatusCommand.cs",
+      "sha256": "5a63c7d48e6dee491f3af785dd4c398bcddbc8956e50a71e158a0c6e1cc0eaab"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/SetBrandStatus/SetBrandStatusCommandValidator.cs",
+      "sha256": "9540e892e429164673c7fff1f107915b6a2d3f1ba824713a794ce0f6024aa503"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/SetBrandStatus/SetBrandStatusHandler.cs",
+      "sha256": "87050cd814e535c37b1ce2fbd35eb720de0b3a57b1f331728ef29fa7b93cf57a"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/UpdateBrand/UpdateBrandCommand.cs",
+      "sha256": "3ff747d210010afd86899a4d32e67166c96e877bbd6060cc4ed2a3cbc09ec7ca"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/UpdateBrand/UpdateBrandCommandValidator.cs",
+      "sha256": "de9167b78b8929e17848c2b4ca2ec72947eace8cd3202683bd1376e205c0dd0f"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Commands/UpdateBrand/UpdateBrandHandler.cs",
+      "sha256": "d005bcc7fb8d63adbe499240db81192ef13956252062748aecbf8e0650650c57"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/DTOs/BlockedBrandDto.cs",
+      "sha256": "e0d92855a86bae67c547f944736c87a00d849d669829325a23d08ddf78323bca"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/DTOs/BrandDeletionOutcomeDto.cs",
+      "sha256": "394b4b8003f276049d77c47f95a639c0c18e66eeecc970652c91d5470fca8ff9"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/DTOs/BrandDto.cs",
+      "sha256": "c58cabb0655fcc03fdb9a4315eb6944b58f18c4c84b87d75021b9a10e3410826"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/DTOs/BrandListItemDto.cs",
+      "sha256": "6d38c3dff02662ee4f3a108efb61a4ed7a72fe8cff4cece675add9a2136ddd5f"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/DTOs/BrandLogoUpload.cs",
+      "sha256": "4a89372d48c22c9d7e529fa71493e746524861929624f6c05ce9da5dd5c10c5a"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/DTOs/BrandStatusChangeDto.cs",
+      "sha256": "eec6b1c9c74bfaa5e516480072e83ece0e2a97650bc55727e170dcbfbdc11177"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Mappers/BrandDtoMapper.cs",
+      "sha256": "263d8835cc14e593cb0aa91c610c86e1d2e8ad315a397cc384061b13a7e0027b"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Queries/GetBrandById/GetBrandByIdHandler.cs",
+      "sha256": "9671b61e6873e698189d247db96f2925502df96757a8d903e6111054e0bb6ed2"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Queries/GetBrandById/GetBrandByIdQuery.cs",
+      "sha256": "66cb1145a355a22f19a668cc117b206e219ef76de1161307499073abaaa44582"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Queries/GetBrandsPage/GetBrandsPageHandler.cs",
+      "sha256": "a3e2f29ad20cf17923a07a0643cb9add6a836a229ee43ed53d6bb1e5d74c78b4"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Queries/GetBrandsPage/GetBrandsPageQuery.cs",
+      "sha256": "04e2bf9062bd8b0f75d0c7d1150039c03e4ffba4f0f59c51a16081b72a311107"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Brands/Queries/GetBrandsPage/GetBrandsPageQueryValidator.cs",
+      "sha256": "e5c2714b20201a729b125ea38ba70e83e43e462aaf42b32ab6ec88040ebc7e8c"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/CategoryErrorKeys.cs",
+      "sha256": "5173dabef6b41dd4a30e4ee12faee5b785ceff746c9c6dae93e72fd7e9ab1dc2"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/CreateCategory/CreateCategoryCommand.cs",
+      "sha256": "62099c7906231bef398430f4c7f823f89816afa782ecf15765c7882920d82eba"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/CreateCategory/CreateCategoryCommandValidator.cs",
+      "sha256": "ff9f2f683e0bf28dd73f34c4352e4a58f7190c4097db706b2a7acc1d4bd926c3"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/CreateCategory/CreateCategoryHandler.cs",
+      "sha256": "54a581e8ba6135355586f043a9cb5f6929b029587a8d87ff1f06dbce6b6cae28"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/DeleteCategories/DeleteCategoriesCommand.cs",
+      "sha256": "0cb88020b16e0e24f0379ef25113787d73bdb62dba53759100cc86021492463d"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/DeleteCategories/DeleteCategoriesCommandValidator.cs",
+      "sha256": "104d82f7e4aac94a551c024f08aa487514045c5ef9cfc72d74f0ec2f34bc5518"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/DeleteCategories/DeleteCategoriesHandler.cs",
+      "sha256": "26fa7cd94014070c24243743c374cf9788991c022e275bf623ec3ce913477b06"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/SetCategoryStatus/SetCategoryStatusCommand.cs",
+      "sha256": "488f6599d77df66a5a984186fc81fa26bad67c16b17eb5288efa9b5c57cb9b1c"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/SetCategoryStatus/SetCategoryStatusCommandValidator.cs",
+      "sha256": "15d199e96d971eab8d85c85d3ae9e64a23579312dac2b560a1276786b7628140"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/SetCategoryStatus/SetCategoryStatusHandler.cs",
+      "sha256": "c9334290ad8c05c6b04cae9014e0f5d265b91459b50ed406470bd3207aec871b"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/UpdateCategory/UpdateCategoryCommand.cs",
+      "sha256": "4c5689886db20eb8e604b686e4293a87af0a37d84f1633685f0ba4ef9219cd94"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/UpdateCategory/UpdateCategoryCommandValidator.cs",
+      "sha256": "914160bc8545a83353166114daa5108e1316599d8f5911a958a42f0ccf454309"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Commands/UpdateCategory/UpdateCategoryHandler.cs",
+      "sha256": "daebdcfa65e4fd269281ac8f04ba7dfacfb4edfaf41a0f3cac9ba959cbd59182"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/DTOs/BlockedCategoryDto.cs",
+      "sha256": "cbcf1faf97c68f09143e1f717b2b92b74571e26aade72c692f9ee8f2f53b2a9b"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/DTOs/CategoryDeletionOutcomeDto.cs",
+      "sha256": "1ba24d67c8b7ed6bc2c871dbf4a7a07c5e2b30d73bb207f3e453dc00f46e0411"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/DTOs/CategoryDto.cs",
+      "sha256": "c476459baa4485d49f2e1405792870267818fab71ad131e05362c237cf8c9346"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/DTOs/CategoryImageUpload.cs",
+      "sha256": "fa189a7c199bb489ca0e648259826f64049575971a740dbab6ed4fff707f077f"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/DTOs/CategoryListItemDto.cs",
+      "sha256": "77284b4f8e4b0b44a02333610e3d839b55a5d0d076f28eb504a0499c769e7f98"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/DTOs/CategoryStatusChangeDto.cs",
+      "sha256": "251d4bd7c10f297541abe91454ae2042a744be1cb8e5a10591c81a0512e8d46e"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Mappers/CategoryDtoMapper.cs",
+      "sha256": "270f4abe152dcd8e388f93b71639ee2cc7fce7ed3435c5bbba24664b1bb65477"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Queries/GetCategoriesPage/GetCategoriesPageHandler.cs",
+      "sha256": "606bcd531f86020a67eea53e7f192c7af48e9c1808bad877268364daf2ac0272"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Queries/GetCategoriesPage/GetCategoriesPageQuery.cs",
+      "sha256": "f3212de91eac5b775d23cecb47459dc8c2dd21521f30b348a8f50aad7ff06fae"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Queries/GetCategoriesPage/GetCategoriesPageQueryValidator.cs",
+      "sha256": "b6ece26a277c5c71c505111fd57c411e05e7ff2743ea3873c3dd0e4188ea9fb7"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Queries/GetCategoryById/GetCategoryByIdHandler.cs",
+      "sha256": "dcd60f1a58310d4e5a9449c8d14dae3981684d25725da2d13b6249e0d29c54dd"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Categories/Queries/GetCategoryById/GetCategoryByIdQuery.cs",
+      "sha256": "68f5521a26f1c9422e0c6d779b1f8316cb6d684042f9e8dacf8045348cbcef68"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Customers/Queries/GetCurrentCustomerProfile/GetCurrentCustomerProfileHandler.cs",
+      "sha256": "238757b1cbf64ff6df16f21907c45ec986ca3d8558f0116aab26278695e51f65"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Customers/Queries/GetCurrentCustomerProfile/GetCurrentCustomerProfileQuery.cs",
+      "sha256": "c34d8aee8cb45d333dc4210d6c0aed3ca48b845145d93ba7080596da33402657"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/ProductErrorKeys.cs",
+      "sha256": "f4b2a23ffb15e08bc93352e978f1011e77eefa496ef2dd5ca7fe075dcd7a8038"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/ProductFilterKeys.cs",
+      "sha256": "7e5a6cd3f9bc009493a04b118e54557265a6fe04ebcf5bc2a844b4e10e52df93"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/Commands/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/DTOs/CatalogueFiltersDto.cs",
+      "sha256": "122dce616cb902f5da862775e7b906dfd8c0669bd8d8e8f70f308c5129797c01"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/DTOs/ProductCatalogueCriteria.cs",
+      "sha256": "6072a33950061394df83dabe7c36fff93e9d42a0d067c80b186026eb57a654f5"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/DTOs/ProductSummaryDto.cs",
+      "sha256": "b40bf84cd206eea5918797114cca136e7355d62cddc9761cc00ce8ede127d626"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/Mappers/ProductDtoMapper.cs",
+      "sha256": "eb75c7798e0f1ab048b263290a8d827ae6328340d58f5f915f6e3f514fcd7a6b"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/Queries/GetCatalogueFilters/GetCatalogueFiltersHandler.cs",
+      "sha256": "15289b68e17cf8d8078d4960540036e343f16529a355fbf931ae8470e91edeba"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/Queries/GetCatalogueFilters/GetCatalogueFiltersQuery.cs",
+      "sha256": "fd132055377b59817d223809262e97d5b00216e050abab5bcc8468b15b5c6c31"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/Queries/GetProductCataloguePage/GetProductCataloguePageHandler.cs",
+      "sha256": "e8424bccb0ba1eeeb55947d9b304729f49e4637afc55d2e305011223d43f1dbf"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/Queries/GetProductCataloguePage/GetProductCataloguePageQuery.cs",
+      "sha256": "d7e9e4dfc9f61399b74d9e15aa8945ccd38cba80aae77890e0b7682ce38ab281"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Products/Queries/GetProductCataloguePage/GetProductCataloguePageQueryValidator.cs",
+      "sha256": "b3ecc6f4232ff8fc0dd2eaf8b708d5dc836c4ebd8af434a9b4f957bd55a25a2a"
+    },
+    {
+      "path": "src/TheShop.Application/Features/Roles/RbacErrorKeys.cs",
+      "sha256": "5378a73ca919ae5b46bab8bf2fdc445e73bfa6f616137a3282547f98d306955d"
+    },
+    {
+      "path": "src/TheShop.Domain/TheShop.Domain.csproj",
+      "sha256": "216b915a45d1f46bb6f2d1947dcad79df3e29d1c620f9b65200fec6bb0cd3713"
+    },
+    {
+      "path": "src/TheShop.Domain/Entities/Brand.cs",
+      "sha256": "74923c27fb336c1733ccf562d1e86d04bcca51c71c37daa9b87997bf11853791"
+    },
+    {
+      "path": "src/TheShop.Domain/Entities/Category.cs",
+      "sha256": "3f2bbef89343fb8d996fa6d4d980f3335c3e11e5e8de4116fc4602e0e449d020"
+    },
+    {
+      "path": "src/TheShop.Domain/Entities/Customer.cs",
+      "sha256": "f00bccf59009edb8193961b2efdd2c887b56b2f0bb6fc7904f5e26dabecbd107"
+    },
+    {
+      "path": "src/TheShop.Domain/Entities/Product.cs",
+      "sha256": "9c5b1a160ddd6765508ba7a8a030b479e33fce5a9ac62282ec9225145eb09ca1"
+    },
+    {
+      "path": "src/TheShop.Domain/Entities/Role.cs",
+      "sha256": "5a3c40efa291ee8539c6ab75ede3853cb9636a329f4b0598fa18a2c4c7c416cf"
+    },
+    {
+      "path": "src/TheShop.Domain/Enums/BrandSortOption.cs",
+      "sha256": "cf20c9bc70804042178268ae34b2da846d959f2355a5c8360024e58fa75a37a5"
+    },
+    {
+      "path": "src/TheShop.Domain/Enums/BrandStatusFilter.cs",
+      "sha256": "390090ec4d06f47f3ee90ecb0cbdd17e779aad25d4e1491f7ec994fa9bd7e313"
+    },
+    {
+      "path": "src/TheShop.Domain/Enums/CategorySortOption.cs",
+      "sha256": "23c6cd4df42ce536ee2929aaabc1fcd7428703f4ec6598f3e228b4d66f600bdf"
+    },
+    {
+      "path": "src/TheShop.Domain/Enums/CategoryStatusFilter.cs",
+      "sha256": "d88986e9a62c2418129f83a399d6f5ac714bf125ec5178cf928edea6a1c533bc"
+    },
+    {
+      "path": "src/TheShop.Domain/Enums/FilterKind.cs",
+      "sha256": "ee19f52a8649b83fc4b70c2c693fe5d6aad3025bf927a43d3083f80e433d0133"
+    },
+    {
+      "path": "src/TheShop.Domain/Enums/OtpPurpose.cs",
+      "sha256": "b98e34c7b39e82154853dd3abd9adc53050f73e6faa7cb1713ca3ae7de4439c0"
+    },
+    {
+      "path": "src/TheShop.Domain/Enums/ProductSortOption.cs",
+      "sha256": "990d28c269b355169a8b8eeef1e235c8f0441e51b1a38b920eab20562552e782"
+    },
+    {
+      "path": "src/TheShop.Domain/Exceptions/BrandDescriptionTooLongException.cs",
+      "sha256": "f83d844a21365cbddc507e8da26e417a2928ee486e4c0f7a36cc5e0653549fea"
+    },
+    {
+      "path": "src/TheShop.Domain/Exceptions/BrandNameRequiredException.cs",
+      "sha256": "be28cb41f6cb6bc88fd88f887c673bdac73ec7c683db7604e8b6ffac6af8b68e"
+    },
+    {
+      "path": "src/TheShop.Domain/Exceptions/BrandNameTooLongException.cs",
+      "sha256": "ca018c1d15caa2c033a43f9082bd1b16e557138a1ee165ea6d51cff18a71ff89"
+    },
+    {
+      "path": "src/TheShop.Domain/Exceptions/CategoryDescriptionTooLongException.cs",
+      "sha256": "707606007d2692cb333c044febc9d27769e705ad7402a3599e4a422669dbbd4e"
+    },
+    {
+      "path": "src/TheShop.Domain/Exceptions/CategoryNameRequiredException.cs",
+      "sha256": "ae9d467966a2c42f9e55df81809ab86000a327c12d2514553a3ae2eed492cf57"
+    },
+    {
+      "path": "src/TheShop.Domain/Exceptions/CategoryNameTooLongException.cs",
+      "sha256": "5c97a1b6b225125c16fd59c7934c6ca21827a8bd7f77ed629d15fadc4804a86d"
+    },
+    {
+      "path": "src/TheShop.Domain/Exceptions/DomainException.cs",
+      "sha256": "305c60f0679fc1d4db9a18f96abefbd9e086579284fc77689e6af17a296c4c3a"
+    },
+    {
+      "path": "src/TheShop.Domain/Exceptions/InvalidPermissionException.cs",
+      "sha256": "52d8b34d88789d5c7dfe9b5368c8b775510d948bacea84401f9c2a0af93ec913"
+    },
+    {
+      "path": "src/TheShop.Domain/Exceptions/SystemRoleImmutableException.cs",
+      "sha256": "c43bde762c3cf1bf4d0fecf061dad3b5c1cfb38498e911f4f4c70405157bcba9"
+    },
+    {
+      "path": "src/TheShop.Domain/Exceptions/UnderageException.cs",
+      "sha256": "80098a911526447ad299e1c35fa690bbf8452395d3e6aff5fc92780d06f23d28"
+    },
+    {
+      "path": "src/TheShop.Domain/ValueObjects/DateOfBirth.cs",
+      "sha256": "da7f355df3145ee803006905fd81ecd0a168dd66d583810adcf4b441536f9cb7"
+    },
+    {
+      "path": "src/TheShop.Domain/ValueObjects/Email.cs",
+      "sha256": "36e0577787051d11589438f081765609de07f77ff846423b68a6fd26d1933733"
+    },
+    {
+      "path": "src/TheShop.Domain/ValueObjects/Money.cs",
+      "sha256": "e63ed2a56344d10de7155de3e662971094a5d85fe40069d8a5731d806dd66ec3"
+    },
+    {
+      "path": "src/TheShop.Domain/ValueObjects/Permission.cs",
+      "sha256": "a121d4955867fc0fc36523de7444d65731b1bb2f89ae22844abf0796e8314093"
+    },
+    {
+      "path": "src/TheShop.Domain/ValueObjects/PermissionCatalogue.cs",
+      "sha256": "a8b1390dd778f611b615818aaae11358924054b1cf1bfe4c02691d7ec4eff542"
+    },
+    {
+      "path": "src/TheShop.Domain/ValueObjects/ProductPricing.cs",
+      "sha256": "aad9fb33d22188a300673532901087df08b592a2457b5f02e688d8e04d20d130"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/DependencyInjection.cs",
+      "sha256": "8c96d2bc528973a13d5a5a0bbd05e833f941c45426da01438f1015ecb84d5b6a"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/TheShop.Infrastructure.csproj",
+      "sha256": "851f3aadc19dc241ee4c08ce85b4af2fa429d18a95f40185c961df48bb74a9d9"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Auth/LocalStorageSessionPersistence.cs",
+      "sha256": "5fd009e420b0379881a066a0bb0f036f6cde9fb2f8229d8f613c09c7effef50f"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Auth/SupabaseAuthService.cs",
+      "sha256": "e809091b74c482a28bd74896936fcf6d9733d251fd711ad79cf898c9f4196eac"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Email/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Payments/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/SupabaseClientFactory.cs",
+      "sha256": "26166e76a9cafbd79619783ac12cafe5a87650a3abff5e594f955b4d0feefc2d"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Filtering/ProductFilterDefinitions.cs",
+      "sha256": "d4cc4806f70b1e8f989d3a07372b70a31deaad8e549a6f709a87a7ed5452b2e9"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Mappers/BrandMapper.cs",
+      "sha256": "4815844b1279f68269bd7aef20b64963e08aba64cae0a3e7d4855f795d6d86c7"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Mappers/CategoryMapper.cs",
+      "sha256": "9fbec37ee69314a545336119a0b603ce94d5e04ccd24bd3fd60dc9a270fdc6d9"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Mappers/CustomerMapper.cs",
+      "sha256": "5979f2eb70407bdc82e5f2fe1cda7e4dabd5315de8ceb351fe2d69d9f96d9686"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Mappers/PlaceholderImage.cs",
+      "sha256": "7707479dd8af5e7ae865d7dc96cea1584ebfe358f109b1a7d9239a5e571a0a1d"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Mappers/ProductMapper.cs",
+      "sha256": "be9cc66f4a72fd19a7060788b95d9877a9c2f2a7fe33323b11e72d12f18b18ff"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Paging/PostgrestPaginationExtensions.cs",
+      "sha256": "0b38755172a8553359b706eb5ed1eb413c9140c5735dafdc4d9789e49ca288e4"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Records/BrandProductCountRecord.cs",
+      "sha256": "c4952edba4cb77847e5133de883d5cc8b6a9760582e6f86cf42ca5fa6f3e1ef8"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Records/BrandRecord.cs",
+      "sha256": "3f97401730f7e1c602c829b70c02f87ba121750d85e7805af54dde6a070d713d"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Records/CatalogueFiltersRecord.cs",
+      "sha256": "bc3d6079a4d27198247aaf5aff109b0ee969bd3a80e0d5f152f2584559c49e37"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Records/CategoryProductCountRecord.cs",
+      "sha256": "e844854b2cd87be8c3f8284edb193a9376765f585b6afede18999d8bd22c9f67"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Records/CategoryRecord.cs",
+      "sha256": "a707d30bc4558e9c0827e554956bcf0087f41b7b028f8b9332c7cba650d3250f"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Records/CustomerRecord.cs",
+      "sha256": "9d595de532bb24178beba7f34e46783c64061f1af960ff01bfb3394a552c111e"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Records/DeleteBrandsResultRecord.cs",
+      "sha256": "f181e3194ae5d9cee85e4de69c3db9d42e61a0f97ee0fd73b94a33464156c528"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Records/DeleteCategoriesResultRecord.cs",
+      "sha256": "15b17a54158d5a5eb149bd64f3203dd6aa841bd990a66f7b289a16b9fa93306c"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Records/ProductRecord.cs",
+      "sha256": "cb2412900be96b7a13770455e25d08dc23e0055fc0b49ef454130ede3a35f006"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Repositories/SupabaseAdminDashboardRepository.cs",
+      "sha256": "7f9a12449722a6067ab8047abf027ce75ac4bbeacec3880b4586b0416b7f7c2a"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Repositories/SupabaseBrandRepository.cs",
+      "sha256": "aff1ee8e4a9c611010cc81e4e6ca534a0a6b0554e4fde1582c7b57acefe3a96b"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Repositories/SupabaseCategoryRepository.cs",
+      "sha256": "e7d8685bbb42f153c4d30e1e814a57366d8c86b99e4c510749323f627f7db3ca"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Repositories/SupabaseCustomerRepository.cs",
+      "sha256": "a9bb3740a6205a9410c503ed39e666fb75a2e22d4175cbec98d9073e1527d879"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Persistence/Repositories/SupabaseProductRepository.cs",
+      "sha256": "b0b0392008c1156c6dee26bab3384a4c88aa292c3ebd3e69f5c0b2e3fdb5c523"
+    },
+    {
+      "path": "src/TheShop.Infrastructure/Storage/SupabaseFileStorage.cs",
+      "sha256": "08756ac52b8d8fa536ca4421d6f452393cbd29589c86f14f8ccbbfaecc2c01a7"
+    },
+    {
+      "path": "src/TheShop.Web/_Imports.razor",
+      "sha256": "09e0f0c9d611c35259a447626faa6027b139300ff04dfdf149fa9a4a746f58ab"
+    },
+    {
+      "path": "src/TheShop.Web/App.razor",
+      "sha256": "238978c9d92737f138cdee1b531bbd41d1d5d98100e04ddc693d10fd5a501f46"
+    },
+    {
+      "path": "src/TheShop.Web/DependencyInjection.cs",
+      "sha256": "0152ce627145b1dfb3bcfdc04c6acba59bad826e7c54269c17f257563993a5c2"
+    },
+    {
+      "path": "src/TheShop.Web/Program.cs",
+      "sha256": "532ccf78b2e714d48da6b6cb929129b652e736f617d7aa40227240b851622439"
+    },
+    {
+      "path": "src/TheShop.Web/sasscompiler.json",
+      "sha256": "2b5b58e64d6217d54242a3c8492c6bf4b085c2a63a4bf0d8e6547601128eb085"
+    },
+    {
+      "path": "src/TheShop.Web/TheShop.Web.csproj",
+      "sha256": "423dd294d556607f87f215d98f4b4eee3c5d3ee6cde1d842591ff1dc746f2761"
+    },
+    {
+      "path": "src/TheShop.Web/TheShop.Web.csproj.user",
+      "sha256": "a7aa504322d6c8938a15e2552de43f74af29633849b03c50a3135caccdf935d9"
+    },
+    {
+      "path": "src/TheShop.Web/Auth/AuthorizePermissionAttribute.cs",
+      "sha256": "40511f153e29db0fb8a088239cd1ad612789766762840d679615c2b26f7f2fdb"
+    },
+    {
+      "path": "src/TheShop.Web/Auth/BlazorCurrentUserService.cs",
+      "sha256": "f4e5795a60e6dde6faf26c6470fe1d14ed723aab9f97a53c22bf0838139207d1"
+    },
+    {
+      "path": "src/TheShop.Web/Auth/ShopAuthorizationPolicyProvider.cs",
+      "sha256": "c054f21c5636b453a1d2dca95e89708dfc8a264c33c6e01545f56d1041ad3d8c"
+    },
+    {
+      "path": "src/TheShop.Web/Auth/ShopClaimTypes.cs",
+      "sha256": "8e663ab3647bd1fdb7e09d51062ac33e72b594a47b3578229d012510d80bdb82"
+    },
+    {
+      "path": "src/TheShop.Web/Auth/SupabaseAuthStateProvider.cs",
+      "sha256": "a96c5d6e28be77d521c39689cd7f6c01f2861134c6fadbb489d180d44573d5c6"
+    },
+    {
+      "path": "src/TheShop.Web/Common/BreadcrumbTrail.cs",
+      "sha256": "30e83b29c69e1023a313bcdfd41a36a850cd67aeed6b29cc178a30ca6e30357c"
+    },
+    {
+      "path": "src/TheShop.Web/Common/BusyKeys.cs",
+      "sha256": "9f067bfdd79e2b92808aa7f1c2858f5af24ec3a2e2943ace5239e231df057df0"
+    },
+    {
+      "path": "src/TheShop.Web/Common/BusyState.cs",
+      "sha256": "7f24eacdecc2d7c671ad37872cf90ae7481c48029fc6d3c4a4df3192867c31b5"
+    },
+    {
+      "path": "src/TheShop.Web/Common/CurrencyFormatter.cs",
+      "sha256": "cab1ec95fbe5cd395becdbee79d712cb59ad3e94525d1b2d332fcd542abc5789"
+    },
+    {
+      "path": "src/TheShop.Web/Common/FooterContent.cs",
+      "sha256": "c1134cfc58a6e2aea11a8baf0b0b8ca39a3778caeb966856d1d6562de4b07c83"
+    },
+    {
+      "path": "src/TheShop.Web/Common/IUrlQueryState.cs",
+      "sha256": "99cc766ab14b5e4054ce97fed9e166dcd1e206cae3a368c256e40dccfef9c5f6"
+    },
+    {
+      "path": "src/TheShop.Web/Common/Paginator.cs",
+      "sha256": "9b8ef4618a0c5c8f7e1ca527462bdb8b06ced5dfb27b963623f8a6f1ea1b1972"
+    },
+    {
+      "path": "src/TheShop.Web/Common/PolicyNames.cs",
+      "sha256": "2a30daf6bc88a7e836a6207d13809ea6fe5d89e1ff559385b08aee343b65e308"
+    },
+    {
+      "path": "src/TheShop.Web/Common/QueryStatePageBase.cs",
+      "sha256": "861e1a4a36e67a24567e4ac7fbb2c73b1d17134f400487adf87c945785ddd060"
+    },
+    {
+      "path": "src/TheShop.Web/Common/Routes.cs",
+      "sha256": "3c0cddbfe2731751e3f937e6e42ca385abeb49ad8433ceaedcbecbae3c62e51f"
+    },
+    {
+      "path": "src/TheShop.Web/Common/Sorting/BrandSortCatalogue.cs",
+      "sha256": "fdaa7bf7d5fdb00b9d35156b4e596a59ffc1bba5b86a33babb89b8021dddcc20"
+    },
+    {
+      "path": "src/TheShop.Web/Common/Sorting/CategorySortCatalogue.cs",
+      "sha256": "37657829311da083d20acafff76fc336e349d398205752031de50123e086f036"
+    },
+    {
+      "path": "src/TheShop.Web/Common/Sorting/ProductSortCatalogue.cs",
+      "sha256": "8d3014fd15ebbead107a3119b833fd2908aa8a7664436a3f9ea61449fa614d63"
+    },
+    {
+      "path": "src/TheShop.Web/Common/Sorting/SortCatalogue.cs",
+      "sha256": "601ec9f141ad1899bce69771d75154eda64705a8c22034c90c04a291dc1de99d"
+    },
+    {
+      "path": "src/TheShop.Web/Common/Sorting/SortOptionDefinition.cs",
+      "sha256": "f650919b3d127a46f2b9fbe5d2fea40fe7a1f049c486afbe1c2371adca6c98ce"
+    },
+    {
+      "path": "src/TheShop.Web/Common/Sorting/SortSlugs.cs",
+      "sha256": "c9eadbdbcdfa27e8f3e67f7620b960accaae624dc6c30356e1431e5fd8748e49"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Admin/AdminModuleCard.razor",
+      "sha256": "ec0e9477b9c045395bbaf225faa87a71d15ef5576da2e65a9d9189731ba67659"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Admin/AdminModuleCard.razor.cs",
+      "sha256": "deb4652debebd12e981720f609ee1a28ad3b903217fd4ac5af04c73c30ee32c7"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/AccessDeniedView.razor",
+      "sha256": "7558ba8cfe53464e8e67dc442986690b1a663c705e47627176f23375d90a628a"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/AccessDeniedView.razor.cs",
+      "sha256": "9dc125b6e2decf98499a734854ad85dc312b5fef05aca3ead4385020bb825f89"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/AuthorizingView.razor",
+      "sha256": "ee3bb9d6aa4374a5e5d3ef9aaf9cd3ca4e650f311bd0bc5cdf9ec36e11716a90"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/AuthorizingView.razor.cs",
+      "sha256": "abce5c781a3910e1f50743febb4f8e8735e039d13dbe9f1472612a08accbd78a"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/BusyFor.razor",
+      "sha256": "ef896f23d1eb6554e277df777932ee3ad175ffe407a777576ad266f22d6b44d3"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/BusyFor.razor.cs",
+      "sha256": "f3233648b622111590b38237c1453ba35aeed71837593066dd09bfeca407582b"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/FilterToggle.cs",
+      "sha256": "92f26086e9565c68f80e3c26be67ae723db255c22b0d3e8194d8a73bda2f4c09"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/OtpInput.razor",
+      "sha256": "511c9c238296138145814da8cc5bfe05d75200f9c4a9d84eab409743060c716c"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/OtpInput.razor.cs",
+      "sha256": "d26bcb464a45aad57b11628094acff51461450cd71597dfd6e7cdccb7ea27df3"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ProfileMenu.razor",
+      "sha256": "7c27a2ca4aafd0f9e48c145ea97b529bd9889bffe38388f9edc755857d162612"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ProfileMenu.razor.cs",
+      "sha256": "36da55e225f3f2134e5f943e733950a9d6d04dc16d75ebb651c8f0c640c8352b"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/RangeSelection.cs",
+      "sha256": "c96a9254b3c641748fb6567ce6b2464f160475486eee1d3ca2845b8b76240797"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopAnnouncementBar.razor",
+      "sha256": "9e4065ff69913bacbf0755080648e901f3db9523a37024c639bea3c5376b37e8"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopAnnouncementBar.razor.cs",
+      "sha256": "2b8b2b99b6800263e06e34f5c7baa0bf9a963341c40e233ae8c80ebb68d86512"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopAppBar.razor",
+      "sha256": "a90081181e33a98fd309e93389e0aefe42a67ecf9136640c4adf178b7affce1f"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopAppBar.razor.cs",
+      "sha256": "b27a052d961245795d8780db2327bc1958019d84d7bc5ff2e876b36cae8d7fee"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopBreadcrumbs.razor",
+      "sha256": "155d5423a70ee256b25ca632b5dff725257e09a77f54c367f12a690aa9c3a76f"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopBreadcrumbs.razor.cs",
+      "sha256": "f48bfd91159ecaa5210f465106bdaf4af073a9f2f63f6e08a499ad3721c4a57b"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopBulkActionBar.razor",
+      "sha256": "801aa3edb56cd15b786e723522829a1159c3727cedef69ae62d120da33bf6b4f"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopBulkActionBar.razor.cs",
+      "sha256": "ee86f266d5b90cb65ab17159fbd1b4cc2f90eca7fe8b0b6232519d9539bc57f1"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopConfirmDialog.razor",
+      "sha256": "42c2a93456e64f15b4b326259b4f373669685c1c64b86f6f71a9f52e378342bd"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopConfirmDialog.razor.cs",
+      "sha256": "17e923dd9a01b75ca883ed48f631668fa2fd248e94694fc11359ac4dce7d0b20"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopFilterPanel.razor",
+      "sha256": "48953bae682a407250c4987a37d822a617f7735ce1e6deedbb85dd96c6e3fbaa"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopFilterPanel.razor.cs",
+      "sha256": "e321ec4b9052337f2448ab5eb8f06c79ecd8fa999bf43d012a2ec85ca4053836"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopFooter.razor",
+      "sha256": "09e5c2029cd5c1f0a09f204bc8db6283472ac587b33db3073c6944be8b9cffc4"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopFooter.razor.cs",
+      "sha256": "0e7a05ed29aa6f7ea250b5b7bf7ac4ffe1a45eb03f9ce180c22931f2dff7d821"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopImageUpload.razor",
+      "sha256": "72ec1ec52e7faad20ac9da37084ed50a7d4a138c5de947a3a3556ae58f7ad9ce"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopImageUpload.razor.cs",
+      "sha256": "3c7836d4b582871e81bfedf34a9c455b45acc1aa280e59eb54348daa8a813d19"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopLoadingOverlay.razor",
+      "sha256": "c9eabc544e12c06e9ca0b16bf1a56bfa97bca204983902ff53fd80388f548abb"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopLoadingOverlay.razor.cs",
+      "sha256": "e1c82217d806a375c0a01e301362481302705898d6ace1223aa99d05c0c38ed2"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopPagination.razor",
+      "sha256": "3ea1de3184f95ecf1d06e70a094e790349de3a8c14652dd928d86b5670a61eaa"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopPagination.razor.cs",
+      "sha256": "c0e106a7993cbbe076f6d87523bd5565f647cbd02d68493436b4fb2e26b7db0c"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopSortSelect.razor",
+      "sha256": "eef528f950b8f52e3401984cb0f472f81b6a91a79ba30ecc71b90721bd8a5c50"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopSortSelect.razor.cs",
+      "sha256": "c5f63d15ecfed33e10cad5675788f5c9a6e120129f6953efa093f7aac5844d6a"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Common/ShopUploadedImage.cs",
+      "sha256": "1e3a42e21036aed8aacd6aec1f9c7aab49987c64cc9019e83b2bbab5b95db85a"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Layout/AuthLayout.razor",
+      "sha256": "319b4df826fa94a9581bd4b1955c478c5a7478528083d956efdc8aff9827cd09"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Layout/AuthLayout.razor.cs",
+      "sha256": "729d02a85ed78a5eafd275136ee731591cb12f8c34378358bf2b4e89dfa526de"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Layout/MainLayout.razor",
+      "sha256": "f2e697cb5c5465ad77980915feaa0394d16486f685e40db73ca1d4fdecf0be58"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Layout/MainLayout.razor.cs",
+      "sha256": "812854ee653e9a564aaba52097721d602480d2d9d167a1c83a12f67cca3bcc5d"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Products/ProductCard.razor",
+      "sha256": "9c0fad49a0bdca5b2be9f8e791ef46c77f2cb05db8785b29b571116e0a1b186a"
+    },
+    {
+      "path": "src/TheShop.Web/Components/Products/ProductCard.razor.cs",
+      "sha256": "c91becd0365322ba85475ee8ef691d460e982e458dcee1b8d881be07f74d9479"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Home.razor",
+      "sha256": "1d11fa04a779a2e920ec533ab3a516a8bb7923c1d0d4210fcb995bc91f2da80b"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Home.razor.cs",
+      "sha256": "da393701caf1fe955c120647469e7a1f53877503653601df9da277f480f31179"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/NotFound.razor",
+      "sha256": "223960a194501e0afef53a57165fd981d01f757ae1b31bd9cc7127a7dd97d926"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/NotFound.razor.cs",
+      "sha256": "59ad5b52e603fc601d295e1dad78614f3e03750f22763240c81d474e0ae81213"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/_Imports.razor",
+      "sha256": "73fe13665f148d0d9f7dc9ab3ee68fe244545b0b7cdad8a85b5c2cf98dae7410"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/AddBrand.razor",
+      "sha256": "527cc6712fe6a96417dc4bdc67d84e0caa76d43e6e857668db6c30ba1a9d86e5"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/AddBrand.razor.cs",
+      "sha256": "44350624d8173c39c75f70ee18fcf4a42090750bef178ea3d759bffcd44a0565"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/AddCategory.razor",
+      "sha256": "47abb96d811893571ffd71d0ac436c40b858e2ecdd4dc043f4f17e4d15786eb0"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/AddCategory.razor.cs",
+      "sha256": "51e9de88be1f1c26db6489476415ab13998b688f8429983319eb1d0d0343e921"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/AdminConsole.razor",
+      "sha256": "b7473b1ff6c8913fd24cda1be6907466e37d0b1cf5d01a0505ad200ec000b8b6"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/AdminConsole.razor.cs",
+      "sha256": "419b6073c4a263e0cedb58fca48807bfc439fc1e7d53836c26500a13e3aa6b5a"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/BrandQueryState.cs",
+      "sha256": "5cdb388fec891c9088b28bed839035373e8a7510fa5cd5e1f64d45fe2c65a99e"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/CategoryQueryState.cs",
+      "sha256": "b52f4767ddf27dc658a85986ba26dd290608915e6862b82d9255fdca4d1f1efa"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/EditBrand.razor",
+      "sha256": "d2c4952450d4c4ad3953288c09e57d968bad5129734ec5a776c97deca879f778"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/EditBrand.razor.cs",
+      "sha256": "72e5a496e2af5401cd8e256ea17ac70154ba3252c6694bdb7aa1171d12ed0dc8"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/EditCategory.razor",
+      "sha256": "c61b7b4ec5e76ba6ffde314b45b30a1ceda42799b751ba928bf65ea4b08285a4"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/EditCategory.razor.cs",
+      "sha256": "c19062263654cbc3d63811736665507073ec90ae85a69e4be66937843299c2ce"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/ManageBrands.razor",
+      "sha256": "c410747026c875b52478894bffb6a5dbce39a9d10fe9eee73c89e9779d8eaa9f"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/ManageBrands.razor.cs",
+      "sha256": "04a1248cd33891afdce3078153c1d4a823e4cd8a91b7e724cf9744ae70da3ee1"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/ManageCategories.razor",
+      "sha256": "126d81c39a91aebce88a601e361965b99be612c8a3e7904854a30c0da5e7e968"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/ManageCategories.razor.cs",
+      "sha256": "dfcd9e72cae40703d27e6b7e8c1e9d16030e85345a395006f8c32ee3fc8e7d51"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/ManageProducts.razor",
+      "sha256": "b543deb600be88220304041722d32411e53d9a52947b3dd3bd919de78f996334"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Admin/ManageProducts.razor.cs",
+      "sha256": "f8c3fd775f56a2f3cb35919cb73e99ce0ec5328071bc7d8bb2859e2b7649ea68"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Auth/RedirectToSignIn.razor",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Auth/RedirectToSignIn.razor.cs",
+      "sha256": "503f89dbc1a44a723f3a19c1f0301417ad65a74aadde6b2e996620d922f4339d"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Auth/SignIn.razor",
+      "sha256": "4dbb0cc74622e1f1a0668aa1114924309e53667240f0378311bb97b9e5c93b38"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Auth/SignIn.razor.cs",
+      "sha256": "fe84c41cd2e4e82d391eea47eec78931ce3743ee9170bee90806cb91e0602cb0"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Auth/SignInVerify.razor",
+      "sha256": "d819a589983ef7f46a65d5e777f9f5adc209c884d516f750e3c4a2bb2a2e8096"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Auth/SignInVerify.razor.cs",
+      "sha256": "038700880f597b8efaf527429d5935cbaa9ae0721c3bffdd854129cd2d6bdb81"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Auth/SignUp.razor",
+      "sha256": "4663654c9316d07ab03f97bfdebac36d89a43bc5cfd840dc4a66207e35ab0e3a"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Auth/SignUp.razor.cs",
+      "sha256": "b549fcbc3d2a6ab581269c6a72757d4215bbf6541d74eac0da6acd05158ecacd"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Auth/SignUpVerify.razor",
+      "sha256": "996aa990003b864397bb33f767a38cd1c459b5c57d13e1023d4eef7f1885043c"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Auth/SignUpVerify.razor.cs",
+      "sha256": "4007e31827369f1dbd90254b85baf340d5f5e8dab7bc9a863e7d4cb9ee7d5e37"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Cart/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Checkout/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Products/CatalogueQueryState.cs",
+      "sha256": "73448c7cf0f6427933531e17c21016cea9e4097f2a50c9152b1afd852f4a3790"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Products/ProductCatalogue.razor",
+      "sha256": "ec441a60b6a89472d71f7cdd93ddd9a7114d5527ccb0aba5862a751f143cf256"
+    },
+    {
+      "path": "src/TheShop.Web/Pages/Products/ProductCatalogue.razor.cs",
+      "sha256": "ccac7fd48c16090f0d7824f469c2cc1eb30248d3e155a30bb1b25affb26f86fc"
+    },
+    {
+      "path": "src/TheShop.Web/Properties/launchSettings.json",
+      "sha256": "020a576931b9b0c24680cec72da0f646addcc1474051c4ed899a85195e90741f"
+    },
+    {
+      "path": "src/TheShop.Web/Resources/Strings.fr.resx",
+      "sha256": "f22fc197f3961a736dbc16d02b749a1330dd64cf0f05f6e02a8a73a37118d1d9"
+    },
+    {
+      "path": "src/TheShop.Web/Resources/Strings.resx",
+      "sha256": "cf4b43fcc0adcc8a7fcbc3fd7ff7bf5fff98c97487a3c0f4e4e4209009a0edc0"
+    },
+    {
+      "path": "src/TheShop.Web/State/AnnouncementState.cs",
+      "sha256": "d916837752ef0c3d6e888f02bed1a9e9ba12d786d2c5348e873ed54e350e372d"
+    },
+    {
+      "path": "src/TheShop.Web/State/AuthState.cs",
+      "sha256": "4cf14d972764427b504cc542f90515eb3ea0643deb80d2cd010ccf6ef32619d7"
+    },
+    {
+      "path": "src/TheShop.Web/State/BreadcrumbState.cs",
+      "sha256": "f03797e6f8483e076a6bb813468fab5811be9d9aa1778dc0eca7b10eb43fedcb"
+    },
+    {
+      "path": "src/TheShop.Web/State/CartState.cs",
+      "sha256": "de26675f60b5940dd0cffbe4670d49c74bfe84bdba374fae072923d027210882"
+    },
+    {
+      "path": "src/TheShop.Web/State/FooterState.cs",
+      "sha256": "f4387db6ec832101091d04cbb294090889e4446dbf9e4d2cfda706b10efa7d4f"
+    },
+    {
+      "path": "src/TheShop.Web/State/PendingSignUpState.cs",
+      "sha256": "6697c3ba84dd14c262d3ba51ad71b07d01efd80d6429246bc11ddf4e90df9721"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/TheShop.scss",
+      "sha256": "afe4c9ab25d4d902f75b5ad5b445b42ff771de28bb4a8a5790af6f2d23cc9348"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/abstracts/_colors.scss",
+      "sha256": "fa0cab1580792a0fbaea47bc8afbabb0c8afa45a7deec0bc8697ec0c079b48ad"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/abstracts/_typography.scss",
+      "sha256": "aa92bd7cb22364e659a845d7ee412f9288ea2efda37f8138494826f52e76d02c"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/abstracts/_variables.scss",
+      "sha256": "c70ebfb98ebc94a5e9c4bc7931cb92a2e9118c8b4e7a889e7ec4c428d63247da"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_breadcrumbs.scss",
+      "sha256": "ff049889f07b1d7f36dacc64edbe8cf4b283922588946ccfc471a9d9862220b3"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_bulkactionbar.scss",
+      "sha256": "b7e5950fcb29d4af76ead264fb76db209842c0dfdc16c3308bfae108d9294f33"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_button.scss",
+      "sha256": "75c0eed769f951cd04f2b6e282d2cbfcf6f5840e47d01e6c556974698456a0c7"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_chip.scss",
+      "sha256": "a7f49f5e7ba083a5f74aa5e35b39f1b7ccbf9d35ce3f0cab6194ea47e30082ac"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_expansionpanel.scss",
+      "sha256": "60f3c924b482ac6a46ce162926dcf64318cee7c25fa69978bfa09c29211c6105"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_field.scss",
+      "sha256": "fd19c19e60f3c57ddfa444f861e2101bd07f7457d89114128804f5a66caf4138"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_imageupload.scss",
+      "sha256": "2a1bc6d7881beeb890fe4a7e03bf0bd343f21bd1f08f2d5943249addf034701b"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_otpinput.scss",
+      "sha256": "0ff5b3e6580fc07c26830340c2bc819dca1f4d6be943611dbdd090d49e952476"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_pagination.scss",
+      "sha256": "cb2d33cee1e9c44f87718b4d680df80c0584adee781a041c9be63224371d5331"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_picker.scss",
+      "sha256": "88156ca0b4daa8c42614dcb8c93f487e2927c0527da4f3f0e539558309cb2378"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/components/_producttile.scss",
+      "sha256": "3c82a25b79fcaf3bd6541a3b906a45664ca70c054156ed7f4a64d31f8549fdd5"
+    },
+    {
+      "path": "src/TheShop.Web/Styles/utilities/_sizing.scss",
+      "sha256": "86c0de87f91b0ba15a0452ca7e9d55036b0513667c5626995051646bf553a161"
+    },
+    {
+      "path": "src/TheShop.Web/Theme/ShopColors.cs",
+      "sha256": "4a785c2fcca90f94cebe09e2410613b1ae59ad51e079fd87eb4483d1747d4947"
+    },
+    {
+      "path": "src/TheShop.Web/Theme/ShopIcons.cs",
+      "sha256": "feab1a352be73e5ad8b6dcea2b63c5d835db96f1fa8541cf8611ba9f6ddc24a6"
+    },
+    {
+      "path": "src/TheShop.Web/Theme/ShopTheme.cs",
+      "sha256": "228f89669b1162fc3941861e8b41fddcbb5985708fa35a9196deef1041ccb5c7"
+    },
+    {
+      "path": "src/TheShop.Web/Theme/ShopTypography.cs",
+      "sha256": "65bd1a693ea364d3389a4aeb7855bc704a694127a21a611214b6df3c714aca56"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/appsettings.Development.json",
+      "sha256": "2c3aee57c955ae68b246202056001192b694d62bb786a6ddf0c350e58c28af86"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/appsettings.json",
+      "sha256": "ae9b1f6eee23feea590d292bd42861c177f67df41142fd8582f97adc76babda0"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/appsettings.Production.json",
+      "sha256": "28b8d785ecca101c5e4b0dd8769d7ab0cf4fda95b09d9ee564546236d139f921"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/favicon.png",
+      "sha256": "e265ac0f2dda1e5dfa65b1adf330722bb3ef7789115283604d8cd19f098f1f08"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/index.html",
+      "sha256": "1329b379d8f7bf40de27557142fd5662a3b5ab76271be79c3bdb509f92fb6e34"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/staticwebapp.config.json",
+      "sha256": "6f0065beb509edc7bd2fd7bb2089e2c40d1a19701d65f9f12f16a63f24167657"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/staticwebapp.dev.config.json",
+      "sha256": "f50a140113165626b068f28f573df873973bb5060bedef186ef18c682796a079"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/staticwebapp.prod.config.json",
+      "sha256": "e5fab1b65ac5168586ec1a37c33e657e42d56b5a37ad2b53a251b12382a84346"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/css/app.css",
+      "sha256": "086df27735069fc63bee3740df56bbefd81b3f518f54083b2e7712258e577834"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/css/TheShop.css",
+      "sha256": "89a852047bba74453a6e4b64599bb242e4807020e2278beabee1da10ed521cc9"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/css/TheShop.css.map",
+      "sha256": "ef3f70609bba823708f77190266f09a2c6e17779245c16850b7f201dff05caf1"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/fonts/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/images/brands/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/images/heroes/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/images/logo/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/images/logo/logo_icon.svg",
+      "sha256": "dc5661e9edd1fae3e47251071c04bc1f2fffcc3c15caf1382e3631533217579e"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/images/logo/logo_primary.svg",
+      "sha256": "65cabec790ef399a54da6bbb4923ac2a0f424e8ba6b0bede3f285e9ed7786910"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/images/og/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/images/ui/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/TheShop.Web/wwwroot/js/shopOtpInput.js",
+      "sha256": "7da38de7e919435beaeb52199d8386519d0cb125674bfe31a76369c31c40dffb"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/TheShop.Application.Tests.csproj",
+      "sha256": "ba55181e403fd2da2ad2b19d703178ae77557b85d4837c487fe6fc546a93b990"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Common/Behaviors/AuthorizationBehaviorTests.cs",
+      "sha256": "af4a04518dd4e92c722b95bd6cdbf2188a9269a4e80df073af4f4f05acd23af9"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Common/Models/PagedResultTests.cs",
+      "sha256": "0e54a509d5c9bdc23ca8ce0f709eaf8d14e0addfb3909c71dbdae93ad4cd6ffa"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Common/Models/PaginationRequestTests.cs",
+      "sha256": "35d31dfb98d82d355439f4fd11ee1e1755017031351f9ac3eb14e2da0d7dbc02"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Admin/AdminDashboardCatalogueTests.cs",
+      "sha256": "1cf39febfbbebf6e5c240d405ebcde78a68de84e3f37ed76190a12c5870c291d"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Admin/Queries/GetAdminDashboard/GetAdminDashboardHandlerTests.cs",
+      "sha256": "af7b527042026e702b44bdb4555f3d8e842b5348ffa5429d9c6ddf171b296e09"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Auth/RequestSignInOtpHandlerTests.cs",
+      "sha256": "f084bbd02e325e777e26d4fcfe785ddf61a28ae50b9d006171e4dfed289f1b18"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Auth/RequestSignInOtpValidatorTests.cs",
+      "sha256": "1b608f71a667d3f99abf777ecd694ccbe11eff18b92ad65f77a3d3210daf4fe2"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Auth/RequestSignUpOtpHandlerTests.cs",
+      "sha256": "5c2556b9afef5f1cacd8ee87e2e2812f9d4ed89bd1381e40c3c25a037e7530e4"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Auth/RequestSignUpOtpValidatorTests.cs",
+      "sha256": "9c900f6c33eebaebd74d37d10fb8a9e8c58f62f9c953c07bc20d888974cfa2e7"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Auth/ResendOtpHandlerTests.cs",
+      "sha256": "e175cccab3a10e7085434d88cb59030eaab7c346537a2a0af69af301b798d3e1"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Auth/ResendOtpValidatorTests.cs",
+      "sha256": "f195fcdca3f24984e0719f35ee2ef1f88bdb674d3976a96ee8b60eb6dc59ce21"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Auth/SignOutHandlerTests.cs",
+      "sha256": "cd106bd1323a0b25f3a9e2aa01d2d8b8d86a52daec00dee315a44622d38ed63a"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Auth/VerifyOtpValidatorTests.cs",
+      "sha256": "7c8a85b24dbb18b19eb968615988b0019a074626bdae10add09f4fbae9b09323"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Auth/VerifySignInOtpHandlerTests.cs",
+      "sha256": "c2caa7b68fb738e855321db2e1a1b77259411102d00f5b332e2663c9b8497cfb"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Auth/VerifySignUpOtpHandlerTests.cs",
+      "sha256": "4567e392188c1ad6f3879fee5f037c4e6807a91a2e2e951872f8b39d30c67ce1"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/CreateBrand/CreateBrandCommandTests.cs",
+      "sha256": "1ce13b1ecc761b674ddfe52661f41d5402993a3ca3fb450c3ab6999ca5b40ecc"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/CreateBrand/CreateBrandCommandValidatorTests.cs",
+      "sha256": "b820d32ccabc456f62997edaecf5cc45e446f5aafffde0c82341140148b247ef"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/CreateBrand/CreateBrandHandlerTests.cs",
+      "sha256": "8749d0cadd833dd3e315e224ba663143a804556e5eddf3ca61c1feaddbe954cf"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/DeleteBrands/DeleteBrandsCommandTests.cs",
+      "sha256": "26ab992988875177b0a3c0727e5a69c8448c8286771b716385526a80fe8782d4"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/DeleteBrands/DeleteBrandsCommandValidatorTests.cs",
+      "sha256": "d9ece85b39032a2357b984b898b6d5c1556f75ecda64fed5bcdea86aa36e584c"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/DeleteBrands/DeleteBrandsHandlerTests.cs",
+      "sha256": "3dd5ac38624e9164a8a4f9ff428ea98c4ffc372de5f82b35c74d3f12fc2120e8"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/SetBrandStatus/SetBrandStatusCommandTests.cs",
+      "sha256": "f75ae8935b4d1f91af1b1f8de03154e3c6879e4f98600e11264e5f652be9c704"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/SetBrandStatus/SetBrandStatusCommandValidatorTests.cs",
+      "sha256": "ddb734ea77dc53cb0dffef9e153e2bb37c6a19b5e96b0ead40a1288ce39c3175"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/SetBrandStatus/SetBrandStatusHandlerTests.cs",
+      "sha256": "22ddc76c13e329027bde004582861e2c00ce4e2e09d04185ef226cd739377380"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/UpdateBrand/UpdateBrandCommandTests.cs",
+      "sha256": "773e83d553160414ec6435d1f339ff4a128f347990238c2f2eaa72635f8e9d6e"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/UpdateBrand/UpdateBrandCommandValidatorTests.cs",
+      "sha256": "6c3910d4b63970a2200b739c56f203cd710be43b3e26bcc23b214001d5815208"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Commands/UpdateBrand/UpdateBrandHandlerTests.cs",
+      "sha256": "24f2928aeda521333c52498233a11738825c7b1493401675a548cccab00ae843"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Mappers/BrandDtoMapperTests.cs",
+      "sha256": "8f0ac90f062807c01dd8985fef18ff79938ce6e88c112b3efce875b9403391b8"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandById/GetBrandByIdHandlerTests.cs",
+      "sha256": "6181b77fc127aa34fa109f600045530f05eb090f06c369743d2407d97ac9aeea"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandById/GetBrandByIdQueryTests.cs",
+      "sha256": "f80b2c165867868608e3d93d08415374691716a0d20f4216c9098cf3e01398a2"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandsPage/GetBrandsPageHandlerTests.cs",
+      "sha256": "41eb308345c6ada83076a637dad8716174c35b870405a55a999f9c59a3713049"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandsPage/GetBrandsPageQueryTests.cs",
+      "sha256": "e1b8590e729a8d40bdd9f7f18a7d77e16793f700a592406c998e5a11b2fcee02"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Brands/Queries/GetBrandsPage/GetBrandsPageQueryValidatorTests.cs",
+      "sha256": "e21f2bda0765cc570e3c22f0de88cb121b93b590689f87e5e56dae51325fa307"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/CreateCategory/CreateCategoryCommandTests.cs",
+      "sha256": "8f4b7ca199738a0fc88bfcebc1b5ce8856e8d10fd8692233e8c9ad97f4e1fd64"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/CreateCategory/CreateCategoryCommandValidatorTests.cs",
+      "sha256": "de014f9868507d5cd4596d02eaecae88df074f7a76a307c5e3882414f9db42df"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/CreateCategory/CreateCategoryHandlerTests.cs",
+      "sha256": "a833b60279c465f1ebe665730b38db446a83de39c00bfbff98b021626fd27a7a"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/DeleteCategories/DeleteCategoriesCommandTests.cs",
+      "sha256": "18abb31692b82e43a6499faf4e4a400b217ca0afd61792c01391ac94275796cf"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/DeleteCategories/DeleteCategoriesCommandValidatorTests.cs",
+      "sha256": "6e48ac2bc0f75ce479092cb5c0fc3f5bfc2a4132baefb09c6fb340587093a960"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/DeleteCategories/DeleteCategoriesHandlerTests.cs",
+      "sha256": "295c6fb6ae1e33d9d0904c37802efccf813e47b64876f8143f6634e281fe6b4a"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/SetCategoryStatus/SetCategoryStatusCommandTests.cs",
+      "sha256": "c2a8bec0ffecf439779b2c3532cab0c830aa1b6cd74d61f81ff5a54f3728f0cb"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/SetCategoryStatus/SetCategoryStatusCommandValidatorTests.cs",
+      "sha256": "63153bb83c6a1648388fd6a838806057ef51ef1256230dd4b21a0f9077a59760"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/SetCategoryStatus/SetCategoryStatusHandlerTests.cs",
+      "sha256": "e4b9259caab1ce89c2035fe3bd56c9d68254dc813bc34a05aff381f4aedf8dae"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/UpdateCategory/UpdateCategoryCommandTests.cs",
+      "sha256": "10ac51a9ea2e22a979658b15933f993f62cb75f22d9a295b915aea8e788ea5b5"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/UpdateCategory/UpdateCategoryCommandValidatorTests.cs",
+      "sha256": "62e9ff312594cbab7e482952f6d28dd3a4d7ef43d05f362cd653a63b51331e3b"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Commands/UpdateCategory/UpdateCategoryHandlerTests.cs",
+      "sha256": "8cdcd77386c34e3ff9f976de043ed69893f7f835fb43217563582623937b110c"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Mappers/CategoryDtoMapperTests.cs",
+      "sha256": "556c1797db284fafb82114e26c2f2d3841f490331987b44621643a2d39db613a"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Queries/GetCategoriesPage/GetCategoriesPageHandlerTests.cs",
+      "sha256": "c8982d5cc9e776002021ed0f83f35cef37e571244a18d80d1c9c355c185b707e"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Queries/GetCategoriesPage/GetCategoriesPageQueryTests.cs",
+      "sha256": "1ed517e4c2d6ec6c4cc5e2234107871bbc3076d1f522ae3b410fc1a153f0441d"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Queries/GetCategoriesPage/GetCategoriesPageQueryValidatorTests.cs",
+      "sha256": "7fcb4500f2c4c449ff3cec46c4e2bd23c3f7b9e2aca4e6574180cafd1880c4e2"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Queries/GetCategoryById/GetCategoryByIdHandlerTests.cs",
+      "sha256": "ea0e4eab3a7b2a4ccddb42dea027f7082b418f49d1d5bd7c90e372791cdc5e89"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Categories/Queries/GetCategoryById/GetCategoryByIdQueryTests.cs",
+      "sha256": "4fe1f9e208fea3838780b62e92482e98b0f5037bc8e89beec6dc9ab9f6c555d3"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Customers/Queries/GetCurrentCustomerProfileHandlerTests.cs",
+      "sha256": "15b37b2d2a790a7511f3f3b7ff7e7a2e9f7b2816f20e91742e40ce245c5f14c1"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Products/Mappers/ProductDtoMapperTests.cs",
+      "sha256": "e8ee6e07a4c6a72dd67a4e2ac346793099716de3d87ed32ac7b99899b9c389d2"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Products/Queries/GetCatalogueFiltersHandlerTests.cs",
+      "sha256": "3da78c272f4735d9dcf3319db61268c89fa3bafb6495f058cd271ea48c7820b2"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Products/Queries/GetProductCataloguePageHandlerTests.cs",
+      "sha256": "ba73e2fba3c648db9008bb145884f3effbe25f71997a33625764c6e38af5f11e"
+    },
+    {
+      "path": "tests/TheShop.Application.Tests/Features/Products/Queries/GetProductCataloguePageQueryValidatorTests.cs",
+      "sha256": "d53a017cf519b5959a5eaf976fb8a3558388a823f63f0ce08a00821365590f9d"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/TheShop.Domain.Tests.csproj",
+      "sha256": "72e83cc2a000fae0863c0439da99166338cf90fea1a1202216052706614179d1"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/Entities/BrandTests.cs",
+      "sha256": "a74922d90834f0ec2d2a64cad645acb5045ab62ca085e773cfc97bf693c6a3df"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/Entities/CategoryTests.cs",
+      "sha256": "cb8f95b0418434a71946e8ff805bb01f600b9e039c1a60048772207be9f3c728"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/Entities/CustomerTests.cs",
+      "sha256": "d9eb96f178dc9807ee65042a3ad60e12c50eaadb67d522c5dbcd8a7421c93185"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/Entities/ProductTests.cs",
+      "sha256": "c16ab78cda3e2533eb9473026e85b1a1361c1e6331532ca49267e9256071d674"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/Entities/RoleTests.cs",
+      "sha256": "a04732e15599a5d7c7a17d2ab5613c1e5352d9ff09fe3c551a24911bb12916f1"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/Enums/ProductSortOptionTests.cs",
+      "sha256": "b72794c4fb93d365ea60297f02c31bf362f390bed8582954e560e26ff18246bd"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/ValueObjects/DateOfBirthValueObjectTests.cs",
+      "sha256": "66d7b97dd2dbe7486c45c600f6cdfdfccfff6531fba794293f1fa0705752fc3e"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/ValueObjects/EmailValueObjectTests.cs",
+      "sha256": "b8905437df53464ebd509c4a6ab64ce18553d937ab89f57b6d8dbeb761d2abfb"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/ValueObjects/MoneyTests.cs",
+      "sha256": "fc8b5d5970d1d69cfb307642da5d27acae55ac5bf4a669caa3430c5dc6298fb9"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/ValueObjects/PermissionCatalogueTests.cs",
+      "sha256": "bfd2725b3770b1844cd8b36b3771b90f2eb82966c0f4e24f9cd3d6b94a0c6d12"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/ValueObjects/PermissionTests.cs",
+      "sha256": "9b487f837d1853cd29a430674cd720a26c955f79fefeb7ba925342b49d94b113"
+    },
+    {
+      "path": "tests/TheShop.Domain.Tests/ValueObjects/ProductPricingTests.cs",
+      "sha256": "5216b4aeb36f6a9c1955e68a522bfe494ae4b1a239ddd191cc5d5596bd11b9a9"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/AssemblyInfo.cs",
+      "sha256": "146dd8dbd8e086ed3bf2ca8a3b8795c0b16eeeaac9631b9f7ba0655c43946d86"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/TheShop.E2E.Tests.csproj",
+      "sha256": "b3a44aed05f7859d897d8ea9a63c082482b29f861b13a3602caf991fed0256bb"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Auth/AuthStateFactory.cs",
+      "sha256": "d756172081b2be819ec3736f9b3cf99ef84ebcadccd35f0308ed08a05e9562b0"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Auth/OtpInbox.cs",
+      "sha256": "257481c5317edb8e16a43c85eda30c9b3e6353e017a93c13e104a995e3e9f55e"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Fixtures/AppHostFixture.cs",
+      "sha256": "d7caed9056f00994b0e71a13a04b3f89924fc0d863c7d65a8b89783222e5a3d8"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Fixtures/AuthenticatedE2ETestBase.cs",
+      "sha256": "756365f8fa77df1e9c8b0b3ac1d7e3ce36e77640abea0fd779da38b729a35e5a"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Fixtures/E2ECollection.cs",
+      "sha256": "1a21ec87c9ef89cdbdc9b542190195bb745aff52435e8991d216923b21625e1e"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Fixtures/E2EEnvironment.cs",
+      "sha256": "5e3992e51c0b6514b8b1bfb92ba900d3f387903985c2bbf733e169f655d9cca0"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Fixtures/E2ETestBase.cs",
+      "sha256": "c00be5ba86045e2955982b142fc322f853293971a115d02471844abf10bbaee7"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Fixtures/PlaywrightFixture.cs",
+      "sha256": "03caa8dc281e0a8ac92a18c51b5dbde1d6ea285b67cda4fc66375af9cf9b3dc9"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Fixtures/ShopBrowser.cs",
+      "sha256": "564e64552f984f88586cc54a71a2d5f72267e6e44b563f76afbb44059c76a11c"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Journeys/AdminConsoleJourneyTests.cs",
+      "sha256": "386f571964b3a0d585e2b211147cc1ad3be07dba8ae68880e1ada046063de68f"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Journeys/AppBootTests.cs",
+      "sha256": "ff4d70ad345d4a49881d14b32ebac5637a2ddcec12537b906deea25451bb99e8"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Journeys/AuthenticationJourneyTests.cs",
+      "sha256": "e9b46c041802d188f45f54e764ad0b9d33f5cc8f488c17db7e34fd3522185726"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Journeys/BreadcrumbsJourneyTests.cs",
+      "sha256": "43f24fe91d8e127725646f37b0f1a101a0eab4b4606c5bc53d3223e75394b1f7"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Journeys/CatalogueJourneyTests.cs",
+      "sha256": "f6e3aece5fda7e07e50b1f761428ae29673544510c8cde87cfdd469489daf0aa"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Journeys/ManageBrandsJourneyTests.cs",
+      "sha256": "5e8650fa79a69c084683c536443a8132111518cf2d528ca97e8f2666a6079edc"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Journeys/ManageCategoriesJourneyTests.cs",
+      "sha256": "ee7228a34ad85bd3cc9c3ff40c797740cff0b1d4e76bcc1167449ac8eb7fddef"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Journeys/RbacJourneyTests.cs",
+      "sha256": "77c73ba92ef184adc45d5ba4b3d549ccddf6d1f209fcfda6cf62ee1617d18ae3"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Journeys/SignInJourneyTests.cs",
+      "sha256": "bd2ddc26ad9ecad5c33071d0196fcdcf5e26c9d9eb0e7f258b3a0fa3e1874661"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Pages/CataloguePage.cs",
+      "sha256": "5e1697e4329e7e0297c3b79df7967ea820f692ca6b0d7e95e4aae6dbd74a2241"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Pages/ConfirmDialogPage.cs",
+      "sha256": "68a7579aa19ade4907a961f4fb5a47d785cd055aa1812ca981db4ec4f5abd10e"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Pages/ShopPage.cs",
+      "sha256": "c133de2a77e1b9fda7d30d0a4c46c5bf16674063be518e26d84f9489b29b947b"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Pages/Admin/AddBrandPage.cs",
+      "sha256": "6eaa1e35f04f079ae0d6d41b73e8ee71bd137c0c096af07861989bd0864c5c11"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Pages/Admin/AddCategoryPage.cs",
+      "sha256": "4705322af26b6efe83e8ea6ebdae7764ee8fdc9db9e4a19ce74e87cbeb5d816e"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Pages/Admin/AdminConsolePage.cs",
+      "sha256": "0a4faa03a6fa12dea1e87120580d68ba64287a892035f6518ed97723f2577620"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Pages/Admin/EditBrandPage.cs",
+      "sha256": "1854a522efb177fa235e10b234d3b7b272e29b8e1451956cb11e59c99ba6693d"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Pages/Admin/EditCategoryPage.cs",
+      "sha256": "e45d02b19473a07df66e5a81e0b739377f7df3f728c08ab2f36f9be96621f43c"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Pages/Admin/ManageBrandsPage.cs",
+      "sha256": "fea63a35d638d03967f05f27fa99a6a01d6da1a4c85ffcce8b5e7480df41b497"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/Pages/Admin/ManageCategoriesPage.cs",
+      "sha256": "b12ec88fbf77b0a650e9e708c0e43ea06adf04d91180c408dbde178e6640d34f"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/tools/start-e2e-env.ps1",
+      "sha256": "cbd0778c45140fac48d89cee7a8b213bbd9f59c030fc0626025322d04c82fd23"
+    },
+    {
+      "path": "tests/TheShop.E2E.Tests/tools/stop-e2e-env.ps1",
+      "sha256": "c679965ec05a743419879bacafcfa9f3bb52f9dc79e451745eee29f1bfec9969"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/TheShop.Infrastructure.Tests.csproj",
+      "sha256": "b945e3c9a99d77a6418c1c2026cb0832c294b8029d7715c847cb0da4c137f91d"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Auth/LocalStorageSessionPersistenceTests.cs",
+      "sha256": "57b5762f295f690f75fdf31578132a3016c5472e20768b6d82c5583767e01566"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/BrandMapperTests.cs",
+      "sha256": "a815af8007d7a2d9a0d32a4db28890aa480013a3b4b547d775cf55269d7ba5cd"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/CategoryMapperTests.cs",
+      "sha256": "51691fc24706d5c3231aff82e00add501df4de77da3a7d1ca5caa59a671b5799"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/CustomerMapperTests.cs",
+      "sha256": "42c6a8f8e17463044d3156a75157a030b5c07988e71afdbf6a6279f51647745d"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/ManageBrandsSchemaTests.cs",
+      "sha256": "96dfff910a95619dd23f6a7df9c39ddec5eb25efd522457a35a7eca2c4cf3580"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/ManageCategoriesSchemaTests.cs",
+      "sha256": "ed491abd930b9fbca77b7171d170dd63caeb9783ff94287207ac17b936a74f83"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/PlaceholderImageTests.cs",
+      "sha256": "cfabb248915da7a885dcbb35613d669ac1e55d419c48e3479485fea07a612c53"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/ProductMapperTests.cs",
+      "sha256": "84d35835ec0125211aa9662161817eb977a5097fa5099ac33774a6695194f425"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/RbacAuthorizationTests.cs",
+      "sha256": "80d5d6dcb09389c75473068d171a46859697d63b867fa40025e30f4d4aa6d0aa"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/RbacPolicyRegressionTests.cs",
+      "sha256": "782260656a5214bd139509ef1386117abdd043d33d1b6142722ff06acda23646"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/RbacTestSchema.cs",
+      "sha256": "fcdb89b64560629604edf01860028430fb772957b3df1c5355446ffeb30a9664"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseAdminDashboardRepositorySchemaTests.cs",
+      "sha256": "bc898b25b6fa0b7dbb47f8c2ca81c19222d119d738b8a37fd8ae32f773aef82f"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseBrandRepositorySchemaTests.cs",
+      "sha256": "29838b50d2aaec2a3303a7c9d96b96f5a86b7ad9b87fd15c4d7218d9997aa567"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseCategoryRepositorySchemaTests.cs",
+      "sha256": "600ac1d30061a59684542ff4df3018f845e44d71d4e0f9cfbaf6ed1276af07ee"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseCustomerRepositoryTests.cs",
+      "sha256": "ba1b0e1711e0530670b755cdca9d38535bbbaf50c73a327aa4487cf106c5de48"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseProductRepositorySchemaTests.cs",
+      "sha256": "ef7bee153acd7ecb4cd047bebfb9c0349fdca3df12404eedabcdf1b3bf4d932b"
+    },
+    {
+      "path": "tests/TheShop.Infrastructure.Tests/Persistence/Filtering/ProductFilterDefinitionsTests.cs",
+      "sha256": "c1b3e2ffa815b416b08eff2f5e65b6e3360457efc633f0f706354cc1daba28d8"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/GlobalUsings.cs",
+      "sha256": "dcc76f8beba12c61cded779b83bb96c278f27bdb6a21529563f0f8c12c0863c8"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/TheShop.Web.Tests.csproj",
+      "sha256": "c238c64f5fe5b49393b18834ac4cc87fbb6d342088b9fbded21d96d14f7256ca"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Auth/AuthorizePermissionAttributeTests.cs",
+      "sha256": "fe9378951f41b504f3f86fab037d3acc01c5fa9af58a33b75caf6f176f9e1319"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Auth/ShopAuthorizationPolicyProviderTests.cs",
+      "sha256": "9a9ff2cc8e3ebe7908e76fdc9ae6a00bac9de125b9e862aece07b032f5b4b3a5"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Auth/SupabaseAuthStateProviderTests.cs",
+      "sha256": "8375cf459fe3035b6c2efb2189dcd90c9fd7aea4cfbfd03a78de56cb8c9e86a9"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Common/BreadcrumbTrailTests.cs",
+      "sha256": "646d449c45b1a9ae34326d14bdcbf34df72341f1ff8f48c8a4019f3d94441b8e"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Common/CurrencyFormatterTests.cs",
+      "sha256": "c7d78ad5828891507b9d9b57db6f620271b0fa08566a488949112be7fa7da026"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Common/Sorting/BrandSortCatalogueTests.cs",
+      "sha256": "a2eb8a3b96fddcfc25a1d3d2752e45fec0c1d80e6328b0082809c1530152b833"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Common/Sorting/CategorySortCatalogueTests.cs",
+      "sha256": "88db53654003d2d22e624d518d1e1f6fd41753da9f4de1598695795d8855c354"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Common/Sorting/ProductSortCatalogueTests.cs",
+      "sha256": "a6c0d3f6f88d87b8cbb49bbe7ebefa8e0f435d3df89f2e81fa7ba72ca2a0f9b9"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Common/Sorting/SortCatalogueTests.cs",
+      "sha256": "b539cfb997ad770a43ada917ac9a7d35517acd81b8bd7986a8ce295277f0cc48"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Admin/AdminModuleCardTests.cs",
+      "sha256": "6c933a3a44f8ed4c793c2a2a7693cc994319c94173510127375a4607e39a33ec"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/AccessDeniedViewTests.cs",
+      "sha256": "1c2ccc6ea8b4e797b7608ab93e952540d86d6dc950b9ef0ad72c530fe910f7a9"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/AuthorizingViewTests.cs",
+      "sha256": "32a3c27b1728e94c9ef460485af06c2d2507de0fd02dd8c4c1799fe68f49895f"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/ProfileMenuTests.cs",
+      "sha256": "9ed2e54174cfe83eddf7b2021a8fa6e232c6639d03f5a1284ca7763631561412"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/ShopBreadcrumbsTests.cs",
+      "sha256": "c5c8fd1b31800ed35e5b2e5343d66b3e2c72889d331805e63b33e98db9ad50bf"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/ShopBulkActionBarTests.cs",
+      "sha256": "584446715f7d833781a72dc6d5c20ffc42d23c4c1e922f81f32d7c077c73df59"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/ShopConfirmDialogTests.cs",
+      "sha256": "e97fc6d089c96ccc5848af1cce6448343c4bff8c311f1d4113304f5dd1c512c1"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/ShopFilterPanelTests.cs",
+      "sha256": "a70a6b28a07c4c96e03466e08d420ef110de7c0dda15e9e8323b375b56f9f63c"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/ShopFooterTests.cs",
+      "sha256": "ed3b5700e37f3964ecedf40362a1ae98dd69c27ed8073e54c4cf8775625c2e2d"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/ShopImageUploadTests.cs",
+      "sha256": "376e332e6a9084daafe97e6ae24ba57be60c083e92477a7df763d4aa5dd5e8d7"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/ShopPaginationTests.cs",
+      "sha256": "c74ae5cae62959efb7c92c8fbda0fdac15422ce8e004eb3fad6b275659b54848"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Common/ShopSortSelectTests.cs",
+      "sha256": "bf39b75f30c9816415e29cd59006206d7f4ca7dc68c5fb13741d417c0448a70a"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Components/Products/ProductCardTests.cs",
+      "sha256": "322c14a9e76d9ff719d95f867b9b02e6db8840b51f31fb7a430e299f4d807054"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Admin/AddBrandTests.cs",
+      "sha256": "13f66199f8dfd4816c966d7101085005f1c5513fb5835d14430be2d195980840"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Admin/AddCategoryTests.cs",
+      "sha256": "0d563cb141e519de5701250221ea993c81ab5dcd0065ba44e9f60dddc69e781d"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Admin/AdminConsoleTests.cs",
+      "sha256": "9ccbb621ca79b2e6d9f384a56bc9c72d30aa5f99a616a0fff53045e7c39b5af2"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Admin/EditBrandTests.cs",
+      "sha256": "1376c6b04a01e30ed54f97cf104ce556c6b612ac7826d6792bf01ffb9d559829"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Admin/EditCategoryTests.cs",
+      "sha256": "79adec30006ded288db1ef7abb5686a4625b919938c484ee4ecbcbc062dc3dbd"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Admin/ManageBrandsTests.cs",
+      "sha256": "8dbae038e349865355de20ead0e55ff0ccd352bb79d673e3a90b83e1286324eb"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Admin/ManageCategoriesTests.cs",
+      "sha256": "944383a8db55225a2b7d1a752ed7114c04a84951eccbf035666e4d7a88fa1458"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Admin/ManageProductsTests.cs",
+      "sha256": "31a706759ad213149db2196b9d9cf547429d6f25312efa04981d1d4fecc9672b"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Auth/SignInTests.cs",
+      "sha256": "c0010cabb0f5223c693ffc9fff5744e7611dd287151010819f6b07da461bbe12"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Auth/SignInVerifyTests.cs",
+      "sha256": "1599322e5fcbe32818fb5f39990e723c1fc90e6b843dbf594b7a69c2d41c854f"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Auth/SignUpTests.cs",
+      "sha256": "0e109ea71fd3b1ec2b58d407d4e71d138f48ae4fa6e799f1bbd6caf291856ec0"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Auth/SignUpVerifyTests.cs",
+      "sha256": "cf1e2abb6b1ffbeecd4579242b0bbaa590340110fb818e2d8a6056f4cfa90112"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Products/CatalogueQueryStateTests.cs",
+      "sha256": "f42a237f1b0e111659bf93f9016ea5b6a9d168ae27d5e1f80cb4392f3c0b5b14"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Pages/Products/ProductCatalogueTests.cs",
+      "sha256": "a7b4b48c857b302f5e22b7e34cce89df0669788bfddb580074af83f8a8256f50"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Resources/AdminConsoleLocalizationTests.cs",
+      "sha256": "c09cd153d3bf1504edbc955fc30eee86b31fbe15d4309a4defaef327ed3031a8"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Resources/BrandLocalizationTests.cs",
+      "sha256": "88dfd0a6f21f979b6505390c140eb5f247a14848ab727fdaac3d11dfb3f07db8"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Resources/CategoryLocalizationTests.cs",
+      "sha256": "df4cabb05b7ed3930e4cc17cb12dbad751f2ed0cadab78d5493db20956343ebb"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/Resources/RbacLocalizationTests.cs",
+      "sha256": "719badef8c12711596c3c114b9dc9b7cadaa3d1491c3e2fe4bc7a761cfbae2cb"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/State/AuthStateTests.cs",
+      "sha256": "b9018a3ad500e3f16ed8c7003e40ea53497b538e0b56ca003cb9addbf20c8409"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/State/BreadcrumbStateTests.cs",
+      "sha256": "c4370eb1c4d686d284eebd265bada01403624590c86b2852f4ab9c305cb0c159"
+    },
+    {
+      "path": "tests/TheShop.Web.Tests/State/FooterStateTests.cs",
+      "sha256": "403c363d9910376d49fb5403fd7a5e746fcbaa2a9aeacb2a3ce4c253ece1240a"
+    },
+    {
+      "path": ".specs/add-brand/plan.md",
+      "sha256": "ee659dd1e49738b2ae47dc9683e3639f674fc49669f7ab09b4834f8da874067b"
+    },
+    {
+      "path": ".specs/add-brand/spec.md",
+      "sha256": "ece51e5bc57b7346f22e16656646694e21350cb19f7268fd4c04a173f04c1ab3"
+    },
+    {
+      "path": ".specs/add-brand/status.md",
+      "sha256": "20e1c5da690a4fc7b865e57f37072cbf3d760efff22969d22bc2f56b55b73212"
+    },
+    {
+      "path": ".specs/add-brand/test-manifest.json",
+      "sha256": "51edddfc375bb6a8288d30ee129d32e2ce551e8a09d27676102c11f7cd6beef5"
+    },
+    {
+      "path": ".specs/add-brand/test-report.md",
+      "sha256": "08426c0a0e5824073a3b8ae0bd9df919ad8f826a9784afa5358a626afe81519f"
+    },
+    {
+      "path": ".specs/admin-console/plan.md",
+      "sha256": "751007cb6c40130ff0df58d5b06099856f59ff4b5906842d597dc2f530a96593"
+    },
+    {
+      "path": ".specs/admin-console/spec.md",
+      "sha256": "745d37db6eb66e3fe6fbbbbaae7718c50cd21d748462dca636260b67d190674c"
+    },
+    {
+      "path": ".specs/admin-console/status.md",
+      "sha256": "418bb93b7f6257ef58327daea401cd6b4734e9a6d81a891f1e699c10c8c5abef"
+    },
+    {
+      "path": ".specs/admin-console/test-manifest.json",
+      "sha256": "b4eadd6ce485d7689a6f161aa4aa3fb2f3b401543890b0cfb2e7812ffdb011c1"
+    },
+    {
+      "path": ".specs/admin-console/test-report.md",
+      "sha256": "e9307c1bea0d7337c89913dfe6e3785b99424b65e028986ae9238a388ed9ca6c"
+    },
+    {
+      "path": ".specs/authentication/plan.md",
+      "sha256": "cefcf40606ffeda9be06943ada7019039c31c76e8a7705248fb57d3ce9df0067"
+    },
+    {
+      "path": ".specs/authentication/spec.md",
+      "sha256": "2c524055ff15596cd432b014ee1a07c39ebad2c1602ada23712cad63b81d068d"
+    },
+    {
+      "path": ".specs/authentication/status.md",
+      "sha256": "4fb3ca67fee74ae1b35bac8f4de4a7b157355e6e052426a82aee11f53bfd0b27"
+    },
+    {
+      "path": ".specs/authentication/test-manifest.json",
+      "sha256": "eae22fc4b1dabef029325840f4f1764f97b017a2faf30d2fd996626e5d98f7a9"
+    },
+    {
+      "path": ".specs/breadcrumbs/plan.md",
+      "sha256": "3b823901187504826f6681042e7fb2f917c4e502d7bbcc3c643c3c5a5e8e9779"
+    },
+    {
+      "path": ".specs/breadcrumbs/spec.md",
+      "sha256": "617261e82fa58153708eec4c24cbbc3ff05ed294506a8d7a17df370d93aa8c29"
+    },
+    {
+      "path": ".specs/breadcrumbs/status.md",
+      "sha256": "c3520b5266de3126fc75d8c2886af1527f1ac76186be48a9fe8bd0803c41ee88"
+    },
+    {
+      "path": ".specs/breadcrumbs/test-manifest.json",
+      "sha256": "f5d24d172e0106a6ae0447d77892fa3cbbb56cfcf2e4ed4f1e9f5e406f9fb5d3"
+    },
+    {
+      "path": ".specs/e2e-test/e2e-automation-plan.md",
+      "sha256": "32b942f887282a46d9f363a7b2e78b016e01f5f60e79b6fc909c86ffd79771ec"
+    },
+    {
+      "path": ".specs/manage-brands/plan.md",
+      "sha256": "4258bed4cd6a308a0365825e48aad70a7e85c8cbb1fbeb5063852a47630c0380"
+    },
+    {
+      "path": ".specs/manage-brands/spec.md",
+      "sha256": "46c4b1fa7d7a49d48bd32d7d517b97455ad8d55dd4cdea226811908985a0ccd2"
+    },
+    {
+      "path": ".specs/manage-brands/status.md",
+      "sha256": "241e634563e6c247427aa61358b545c727d6e5be3f80f2d14848cc5bd459c0eb"
+    },
+    {
+      "path": ".specs/manage-brands/test-manifest.json",
+      "sha256": "adfa55fc04c157c5dea355fdc4503791e47eccee32e3605820855a01ae894e8e"
+    },
+    {
+      "path": ".specs/manage-brands/test-report.md",
+      "sha256": "9b743ac01c3ea1fc45731b98941a3b84de03a8ec795ecf194ae42589dc0fa4be"
+    },
+    {
+      "path": ".specs/manage-categories/plan.md",
+      "sha256": "ece3822be094c01e539758178f73fc3391a9abb7a708281b6ca0166ac253e416"
+    },
+    {
+      "path": ".specs/manage-categories/spec.md",
+      "sha256": "58121547ed504839fa753ed80b5c29b6a373e0a1c413b60a594da9dfbc79a926"
+    },
+    {
+      "path": ".specs/manage-categories/status.md",
+      "sha256": "a33180554c3db0d89f74f06ebb808f12e86a322b050a034a9ef28d43f97b347e"
+    },
+    {
+      "path": ".specs/manage-categories/test-manifest.json",
+      "sha256": "01e64ee0f13837d5876434ed58632fd995092097b6ae61c0e8b85185dac9528a"
+    },
+    {
+      "path": ".specs/manage-categories/test-report.md",
+      "sha256": "ef0aeada5044ef6af994952c7d9846b740c8a4fd616f8b7bca45346a331bc8fc"
+    },
+    {
+      "path": ".specs/manage-product/spec.md",
+      "sha256": "4cba12a88acc2d008e3dc49bf699dca790c3407f2a2c0691ca0009c294d9567b"
+    },
+    {
+      "path": ".specs/manage-product/status.md",
+      "sha256": "ad145b98806202fd9f097c2491de82aa12b61bc39dd5592f2f0f53f9a346d800"
+    },
+    {
+      "path": ".specs/product-catalogue/plan.md",
+      "sha256": "80ad2cfaf90789af343dfdfc515bfa7f27c47a46eaa3c501bfae9628def19ba8"
+    },
+    {
+      "path": ".specs/product-catalogue/spec.md",
+      "sha256": "ed2f53bbb3b47c7f4f71339dec8215d5af870263393600614dd7ce9df97c3fb8"
+    },
+    {
+      "path": ".specs/product-catalogue/status.md",
+      "sha256": "ea655e37a8524e1abd6888fc9305e8708e507fa8c3b4982c51f2f83ec7ac7920"
+    },
+    {
+      "path": ".specs/product-catalogue/test-manifest.json",
+      "sha256": "8c09af3bb6a727b3859783af142c819a8bf44f8637f32351fee43fb6b2eaaf6b"
+    },
+    {
+      "path": ".specs/role-based-access-control/plan.md",
+      "sha256": "b1824bd93b8018000a3394b9fcbfe92a1ad239ce99d95c31f2ab92ad65050bbc"
+    },
+    {
+      "path": ".specs/role-based-access-control/spec.md",
+      "sha256": "2bfd3af05a3ea80cfb99b52fb59a1fa44819a72e47160cf8e8ea85ea4aaf70ad"
+    },
+    {
+      "path": ".specs/role-based-access-control/status.md",
+      "sha256": "9aecced6318177aa2024822ff413276f488ab9a1326e94fb087b340122b5cd2b"
+    },
+    {
+      "path": ".specs/role-based-access-control/test-manifest.json",
+      "sha256": "c964b236515ada70a07ea6526920ce83af9ad1f06e2d2994be4d375327d66b3d"
+    },
+    {
+      "path": ".specs/role-based-access-control/test-report.md",
+      "sha256": "08cefd91b6bbc3a2ca0d04f025b0e59563569451963135ff5d8a6345cd7b0512"
+    }
+  ]
+}

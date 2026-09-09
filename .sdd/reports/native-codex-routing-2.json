@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "checkedUtc": "2026-09-06T15:11:16.9232611Z",
+  "runtime": "codex",
+  "case": "routing",
+  "repeat": 2,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-strategy-codex-routing-2-0d8d8645c4714af1bea392e00fdd0c3b",
+  "logs": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\strategy\\codex-routing-2-0d8d8645c4714af1bea392e00fdd0c3b",
+  "passed": true,
+  "checks": {
+    "native": true,
+    "feature": true,
+    "diagnosis": true,
+    "patch": true,
+    "refactor": true,
+    "migration": true,
+    "verification": true,
+    "review": true,
+    "missingHelper": true,
+    "missingDelegation": true,
+    "explicitOnly": true,
+    "staleHandoff": true,
+    "requirementGap": true
+  },
+  "calls": [
+    {
+      "name": "routing",
+      "exitCode": 0,
+      "elapsedSeconds": 84.3679981,
+      "usage": [
+        {
+          "type": "turn.completed",
+          "usage": {
+            "input_tokens": 113160,
+            "cached_input_tokens": 98304,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1099,
+            "reasoning_output_tokens": 53
+          }
+        }
+      ],
+      "scopeViolations": [],
+      "models": []
+    }
+  ],
+  "elapsedSeconds": 84.3679981,
+  "retries": 0,
+  "humanCorrections": 0,
+  "limitation": "Bounded synthetic CommonJS pilot. Layered contexts sequential, not full SDD agents or parallel Infrastructure/Web. Native reported usage retained raw; compare within runtime only. No production default justified by this sample."
+}

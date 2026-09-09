@@ -1,0 +1,63 @@
+{
+  "checkedUtc": "2026-09-06T16:11:43.0079471Z",
+  "variant": "candidate",
+  "runtime": "claude",
+  "case": "plan",
+  "repeat": 1,
+  "passed": false,
+  "checks": {
+    "plan": false,
+    "status": false,
+    "state": false,
+    "processExit": true
+  },
+  "processExitCode": 0,
+  "elapsedSeconds": 95.66,
+  "fixture": "C:\\Users\\vaibh\\AppData\\Local\\Temp\\TheShop-sdd-eval-6494df3a9b844d51ba596f766ad65b18",
+  "logs": ".sdd/.test-work/caveman-native/release-fidelity-candidate-claude-plan-1-379cb147a129426d8c158458abc1fc9e",
+  "models": [
+    "claude-opus-5"
+  ],
+  "usage": [
+    {
+      "event": "result",
+      "usage": {
+        "input_tokens": 30,
+        "cache_creation_input_tokens": 34551,
+        "cache_read_input_tokens": 622038,
+        "output_tokens": 5497,
+        "output_tokens_details": {
+          "thinking_tokens": 1372
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 34551,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 1371,
+            "cache_read_input_tokens": 47399,
+            "cache_creation_input_tokens": 350,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 350
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      }
+    }
+  ],
+  "measurement": "Native runtime-reported usage; baseline/candidate compared within runtime only. Decision exercises do not claim production execution.",
+  "styleValidation": "Mode fields establish recognition only. Human review of actual artifacts assesses compression, completeness, and auto-clarity separately.",
+  "baselineArchive": ".sdd/baseline/caveman/phase5.zip",
+  "reportPrefix": "release-fidelity"
+}

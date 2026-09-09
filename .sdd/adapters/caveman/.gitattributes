@@ -1,0 +1,2 @@
+# Preserve exact bytes used by the pinned upstream SHA-256.
+/upstream-skill.md -text

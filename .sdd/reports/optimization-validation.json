@@ -1,0 +1,226 @@
+{
+  "trials": [
+    {
+      "originalBytes": 3307,
+      "originalHash": "312DB9005332D5A650CA7CACE4448D7EE99FCC795C79CB1087D7685ED527B1B6",
+      "byteReductionPercent": 94.28,
+      "candidateBytes": 189,
+      "adopted": false,
+      "reason": "Byte result only. No tokenizer or model-quality proof; candidate stays offline.",
+      "roundTripExact": true,
+      "name": "tool-output",
+      "restoredHash": "312DB9005332D5A650CA7CACE4448D7EE99FCC795C79CB1087D7685ED527B1B6"
+    },
+    {
+      "originalBytes": 6032,
+      "originalHash": "014CB26662C4F452DBDD02EEE5259DAF2706A31FEE5692CE5C60B2B75DD6EF8F",
+      "byteReductionPercent": -16.03,
+      "candidateBytes": 6999,
+      "adopted": false,
+      "reason": "Byte result only. No tokenizer or model-quality proof; candidate stays offline.",
+      "roundTripExact": true,
+      "name": "memory",
+      "restoredHash": "014CB26662C4F452DBDD02EEE5259DAF2706A31FEE5692CE5C60B2B75DD6EF8F"
+    },
+    {
+      "originalBytes": 33,
+      "originalHash": "C1EE6A7CB2061C5CC7DA62FE4310C55CA75314EBB95FDA55CA433784BA57545A",
+      "byteReductionPercent": -196.97,
+      "candidateBytes": 98,
+      "adopted": false,
+      "reason": "Byte result only. No tokenizer or model-quality proof; candidate stays offline.",
+      "roundTripExact": true,
+      "name": "edge-cases",
+      "restoredHash": "C1EE6A7CB2061C5CC7DA62FE4310C55CA75314EBB95FDA55CA433784BA57545A"
+    },
+    {
+      "originalBytes": 0,
+      "originalHash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "byteReductionPercent": 0,
+      "candidateBytes": 2,
+      "adopted": false,
+      "reason": "Byte result only. No tokenizer or model-quality proof; candidate stays offline.",
+      "roundTripExact": true,
+      "name": "empty",
+      "restoredHash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    }
+  ],
+  "passed": true,
+  "checkedUtc": "2026-09-06T15:25:52.9329148Z",
+  "adopted": [],
+  "proxy": {
+    "passed": true,
+    "requests": 40,
+    "exactResponseBytes": true,
+    "directMeanMs": 2.68471,
+    "proxyMeanMs": 2.8024649999999953,
+    "samples": [
+      {
+        "name": "direct",
+        "milliseconds": 29.875100000000003
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 9.359200000000016
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 4.290999999999997
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.8062999999999931
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.237499999999983
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 2.9535999999999945
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 2.575099999999992
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.3052999999999884
+      },
+      {
+        "name": "direct",
+        "milliseconds": 2.2390000000000043
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 1.9040999999999997
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 1.8804999999999836
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.2099000000000046
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.0409999999999968
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 2.5855999999999995
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 4.119799999999998
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.642799999999994
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.4978999999999871
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 2.6199000000000012
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 3.004099999999994
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.3491999999999962
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.0959000000000003
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 2.5852999999999895
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 1.926700000000011
+      },
+      {
+        "name": "direct",
+        "milliseconds": 0.944800000000015
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.1101999999999919
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 1.6770999999999958
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 2.0666999999999973
+      },
+      {
+        "name": "direct",
+        "milliseconds": 0.8489000000000146
+      },
+      {
+        "name": "direct",
+        "milliseconds": 0.8856999999999857
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 1.8239999999999839
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 2.220499999999987
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.2694000000000187
+      },
+      {
+        "name": "direct",
+        "milliseconds": 0.9000000000000057
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 1.76339999999999
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 2.8603999999999985
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.0814000000000021
+      },
+      {
+        "name": "direct",
+        "milliseconds": 1.4632000000000005
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 1.934899999999999
+      },
+      {
+        "name": "proxy",
+        "milliseconds": 1.8973999999999762
+      },
+      {
+        "name": "direct",
+        "milliseconds": 0.8907000000000096
+      }
+    ],
+    "adopted": false,
+    "reason": "Loopback transport only; no model streaming, cost, or production benefit proof."
+  },
+  "schemaVersion": 1,
+  "limitation": "Synthetic repeated tool output, actual shared execution memory, local HTTP passthrough. No Caveman Cloud, real model proxy routing, streaming, credentials, token-saving, or production quality claims.",
+  "artifacts": "D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\.test-work\\optimization-14dcea9085db409fbacfa1c9f85f69bf",
+  "rollback": "No runtime setting changed. Originals and restored byte copies retained in fixture."
+}

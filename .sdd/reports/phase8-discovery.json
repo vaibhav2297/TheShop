@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "checkedUtc": "2026-09-06T15:01:13.9864780Z",
+  "checks": [
+    {
+      "skill": "lean-build",
+      "codex": "C:\\Users\\vaibh\\.agents\\skills\\lean-build\\SKILL.md",
+      "claude": "C:\\Users\\vaibh\\.claude\\skills\\lean-build\\SKILL.md",
+      "available": true,
+      "identicalBytes": true
+    },
+    {
+      "skill": "investigate-first",
+      "codex": "C:\\Users\\vaibh\\.agents\\skills\\investigate-first\\SKILL.md",
+      "claude": "C:\\Users\\vaibh\\.claude\\skills\\investigate-first\\SKILL.md",
+      "available": true,
+      "identicalBytes": true
+    },
+    {
+      "skill": "surgical-patch",
+      "codex": "C:\\Users\\vaibh\\.agents\\skills\\surgical-patch\\SKILL.md",
+      "claude": "C:\\Users\\vaibh\\.claude\\skills\\surgical-patch\\SKILL.md",
+      "available": true,
+      "identicalBytes": true
+    },
+    {
+      "skill": "safe-refactor",
+      "codex": "C:\\Users\\vaibh\\.agents\\skills\\safe-refactor\\SKILL.md",
+      "claude": "C:\\Users\\vaibh\\.claude\\skills\\safe-refactor\\SKILL.md",
+      "available": true,
+      "identicalBytes": true
+    },
+    {
+      "skill": "migration",
+      "codex": "C:\\Users\\vaibh\\.agents\\skills\\migration\\SKILL.md",
+      "claude": "C:\\Users\\vaibh\\.claude\\skills\\migration\\SKILL.md",
+      "available": true,
+      "identicalBytes": true
+    },
+    {
+      "skill": "verify-and-stop",
+      "codex": "C:\\Users\\vaibh\\.agents\\skills\\verify-and-stop\\SKILL.md",
+      "claude": "C:\\Users\\vaibh\\.claude\\skills\\verify-and-stop\\SKILL.md",
+      "available": true,
+      "identicalBytes": true
+    }
+  ],
+  "passed": true,
+  "limitation": "Filesystem discovery only; does not prove native selection or agent registration."
+}

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "testedUtc": "2026-09-09T05:53:44.4907941Z",
+  "migrationAudit": false,
+  "published": true,
+  "passed": true,
+  "checks": [
+    {
+      "name": "Generate both adapters in isolation",
+      "passed": true,
+      "evidence": "[sdd-adapters] generated 247 files; changed 247.\n"
+    },
+    {
+      "name": "Generation is idempotent",
+      "passed": true,
+      "evidence": "[sdd-adapters] generated 247 files; changed 0.\n"
+    },
+    {
+      "name": "Generated output passes drift check",
+      "passed": true,
+      "evidence": "[sdd-adapters] clean: 247 files.\n"
+    },
+    {
+      "name": "Skill discovery metadata and invocation policy",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "All specialist roles have usable native definitions",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "Native spec references use rendered templates",
+      "passed": true,
+      "evidence": "The normal spec entry point cannot copy raw generator tokens into feature artifacts."
+    },
+    {
+      "name": "Executable gates contain no generator tokens",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "Formatting waits for workers and design checks are explicit",
+      "passed": true,
+      "evidence": "Both adapters require explicit finalization; Claude edit hooks cannot format a sibling worker\\u0027s changes."
+    },
+    {
+      "name": "Independent generated edits block publication without partial writes",
+      "passed": true,
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\sync-adapters.ps1:150\nLine |\n 150 |  … ts.Count) { throw \"Refusing independently changed or unowned files:`n …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Refusing independently changed or unowned files: .agents/skills/theshop-plan/SKILL.md\n"
+    },
+    {
+      "name": "Generated paths cannot escape the workspace",
+      "passed": true,
+      "evidence": "Parent traversal rejected before writes."
+    },
+    {
+      "name": "Missing required artifact fails the shared gate",
+      "passed": true,
+      "evidence": "[sdd-gates] spec:missing - 1 violation(s):\n  - .specs/missing/spec.md not found\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n"
+    },
+    {
+      "name": "Layer escape fails the shared scope gate",
+      "passed": true,
+      "evidence": "[sdd-gates] scope:domain - 1 violation(s):\n  - 'src/TheShop.Web/Page.razor' is outside the domain agent's allowed scope (allowed: src/TheShop.Domain/)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n"
+    },
+    {
+      "name": "Both runtimes allow Infrastructure migrations and seed data",
+      "passed": true,
+      "evidence": "[sdd-gates] scope:infra - clean.\n\n[sdd-gates] scope:infra - clean.\n\n[sdd-gates] scope:infra+web - clean.\n\n[sdd-gates] scope:infra+web - clean.\n\n[sdd-gates] scope:infra - clean.\n\n[sdd-gates] scope:infra - clean.\n\n[sdd-gates] scope:infra+web - clean.\n\n[sdd-gates] scope:infra+web - clean.\n"
+    },
+    {
+      "name": "Both runtimes reject unrelated files outside Infrastructure scope",
+      "passed": true,
+      "evidence": "[sdd-gates] scope:domain - 1 violation(s):\n  - 'supabase/migrations/probe.sql' is outside the domain agent's allowed scope (allowed: src/TheShop.Domain/)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n\n[sdd-gates] scope:infra - 1 violation(s):\n  - 'supabase/config.toml' is outside the infra agent's allowed scope (allowed: src/TheShop.Infrastructure/, supabase/migrations/, supabase/seed.sql)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n\n[sdd-gates] scope:infra - 1 violation(s):\n  - 'src/TheShop.Web/Page.razor' is outside the infra agent's allowed scope (allowed: src/TheShop.Infrastructure/, supabase/migrations/, supabase/seed.sql)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n\n[sdd-gates] scope:domain - 1 violation(s):\n  - 'supabase/migrations/probe.sql' is outside the domain agent's allowed scope (allowed: src/TheShop.Domain/)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n\n[sdd-gates] scope:infra - 1 violation(s):\n  - 'supabase/config.toml' is outside the infra agent's allowed scope (allowed: src/TheShop.Infrastructure/, supabase/migrations/, supabase/seed.sql)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n\n[sdd-gates] scope:infra - 1 violation(s):\n  - 'src/TheShop.Web/Page.razor' is outside the infra agent's allowed scope (allowed: src/TheShop.Infrastructure/, supabase/migrations/, supabase/seed.sql)\nA failed gate means the producing step did not meet the pipeline contract. Fix the artifact (or re-run the producing step), then re-run this gate. Do not report the step as done while this gate fails.\n"
+    },
+    {
+      "name": "Both runtimes reject a Domain SDK dependency",
+      "passed": true,
+      "evidence": "[design-rules] src/TheShop.Domain/Probe.cs - 1 violation(s) of theshop-constitution:\n  L1     Rule 2: external SDK / serialization import in Domain - Domain is pure C#\nFix every violation above now (edit the file again). Rules live in .sdd/skills/theshop-constitution/SKILL.md; load the matching reference from its routing table if you need the pattern.\n"
+    },
+    {
+      "name": "Claude edit payload reports the same violation with hook exit 2",
+      "passed": true,
+      "evidence": "[design-rules] src/TheShop.Domain/Probe.cs - 1 violation(s) of theshop-constitution:\n  L1     Rule 2: external SDK / serialization import in Domain - Domain is pure C#\nFix every violation above now (edit the file again). Rules live in .sdd/skills/theshop-constitution/SKILL.md; load the matching reference from its routing table if you need the pattern.\n"
+    },
+    {
+      "name": "Rollback previews without mutation",
+      "passed": true,
+      "evidence": "[sdd-rollback] restore 57 original files; remove 190 generated files. Shared core and unrelated files remain.\nPreview only. Use -Apply for the reviewed rollback.\n"
+    },
+    {
+      "name": "Rollback preserves independent edits",
+      "passed": true,
+      "evidence": "Exception: D:\\Vaibhav\\Code\\Learn\\TheShop\\.sdd\\scripts\\rollback-adapters.ps1:27\nLine |\n  27 |  … ts.Count) { throw \"Rollback blocked by independent edits:`n$($conflic …\n     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Rollback blocked by independent edits: .agents/skills/theshop-plan/SKILL.md\n"
+    },
+    {
+      "name": "Rollback restores all original bytes and leaves unrelated files",
+      "passed": true,
+      "evidence": "[sdd-rollback] restore 57 original files; remove 190 generated files. Shared core and unrelated files remain.\n[sdd-rollback] original adapters restored.\n"
+    },
+    {
+      "name": "PowerShell scripts parse",
+      "passed": true,
+      "evidence": ""
+    },
+    {
+      "name": "Published adapters match shared sources",
+      "passed": true,
+      "evidence": "[sdd-adapters] clean: 247 files.\n"
+    }
+  ],
+  "liveRuntimeExecution": "Recorded separately; static checks do not establish live behavior."
+}

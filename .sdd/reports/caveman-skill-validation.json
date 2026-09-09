@@ -1,0 +1,87 @@
+{
+  "testedUtc": "2026-09-06T06:20:04.9756554Z",
+  "validator": "C:/Users/vaibh/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+  "dependency": "PyYAML 6.0.3 in ignored test directory",
+  "results": [
+    {
+      "skill": "graphify-windows",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-clarify",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-constitution",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-document",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-e2e",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-execute",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-implement",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-plan",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-resolve",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-review",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-ship",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-spec",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-start",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-test",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-test-merged",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    },
+    {
+      "skill": "theshop-verify",
+      "exitCode": 0,
+      "output": "Skill is valid!"
+    }
+  ]
+}

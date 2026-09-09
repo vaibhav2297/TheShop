@@ -1,0 +1,3 @@
+# Generated invocation policy; this is not a subagent definition.
+policy:
+  allow_implicit_invocation: false
