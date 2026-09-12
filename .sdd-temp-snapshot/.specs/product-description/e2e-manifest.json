@@ -1,0 +1,90 @@
+{
+  "feature": "product-description",
+  "trait": "product-description",
+  "writtenAt": "2026-09-11",
+  "journeys": [
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.ProductDescriptionJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/ProductDescriptionJourneyTests.cs",
+      "persona": "admin",
+      "tests": 6
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDescriptionJourneyTests.AC1_Creating_with_every_supported_format_plus_specification_rows_reopens_with_the_same_content"
+    },
+    {
+      "id": "AC-2",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDescriptionJourneyTests.AC2_Editing_description_and_specification_rows_reopens_with_the_edits_and_leaves_unrelated_details_unchanged"
+    },
+    {
+      "id": "AC-3",
+      "coverage": "unit",
+      "evidence": "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Rehydrate_WithLiteralAngleBracketsSurvivingAsEscapedText_KeepsThemAsText"
+    },
+    {
+      "id": "AC-4",
+      "coverage": "unit",
+      "evidence": "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.UpdateProductDescription_AtExactly200000Bytes_Succeeds"
+    },
+    {
+      "id": "AC-5",
+      "coverage": "unit",
+      "evidence": "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.UpdateProductDescription_Over200000Bytes_ThrowsPostgresException"
+    },
+    {
+      "id": "AC-6",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDescriptionJourneyTests.AC6_Removing_all_description_text_and_every_specification_row_persists_as_empty_after_reopening"
+    },
+    {
+      "id": "AC-7",
+      "coverage": "unit",
+      "evidence": "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.InsertSpecification_WithABlankName_ThrowsPostgresException"
+    },
+    {
+      "id": "AC-8",
+      "coverage": "unit",
+      "evidence": "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.InsertSpecification_WithADuplicateNameIgnoringCaseAndSpaces_ThrowsUniqueViolation"
+    },
+    {
+      "id": "AC-9",
+      "coverage": "unit",
+      "evidence": "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.InsertSpecification_AsAuthenticatedUserWithoutProductsCreateOrEdit_IsDeniedByRls"
+    },
+    {
+      "id": "AC-10",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDescriptionJourneyTests.AC10_Pasting_styled_text_keeps_supported_emphasis_drops_unsupported_styling_and_shows_the_notice"
+    },
+    {
+      "id": "AC-11",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDescriptionJourneyTests.AC11_Calling_save_product_directly_with_markup_outside_the_grammar_is_rejected_and_leaves_no_row_changed"
+    },
+    {
+      "id": "AC-12",
+      "coverage": "unit",
+      "evidence": "TheShop.Web.Tests.Resources.ProductDescriptionLocalizationTests.UiString_ForEveryNewKey_IsAvailableInEnglishAndFrench"
+    },
+    {
+      "id": "AC-13",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDescriptionJourneyTests.AC13_Formatting_and_specification_controls_are_keyboard_operable_and_row_removal_moves_focus_and_announces"
+    },
+    {
+      "id": "AC-14",
+      "coverage": "unit",
+      "evidence": "TheShop.Web.Tests.Components.Products.ProductFormTests.EditingTheDescription_ConfirmsExternalNavigation"
+    },
+    {
+      "id": "AC-15",
+      "coverage": "unit",
+      "evidence": "TheShop.Web.Tests.Components.Products.ProductFormTests.Save_WhenTheSaveFails_PreservesTheEnteredDescriptionAndSpecificationRows"
+    }
+  ]
+}

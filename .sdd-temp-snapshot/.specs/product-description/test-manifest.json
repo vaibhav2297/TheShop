@@ -1,0 +1,180 @@
+{
+  "feature": "product-description",
+  "trait": "product-description",
+  "writtenAt": "2026-09-11",
+  "totalTests": 176,
+  "classes": [
+    { "fqn": "TheShop.Domain.Tests.Entities.ProductSpecificationTests", "file": "tests/TheShop.Domain.Tests/Entities/ProductSpecificationTests.cs", "tests": 9 },
+    { "fqn": "TheShop.Domain.Tests.Entities.ProductTests", "file": "tests/TheShop.Domain.Tests/Entities/ProductTests.cs", "tests": 8 },
+    { "fqn": "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests", "file": "tests/TheShop.Domain.Tests/ValueObjects/ProductDescriptionTests.cs", "tests": 58 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/CreateProduct/CreateProductCommandValidatorTests.cs", "tests": 18 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/CreateProduct/CreateProductHandlerTests.cs", "tests": 2 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/UpdateProduct/UpdateProductCommandValidatorTests.cs", "tests": 5 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/UpdateProduct/UpdateProductHandlerTests.cs", "tests": 2 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests", "file": "tests/TheShop.Application.Tests/Features/Products/Mappers/AdminProductDtoMapperTests.cs", "tests": 2 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetProductForEditHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetProductForEditHandlerTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Web.Tests.Components.Common.ShopRichTextEditorTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopRichTextEditorTests.cs", "tests": 6 },
+    { "fqn": "TheShop.Web.Tests.Components.Products.ProductContentCardTests", "file": "tests/TheShop.Web.Tests/Components/Products/ProductContentCardTests.cs", "tests": 12 },
+    { "fqn": "TheShop.Web.Tests.Components.Products.ProductFormTests", "file": "tests/TheShop.Web.Tests/Components/Products/ProductFormTests.cs", "tests": 8 },
+    { "fqn": "TheShop.Web.Tests.Resources.ProductDescriptionLocalizationTests", "file": "tests/TheShop.Web.Tests/Resources/ProductDescriptionLocalizationTests.cs", "tests": 18 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.ProductChildMapperTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ProductChildMapperTests.cs", "tests": 1 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ProductMapperTests.cs", "tests": 2 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseProductDescriptionSchemaTests.cs", "tests": 24 }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_WithEverySupportedFormat_DoesNotThrow",
+        "TheShop.Domain.Tests.Entities.ProductTests.SetSpecifications_WithValidRows_AssignsPositionByListOrder",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WithSpecificationRows_PersistsThemInGivenOrder",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithEveryFR1SupportedFormat_IsValid",
+        "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToAdminDto_MapsSpecificationsOrderedByPosition",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductForEditHandlerTests.Handle_WhenTheProductHasSpecifications_ReturnsThemInSavedOrder",
+        "TheShop.Web.Tests.Components.Products.ProductFormTests.Save_WithDescriptionAndSpecifications_DispatchesThemInTheCommand",
+        "TheShop.Web.Tests.Components.Products.ProductContentCardTests.Render_WithInitialSpecifications_SeedsTheStatePayloadInSavedOrder"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.ProductTests.SetSpecifications_CalledTwice_ReplacesThePriorSetWholesale",
+        "TheShop.Domain.Tests.Entities.ProductTests.SetSpecifications_KeepingAnExistingRowById_PreservesItsId",
+        "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerTests.Handle_WithEditedSpecificationRows_ReplacesThemAndLeavesUnrelatedDetailsUnchanged",
+        "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductCommandValidatorTests.Validate_WithEveryRowNamedAndValued_IsValid",
+        "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToAdminDto_MapsTheDescriptionHtmlVerbatim",
+        "TheShop.Web.Tests.Components.Products.ProductContentCardTests.EditingARowsNameAndValue_RaisesStateChangedWithTheUpdatedRow",
+        "TheShop.Web.Tests.Components.Products.ProductContentCardTests.RemoveRow_WhenAnotherRowRemains_RaisesStateChangedWithoutTheRemovedRow",
+        "TheShop.Web.Tests.Components.Products.ProductContentCardTests.AddRow_AppendsAnEmptyRowAtTheEnd"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Rehydrate_WithLiteralAngleBracketsSurvivingAsEscapedText_KeepsThemAsText",
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Rehydrate_PreservesMultipleParagraphBreaks",
+        "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests.ToDomain_WithALegacyStoredDescriptionOutsideTheGrammar_DoesNotThrow"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_WithExactly20000Characters_Succeeds",
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_DoesNotCountFormattingTagsTowardTextLength",
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_DoesNotCountALinksDestinationTowardTextLength",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithDescriptionOfExactly20000Characters_IsValid",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.UpdateProductDescription_AtExactly200000Bytes_Succeeds"
+      ]
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_With20001Characters_ThrowsProductDescriptionTooLongException",
+        "TheShop.Domain.Tests.Entities.ProductTests.UpdateDetails_WithDescriptionOver20000Characters_ThrowsProductDescriptionTooLongException",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithDescriptionOver20000Characters_HasDescriptionTooLongError",
+        "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductCommandValidatorTests.Validate_WithDescriptionOver20000Characters_HasDescriptionTooLongError",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.UpdateProductDescription_Over200000Bytes_ThrowsPostgresException"
+      ]
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_WithNull_ReturnsEmpty",
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_WithWhitespaceOnlyHtml_ReturnsEmpty",
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_WithMarkupThatCarriesNoVisibleText_NormalizesToEmpty",
+        "TheShop.Domain.Tests.Entities.ProductTests.SetSpecifications_WithNoRows_LeavesTheSpecificationsEmpty",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithNoSpecifications_IsValid",
+        "TheShop.Web.Tests.Components.Products.ProductFormTests.Save_WithWhitespaceOnlyDescription_SendsNullDescription"
+      ]
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.ProductSpecificationTests.Create_WithABlankName_ThrowsSpecificationNameRequiredException",
+        "TheShop.Domain.Tests.Entities.ProductSpecificationTests.Create_WithABlankValue_ThrowsSpecificationValueRequiredException",
+        "TheShop.Domain.Tests.Entities.ProductTests.SetSpecifications_WithAnEmptyName_ThrowsSpecificationNameRequiredException",
+        "TheShop.Domain.Tests.Entities.ProductTests.SetSpecifications_WithAnEmptyValue_ThrowsSpecificationValueRequiredException",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithABlankSpecificationName_HasSpecificationNameRequiredError",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithABlankSpecificationValue_HasSpecificationValueRequiredError",
+        "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductCommandValidatorTests.Validate_WithABlankSpecificationValue_HasSpecificationValueRequiredError",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.InsertSpecification_WithABlankName_ThrowsPostgresException",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.InsertSpecification_WithABlankValue_ThrowsPostgresException",
+        "TheShop.Web.Tests.Components.Products.ProductContentCardTests.Render_WithServerFlaggedRowPosition_MarksThatRowsFieldsInError"
+      ]
+    },
+    {
+      "id": "AC-8",
+      "tests": [
+        "TheShop.Domain.Tests.Entities.ProductTests.SetSpecifications_WithDuplicateNamesIgnoringCaseAndSpaces_ThrowsDuplicateSpecificationNameException",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithDuplicateNamesIgnoringCaseAndSpaces_HasSpecificationNameDuplicatedError",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithDuplicateSpecificationNames_CarriesBothRowPositionsInCustomState",
+        "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductCommandValidatorTests.Validate_WithDuplicateSpecificationNames_HasSpecificationNameDuplicatedError",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WithDuplicateSpecificationNames_FailsWithSpecificationNameDuplicated",
+        "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerTests.Handle_WithDuplicateSpecificationNames_FailsWithSpecificationNameDuplicated",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.InsertSpecification_WithADuplicateNameIgnoringCaseAndSpaces_ThrowsUniqueViolation",
+        "TheShop.Web.Tests.Components.Products.ProductFormTests.Save_WhenTheServerFlagsADuplicateSpecificationName_FlagsThoseRowsOnTheContentCard",
+        "TheShop.Web.Tests.Components.Products.ProductContentCardTests.Render_WithTwoRowsSharingANameIgnoringCaseAndSpaces_FlagsBothClientSide"
+      ]
+    },
+    {
+      "id": "AC-9",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.SelectSpecifications_AsAuthenticatedUserWithoutProductsView_SeesNoneOfAnUnpublishedProductsRows",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.SelectSpecifications_AsStaffWithProductsView_SeesThem",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.InsertSpecification_AsAuthenticatedUserWithoutProductsCreateOrEdit_IsDeniedByRls"
+      ]
+    },
+    {
+      "id": "AC-10",
+      "proof": "e2e",
+      "reason": "Real paste behavior (clipboard HTML inspection in shop-rich-text-editor.js, Quill dropping unsupported formats) only observable in a real browser; unit/component tests here prove the C# reaction to the callback and the grammar backstop, not the browser-side paste path itself.",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopRichTextEditorTests.OnPasteUnsupported_RaisesOnUnsupportedPaste",
+        "TheShop.Web.Tests.Components.Products.ProductContentCardTests.UnsupportedPaste_ShowsTheFormattingRemovedNotice",
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_WithADisallowedAttributeOnAnAllowedTag_ThrowsProductDescriptionUnsupportedContentException",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.UpdateProductDescription_WithMarkupOutsideTheGrammar_ThrowsPostgresException"
+      ]
+    },
+    {
+      "id": "AC-11",
+      "tests": [
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_WithADisallowedTag_ThrowsProductDescriptionUnsupportedContentException",
+        "TheShop.Domain.Tests.ValueObjects.ProductDescriptionTests.Create_WithALinkTargetingExecutableContent_ThrowsProductDescriptionUnsupportedContentException",
+        "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithDescriptionContainingUnsupportedMarkup_HasDescriptionUnsupportedContentError",
+        "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductCommandValidatorTests.Validate_WithDescriptionContainingUnsupportedMarkup_HasDescriptionUnsupportedContentError",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.UpdateProductDescription_WithMarkupOutsideTheGrammar_ThrowsPostgresException",
+        "TheShop.Infrastructure.Tests.Persistence.SupabaseProductDescriptionSchemaTests.UpdateProductDescription_WithExecutableContent_LeavesNoRowChanged"
+      ]
+    },
+    {
+      "id": "AC-12",
+      "tests": [
+        "TheShop.Web.Tests.Resources.ProductDescriptionLocalizationTests.UiString_ForEveryNewKey_IsAvailableInEnglishAndFrench"
+      ]
+    },
+    {
+      "id": "AC-13",
+      "proof": "e2e",
+      "reason": "True keyboard operability, visible focus, and screen-reader announcements need a real browser/assistive tech; bUnit's virtual DOM (AngleSharp) does not render focus or an accessibility tree. Unit/component tests here prove accessible-name markup and announcement text/state changes, not real focus or AT behavior.",
+      "tests": [
+        "TheShop.Web.Tests.Components.Products.ProductContentCardTests.RemoveRow_AnnouncesTheRemoval",
+        "TheShop.Web.Tests.Components.Products.ProductContentCardTests.Render_WithServerFlaggedRowPosition_MarksThatRowsFieldsInError",
+        "TheShop.Web.Tests.Components.Common.ShopRichTextEditorTests.Render_ForwardsAriaLabelledBy"
+      ]
+    },
+    {
+      "id": "AC-14",
+      "tests": [
+        "TheShop.Web.Tests.Components.Products.ProductFormTests.Render_BeforeAnyEdit_DoesNotConfirmExternalNavigation",
+        "TheShop.Web.Tests.Components.Products.ProductFormTests.EditingTheDescription_ConfirmsExternalNavigation",
+        "TheShop.Web.Tests.Components.Products.ProductFormTests.EditingASpecificationRow_ConfirmsExternalNavigation"
+      ]
+    },
+    {
+      "id": "AC-15",
+      "tests": [
+        "TheShop.Web.Tests.Components.Products.ProductFormTests.Save_WhenTheSaveFails_PreservesTheEnteredDescriptionAndSpecificationRows"
+      ]
+    }
+  ]
+}

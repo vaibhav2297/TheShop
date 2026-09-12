@@ -1,0 +1,40 @@
+// ─── ShopRichTextEditor ──────────────────────────────────────────────────────
+// Quill's own snow theme owns the toolbar (chrome, borders, its own SVG icons)
+// directly (plan Decision 2 waiver); only enough is overridden here to match
+// MudBlazor's outlined field style and keep toolbar + editor reading as one
+// bordered control.
+.shop-rich-text-editor {
+    border-radius: 4px;
+    transition: border-color 0.2s ease-in-out;
+
+    .ql-toolbar.ql-snow {
+        border: 1px solid var(--mud-palette-lines-inputs);
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .ql-container.ql-snow {
+        border: 1px solid var(--mud-palette-lines-inputs);
+        border-radius: 0 0 4px 4px;
+    }
+
+    .ql-editor {
+        min-height: 160px;
+        padding: 12px 16px;
+        font-family: inherit;
+        font-size: inherit;
+        color: var(--mud-palette-text-primary);
+    }
+
+    .ql-editor.ql-blank::before {
+        color: var(--mud-palette-text-secondary);
+        font-style: normal;
+        left: 16px;
+        right: 16px;
+    }
+
+    &:focus-within .ql-toolbar.ql-snow,
+    &:focus-within .ql-container.ql-snow {
+        border-color: var(--mud-palette-primary);
+    }
+}

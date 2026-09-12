@@ -7,6 +7,7 @@ namespace TheShop.Infrastructure.Persistence.Mappers;
 /// <summary>
 /// Maps the product aggregate's child records (<see cref="ProductImageRecord"/>,
 /// <see cref="ProductOptionTypeRecord"/>/<see cref="ProductOptionValueRecord"/>,
+/// <see cref="ProductSpecificationRecord"/>,
 /// <see cref="ProductVariantRecord"/>/<see cref="ProductVariantOptionValueRecord"/>) into their
 /// domain entities. Grouping/nesting (values under their type, option-value ids under their
 /// variant) is assembled by <see cref="Repositories.SupabaseProductRepository.GetForEditAsync"/>,
@@ -26,6 +27,9 @@ internal static class ProductChildMapper
             [.. values
                 .OrderBy(v => v.Position)
                 .Select(v => new ProductOptionValueInput(v.Id, v.Value))]);
+
+    public static ProductSpecification ToDomain(this ProductSpecificationRecord record) =>
+        ProductSpecification.Create(record.Id, record.Name, record.Value, record.Position);
 
     public static ProductVariant ToDomain(this ProductVariantRecord record, IReadOnlySet<Guid> optionValueIds) =>
         ProductVariant.Create(

@@ -17,8 +17,9 @@ internal static class ProductMapper
     /// Supabase Storage object key) it is turned into a public URL via
     /// <paramref name="resolvePublicUrl"/>; when it is absent a placeholder image URL is generated
     /// using the product name. When <paramref name="images"/>/<paramref name="optionTypes"/>/
-    /// <paramref name="variants"/> are supplied (the admin edit-load path) the aggregate carries
-    /// its full gallery/option-type/variant children; otherwise (the catalogue/admin-list read
+    /// <paramref name="specifications"/>/<paramref name="variants"/> are supplied (the admin
+    /// edit-load path) the aggregate carries its full gallery/option-type/specification/variant
+    /// children; otherwise (the catalogue/admin-list read
     /// paths) it carries the DB's precomputed <c>min_variant_price</c>/<c>has_sellable_variant</c>
     /// read model instead, per <see cref="Product.Rehydrate"/>'s read-optimized overload.
     /// </summary>
@@ -27,6 +28,7 @@ internal static class ProductMapper
         Func<string, string> resolvePublicUrl,
         IReadOnlyList<ProductImage>? images = null,
         IReadOnlyList<ProductOptionType>? optionTypes = null,
+        IReadOnlyList<ProductSpecification>? specifications = null,
         IReadOnlyList<ProductVariant>? variants = null)
     {
         if (record.Category is null)
@@ -51,7 +53,7 @@ internal static class ProductMapper
         return Product.Rehydrate(
             record.Id,
             record.Name,
-            record.Description,
+            ProductDescription.Rehydrate(record.Description),
             imageUrl,
             Sku.Create(record.Sku),
             pricing,
@@ -61,6 +63,7 @@ internal static class ProductMapper
             record.CreatedAt,
             images,
             optionTypes,
+            specifications,
             variants,
             hasVariants: record.MinVariantPrice is not null || variants is { Count: > 0 },
             minVariantPrice: record.MinVariantPrice is decimal min ? Money.Create(min, record.Currency) : null,
