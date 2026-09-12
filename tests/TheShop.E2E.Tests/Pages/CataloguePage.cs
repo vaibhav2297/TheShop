@@ -11,6 +11,12 @@ public sealed class CataloguePage(IPage page) : ShopPage(page)
     /// <summary>Locator for a product card's name text, exact match.</summary>
     public ILocator ProductName(string name) => Page.GetByText(name, new() { Exact = true });
 
+    /// <summary>Product image treatment frames rendered by the visible catalogue cards.</summary>
+    public ILocator ProductImageFrames => Page.Locator(".shop-product-tile .shop-image-product");
+
+    /// <summary>Product cards rendered by the catalogue.</summary>
+    public ILocator ProductCards => Page.Locator(".shop-product-tile");
+
     /// <summary>
     /// Expands a collapsed filter group panel by its heading (e.g. Strings.Filter_Brand).
     /// MudExpansionPanel's header renders as a plain div with no ARIA role, so GetByRole can't

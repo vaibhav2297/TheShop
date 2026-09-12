@@ -50,6 +50,9 @@ public sealed class ManageProductsPage(IPage page) : ShopPage(page)
             active ? Strings.ManageProducts_StatusActive : Strings.ManageProducts_StatusInactive,
             new() { Exact = true });
 
+    /// <summary>Thumbnail treatment frames rendered by product rows.</summary>
+    public ILocator ThumbnailFrames => Page.Locator(".shop-image-thumbnail");
+
     /// <summary>Locator for the next-page pagination button, by its accessible page number.</summary>
     public ILocator PageButton(int pageNumber) =>
         Page.GetByRole(AriaRole.Button, new() { Name = pageNumber.ToString() });

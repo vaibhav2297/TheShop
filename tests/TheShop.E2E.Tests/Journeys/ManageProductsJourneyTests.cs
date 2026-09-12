@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Microsoft.Playwright;
 using TheShop.E2E.Tests.Auth;
 using TheShop.E2E.Tests.Fixtures;
@@ -26,6 +27,23 @@ public sealed class ManageProductsJourneyTests(PlaywrightFixture playwright)
     : AuthenticatedE2ETestBase(playwright, AuthStateFactory.AdminEmail)
 {
     [Fact]
+    [Trait("Feature", "reusable-image-treatments")]
+    public async Task Admin_lists_render_confirmed_image_treatments()
+    {
+        var products = new ManageProductsPage(Page);
+        await products.GotoAsync();
+        await AssertContainTreatmentAsync(products.ThumbnailFrames.First, "shop-image-thumbnail", square: true);
+
+        var categories = new ManageCategoriesPage(Page);
+        await categories.GotoAsync();
+        await AssertContainTreatmentAsync(categories.ThumbnailFrames.First, "shop-image-thumbnail", square: true);
+
+        var brands = new ManageBrandsPage(Page);
+        await brands.GotoAsync();
+        await AssertContainTreatmentAsync(brands.LogoFrames.First, "shop-image-brand-logo", square: false);
+    }
+
+    [Fact]
     public async Task AC8_Creating_a_product_through_the_add_flow_appears_in_subsequent_matching_results()
     {
         var name = $"e2e-product-{Guid.NewGuid():N}";
@@ -36,6 +54,21 @@ public sealed class ManageProductsJourneyTests(PlaywrightFixture playwright)
         // what "subsequent matching listing results" actually asks for.
         await manageProducts.SearchAsync(name);
         await manageProducts.Row(name).WaitForAsync(new() { Timeout = 15_000 });
+    }
+
+    private static async Task AssertContainTreatmentAsync(ILocator frame, string expectedClass, bool square)
+    {
+        await frame.WaitForAsync(new() { Timeout = 15_000 });
+        (await frame.GetAttributeAsync("class")).Should().Contain(expectedClass);
+        (await frame.Locator("img").EvaluateAsync<string>("element => getComputedStyle(element).objectFit"))
+            .Should().Be("contain");
+
+        if (!square)
+            return;
+
+        var bounds = await frame.BoundingBoxAsync();
+        bounds.Should().NotBeNull();
+        bounds!.Width.Should().BeApproximately(bounds.Height, 1);
     }
 
     [Fact]

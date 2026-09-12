@@ -94,7 +94,9 @@
                                     <MudTd>
                                         <MudStack Row AlignItems="AlignItems.Center" Spacing="3">
                                             <MudAvatar Rounded="true">
-                                                <MudImage Src="@category.ImageUrl" Alt="@category.Name" ObjectFit="ObjectFit.Cover" />
+                                                <ShopImage Src="@category.ImageUrl"
+                                                           Alt="@category.Name"
+                                                           Treatment="ShopImageTreatment.Thumbnail" />
                                             </MudAvatar>
                                             <MudStack Spacing="0">
                                                 <MudText Typo="Typo.body2">@category.Name</MudText>

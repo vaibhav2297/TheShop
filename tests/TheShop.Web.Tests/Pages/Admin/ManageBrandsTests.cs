@@ -461,6 +461,8 @@ public class ManageBrandsTests : TestContext
 
         var firstBrand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
         cut.FindAll("img").Should().Contain(img => img.GetAttribute("src") == firstBrand.LogoUrl);
+        cut.FindComponents<ShopImage>().Should().Contain(image =>
+            image.Instance.Src == firstBrand.LogoUrl && image.Instance.Treatment == ShopImageTreatment.BrandLogo);
     }
 
     [Fact]

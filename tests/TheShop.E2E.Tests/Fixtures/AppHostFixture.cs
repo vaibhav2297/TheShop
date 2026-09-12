@@ -4,7 +4,7 @@ using Xunit;
 namespace TheShop.E2E.Tests.Fixtures;
 
 /// <summary>
-/// Launches the Blazor WASM dev server (<c>dotnet run --launch-profile http</c>) once per test
+/// Launches the already-built Blazor WASM dev server (<c>dotnet run --no-build --no-restore</c>) once per test
 /// collection, polls <see cref="E2EEnvironment.AppBaseUrl"/> until it serves 200, and kills the
 /// entire process tree on disposal so no orphaned process holds port 5218.
 /// </summary>
@@ -20,7 +20,7 @@ public sealed class AppHostFixture : IAsyncLifetime
         _app = Process.Start(new ProcessStartInfo
         {
             FileName = "dotnet",
-            Arguments = "run --project src/TheShop.Web --launch-profile http",
+            Arguments = "run --project src/TheShop.Web --launch-profile http --no-build --no-restore",
             WorkingDirectory = E2EEnvironment.RepoRoot,
             UseShellExecute = false,
             RedirectStandardOutput = true,

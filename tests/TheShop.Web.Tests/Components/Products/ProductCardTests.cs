@@ -7,6 +7,7 @@ using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Common;
+using TheShop.Web.Components.Common;
 using TheShop.Web.Components.Products;
 using TheShop.Web.Resources;
 using TheShop.Web.Theme;
@@ -53,6 +54,7 @@ public class ProductCardTests : TestContext
         var cut = Render<ProductCard>(p => p.Add(c => c.Product, dto));
 
         cut.Find("img").GetAttribute("src").Should().Be("https://example.com/photo.webp");
+        cut.FindComponent<ShopImage>().Instance.Treatment.Should().Be(ShopImageTreatment.Product);
     }
 
     [Fact]

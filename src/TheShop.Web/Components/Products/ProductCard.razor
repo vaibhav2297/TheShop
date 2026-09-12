@@ -2,6 +2,7 @@
 @inherits MudComponentBase
 
 @using TheShop.Web.Common
+@using TheShop.Web.Components.Common
 @using TheShop.Web.Resources
 @using TheShop.Web.Theme
 
@@ -14,11 +15,11 @@
               AlignItems="AlignItems.Center"
               Justify="Justify.Center">
 
-        <MudImage Src="@(string.IsNullOrWhiteSpace(Product.ImageUrl) ? ShopIcons.ImageAssets.LogoPrimary : Product.ImageUrl)"
-                  Alt="@string.Format(Strings.Product_ImageAlt, Product.Name)"
-                  ObjectFit="ObjectFit.Cover"
-                  FallbackSrc="@ShopIcons.ImageAssets.LogoPrimary"
-                  Class="media-image" />
+        <ShopImage Src="@(string.IsNullOrWhiteSpace(Product.ImageUrl) ? ShopIcons.ImageAssets.LogoPrimary : Product.ImageUrl)"
+                   Alt="@string.Format(Strings.Product_ImageAlt, Product.Name)"
+                   Treatment="ShopImageTreatment.Product"
+                   FallbackSrc="@ShopIcons.ImageAssets.LogoPrimary"
+                   Class="media-image" />
 
         <!-- Out of Stock -->
         @if (!Product.IsInStock)

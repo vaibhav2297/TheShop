@@ -379,6 +379,8 @@ public class ManageCategoriesTests : TestContext
 
         var firstCategory = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
         cut.FindAll("img").Should().Contain(img => img.GetAttribute("src") == firstCategory.ImageUrl);
+        cut.FindComponents<ShopImage>().Should().Contain(image =>
+            image.Instance.Src == firstCategory.ImageUrl && image.Instance.Treatment == ShopImageTreatment.Thumbnail);
     }
 
     [Fact]

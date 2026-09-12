@@ -94,7 +94,9 @@
                                     <MudTd>
                                         <MudStack Row AlignItems="AlignItems.Center" Spacing="3">
                                             <MudAvatar Rounded="true">
-                                                <MudImage Src="@brand.LogoUrl" Alt="@brand.Name" ObjectFit="ObjectFit.Cover" />
+                                                <ShopImage Src="@brand.LogoUrl"
+                                                           Alt="@brand.Name"
+                                                           Treatment="ShopImageTreatment.BrandLogo" />
                                             </MudAvatar>
                                             <MudStack Spacing="0">
                                                 <MudText Typo="Typo.body2">@brand.Name</MudText>

@@ -20,6 +20,9 @@ public sealed class ManageBrandsPage(IPage page) : ShopPage(page)
     /// <summary>Locator for a brand's name text in the list, exact match.</summary>
     public ILocator BrandRow(string brandName) => Page.GetByText(brandName, new() { Exact = true });
 
+    /// <summary>Brand-logo treatment frames rendered by the list.</summary>
+    public ILocator LogoFrames => Page.Locator(".shop-image-brand-logo");
+
     /// <summary>Searches the brand list.</summary>
     public async Task SearchAsync(string term) =>
         await Page.GetByPlaceholder(Strings.ManageBrands_SearchPlaceholder).FillAsync(term);

@@ -43,6 +43,9 @@ public sealed class ManageCategoriesPage(IPage page) : ShopPage(page)
     /// <summary>The multi-selection checkbox of a category's row.</summary>
     public ILocator RowCheckbox(string categoryName) => Row(categoryName).GetByRole(AriaRole.Checkbox);
 
+    /// <summary>Thumbnail treatment frames rendered by category rows.</summary>
+    public ILocator ThumbnailFrames => Page.Locator(".shop-image-thumbnail");
+
     /// <summary>
     /// A category row's status chip. Clicking it flips the status — immediately when activating,
     /// behind a confirmation when deactivating (spec AC-16). Located by the chip's own label so

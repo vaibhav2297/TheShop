@@ -365,6 +365,19 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "reusable-image-treatments")]
+    public async Task Render_WhenProductsExist_UsesThumbnailTreatmentForPrimaryImages()
+    {
+        var item = Item("Elf Bar BC5000");
+        SetUpKnownProductsList([item]);
+
+        var cut = await RenderListAsync();
+
+        cut.FindComponents<ShopImage>().Should().Contain(image =>
+            image.Instance.Src == item.PrimaryImageUrl && image.Instance.Treatment == ShopImageTreatment.Thumbnail);
+    }
+
+    [Fact]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenAProductIsUnpublished_ShowsInactiveStatus()
     {
