@@ -4,7 +4,7 @@ Status: Implemented locally; fresh runtime and remote CI/branch-protection proof
 Date: 2026-09-14
 Inspected baseline: `36cec5c`, branch `refactor/sdd-flow`; no tracked changes before planning.
 
-Outcome: `.sdd-next` becomes sole active feature workflow for Claude Code and Codex. Retire legacy orchestration, native registrations, agents, scripts, hooks, CI, and instructions. Preserve engineering requirements, application behavior, feature history, and unrelated integrations.
+Outcome: `.sdd` is sole active feature workflow for Claude Code and Codex. Retire legacy orchestration, native registrations, agents, scripts, hooks, CI, and instructions. Preserve engineering requirements, application behavior, feature history, and unrelated integrations.
 
 Migration requested on 2026-09-14. The local cutover removed legacy tracked and ignored workflow files, registered Next entries, restored the unique historical `shop-image` record, and refreshed Graphify. No commit, push, pull request, deployment, or remote configuration change occurred.
 
@@ -19,7 +19,7 @@ Migration requested on 2026-09-14. The local cutover removed legacy tracked and 
 | Native registrations | `.agents/skills/`, `.claude/skills/`, `.claude/commands/`, `.claude/agents/`, `.codex/agents/` | Claude has dotted compatibility names and hyphenated names. Both runtimes have 10 project agents each. |
 | Root instructions | `AGENTS.md`, `CLAUDE.md` | Generated from `.sdd/contracts/project.md`; require old pipeline, constitution, formatting, gates. |
 | Claude hook | `.claude/settings.json`, `.claude/scripts/check-design-rules.ps1` | Hook wrapper searches for `.sdd/catalog.json`, then invokes old checker. Directly changing checker path alone leaves root discovery broken. |
-| CI | `.github/workflows/sdd-portability.yml` | Five checks invoke old scripts. Trigger paths omit `.sdd-next/**`. |
+| CI | `.github/workflows/sdd-portability.yml` | Five checks invoke old scripts. Trigger paths omit active SDD files. |
 | History | `.specs/`: 12 folders, 11 status files | Ten status files include shipped markers; all 11 contain waivers. `authentication` lacks shipped marker; `e2e-test` lacks status file. Inspect before deciding continuation. |
 | Existing references | Test XML documentation links `.specs/.../spec.md` | Preserve history paths; mass rewriting adds unrelated churn. Focused scan found no `.sdd/` execution reference in `src/` or `tests/`. |
 | Other leftovers | `.sdd-temp-snapshot/`, `.claude/settings.json.graphify-bak`, `update-skill.ps1` | Snapshot has 83 tracked files, including application/tests/SQL/history copies. Old updater expects absent root architecture/design files. Inventory before removal. |
@@ -29,8 +29,8 @@ Graph query used existing vocabulary: `sdd claude codex adapter skill workflow m
 
 ## 2. Target decisions
 
-- Keep `.sdd-next` name. Make production status explicit; remove pilot selection and override ceremony.
-- One canonical workflow: `.sdd-next/theshop-build/SKILL.md`. Understand, Build, Verify, Deliver; one implementing agent and one feature record.
+- Keep `.sdd` name. Make production status explicit; remove pilot selection and override ceremony.
+- One canonical workflow: `.sdd/theshop-build/SKILL.md`. Understand, Build, Verify, Deliver; one implementing agent and one feature record.
 - Codex entry: `$theshop-build`; Claude entry: `/theshop-build`. Natural-language feature requests route here through root instructions. Questions and unrelated tasks retain ordinary handling.
 - Add thin native entry files at `.agents/skills/theshop-build/SKILL.md` and `.claude/skills/theshop-build/SKILL.md`. Each loads canonical skill by repository path; supporting references resolve from canonical directory.
 - Native entries contain discovery metadata and loading instructions only. No copied workflow, symlink requirement, adapter generator, catalog, or replacement orchestration framework.
@@ -38,7 +38,7 @@ Graph query used existing vocabulary: `sdd claude codex adapter skill workflow m
 - Root instructions preserve engineering rules, `{Type} | {Description}`, no attribution, Graphify policy, and Caveman default `full` with explicit overrides. This session's `ultra` remains session preference.
 - Keep Next's conditional independent review. Remove legacy specialist agents; use available generic reviewer with complete scoped review instructions. Missing independent capability leaves review pending.
 - Keep existing unnumbered pilot record unchanged. New records use existing numbered allocation; no renumbering or automatic history conversion.
-- Retain `.specs/` as inactive historical records. New writes use `.sdd-next/features/`; continuing old work creates one new record with source links and explicit remaining acceptance.
+- Retain `.specs/` as inactive historical records. New writes use `.sdd/features/`; continuing old work creates one new record with source links and explicit remaining acceptance.
 - Preserve unrelated Graphify/Caveman tools, personal skills, plugins, MCP connections, credentials, application code, tests, and SQL migrations.
 
 Native registration locations and discovery behavior: [Codex skills](https://learn.chatgpt.com/docs/build-skills), [Claude skills](https://code.claude.com/docs/en/skills). Codex project agent files live under `.codex/agents/`: [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents).
@@ -71,11 +71,11 @@ Exit: required guidance resolves without legacy reads; engineering-rule comparis
 
 1. Add two thin `theshop-build` native entries. Use same workflow name, scope, canonical source, and feature directory. Avoid duplicate command aliases.
 2. Replace root instructions in same cutover change. Remove generated-source banners and old command pipeline tables. No transition where new shortcut still mandates old gates.
-3. Replace Claude design-hook wrapper with `.sdd-next/scripts/claude-design-hook.ps1`; point settings there. Resolve root through Next path, decode hook JSON, invoke shared checker, preserve failure feedback.
+3. Replace Claude design-hook wrapper with `.sdd/scripts/claude-design-hook.ps1`; point settings there. Resolve root through SDD path, decode hook JSON, invoke shared checker, preserve failure feedback.
 4. Keep explicit checker invocation for Codex and final verification for both runtimes. Hooks supplement checks; no hook dependency for completion. Validate Windows absolute paths and spaces against [Claude hook input](https://code.claude.com/docs/en/hooks).
 5. Remove obsolete formatter/gate hook registrations from shared and project-local settings when present. Preserve unrelated hook entries and permissions. Next uses scoped `dotnet format` directly.
-6. Replace legacy CI with `.github/workflows/sdd-next.yml`. Add `.sdd-next/**`, root instructions, and relevant native paths to triggers.
-7. Add one focused validation script, `.sdd-next/scripts/test-integration.ps1`, for native entries, local links, syntax, hook fixtures, checker fixtures, and forbidden active legacy references. No per-feature manifest or ledger gate.
+6. Replace legacy CI with `.github/workflows/sdd.yml`. Add `.sdd/**`, root instructions, and relevant native paths to triggers.
+7. Add one focused validation script, `.sdd/scripts/test-integration.ps1`, for native entries, local links, syntax, hook fixtures, checker fixtures, and forbidden active legacy references. No per-feature manifest or ledger gate.
 8. Verify branch protection requirements before renaming required check identities. Preserve existing required identity until authorized remote settings are updated; avoid PRs waiting permanently for deleted jobs.
 
 Exit: clean fixture checkout can discover Next in both runtimes and run validation with legacy tree absent. Scripts above are proposed; none created or run during planning.

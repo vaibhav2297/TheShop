@@ -2,4 +2,4 @@
 
 @AGENTS.md
 
-Use `/theshop-build` for feature work. Its canonical source is `.sdd-next/theshop-build/SKILL.md`.
+Use `/theshop-build` for feature work. Its canonical source is `.sdd/theshop-build/SKILL.md`.

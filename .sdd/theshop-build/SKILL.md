@@ -25,7 +25,7 @@ Figma: <frame URL> — wishlist page, empty and populated states
 
 Description is required for new work; request text can supply it. Name and Figma are optional. Derive a descriptive kebab-case name when omitted. A resume request can use existing feature name or numbered ID without repeating description. Preserve supplied URLs/node IDs; web reference defines access and design handling.
 
-Validate new name as one segment matching `^[a-z0-9]+(?:-[a-z0-9]+)*$`; reject separators, traversal, and shell syntax. New folders use `.sdd-next/features/<number>-<name>/feature.md`. Allocate highest existing numeric prefix plus one, starting `001`, padded to at least three digits. Numbers identify creation order, never priority or migration version.
+Validate new name as one segment matching `^[a-z0-9]+(?:-[a-z0-9]+)*$`; reject separators, traversal, and shell syntax. New folders use `.sdd/features/<number>-<name>/feature.md`. Allocate highest existing numeric prefix plus one, starting `001`, padded to at least three digits. Numbers identify creation order, never priority or migration version.
 
 List existing feature folders before allocating. Reuse a matching record only for continuation; resolve ambiguous name matches or conflicting intent. Missing requested resume record: report it; do not silently create a new feature. Preserve existing unnumbered folders and records. Never renumber existing features. Keep cancelled records so IDs remain reserved; recheck allocation before creating and never overwrite an occupied ID. No separate numbering registry.
 

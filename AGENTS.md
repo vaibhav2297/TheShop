@@ -2,7 +2,7 @@
 
 ## SDD Next
 
-`.sdd-next/theshop-build/SKILL.md` is the sole feature workflow. Use `$theshop-build` in Codex and `/theshop-build` in Claude Code for feature work. It owns Understand, Build, Verify, Deliver, and records new work in `.sdd-next/features/`.
+`.sdd/theshop-build/SKILL.md` is the sole feature workflow. Use `$theshop-build` in Codex and `/theshop-build` in Claude Code for feature work. It owns Understand, Build, Verify, Deliver, and records new work in `.sdd/features/`.
 
 Read canonical skill and relevant references before feature work. Confirm material behavior, scope, data, security, or design decisions before dependent implementation. Existing explicit approval of same expectations remains valid. Do not create a feature record for unrelated questions or planning-only requests.
 
@@ -27,7 +27,7 @@ The Shop is a .NET 10 Blazor WebAssembly application using MudBlazor, Supabase, 
 9. Prefer XML documentation comments for public C# types and members. Use implementation comments only when XML documentation cannot express reason.
 10. Use `{Type} | {Description}` for authorized commits.
 
-For C# and Razor work, load `.sdd-next/theshop-build/references/constitution.md` and relevant architecture, web, security, migration, and verification references. Run scoped `dotnet format TheShop.slnx --no-restore --include <paths>` for owned C# or Razor edits, then repeat affected checks. Run `.sdd-next/scripts/check-design-rules.ps1 -Path <changed-production-files>` for changed production C# or Razor files. Build with `dotnet build TheShop.slnx --nologo`; run applicable tests and browser proof. A failed, skipped, blocked, stale, or unavailable check is not passing proof.
+For C# and Razor work, load `.sdd/theshop-build/references/constitution.md` and relevant architecture, web, security, migration, and verification references. Run scoped `dotnet format TheShop.slnx --no-restore --include <paths>` for owned C# or Razor edits, then repeat affected checks. Run `.sdd/scripts/check-design-rules.ps1 -Path <changed-production-files>` for changed production C# or Razor files. Build with `dotnet build TheShop.slnx --nologo`; run applicable tests and browser proof. A failed, skipped, blocked, stale, or unavailable check is not passing proof.
 
 ## Graphify
 

@@ -1,11 +1,11 @@
 # Isolated SDD Next copy. Missing paths fail; RepositoryRoot supports fixture validation.
 # check-design-rules.ps1 - deterministic linter for the mechanically-checkable
 # subset of the theshop-constitution rules. Rule numbers in the output refer to
-# .sdd-next/theshop-build/references/constitution.md.
+# .sdd/theshop-build/references/constitution.md.
 #
 # Modes:
 #   Path mode (-Path ...) Lints the given files/directories.
-#                         or manually: pwsh .sdd-next/scripts/check-design-rules.ps1 -Path src
+#                         or manually: pwsh .sdd/scripts/check-design-rules.ps1 -Path src
 #                         Violations -> stdout, exit 1.
 #
 # Scope: *.razor / *.cs under src/ only.
@@ -115,7 +115,7 @@ function Format-Report {
             [void]$sb.AppendLine(("  L{0,-5} Rule {1}: {2}" -f $v.Line, $v.Rule, $v.Msg))
         }
     }
-    [void]$sb.Append('Fix reported violations. Rules: .sdd-next/theshop-build/references/constitution.md. Load relevant guidance through theshop-build/SKILL.md.')
+    [void]$sb.Append('Fix reported violations. Rules: .sdd/theshop-build/references/constitution.md. Load relevant guidance through theshop-build/SKILL.md.')
     return $sb.ToString()
 }
 

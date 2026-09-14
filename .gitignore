@@ -388,4 +388,4 @@ tests/TheShop.E2E.Tests/.auth-states/
 **/playwright-traces/
 
 # SDD Next disposable integration fixtures
-.sdd-next/.validation/
+.sdd/.validation/

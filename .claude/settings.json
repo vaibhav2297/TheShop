@@ -12,7 +12,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.sdd-next/scripts/claude-design-hook.ps1\"",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.sdd/scripts/claude-design-hook.ps1\"",
             "timeout": 30,
             "statusMessage": "Checking design rules..."
           }

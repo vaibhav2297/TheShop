@@ -1,0 +1,26 @@
+name: SDD integration
+
+on:
+  pull_request:
+    paths:
+      - '.sdd/**'
+      - '.agents/skills/theshop-build/**'
+      - '.agents/skills/graphify-windows/**'
+      - '.claude/**'
+      - '.codex/**'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - '.github/workflows/sdd.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate SDD integration
+        shell: pwsh
+        run: pwsh -NoProfile -File .sdd/scripts/test-integration.ps1
