@@ -1,15 +1,15 @@
 ---
 name: theshop-build
-description: Build The Shop features through the isolated SDD Next pilot, from clarified expectations through implementation, unit/component tests, applicable E2E, and verified delivery. Use when the user selects this pilot workflow.
+description: Build The Shop features through SDD Next, from clarified expectations through implementation, unit/component tests, applicable E2E, and verified delivery. Use for feature requests.
 ---
 
 # Build a feature
 
-Use only when user selects pilot workflow. Read [pilot entry](../README.md) if task has not explicitly selected replacement of legacy stage mechanics. Resolve instruction conflicts before dependent work; this file grants no override itself.
+Use for feature requests. This is the sole active project workflow. Resolve instruction conflicts before dependent work; this file grants no override itself.
 
 ## Context
 
-Read [constitution](references/constitution.md) once. Load [architecture](references/architecture.md) for C# or layer decisions, [web](references/web.md) for UI/resources/styles or supplied Figma references, [security](references/security.md) for permissions, identity, data access, payments, or migrations. Load [migrations](references/migrations.md) only for database changes. Read [verification](references/verification.md) when assigning acceptance proof; reuse through completion. Do not preload unrelated references or legacy workflows. Pilot's explicit selection replaces legacy rule-loading requirements as described in its entry prompt; application code remains available for inspection.
+Read [constitution](references/constitution.md) once. Load [architecture](references/architecture.md) for C# or layer decisions, [web](references/web.md) for UI/resources/styles or supplied Figma references, [security](references/security.md) for permissions, identity, data access, payments, or migrations. Load [migrations](references/migrations.md) only for database changes. Read [verification](references/verification.md) when assigning acceptance proof; reuse through completion. Do not preload unrelated references or retired workflows. Application code remains available for inspection.
 
 One agent owns normal work. No mandatory layer handoffs. Verification policy defines when independent review is needed. Use current communication preference; default full Caveman, preserve technical literals and clarity. Never compress away uncertainty or approval boundaries.
 
@@ -62,6 +62,8 @@ Do not auto-commit, push, open PRs, merge, deploy, or delete branches. An explic
 ## Resume
 
 Read feature record, current Git revision, dirty files, and affected code. Check whether recorded proof still applies to current changes and environment. Rerun invalidated or uncertain checks; preserve valid completed work. No mandatory hash ledger. Resolve concurrent changes before editing overlap. One agent owns a feature record at a time.
+
+For work continued from `.specs/`, create a new Next record, link its historical source, and list remaining acceptance. Preserve historical files and their evidence; never reinterpret a waiver, failure, or missing proof as passing.
 
 ## Token discipline
 
