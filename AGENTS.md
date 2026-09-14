@@ -4,7 +4,7 @@
 
 `.sdd/theshop-build/SKILL.md` is the sole feature workflow. Use `$theshop-build` in Codex and `/theshop-build` in Claude Code for feature work. It owns Understand, Build, Verify, Deliver, and records new work in `.sdd/features/`.
 
-Read canonical skill and relevant references before feature work. Confirm material behavior, scope, data, security, or design decisions before dependent implementation. Existing explicit approval of same expectations remains valid. Do not create a feature record for unrelated questions or planning-only requests.
+Read canonical skill and relevant references before feature work. Confirm material behavior, scope, data, security, or design decisions before dependent implementation. Existing explicit approval of same expectations remains valid. Do not create a feature record for unrelated questions or general planning-only requests. Explicit `Mode: understand` requests a feature record and stops before implementation, even after confirmation. `Mode: implement` resumes an existing confirmed record through Build, Verify, Deliver. Omitted mode preserves full flow; model selection stays in runtime.
 
 Use one feature record and one normal implementation owner. Risk-based independent review is required for authorization, identity, payments, sensitive access, and destructive database changes. A missing independent reviewer leaves proof pending.
 

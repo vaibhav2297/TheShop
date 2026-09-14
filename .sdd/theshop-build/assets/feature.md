@@ -18,7 +18,7 @@ Excluded: <scope boundaries>
 
 ## Decisions
 
-Expectation confirmation: Pending
+Expectation confirmation: Pending <replace with confirmed scope and source user instruction/answer when explicit>
 
 Design references: <Figma URLs/node IDs with screen/state/viewport mapping, access result, or confirmed reuse direction>
 
@@ -29,6 +29,8 @@ Design references: <Figma URLs/node IDs with screen/state/viewport mapping, acce
 - [ ] <Required change and owning files/layers>
 - [ ] <Required tests and verification>
 
+Reuse / constraints: <relevant existing paths/contracts and non-obvious implementation decisions; link definitions, do not duplicate APIs>
+
 ## Verification
 
 Revision / dirty files: <observed context>
@@ -37,11 +39,11 @@ Browser E2E: <headed/headless/not applicable; observed window visibility; reason
 
 Database test lifecycle: <not applicable, or disposable target, baseline/seed method, cleanup outcome, and service shutdown/retention>
 
-Record checks actually performed. Commands enable reproduction; results show outcomes; evidence points to observed proof.
+Plan exact commands and required environment/fixtures during Understand. Mark implementation-dependent commands proposed, with unresolved prerequisites. Planned checks remain Pending / not run; replace results only after execution. Commands enable reproduction; results show outcomes; evidence points to observed proof.
 
 | Check / exact command | Result / exit code / test counts | Evidence |
 |---|---|---|
-| <actual check> | Pending | <relative log/trace path when produced> |
+| <planned exact command; prerequisites, or proposed command with unresolved detail> | Pending / not run | <relative log/trace path when produced> |
 
 Review: <self-review; independent review when required; outstanding findings>
 
@@ -62,3 +64,4 @@ Recovery: <rollback/forward-repair approach and data-preservation limits>
 Completed: <verified work>
 Remaining: <unfinished work or none>
 Blocker / next action: <specific action or none>
+Implementation handoff: <when ready, resume exact feature ID with Mode: implement; implementation and verification remain pending>

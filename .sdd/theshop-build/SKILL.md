@@ -20,10 +20,29 @@ Accept natural-language request or labeled fields; these are prompt inputs, not 
 ```text
 Name: wishlist
 Description: Customers can save products and revisit them later.
+Mode: understand
 Figma: <frame URL> — wishlist page, empty and populated states
 ```
 
 Description is required for new work; request text can supply it. Name and Figma are optional. Derive a descriptive kebab-case name when omitted. A resume request can use existing feature name or numbered ID without repeating description. Preserve supplied URLs/node IDs; web reference defines access and design handling.
+
+## Execution mode
+
+Accept `Mode: full`, `Mode: understand`, or `Mode: implement`; equivalent explicit prose is valid. Omitted mode preserves full workflow. Resolve unknown or conflicting modes before writes. Mode controls this invocation, not feature identity or model selection.
+
+- `full`: Understand, Build, Verify, Deliver under existing confirmation rules.
+- `understand`: Inspect, clarify, and create or update feature record only. This explicitly requests a feature record, unlike general planning questions. No application, test, configuration, or migration edits; no build/test execution, service changes, or deployment. Prepare handoff below. Once expectations are confirmed, set `Ready for implementation` and stop. Confirmation alone never starts Build in this mode; continuation requires an explicit implementation request. Unresolved decisions stay `Awaiting decision`, not ready or done.
+- `implement`: Require an existing feature name/ID and record with explicit expectation confirmation. Do not allocate a feature or infer approval from a checklist or state label. Missing record or confirmation: stop before implementation, explain missing prerequisite, and request Understand/confirmation. Otherwise apply Resume checks, then Build, Verify, Deliver. Do not repeat completed planning or ask again for unchanged approval. Reconcile stale paths and routine implementation details against current code; ask only about new material changes before dependent work.
+
+User selects model in runtime before each invocation. Never claim this skill switches models or spawns a lower-model worker automatically. Same-chat and fresh-chat continuation both use feature record; neither weakens verification or shipping boundaries.
+
+### Understand handoff
+
+Keep handoff self-contained in `feature.md`: confirmed scope and decisions, acceptance examples and proof types, short implementation checklist with relevant file paths/layers and reusable contracts, and exact planned verification commands with prerequisites. Link definitions instead of copying APIs. When a future path or command depends on implementation, mark it proposed and name what must be resolved; never invent an executable check.
+
+Record confirmation scope and source (user instruction/answer), current revision and relevant dirty files, unresolved work, and next invocation: `$theshop-build Mode: implement <feature-id>` (Claude Code: `/theshop-build Mode: implement <feature-id>`). Planned checks remain `Pending / not run`; inspection is not passing test evidence. Preserve previously completed work and observed evidence when replanning an existing feature. Delivery reports handoff readiness, record path, and that this invocation did not implement or verify. `Ready for implementation` is not `Done`.
+
+## Feature allocation
 
 Validate new name as one segment matching `^[a-z0-9]+(?:-[a-z0-9]+)*$`; reject separators, traversal, and shell syntax. New folders use `.sdd/features/<number>-<name>/feature.md`. Allocate highest existing numeric prefix plus one, starting `001`, padded to at least three digits. Numbers identify creation order, never priority or migration version.
 
@@ -36,6 +55,8 @@ List existing feature folders before allocating. Reuse a matching record only fo
 3. Record intended outcome, exclusions, concrete acceptance examples, and short implementation checklist. Cover meaningful failures, permissions, persistence, and UI states where relevant. Attach proof type to each acceptance criterion. Scale detail to feature; no separate plan by default.
 4. Resolve routine implementation details from existing patterns. Ask grouped questions when answers change behavior, scope, data handling, security, or significant tradeoffs. Give recommendation and consequences; never treat missing answer as agreement. New UI needs accessible design or confirmed reuse direction; missing Figma alone is not a blocker. Record supplied frame links, screen/state mapping, and access result. Database changes record local test target, intended remote environment if known, and whether deployment is in scope; unknown remote target does not block local implementation.
 5. Incorporate answers. Present resulting expectations for confirmation before implementation. Existing explicit approval of the same expectations satisfies this step; do not ask again. Record what user confirmed. If user changes agreed scope later, confirm only material changes. Continue independent inspection while decisions remain pending.
+
+In `understand` mode, finish handoff and stop here. In `full` mode, continue after confirmation. `implement` enters through Resume, not a fresh Understand pass.
 
 ## Build
 
@@ -53,7 +74,7 @@ For database changes, create versioned SQL and validate it locally through migra
 
 Execute [verification policy](references/verification.md). Fix in-scope failures. Repeat affected checks after changes. Stop retrying when no new evidence or viable correction remains; report blocker and precise next action. Environment failure is not passing proof.
 
-Mark `Done` only after confirmed acceptance and required checks pass. Otherwise retain `In progress`, `Awaiting decision`, or `Blocked`, with exact unfinished work. A deliberate user-approved scope change can remove a requirement; a failed check cannot silently disappear.
+Mark `Done` only after confirmed acceptance and required checks pass. Build starts `In progress`; unimplemented confirmed handoff stays `Ready for implementation`. Otherwise retain `In progress`, `Awaiting decision`, or `Blocked`, with exact unfinished work. A deliberate user-approved scope change can remove a requirement; a failed check cannot silently disappear.
 
 Deliver concise changed behavior, verification results, unresolved limitations, and feature-record path. State local migration validation and remote deployment separately. When deployment is outside agreed scope, local acceptance may be `Done`; remote stays `Not requested`, or `Pending authorization` if proposed deployment awaits approval. Never describe either as deployed. If remote deployment is agreed scope, completion requires its observed verification.
 
@@ -61,7 +82,7 @@ Do not auto-commit, push, open PRs, merge, deploy, or delete branches. An explic
 
 ## Resume
 
-Read feature record, current Git revision, dirty files, and affected code. Check whether recorded proof still applies to current changes and environment. Rerun invalidated or uncertain checks; preserve valid completed work. No mandatory hash ledger. Resolve concurrent changes before editing overlap. One agent owns a feature record at a time.
+Read feature record, current Git revision, dirty files, and affected code. Check whether recorded proof still applies to current changes and environment. Rerun invalidated or uncertain checks in `full`/`implement`; `understand` records required reruns as pending without executing them. Preserve valid completed work. No mandatory hash ledger. Resolve concurrent changes before editing overlap. One agent owns a feature record at a time.
 
 For work continued from `.specs/`, create a new Next record, link its historical source, and list remaining acceptance. Preserve historical files and their evidence; never reinterpret a waiver, failure, or missing proof as passing.
 

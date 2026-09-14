@@ -8,6 +8,32 @@ Feature work confirms material expectations before implementation, keeps tests a
 
 Existing unnumbered records remain unchanged. New records use numbered folders. Historical `.specs/` records remain inactive; continuation starts a new Next record with source links and remaining acceptance.
 
+## Split planning and implementation across models
+
+One skill, two invocations. Select stronger model in runtime, then:
+
+```text
+$theshop-build
+Mode: understand
+Name: wishlist
+Description: Customers can save products for later.
+Figma: <optional frame link>
+```
+
+Resolve questions and confirm expectations. Skill saves decisions, acceptance, implementation checklist, and planned verification commands in `feature.md`, then stops at `Ready for implementation`. No code changes or test execution. Confirmation does not start implementation.
+
+Select implementation model, optionally open a fresh chat, then:
+
+```text
+$theshop-build
+Mode: implement
+Resume <actual feature ID from handoff>
+```
+
+Skill reads confirmed record and current code, then builds, verifies, and delivers. Missing record or confirmation blocks implementation. New material changes need confirmation; unchanged approval remains valid. All verification and deployment boundaries remain unchanged.
+
+Claude Code uses `/theshop-build` with same prompt fields. Model changes are manual, not skill automation. Omit mode or use `Mode: full` for original end-to-end flow. These are prompt inputs, not shell flags.
+
 ## Ownership
 
 | Path | Purpose |
