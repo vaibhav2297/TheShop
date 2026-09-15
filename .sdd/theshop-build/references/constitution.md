@@ -45,6 +45,6 @@ Stable engineering requirements. Workflow lives in `SKILL.md`; this file assigns
 
 Blazor WebAssembly is public client code. Keep secrets and privileged operations server-side. Enforce data access through backend authorization/RLS; hiding controls is insufficient. Load security reference for affected work.
 
-Changed resource keys need complete English and French text; placeholders block delivery. Preserve architecture and UI rules during repairs. Explicit exceptions stay recorded; never silently suppress diagnostics.
+Changed resource keys need complete English text; placeholders block delivery. Preserve architecture and UI rules during repairs. Explicit exceptions stay recorded; never silently suppress diagnostics.
 
 Commit format: `{Type} | {Description}`. No AI attribution in commit, PR, or review text. Message generation grants no Git mutation permission.

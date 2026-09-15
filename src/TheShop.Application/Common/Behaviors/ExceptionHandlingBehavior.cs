@@ -13,7 +13,7 @@ public sealed class ExceptionHandlingBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    // Resx keys defined in Strings.resx / Strings.fr.resx.
+    // Resource keys defined in Strings.resx.
     private const string NetworkErrorKey = "Auth_Network";
     private const string UnexpectedErrorKey = "Auth_Unexpected";
 

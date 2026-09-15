@@ -26,8 +26,7 @@
 
 
 	<ItemGroup>
-		<!-- Strings.resx stays embedded so ResourceManager has its data at runtime and the French
-         satellite (Strings.fr.resx) keeps base name "TheShop.Web.Resources.Strings".
+		<!-- Strings.resx stays embedded so ResourceManager has its data at runtime.
          The VocaDb.ResXFileCodeGenerator source generator (below) emits the public
          TheShop.Web.Resources.Strings accessor at compile time — IDE-agnostic, runs on CI — so no
          Strings.Designer.cs is written to disk or committed. PublicClass=true keeps it accessible

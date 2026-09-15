@@ -44,21 +44,16 @@ public abstract class SortCatalogueTests<TSort> where TSort : struct, Enum
         Catalogue.Options.Should().OnlyContain(option => !string.IsNullOrWhiteSpace(option.LabelKey));
     }
 
-    [Theory]
-    [InlineData("en")]
-    [InlineData("fr")]
-    public void LabelKeys_ResolveToRealResourceStrings_InEveryShippedLanguage(string culture)
+    [Fact]
+    public void LabelKeys_ResolveToRealEnglishResourceStrings()
     {
-        // The keys are plain strings by the time they reach the localizer, so a typo or a resx entry
-        // that only exists in English would surface as the raw key rendered in the picker. Resolving
-        // each one against both cultures turns that into a build-time failure instead.
+        // The keys are plain strings by the time they reach the localizer, so a typo would surface
+        // as raw key text in picker.
         var resources = new System.Resources.ResourceManager(typeof(Strings));
-        var cultureInfo = CultureInfo.GetCultureInfo(culture);
-
         foreach (var option in Catalogue.Options)
         {
-            resources.GetString(option.LabelKey, cultureInfo)
-                .Should().NotBeNullOrWhiteSpace($"'{option.LabelKey}' must exist in Strings.{culture}.resx");
+            resources.GetString(option.LabelKey, CultureInfo.InvariantCulture)
+                .Should().NotBeNullOrWhiteSpace($"'{option.LabelKey}' must exist in Strings.resx");
         }
     }
 

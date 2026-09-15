@@ -12,7 +12,7 @@ Render loading, empty, success, validation, and failure states relevant to accep
 
 Use `Routes` helpers for parameterized URLs and `BusyKeys` constants for actions. Keep feature-specific imports local to Razor file. Code-behind owns UI interactions, not business rules.
 
-Resource keys follow `{Context}_{Purpose}` and remain valid C# identifiers. Reuse existing keys with same meaning. Update `Strings.resx` and `Strings.fr.resx` together, preserving format placeholders. Never edit/create `Strings.Designer.cs`. Include email, metadata, image alt text, and ARIA text when user-facing. Runtime failures localize returned keys at presentation boundary.
+Resource keys follow `{Context}_{Purpose}` and remain valid C# identifiers. Reuse existing keys with same meaning. Update `Strings.resx`, preserving format placeholders. Never edit/create `Strings.Designer.cs`. Include email, metadata, image alt text, and ARIA text when user-facing. Runtime failures localize returned keys at presentation boundary.
 
 Theme registries live under `Web/Theme/`; token registries are static, `ShopTheme` is an instance. Prefer most specific color class: `mud-error-text` for text, not whole-surface theme class. New typography structure such as font family or line height requires resolved design choice.
 

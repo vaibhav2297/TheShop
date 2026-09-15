@@ -23,12 +23,15 @@ public abstract class E2ETestBase(PlaywrightFixture playwright) : IAsyncLifetime
     /// <summary>Storage-state file to preload (set by authenticated journeys); null = anonymous.</summary>
     protected virtual string? StorageStatePath => null;
 
+    /// <summary>Browser locale for the current journey; null uses Playwright's default.</summary>
+    protected virtual string? Locale => null;
+
     public virtual async ValueTask InitializeAsync()
     {
         Assert.SkipUnless(E2EEnvironment.IsAvailable,
             "E2E environment not running — execute tests/TheShop.E2E.Tests/tools/start-e2e-env.ps1 first.");
 
-        Context = await ShopBrowser.NewContextAsync(Playwright.Browser, StorageStatePath);
+        Context = await ShopBrowser.NewContextAsync(Playwright.Browser, StorageStatePath, Locale);
         await Context.Tracing.StartAsync(new() { Screenshots = true, Snapshots = true });
         Page = await Context.NewPageAsync();
     }
