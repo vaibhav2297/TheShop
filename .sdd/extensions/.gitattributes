@@ -1,2 +1,0 @@
-# Package identity includes exact bytes. Git must not normalize vendor sources or wrappers.
-packages/** -text
