@@ -1,235 +1,127 @@
 ---
 name: theshop-execute
-description: "Implement four layers in one context with plan, scope/build gates, migration, Figma parity, and ledger. Explicit alternative to {{command:theshop-implement}}; no subagents."
+description: Implement one resolved feature plan in a single session, layer by layer, with scoped build gates and no sub-agents.
+argument-hint: <feature-name>
+disable-model-invocation: true
 ---
 
-# {{command:theshop-execute}} — single-agent implement (merge test bed)
+# Execute Feature
 
-Execute `{{command:theshop-implement}}` contract alone: four layers, same gates and report, one context, no subagents. Preserve behavior equivalence for A/B comparison.
+Implement `.specs/{feature}/plan.md` in one session.
 
-## Scope
+Order: **Domain → Application → Infrastructure → Web → integration**.
 
-Include required implementation tests under project rule 6; separate Test stage still owns full acceptance coverage. XML documentation remains manually invoked through `{{command:theshop-document}}`.
+No sub-agents. Do not split layers across sessions.
 
----
+## Input
 
-## Inputs
+Require one safe feature folder name: no separators or `..`.
 
-`{feature}` = `{arguments}`. If empty, stop and ask:
+Require:
 
-> "Please provide a feature name. Usage: `{{command:theshop-execute}} <feature-name>` — it must match an existing plan at `.specs/{feature}/plan.md`."
+- `.specs/{feature}/spec.md`
+- `.specs/{feature}/plan.md`
 
----
+Load `$theshop-constitution` once. Read core rules first; load routed references only when their layer starts.
 
-## Pre-flight (in order; failure halts)
+Read the plan once. Build a phase checklist from its Development Plan.
 
-1. **Plan exists.** `.specs/{feature}/plan.md` missing → halt: "No plan found. Run `{{command:theshop-plan}} {feature}` first."
-2. **Plan resolved (soft gate).** Read the plan's Status footer and Section 11. Status `Draft` or any unresolved `❓ Open question` → warn: "Plan isn't resolved (Status: Draft / {N} open question(s)). Run `{{command:theshop-resolve}} {feature}`, or reply `proceed` to build on logged assumptions." Proceed only on explicit go-ahead; record the waiver in `status.md` (see Tracker). Accepted/mitigated `⚠️ Risk` items don't block.
-3. **Clean baseline build.** `dotnet build TheShop.slnx --nologo`. Red → halt: fix the existing build first.
-4. **Working tree note.** `git status --short`. Dirty → note it at the top of your output. Not a gate.
+## Pre-flight
 
----
+1. Inspect branch and working tree. Dirty state is informational; preserve unrelated changes.
+2. Run:
+   ```powershell
+   pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 plan -Feature {feature}
+   ```
+3. If plan is not `Resolved`, show violations. Continue only after fix or explicit `proceed`; record a waiver.
+4. Run:
+   ```powershell
+   dotnet build TheShop.slnx --nologo
+   ```
+5. Red baseline: halt. Do not implement over an unexplained broken solution.
 
-## Required context
+## Phase loop
 
-Load shared sources once per context; execution contract governs necessary rereads.
+For each planned layer:
 
-- **Read `.specs/{feature}/plan.md` in full, once.** Each phase below names its sections; don't re-read.
-- **Load `theshop-constitution` now:** `SKILL.md` + `references/rules/architecture-core.md`. On any conflict, **the skill wins** over this file.
-- **Load the remaining references lazily, at their phase, each at most once:**
+1. Re-read only that phase and relevant constitution reference.
+2. Implement only its listed tasks and necessary same-layer support.
+3. Run the narrowest relevant build.
+4. Run scope gate:
+   ```powershell
+   pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 scope -Phase {domain|application|infrastructure|web} -Files "{changed-files}"
+   ```
+5. Fix focused failures. Maximum two attempts.
+6. Record completed tasks, files, build, scope result, and deviations.
+7. Continue only when green.
 
-| Phase | Load |
-|---|---|
-| 1 Domain | `examples/domain-entity.md` |
-| 2 Application | `rules/architecture-patterns.md`, `examples/application-handler.md` |
-| 3 Infrastructure | `examples/infrastructure-repository.md`; `rules/architecture-admin.md` if admin tables/RLS roles |
-| 4 Web | `rules/design-theme.md`, `rules/design-components.md`, `rules/design-strings.md`, `examples/web-page.md`, `examples/web-component.md`; `rules/design-styles.md` if CSS/SCSS; `rules/architecture-admin.md` if admin UI (skip if already loaded) |
+If a later phase exposes an upstream gap, reopen the owning phase once. Re-run its build and scope gate before returning. If still unclear or red, halt; do not invent architecture.
 
-Never load `rules/documentation.md` (documenter's job) or `design-theme-setup.md`.
+## Layer contracts
 
-- **Orient with the graph, per phase:** if `graphify-out/graph.json` exists, `graphify query "..."` scoped to that layer + feature; `Read` only surfaced files. `Glob` the layer folder only as fallback. Reuse and extend existing types — never duplicate.
+### Domain
 
----
+- Pure business model: entities, value objects, enums, domain rules.
+- No UI, persistence, transport, or framework leakage.
+- Preserve invariants and existing aggregate conventions.
 
-## Gates (apply to every phase)
+### Application
 
-**Build gate.** End each phase with `dotnet build src/TheShop.{Layer}/TheShop.{Layer}.csproj --nologo`. Red → fix and rebuild. Same phase still red after **2 focused fix attempts** → halt, Template C. Green → `graphify update .` (AST-only, non-fatal; skip silently if unavailable).
+- Commands, queries, handlers, DTOs, validators, mappings, interfaces.
+- Depend inward only.
+- User-visible strings use `.resx`; no hardcoded UI/error text.
+- Contract changes must match the plan and downstream consumers.
 
-**Scope gate.** Snapshot `git status --porcelain --untracked-files=all` before each phase; diff after it to get the phase's newly changed files (`.specs/` and `tests/` exempt). Then:
+### Infrastructure
 
-```bash
-pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 scope -Phase {domain|application|infra|web} -Files {comma-separated}
-```
+- Implement Application contracts.
+- Follow existing Supabase/Postgres patterns.
+- Preserve tenant isolation and RLS.
+- Never run destructive DDL, reset data, or rewrite migration history without explicit confirmation.
+- Migration changes must be additive and reversible where practical.
 
-Exit 1 → you misplaced a file. Relocate it to the correct layer **once** and re-run the gate; still failing → halt, Template C. (Sub-agents had to hard-halt here; you may fix your own placement, once.)
+### Web
 
-**Reopen rule:** upstream gap discovered later requires explicit reopen of owning phase. Change there, rebuild that layer, run its scope gate, and record reopen. Never bend downstream code or silently mix layers.
-
-**Ask, don't invent.** Anything vague, contradictory, or missing in the plan → stop and ask the user (Template B). Every type, handler, table, and page must trace to a plan line — nothing "for completeness."
-
----
-
-## Phase 1 — Domain (`src/TheShop.Domain/` only)
-
-Plan sections: **4** (entities/VOs), **5** (domain-relevant decisions), **9** (domain exceptions + MessageKeys).
-
-Rules:
-- Zero dependencies: no Supabase/MudBlazor/Stripe/JSON usings; the Domain csproj references nothing.
-- No Application concerns: no handlers, validators, DTOs, `Result<T>`.
-- Invariants live **inside** entities; violations throw `DomainException` subtypes carrying `MessageKey = nameof(Strings.X)`.
-- Extend existing entities/VOs in place; inherit from the existing `DomainException` base.
-
-On green build, record the **Public API produced** block (exact signatures — entities, VOs, exceptions) for the report and as the contract Phase 2 builds against.
-
-## Phase 2 — Application (`src/TheShop.Application/` + resx exception)
-
-Plan sections: **3** (flow), **4** (DTOs), **6** (journeys → handlers), **7 Phase 2** (the explicit list), **9** (validators + error-key table).
-
-Rules:
-- No external SDKs, no `Microsoft.AspNetCore.*`. Depends on Domain only — build against Phase 1's exact API.
-- Declare repository/service interfaces in `Common/Interfaces/`; Phase 3 implements them.
-- Reuse cross-cutting types (`Result<T>`, `ValidationBehavior<,>`, `ICurrentUserService`) — never re-declare.
-- New pipeline behaviors/services → register in `src/TheShop.Application/DependencyInjection.cs`; otherwise leave it alone.
-- **Strings (the one out-of-layer write):** every referenced `nameof(Strings.X)` gets a key in `src/TheShop.Web/Resources/Strings.resx` (English from Section 9) **and** `Strings.fr.resx` (real French, or `[TODO] {English}` — the literal `[TODO]` is what the review localization gate scans for). Touch only `.resx` files there; **never** `Strings.Designer.cs` (auto-generated).
-
-On green build, record the **Interfaces produced** and **DTOs and Commands produced** blocks.
-
-## Phase 3 — Infrastructure (`src/TheShop.Infrastructure/` + Supabase MCP)
-
-Plan sections: **4** (tables), **7 Phase 3**, **10** (schema + RLS — the migration source).
-
-Database first:
-1. `list_tables` + `list_migrations` — see what exists. Tables already correct → apply deltas only. Shape mismatch on a populated table → halt and confirm with the user.
-2. Destructive DDL (`DROP TABLE`, dropping NOT NULL on populated columns, …) → surface and get confirmation **before** applying.
-3. `apply_migration` with a snake_case name and the full Section 10 SQL: tables, indexes, `ENABLE ROW LEVEL SECURITY`, every policy. **Every new table needs RLS + ≥1 policy** — the plan omitting policies is a halt-and-surface, not a shrug. RLS is the only real security boundary (`architecture-admin.md`).
-4. `get_advisors` (lint) after; report new warnings.
-
-Code rules:
-- Records/mappers/repositories follow the canonical trio (`internal sealed` records); match the shape of existing repositories.
-- No business logic in repositories — rules live on Domain entities. No SDK types (`Supabase.Client`, `Stripe.*`, `Resend.*`) on public surfaces.
-- Implement Phase 2's interfaces exactly; an interface that looks wrong → **reopen Phase 2**, don't edit it from here.
-- One DI registration per implementation in `src/TheShop.Infrastructure/DependencyInjection.cs`, matching existing lifetimes/style.
-
-## Phase 4 — Web (`src/TheShop.Web/` only)
-
-Plan sections: **6**, **7 Phase 4** (pages/components/state/routes list), **9** (error keys → `Snackbar`/`MudAlert`), plus **Figma references** — non-negotiable; missing → halt.
-
-Figma first (never build UI from imagination):
-1. Per plan node ID: `figma_get_component_for_development` (`_deep` for nested).
-2. Once: `figma_get_variables` + `figma_get_text_styles`. Map every token: color variable → `Color="Color.Primary"` when semantics match, else `mud-*` class, else `ShopColors.X` (last resort, commented); text style → `Typo.X` on `MudText`; spacing → utility classes (`pa-4`, `gap-2`). No `Shop*` equivalent → open question; don't mint tokens.
-3. Unfamiliar MudBlazor component → `{{tool:mudblazor.get_component_detail}}`.
-
-Rules:
-- Pages render and dispatch via `IMediator.Send` — no business logic in `@code`/code-behind, no Infrastructure SDK usings.
-- **MudBlazor can't meet a requirement → halt and ask** (Rule 14). Never silently hand-roll a UI primitive.
-- Reuse first: existing layouts, components, state stores. Append new `Routes.X` / `BusyKeys.X` constants before referencing them.
-- Every user-facing string → key in both `Strings.resx` and `Strings.fr.resx` (`[TODO]` placeholder rule as above); never `Strings.Designer.cs`.
-- The PostToolUse design-lint hook feeds violations back with rule numbers: fix each immediately; `design-rules: ignore` only with explicit user approval.
-
-Visual validation (mandatory): build Web → `figma_take_screenshot` on the reference node → compare layout/spacing/typography/color → fix in-scope mismatches and re-check. **Max 3 iterations**; still off → halt and report what blocks parity. Then run `references/checklists/design.md` against your output.
-
----
+- Follow planned routes, component boundaries, resources, and Figma intent.
+- Reuse project components and MudBlazor conventions.
+- Do not invent design values when a design source exists.
+- Add stable `data-testid` hooks required by planned E2E journeys.
+- Keep business logic outside Razor components.
 
 ## Integration gate
 
-After Phase 4: `dotnet build TheShop.slnx --nologo`. Red despite green layers = cross-layer break (DI wiring, DTO drift). Diagnose, fix via **one** reopen of the owning phase (build + scope gate for it), and rebuild the solution. Still red → halt, Template C, quoting the solution errors. Then a final `graphify update .` as safety net.
+After all layers:
 
----
-
-## Tracker (full success only)
-
-Before updating tracker, follow `.sdd/skills/theshop-implement/references/implementation-tests.md` in single-context mode: author required tests, format only after all edits finish, run build/design/manifest/compile checks and targeted tests, and record observed member coverage and test counts. No delegation. No Done state before these checks pass.
-
-Update `.specs/{feature}/status.md` **Implement** row: State `Done`; Gate `✅ scope + build gates pass (single-agent)` — or `⚠️ waived: plan Draft, {N} open question(s)` if the user proceeded past Pre-flight 2; Evidence = one mechanical line (e.g. `4 layers built · migration add_x · scope clean · single-agent run`); today's date. Refresh **Last updated**; set **Next step** to `{{command:theshop-test}} {feature}`. Missing `status.md` → create from the `theshop-spec` template first. Never touch the tracker on a halted run.
-
----
-
-## Final output — one template, verbatim, no extra prose
-
-### Template A — Full success
-
-```markdown
-# Implementation report — {feature} (single-agent run)
-
-## Phases run
-
-| Phase | Status |
-|---|---|
-| 1. Domain | ✅ |
-| 2. Application | ✅ |
-| 3. Infrastructure | ✅ |
-| 4. Web | ✅ |
-| Format | {observed formatter and post-format build result} |
-
-## Files changed
-{Per layer, cross-checked against `git diff --name-only`.}
-
-## API surface produced
-{The Domain public-API, Interfaces, and DTOs/Commands blocks recorded per phase.}
-
-## Migrations applied
-{Name, tables, indexes, RLS policies, advisor warnings. "None." if none.}
-
-## Visual validation
-{Figma parity per page/component, iterations used.}
-
-## Reopens
-{Any upstream phase reopened mid-run, with reason. "None." if none.}
-
-## Build status
-- `dotnet build TheShop.slnx` — {observed exit code, warning count, error count, and evidence path}.
-
-## Implementation tests
-
-{Required-member coverage, manifest/discovered/passed/failed/skipped counts, and evidence paths. Remaining browser/manual proof stays explicit.}
-
-## Open items
-{Ambiguities you flagged. "None." if none.}
-
-## Next steps
-1. Formatting and post-format verification must pass before reporting completion.
-2. `{{command:theshop-test}} {feature}` → 3. `{{command:theshop-e2e}} {feature}` (user-facing) → 4. `{{command:theshop-review}} {feature}` → 5. `{{command:theshop-document}}` when final.
+```powershell
+dotnet build TheShop.slnx --nologo
 ```
 
-### Template B — Halted on open question
+If red, assign failure to one owning phase and reopen it once. Re-run that phase gates, then the solution build. Still red: halt.
 
-```markdown
-# Implementation report — {feature} (single-agent run)
+Do not write or run feature tests here; `$theshop-test` owns them.
 
-## Phases run
-{Table — halting phase ⛔, later phases "Not started".}
+## Tracker
 
-## Halt reason
-**Phase {N} stopped on a clarifying question:**
-> {The question.}
+Only after full success, update `.specs/{feature}/status.md`:
 
-## What I'm not doing
-- Later phases untouched; no code beyond the completed phases.
+- `Implement`: `Done`
+- Gate: `✅ solution build + layer scope gates`
+- Evidence: compact phase/build summary; include any waiver
+- Date: today
+- Refresh `Last updated`
+- Next: `$theshop-test {feature}`
 
-## Next step
-Answer, then re-invoke `{{command:theshop-execute}} {feature}` — completed phases are preserved on disk; the run continues from the halted phase.
-```
+On halt, do not mark Done. Report completed phase, failure, evidence, and exact resume point.
 
-### Template C — Halted on hard failure
+## Output
 
-```markdown
-# Implementation report — {feature} (single-agent run)
+Return:
 
-## Phases run
-{Table — failing phase 🔴.}
+- phases completed
+- files changed by phase
+- build/scope results
+- deviations or waivers
+- unresolved blockers
+- next command
 
-## Halt reason
-**Phase {N} failed after the fix budget (2 attempts / 1 reopen):**
-- {One line per attempt: what broke.}
-
-## Evidence
-```
-{Error output from the last attempt.}
-```
-
-## What I'm not doing
-- Later phases untouched. No third retry — that's an infinite loop in disguise.
-
-## Next step
-Resolve manually, then re-invoke `{{command:theshop-execute}} {feature}` to continue from the failing phase.
-```
+Success ends with `$theshop-test {feature}`.

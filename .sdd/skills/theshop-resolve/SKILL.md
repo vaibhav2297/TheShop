@@ -1,84 +1,111 @@
 ---
 name: theshop-resolve
-description: "Resolve technical questions, assumptions, and risks in one feature plan; incorporate decisions and update status. Explicit invocation only."
+description: Resolve technical questions, assumptions, and risks in one feature plan, then gate it.
+argument-hint: <feature-name>
+disable-model-invocation: true
 ---
 
 # Resolve Plan
 
-Resolve one plan's Section 11 questions, risks, and assumptions with user. Incorporate decisions into body before marking `Resolved`. Explicit invocation only.
+Resolve open engineering decisions in `.specs/{feature}/plan.md`.
 
-## Inputs
+Stay at **HOW**, but keep a plan—not implementation.
 
-Require feature name matching `.specs/{feature_name}/plan.md`. Strip trailing `.md`; normalize lowercase-hyphenated name. Missing name: ask and wait; never guess from context. Missing plan: report path, direct user to `{{command:theshop-plan}} {name}`, and halt.
+## Input
 
-## Scope
+Require one safe feature folder name. Strip optional `.md`; normalize lowercase-hyphenated.
 
-Technical HOW: endpoints, schemas, concurrency, RLS, validators, library choices. No product/marketing rewrite or full implementation. Edit one plan only; target 3–6 pages by folding decisions into existing sections.
+Missing plan: halt; direct to `$theshop-plan {feature}`.
 
-Spec contradiction: flag and direct user to `{{command:theshop-clarify}}` or spec update, then re-plan. Never edit spec or related plans here.
+Read the full plan. Collect:
 
-## Procedure
+- Section 11 `❓ Open question`, `📌 Assumption`, and `⚠️ Risk`
+- unmatched inline `📌` markers
 
-### 1. Read plan and collect open items
+Map each item to its destination in Sections 1–10: model/schema, design, flow, validation, RLS, AC mapping, or phase task.
 
-Read full plan. Collect Section 11 `❓ Open question`, `⚠️ Risk`, and `📌 Assumption`, plus inline `📌 Assumption` markers absent from Section 11. Record destination sections:
+If no open item exists or footer is already `Resolved`, report and stop.
 
-- Data shape/entity/table: Sections 4 and 10.
-- Behavior/architecture: Section 5.
-- Failure/validation: Section 9.
-- Access/tenancy: Section 10 RLS.
-- Sequencing/new work: Section 7.
+## Resolve
 
-### 2. Short-circuit when no work remains
+Walk document order. Keep each decision separately answerable.
 
-Only an empty unresolved worklist with consistent `Resolved` footer can short-circuit. Accepted risks remain visible but are not unresolved work. Run plan/status gates before reporting no work. A `Resolved` footer with unanswered questions, unratified assumptions, or undispositioned risks is inconsistent: process those items. Empty worklist with Draft footer requires Step 5–6 reconciliation without inventing decisions.
+### Open question
 
-### 3. Resolve one decision at a time
+Must be answered. Offer a recommended engineering choice plus realistic alternatives and “use your judgment.”
 
-Follow document order; keep each decision separately answerable. Tightly related items may share a turn; never batch unrelated questions.
+### Assumption
 
-- **Open question:** ask focused technical question. Offer engineering default as *(Recommended)* when available, realistic alternatives, and “use your judgment.” Every question must be answered before `Resolved`.
-- **Assumption:** recommend logged default. Confirm ratifies it; override records user's value; “you decide” accepts default. Deferral to a later pass leaves it open.
-- **Risk:** ask for disposition. Mitigate: record concrete mitigation in relevant decision/task/constraint, then remove risk from Section 11. Accept: retain `⚠️ Risk — ✅ Accepted: {one-line rationale}` in Section 11. Accepted risks remain visible and do not block `Resolved`.
+Allow:
 
-Resolve deeper architectural gaps immediately; add newly exposed cheap sub-decisions to worklist. Pin vague answers to concrete engineering decisions before recording them.
+- confirm default
+- override
+- delegate: accept default
 
-### 4. Incorporate each decision before removing its marker
+All three resolve it.
 
-1. State settled decision in Sections 1–10; replace inline `📌`. Update Section 9 for rules, Sections 4/10 for schema, Section 7 for tasks, Section 6 for flows, and Section 8 when `AC → Task` mapping changes.
-2. Remove resolved item from Section 11, except relabeled Accepted risks.
-3. Never leave a decision only in Section 11; it indexes open items and accepted risks. Fold wording rather than append repetition.
+### Risk
 
-### 5. Recount and update footer
+Choose:
 
-Count remaining `❓` questions and unratified `📌` assumptions. Accepted risks do not count. Every remaining risk still requires Accepted disposition.
+- mitigate: add concrete mitigation to the owning section/task; remove risk line
+- accept: retain as `⚠️ Risk — ✅ Accepted: {rationale}`
 
-- Count zero: Section 11 reads `None — all questions resolved.` followed by any `✅ Accepted` risks. Use footer:
+Accepted risks stay visible but do not block Resolved.
 
-  ```
-  **Status:** Resolved · **Spec:** `.specs/{file_name}/spec.md` · **Created:** {original date} · **Resolved:** {today YYYY-MM-DD}
-  ```
+If a decision exposes a deeper architectural gap, resolve it before continuing.
 
-- Count above zero: retain `Draft`, open items, and report remaining count.
+## Fold decisions
 
-Preserve **Created** date; add/update **Resolved** only. Never mark `Resolved` with unanswered questions, unratified assumptions, or undispositioned risks.
+For every settled item:
 
-### 6. Save, gate, and update ledger
+1. Write the decision into relevant Sections 1–10.
+2. Update affected model, schema/RLS, validation, flow, AC mapping, or phase tasks.
+3. Remove its inline/Section 11 marker, except accepted risks.
 
-Save same plan path. Run mandatory exit gate:
+Never delete a decision without preserving it in the body. Fold; do not append bloat.
 
-```bash
-pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 plan -Feature {feature_name}
+If the plan cannot satisfy the spec, do not edit the spec. Halt and route to `$theshop-clarify`, then re-plan.
+
+## Status
+
+Count remaining open questions and unratified assumptions. Accepted risks do not count.
+
+Zero:
+
+- Section 11: `None — all questions resolved.`, followed by accepted risks
+- footer: `Status: Resolved`
+- preserve Created; add/update Resolved date
+
+Remaining:
+
+- keep `Status: Draft`
+- leave unresolved items visible
+
+Never mark Resolved while a `❓` or unratified `📌` remains.
+
+## Gate and tracker
+
+Run:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 plan -Feature {feature}
 ```
 
-Gate checks eleven sections, AC coverage, zero open questions/unratified assumptions for `Resolved`, and Accepted disposition for remaining risks. Exit 1: fix and rerun; never claim resolution while gate fails.
+Red: fix and rerun. Never resolve over a red gate.
 
-Update `.specs/{feature_name}/status.md` Plan row: `Resolved` only after resolution conditions hold, otherwise `Draft`; Gate `✅ plan-gate pass`; resolved count and accepted risks; today's date. Refresh **Last updated**. **Next step:** Implement only when fully resolved; otherwise another Resolve pass. Missing ledger: read `.sdd/skills/theshop-spec/references/status-tracker.md` and create from its template first.
+Update `status.md`:
 
-## Outputs and completion evidence
+- Plan `Resolved` only at zero open; otherwise `Draft`
+- Gate `✅ plan-gate pass`
+- Evidence: resolved/open/accepted-risk counts
+- Date today; refresh `Last updated`
+- Next: `$theshop-execute {feature}`
 
-Report resolved count, notable changes (especially schema/architecture), each risk disposition, new Status, and remaining items. State implementation unblocked only when fully resolved. Preserve decisions in body and passing gate evidence.
+If tracker is missing, create it from the `theshop-spec` status template.
 
-## Examples
+## Output
 
-Read `references/invocation-examples.md` only when interaction examples are needed.
+Report decisions, risk dispositions, remaining count, material schema/design changes, status, and next command.
+
+Edit this plan only.

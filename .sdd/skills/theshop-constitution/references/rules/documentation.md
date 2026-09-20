@@ -1,6 +1,6 @@
 # Documentation — XML Doc Comments
 
-> Implementation guide for Rule 30 from `SKILL.md`. Tells you **what** to document, **how** to phrase it, and **what not to do**. Loaded by `shop-code-documenter`. The rule statement itself lives in `SKILL.md` — this file does not restate it.
+> Implementation guide for Rule 30 from `SKILL.md`. Tells you **what** to document, **how** to phrase it, and **what not to do**. Loaded by `$theshop-document`. The rule statement itself lives in `SKILL.md` — this file does not restate it.
 
 The project default (per `CLAUDE.md`) is **no comments**. XML doc comments are the exception — they exist for tooling (IntelliSense, generated docs, MCP component pickers) and tell readers what the *contract* is, not what the code does line-by-line. Inline `//` comments remain discouraged.
 

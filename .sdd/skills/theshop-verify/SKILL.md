@@ -1,127 +1,123 @@
 ---
 name: theshop-verify
-description: "Deprecated user-facing smoke check: build, run, observe acceptance criteria without source edits. Backend-only features skipped; prefer {{command:theshop-e2e}}."
+description: Verify a feature's acceptance criteria against the running application without editing source.
+argument-hint: <feature-name>
+disable-model-invocation: true
 ---
 
-# {{command:theshop-verify}}
+# Verify Feature
 
-**Feature requested:** `{arguments}`
+Canonical live-behavior gate after `$theshop-test`.
 
-Build solution, launch Web app, and verify each spec acceptance criterion against live feature. Never edit source; run, observe, report. For backend-only features, report skip.
+Build, run, observe, report. Never edit source or tests. Failed behavior returns to `$theshop-execute`.
 
-## Scope
+## Input
 
-Legacy browser check between `{{command:theshop-test}}` and `{{command:theshop-review}}`. Prefer `{{command:theshop-e2e}}`; preserve this workflow for remaining callers.
+Require one safe feature folder name.
 
----
+Require `.specs/{feature}/spec.md`. Plan is optional but useful for routes, Web scope, and Figma intent.
 
-## Inputs
+The spec acceptance criteria are the oracle.
 
-If `{arguments}` is empty, stop and ask:
+## Applicability
 
-> "Please provide a feature name. Usage: `{{command:theshop-verify}} <feature-name>` — for example, `{{command:theshop-verify}} add-to-cart`. The feature must have a spec at `.specs/{feature_name}/spec.md`."
+User-facing when any applies:
 
-Wait for the reply. Do nothing else.
+- plan Web phase has tasks
+- plan has Figma references
+- feature changed `.razor` files under `src/TheShop.Web/`
 
----
+Backend-only: do not launch. Mark Verify `Skipped` with `⏭️ backend-only`; next `$theshop-ship {feature}` or optional `$theshop-document {feature}`.
 
-## Pre-flight checks
+## Pre-flight
 
-Run in order. A failure halts the gate.
-
-### Pre-flight 1 — Spec and plan must exist
-
-- `.specs/{arguments}/spec.md` must exist — it holds the **Acceptance Criteria** that are this gate's pass/fail oracle. If missing, halt:
-
-  > "I couldn't find a spec at `.specs/{arguments}/spec.md`. Verification checks the spec's acceptance criteria against the running app — create the spec first (`{{command:theshop-spec}} {arguments}`)."
-
-- `.specs/{arguments}/plan.md` should exist — it tells you whether the feature is user-facing and which routes/Figma nodes it introduces. If missing, warn but continue (you can still verify ACs by exploring the app).
-
-### Pre-flight 2 — Is this feature user-facing? (the gate's applicability test)
-
-This gate only applies to features a user can see and touch. Decide from the plan and the code:
-
-- **User-facing** if the plan has a **Phase 4 — Web** with tasks, **or** a **Figma references** block, **or** the feature shipped `.razor` pages/components under `src/TheShop.Web/`.
-- **Backend-only** if the plan touches only Domain / Application / Infrastructure (entities, handlers, repositories, schema) with no Web phase and no UI files.
-
-If the feature is **backend-only**, do not launch the app. Emit the **N/A verdict** (template below) and stop:
-
-> "`{arguments}` is backend-only — no Web-layer surface to drive. E2E verification doesn't apply; its unit/integration tests (`{{command:theshop-test}} {arguments}`) are the appropriate gate. ⏭️ Skipped."
-
-### Pre-flight 3 — Solution must build clean
-
-```bash
+```powershell
 dotnet build TheShop.slnx --nologo
 ```
 
-If the build is red, halt — there's nothing to run:
+Red: halt. Do not verify a build that cannot run.
 
-> "The solution doesn't build, so there's no app to verify. Fix the build errors (or run `{{command:theshop-test}} {arguments}` to see them in context), then re-invoke me."
+Extract:
 
----
+- §6 Acceptance Criteria: checklist
+- §3 Functional Behaviors: click paths
+- plan routes/Figma notes: navigation and intent
 
-## Step 1 — Assemble the smoke checklist from the spec
+Show compact checklist before driving.
 
-Use spec as behavior oracle. From `.specs/{arguments}/spec.md`, extract:
+## Driver
 
-- **Section 6 — Acceptance Criteria** → the pass/fail checklist. Each AC is one row in your verdict.
-- **Section 3 — Functional Behaviors** ("User does / User sees") → the concrete click-path for exercising each AC.
-- From `.specs/{arguments}/plan.md`: the **route(s)** the feature adds (Section 6/7) and the **Figma node intent notes** (Phase 4) → where in the app to look and what it should resemble.
+Use strongest available proof.
 
-Present this checklist to the user before launching, so scope is clear.
+### Tier 1 — existing automation
 
----
+If matching E2E journeys exist:
 
-## Step 2 — Launch the app
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File tests/TheShop.E2E.Tests/tools/start-e2e-env.ps1
+dotnet test tests/TheShop.E2E.Tests/TheShop.E2E.Tests.csproj --filter "Category=E2E&Feature={feature}" --logger "console;verbosity=normal" --nologo
+```
 
-Skip this step when Tier 1 applies — the E2E fixtures own app launch and teardown.
+Map `AC{n}_` tests to ACs. Skipped is not passed. Uncovered ACs fall to Tier 2.
 
-Start the Web app in the background (it does not return on its own):
+Use `$theshop-e2e {feature}` when journeys must be created or repaired; this skill does not edit them.
 
-```bash
+### Tier 2 — guided manual
+
+Launch:
+
+```powershell
 dotnet run --project src/TheShop.Web --launch-profile http
 ```
 
-- The `http` profile serves at **http://localhost:5218** (see `src/TheShop.Web/Properties/launchSettings.json`).
-- Poll readiness — `curl -s -o NUL -w "%{http_code}" http://localhost:5218` until it returns `200` (or time out at ~90s).
-- **Watch the run output for startup exceptions** (unhandled exception, DI failure, missing config). A startup crash is an automatic 🔴 — capture the exception text as evidence.
+Wait up to 90 seconds for `http://localhost:5218`. Startup exception or no readiness: fail.
 
-If the app never becomes ready, halt with 🔴 and quote the last lines of the run log.
+A raw HTTP 200 proves only that the WASM host serves. It does not prove rendered behavior.
 
----
+Give the user the URL and one click path per uncovered AC. Require explicit Pass/Fail. No answer = `⚠️ Unconfirmed`.
 
-## Step 3 — Drive the feature and check each AC
+## Teardown
 
-Verify each acceptance criterion against the running app. Use the strongest tier available:
+Always stop the app process tree started here and confirm port 5218 is free. Tier 1 fixtures own their app lifecycle. Leave no orphan.
 
-- **Tier 1 — Automated (preferred):** if `tests/TheShop.E2E.Tests` contains tests stamped `[Trait("Feature","{arguments}")]` (check with `dotnet test tests/TheShop.E2E.Tests --filter "Category=E2E&Feature={arguments}" --list-tests`), run the E2E environment script (`pwsh tests/TheShop.E2E.Tests/tools/start-e2e-env.ps1`), then `dotnet test tests/TheShop.E2E.Tests --filter "Category=E2E&Feature={arguments}"`. The E2E fixtures launch and tear down the app themselves — skip Step 2's manual launch when running this tier. Map each test's pass/fail to its AC by the `AC{n}_` prefix in the test name. Any **skipped** test means the environment didn't start — treat as a halt (Template C), never as a pass. ACs with no matching `AC{n}_` test fall through to Tier 2 for that AC only.
-- **Tier 2 — Guided manual (fallback, for ACs with no Tier 1 journey):** this is a Blazor **WebAssembly** app, so the page renders client-side — a raw `curl` of a route returns the host shell, **not** the rendered component. That confirms the app *serves* but cannot confirm a component *rendered or behaves*. So:
-  1. Confirm the app is serving (host page returns 200, no startup errors in the log).
-  2. Hand the user the URL and a per-AC click-path (derived from Functional Behaviors), and ask them to confirm each AC **Pass / Fail** in their browser. Present them as a tight checklist; wait for their answers.
-  3. Mark any AC the user did not explicitly confirm as **⚠️ Unconfirmed** (treated as not-passed for the verdict).
+## Verdict
 
-Report actual tier. Never label guided manual checks automated.
+For every AC record:
 
----
+- `✅ Pass`
+- `❌ Fail`
+- `⚠️ Unconfirmed`
 
-## Step 4 — Tear down
+Verdicts:
 
-Always stop the background app when verification ends (success, failure, or halt). Leave no orphaned `dotnet` process bound to the port. Confirm the port is free in your report.
+- `✅ VERIFIED`: build/start clean and every AC explicitly passed
+- `🔴 NOT VERIFIED`: any failure, skip, startup error, or unconfirmed AC
+- `⏭️ SKIPPED`: backend-only
+- `⛔ HALTED`: missing spec or red build before driving
 
----
+State the driver: Tier 1, Tier 2, or mixed. Never present user-confirmed proof as automated.
 
-## Update the status tracker
+## Tracker
 
-Updating the feature's tracking artifact is not a source edit, so it's allowed here. After the verdict settles, update `.specs/{arguments}/status.md`: set the **Verify** row to State `Verified` (Template A, ✅ VERIFIED), `Pending` (Template A, 🔴 NOT VERIFIED — leave it open for a re-run), or `Skipped` (Template B, backend-only); Gate `✅ E2E pass (Tier {1|2})` or `🔴 {N} AC failed/unconfirmed` or `⏭️ backend-only`; Evidence one line of the AC tally and driver tier (e.g. `12 pass · 0 fail · Tier 2 guided manual`) — **always name the tier; a Tier 2 pass is user-confirmed, not automated, and the ledger must say so**; today's date. Refresh **Last updated**; point **Next step** at `{{command:theshop-review}} {arguments}`. Leave the tracker untouched on Template C (halted before driving). Create `status.md` from the `theshop-spec` template first if it's missing.
+Update `.specs/{feature}/status.md` after a settled verdict:
 
-## Outputs and completion evidence
+- verified: Verify `Verified`; gate `✅ E2E pass (Tier {1|2|mixed})`
+- not verified: Verify `Pending`; gate `🔴 {n} failed/unconfirmed`
+- backend-only: Verify `Skipped`; gate `⏭️ backend-only`
+- Evidence: AC tally + driver tier
+- Date today; refresh `Last updated`
+- Next: optional `$theshop-document {feature}`, otherwise `$theshop-ship {feature}`
 
-Read `references/reports.md` before reporting. Use exact A/B/C template for verification, backend-only skip, or pre-drive halt. Preserve AC pass/fail/unconfirmed totals and actual driver tier. No surrounding prose.
+Do not update tracker when halted before driving.
 
-## Rules (enforce strictly)
+## Output
 
-1. **Never edit source code in this command.** You build, run, observe, and report. If an AC fails, that's a finding for the user to act on — fixes happen elsewhere (`{{command:theshop-implement}}`, `{{command:theshop-review}}`).
-2. **Always tear down the app.** No orphaned process, no port left bound — even when you halt.
-3. **Don't fake a pass.** A guided-manual check the user didn't confirm is ⚠️ Unconfirmed, never ✅. A `curl` 200 on the WASM host shell is not AC evidence — it only proves the app serves.
-4. **Backend-only features skip, they don't fail.** ⏭️ is the correct outcome there, not 🔴.
-5. **The spec's acceptance criteria are the oracle.** Don't invent pass/fail criteria of your own — verify what the spec says "done" means.
+Return only a compact verification report:
+
+- surface/routes
+- build and launch
+- driver tier
+- AC result table
+- teardown
+- verdict
+- exact next command

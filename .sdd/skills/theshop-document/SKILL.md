@@ -1,82 +1,93 @@
 ---
 name: theshop-document
-description: "Add XML documentation to current C# diff through shop-code-documenter. Explicit standalone step; preserves behavior."
+description: Optionally add XML documentation to changed C# APIs without behavioral edits.
+argument-hint: [feature-name]
+disable-model-invocation: true
 ---
 
-# {{command:theshop-document}}
+# Document Diff
 
-Invoke `shop-code-documenter` for current diff. Add XML documentation regardless of how that code was produced.
+Optional, single-session documentation pass. Never blocks shipping.
 
-## Inputs and scope
+Add or improve XML comments only. No sub-agents.
 
-Current diff; optional feature name in `{arguments}` controls ledger update. Manual step after `{{command:theshop-test}}`, `{{command:theshop-verify}}`, and `{{command:theshop-review}}`. `{{command:theshop-implement}}` never runs documenter. Document settled code.
+## Scope
 
----
+Inspect:
 
-## Procedure
-
-### 1. Pre-flight — diff must be non-empty
-
-Run:
-
-```bash
+```powershell
 git diff --name-only
 git diff --staged --name-only
 ```
 
-If both are empty, halt:
+No changed files: halt. If a commit range was explicitly supplied, use that range.
 
-> "Working tree is clean and no staged changes. I document recently changed code — make changes first (or specify a commit range) and re-invoke me."
+List the C# files in scope. Preserve unrelated edits.
 
-If a diff exists, briefly list the changed files (output of the two commands above) so the user can confirm scope before the documenter starts.
+Load `$theshop-constitution` documentation guidance.
 
-### 1.5 Snapshot the pre-documentation state (baseline for the exit gate)
+## Baseline
 
-Before invoking the documenter, save the current state of every changed file aside:
+Before editing:
 
-```bash
+```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 snapshot -Snapshot "$env:TEMP/theshop-doc-snapshot"
 ```
 
-Snapshot isolates documenter changes from existing diff.
+## Edit
 
-### 2. Invoke `shop-code-documenter`
+Document changed public/protected APIs where comments add value:
 
-Call the sub-agent via the delegation capability, `role: shop-code-documenter`. Prompt:
+- purpose and responsibility
+- parameters whose meaning is not obvious
+- return semantics
+- exceptions actually thrown
+- important invariants or side effects
 
-> "Add XML doc comments to the current diff (`git diff` + `git diff --staged`). Follow your standard protocol per `references/rules/documentation.md` and end with the structured summary."
+Use valid XML tags. Match repository style.
 
-Wait for it to complete.
+Do not:
 
-### 3. Run the doc-only gate (exit gate — mandatory)
+- change behavior, signatures, names, visibility, formatting, imports, or ordering
+- document private/self-evident members mechanically
+- invent guarantees
+- touch non-`.cs` files
+- add generated or boilerplate prose
 
-The documenter's defining promise is "no behavioral change." Verify it mechanically:
+## Gates
 
-```bash
+Run:
+
+```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 doc-only -Snapshot "$env:TEMP/theshop-doc-snapshot"
+dotnet build TheShop.slnx --nologo
 ```
 
-Compare against Step 1.5 snapshot. Only XML doc-comment (`///`) lines may change. Code edits, formatting, added/deleted files, and non-`.cs` changes fail.
+`doc-only` failure: stop. Show exact non-comment changes. Do not silently revert or bless them.
 
-- **Exit 0** → proceed to Step 4.
-- **Exit 1** → surface the violations **prominently above the documenter's report** and do not record the step as done. Do not fix or revert anything yourself — show the user exactly which lines changed beyond doc comments and let them decide (revert the stray lines, or keep them as a deliberate change outside this command's scope).
+Build failure: report it. Do not repair production behavior here.
 
-### 4. Relay the documenter's report
+## Tracker
 
-Return documenter's structured summary verbatim; no added commentary.
+Only when a feature name was supplied and both gates pass:
 
-If the documenter reported a build failure or halted on a question, surface that prominently above the summary:
+- Document: `Done`
+- Gate: `✅ doc-only gate + build pass`
+- Evidence: files/members documented
+- Date today; refresh `Last updated`
+- Next: `$theshop-ship {feature}`
 
-> "⚠️ Documenter halted — see report below for the reason."
+No feature name: do not touch a tracker.
 
-### 5. Update the status tracker (only if a feature name was given)
+## Output
 
-If `{arguments}` named a feature **and** the documenter completed successfully **and** the doc-only gate passed, update `.specs/{arguments}/status.md`: set the **Document** row to State `Done`, Gate `✅ doc-only gate pass`, Evidence one line (e.g. `{N} files documented · build ✅`), today's date; refresh **Last updated**, and set **Next step** to `— (pipeline complete)`. Create `status.md` from the template in the `theshop-spec` skill first if it's missing. If no feature name was given (the common standalone case), skip this step — the command stays diff-scoped and touches no tracker.
+Return:
 
----
+- files inspected
+- files/members documented
+- skipped items and reason
+- doc-only gate
+- build
+- next: `$theshop-ship {feature}` when tracked
 
-## Hard rules
-
-1. **Do not edit files yourself.** Delegate documentation; preserve Step 5's conditional ledger update.
-2. **Do not invoke any other agent.** Quality, security, tests, implementers — all out of scope. If the user wants those, they'll run the dedicated commands.
-3. **Do not loop the documenter.** One invocation per command run. If it fails, surface the failure; don't retry.
+Never claim success if any non-documentation delta was introduced.

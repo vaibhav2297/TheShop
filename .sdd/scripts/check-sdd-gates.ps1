@@ -37,12 +37,12 @@
 #                                     or carried waiver (the pre-ship readiness scan)
 #
 # Output: violations -> stdout, exit 1. Clean -> one line, exit 0.
-# Used by the /theshop.* commands as entry/exit gates; can also be run manually.
+# Used by the $theshop-* skills as entry/exit gates; can also be run manually.
 
 [CmdletBinding()]
 param(
     [Parameter(Mandatory, Position = 0)]
-    [ValidateSet('spec', 'plan', 'manifest', 'compile', 'e2e', 'scope', 'snapshot', 'doc-only', 'status', 'ship-ready', 'evidence')]
+    [ValidateSet('spec', 'plan', 'manifest', 'compile', 'e2e', 'scope', 'snapshot', 'doc-only', 'status', 'ship-ready')]
     [string]$Mode,
 
     [string]$Feature,
@@ -369,7 +369,7 @@ function Test-CompileGate([string]$F) {
 # covers 11 of 32 ACs stops being indistinguishable from one that covers them all.
 function Test-E2eGate([string]$F) {
     $raw = Read-Doc ".specs/$F/e2e-manifest.json"
-    if (-not $raw) { Fail ".specs/$F/e2e-manifest.json not found - theshop-e2e writes it before any journey runs"; return }
+    if (-not $raw) { Fail ".specs/$F/e2e-manifest.json not found - $theshop-e2e writes it before any journey runs"; return }
     try { $m = $raw | ConvertFrom-Json } catch { Fail "e2e-manifest.json is not valid JSON: $($_.Exception.Message)"; return }
 
     if ($m.feature -ne $F) { Fail "e2e-manifest 'feature' is '$($m.feature)' - expected '$F'" }
@@ -387,8 +387,8 @@ function Test-E2eGate([string]$F) {
         $fp = Join-Path $repoRoot $j.file
         if (-not (Test-Path -LiteralPath $fp)) { Fail "listed journey file missing on disk: $($j.file)"; continue }
         $fc = Get-Content -Raw -LiteralPath $fp
-        if ($fc -notmatch $catTraitRx) { Fail "$($j.file) has no [Trait(""Category"", ""E2E"")] stamp - theshop-e2e's filter will not find its tests" }
-        if ($fc -notmatch $ftTraitRx)  { Fail "$($j.file) has no [Trait(""Feature"", ""$F"")] stamp - theshop-e2e's filter will not find its tests" }
+        if ($fc -notmatch $catTraitRx) { Fail "$($j.file) has no [Trait(""Category"", ""E2E"")] stamp - $theshop-e2e's filter will not find its tests" }
+        if ($fc -notmatch $ftTraitRx)  { Fail "$($j.file) has no [Trait(""Feature"", ""$F"")] stamp - $theshop-e2e's filter will not find its tests" }
 
         $found = @([regex]::Matches($fc, $methodRx) | ForEach-Object { $_.Groups[1].Value })
         if ($j.tests -ne $found.Count) {
@@ -457,7 +457,7 @@ function Test-E2eGate([string]$F) {
     #    Web layer. This is the single largest cause of E2E failure, and it is knowable
     #    without starting a browser.
     #
-    #    The scan is repo-wide, but the VERDICT is feature-scoped. theshop-e2e deliberately
+    #    The scan is repo-wide, but the VERDICT is feature-scoped. $theshop-e2e deliberately
     #    leaves a journey on disk that reaches for a hook src/ does not define yet, then halts
     #    so the Web layer adds it. A repo-wide failure would let that one parked journey block
     #    every other feature's gate. So: this feature's own files fail, everyone else's warn.
@@ -474,7 +474,7 @@ function Test-E2eGate([string]$F) {
         }
 
         # Only per-feature test code can be warned about. Everything else under the E2E
-        # project - Auth/, Fixtures/, the shared sign-in flow - is harness that theshop-e2e
+        # project - Auth/, Fixtures/, the shared sign-in flow - is harness that $theshop-e2e
         # is forbidden to edit and that every feature depends on, so it always fails hard.
         #
         # Out of scope = a Journeys/ file this manifest does not list, or a Pages/ file none
@@ -636,7 +636,7 @@ function Test-StatusGate([string]$F) {
 # --------------------------------------------------------- ship-ready gate --
 # Scans the feature's status.md ledger and reports every stage that is NOT in a
 # ship-ready terminal state, plus any recorded gate failure (red circle) or carried
-# waiver. theshop-ship runs this as a warn-gate before committing: exit 0 means the
+# waiver. $theshop-ship runs this as a warn-gate before committing: exit 0 means the
 # whole pipeline is green and safe to land on dev; exit 1 lists what is still open so
 # the command can surface it and let the user ship anyway with a recorded waiver.
 function Test-ShipReadyGate([string]$F) {
@@ -653,8 +653,6 @@ function Test-ShipReadyGate([string]$F) {
         @{ Rx = '3\.\s*Implement'; Name = '3. Implement'; Ok = @('Done') }
         @{ Rx = '4\.\s*Test';      Name = '4. Test';      Ok = @('Passing') }
         @{ Rx = '5\.\s*Verify';    Name = '5. Verify';    Ok = @('Verified', 'Skipped') }
-        @{ Rx = '6\.\s*Review';    Name = '6. Review';    Ok = @('Approved') }
-        @{ Rx = '7\.\s*Document';  Name = '7. Document';  Ok = @('Done') }
     )
 
     foreach ($s in $stages) {
@@ -677,17 +675,7 @@ function Test-ShipReadyGate([string]$F) {
 }
 
 # ------------------------------------------------------------------ dispatch --
-if ($Feature -and $Feature -notmatch '\A[a-z0-9]+(-[a-z0-9]+)*\z') { throw 'Feature must be one lowercase kebab-case segment.' }
-if ($Mode -in @('evidence','ship-ready') -and $Feature) {
-    $evidencePath=Join-Path $repoRoot ".specs/$Feature/evidence/state.json"
-    if (Test-Path -LiteralPath $evidencePath) {
-        # Evidence management requires PowerShell 7. Existing spec/status fallback remains unchanged.
-        & pwsh -NoProfile -File (Join-Path $PSScriptRoot 'manage-sdd-evidence.ps1') -Action check -Feature $Feature
-        if ($LASTEXITCODE -ne 0) { Fail 'Feature evidence stale or unreadable. Revalidate before continuation or shipping.' }
-    } elseif ($Mode -eq 'evidence') { Fail 'No hash-backed feature evidence. Establish baseline through manage-sdd-evidence.ps1 record.' }
-}
 switch ($Mode) {
-    'evidence' { if (-not $Feature) { throw 'evidence mode requires -Feature' } }
     'spec'     { if (-not $Feature) { throw 'spec mode requires -Feature' };     Test-SpecGate $Feature }
     'plan'     { if (-not $Feature) { throw 'plan mode requires -Feature' };     Test-PlanGate $Feature }
     'manifest' { if (-not $Feature) { throw 'manifest mode requires -Feature' }; Test-ManifestGate $Feature }
@@ -698,23 +686,6 @@ switch ($Mode) {
     'scope'    { Test-ScopeGate }
     'snapshot' { Invoke-SnapshotMode }
     'doc-only' { Test-DocOnlyGate }
-}
-
-# Preserve original structural gates; add stage-specific proof validation.
-if ($Feature -and $Mode -in @('manifest','e2e')) {
-    . (Join-Path $PSScriptRoot 'Test-Proof.ps1')
-    $proofRaw = Read-Doc ".specs/$Feature/test-manifest.json"
-    if ($proofRaw) {
-        try {
-            $proofManifest = $proofRaw | ConvertFrom-Json
-            $browserManifest = $null
-            if ($Mode -eq 'e2e') {
-                $browserRaw = Read-Doc ".specs/$Feature/e2e-manifest.json"
-                if ($browserRaw) { $browserManifest = $browserRaw | ConvertFrom-Json }
-            }
-            foreach ($issue in @(Get-TestProofIssues $proofManifest $browserManifest)) { Fail $issue }
-        } catch { Fail "Acceptance proof validation failed: $($_.Exception.Message)" }
-    }
 }
 
 $label = $Mode + $(if ($Feature) { ":$Feature" } elseif ($Phase) { ":$Phase" } else { '' })
