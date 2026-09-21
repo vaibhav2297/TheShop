@@ -37,6 +37,13 @@ Style affects prose only. Preserve templates, headings, IDs, keywords, status va
 
 `theshop-clarify`, `theshop-constitution`, `theshop-document`, `theshop-e2e`, `theshop-execute`, `theshop-plan`, `theshop-resolve`, `theshop-ship`, `theshop-spec`, `theshop-start`, `theshop-test`, `theshop-verify`.
 
+## Agent adapters
+
+Codex: `.agents/skills/theshop-*/SKILL.md`. Claude: `.claude/skills/theshop-*/SKILL.md`.
+Adapters delegate to `.sdd/skills/`; workflow stays canonical. Pass arguments unchanged.
+Resolve references/templates from canonical skill folder. Adapter prose: Caveman Ultra.
+Preserve canonical invocation policy. Codex explicit-only policy lives in `agents/openai.yaml`.
+
 ## Hooks
 
 Both clients bind `.sdd/scripts/check-design-rules.ps1 -Changed` and `.sdd/scripts/format-on-stop.ps1` to `Stop`. Stop cannot match `Edit` or `Write`; both scripts no-op when no changed C# or Razor files exist.
