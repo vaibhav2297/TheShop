@@ -24,7 +24,10 @@ Read the full plan. Collect:
 
 Map each item to its destination in Sections 1–10: model/schema, design, flow, validation, RLS, AC mapping, or phase task.
 
-If no open item exists or footer is already `Resolved`, report and stop.
+Read [visual fidelity — Plan / Resolve](../theshop-plan/references/visual-fidelity.md).
+Validate `design-contract.json` with the visual plan gate before any early exit.
+Missing screenshots/mappings/fonts/responsive decisions/tolerances block.
+No open items/already `Resolved`: run plan gate before reporting completion.
 
 ## Resolve
 
@@ -110,4 +113,4 @@ If tracker is missing, create it from the `theshop-spec` status template.
 
 Report decisions, risk dispositions, remaining count, material schema/design changes, status, and next command.
 
-Edit this plan only.
+Edit only plan and design contract/context. Never change references to hide mismatches.

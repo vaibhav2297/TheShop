@@ -15,6 +15,12 @@ Canonical SDD instructions live in `.sdd/`. Root `AGENTS.md` and `CLAUDE.md` del
 
 Feature artifacts remain in `.specs/{feature}/`.
 
+UI features require the [visual fidelity contract](skills/theshop-plan/references/visual-fidelity.md).
+Plan captures Figma. Execute renders, compares, fixes. Test/E2E protects aligned baselines.
+Verify/Ship require fresh visual and behavioral proof. No new stage.
+Every plan needs `design-contract.json`: `figma` or `backend`. Existing features
+adopt on next Plan/Verify/Ship. Missing evidence fails.
+
 ## Artifact writing style
 
 Write SDD artifacts using the active session writing style.

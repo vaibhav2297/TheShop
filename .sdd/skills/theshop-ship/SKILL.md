@@ -23,6 +23,15 @@ Expected branch: `feature/{slug}`.
 
 ## Readiness
 
+Always run visual gate, even without a tracker:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 visual -Feature {slug}
+```
+
+Read [visual fidelity — Verify / Ship](../theshop-plan/references/visual-fidelity.md).
+Missing/stale/failing visuals block Ship. Generic `proceed` cannot waive visual gate.
+
 When `.specs/{slug}/status.md` exists:
 
 ```powershell
@@ -31,7 +40,7 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 s
 
 Exit 1: quote every violation. Continue only after fix or explicit `proceed`. Record `⚠️ waived: shipped with {n} open ledger item(s)`.
 
-No tracker: record `⏭️ no SDD tracker`; continue.
+No tracker: record `⏭️ no SDD tracker`; continue only after visual gate passes or declared backend skip.
 
 Check:
 

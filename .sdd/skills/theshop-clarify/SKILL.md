@@ -24,6 +24,10 @@ Read the full spec. Collect:
 
 Note which Sections 1–6 each item affects.
 
+UI work: read [visual fidelity — Spec / Clarify](../theshop-plan/references/visual-fidelity.md).
+Check frames/states/viewports and visual ACs before early exit.
+Missing responsive/state behavior: product questions.
+
 If nothing is open or footer is already `Confirmed`, report and stop.
 
 ## Resolve

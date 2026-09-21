@@ -164,6 +164,10 @@ satisfies the frozen interface · no Infrastructure type leaks inward.
 
 ### Step 5 — Web
 
+**Design contract:** `.specs/{feature}/design-contract.json` — frame/state/viewport/AC mapping,
+captured context and reference hashes, token/component mappings, critical regions and tolerances.
+Backend-only plans declare mode `backend` with reason; omit UI tasks.
+
 **Depends on:** Application contract checkpoint. Infrastructure work completes first in same session.
 
 **Figma references** *(required when this step touches UI — re-fetched by `$theshop-execute` at
@@ -182,6 +186,9 @@ implementation time; omit only for backend-only features and log the gap in Sect
 **Completion gate:** matches Figma nodes · MudBlazor-only, no hardcoded strings or design tokens
 (constitution rules 2–5) · consumes only frozen contracts · unauthorized users see the specified
 denied experience.
+
+**Visual evidence:** fresh browser captures, measured review, overlays/diffs and passing
+`visual/alignment.json`. Include capture/compare/correct tasks and E2E regression coverage.
 
 ### Step 6 — Integration & pipeline
 

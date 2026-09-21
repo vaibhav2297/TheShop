@@ -15,9 +15,18 @@ Build, run, observe, report. Never edit source or tests. Failed behavior returns
 
 Require one safe feature folder name.
 
-Require `.specs/{feature}/spec.md`. Plan is optional but useful for routes, Web scope, and Figma intent.
+Require `.specs/{feature}/spec.md` and `plan.md`: ACs, routes, Web scope, design mapping.
 
-The spec acceptance criteria are the oracle.
+Behavior oracle: spec ACs. Visual oracle: pinned design contract.
+Read [visual fidelity — Verify / Ship](../theshop-plan/references/visual-fidelity.md).
+Require `design-contract.json`. Missing: return to Plan. Run:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 visual -Feature {feature}
+```
+
+Red visual gate blocks VERIFIED across all tiers. Report failures.
+Production fixes: Execute. Missing browser proof: E2E. Never edit source/tests here.
 
 ## Applicability
 
@@ -60,7 +69,8 @@ Prefer a fresh matching E2E report. If both `e2e-manifest.json` and `e2e-report.
 - unit ACs cite matching passing evidence from `test-manifest.json` / Test row
 - report commit matches `HEAD`, and report date is today
 
-Valid report is Tier 1 proof. Map its `AC{n}_` evidence to ACs. Do not start environment or rerun journeys.
+Valid report proves Tier 1 behavior only. Require fresh visual pass.
+Map its `AC{n}_` evidence to ACs. Do not rerun unchanged valid journeys.
 
 Rerun matching journeys only when report or manifest is missing, stale, inconsistent, failed, skipped, or no longer matches current commit/spec. Then:
 
@@ -101,7 +111,7 @@ For every AC record:
 
 Verdicts:
 
-- `✅ VERIFIED`: build/start clean and every AC explicitly passed
+- `✅ VERIFIED`: build/start clean, every AC explicitly passed and visual gate passed (or declared backend skip)
 - `🔴 NOT VERIFIED`: any failure, skip, startup error, or unconfirmed AC
 - `⏭️ SKIPPED`: backend-only
 - `⛔ HALTED`: missing spec or red build before driving

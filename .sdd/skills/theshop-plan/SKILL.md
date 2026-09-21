@@ -33,7 +33,10 @@ Load `$theshop-constitution`. Read only routed references matching planned layer
 
 Inspect existing code only for reuse, naming, and layer placement. Do not invent types, routes, or UI primitives.
 
-UI work: use supplied Figma reference. No reference: ask once for URL/node ID or `skip`. `skip`: record missing design reference in Section 11. Backend work: skip Figma.
+Read [visual fidelity](references/visual-fidelity.md). Create `design-contract.json` for this feature.
+UI: fetch exact nodes, context, screenshots, asset/token mappings. Pin hashes.
+Missing reference/access: blocking Section 11 question. `skip` never proves fidelity.
+Backend-only: declare `{"version":1,"feature":"{slug}","mode":"backend","reason":"{concrete reason}"}`; no Figma fetch.
 
 ## Write
 
@@ -51,6 +54,7 @@ Required:
 - Section 9 covers every spec rule and edge case.
 - Section 10 uses literal runnable SQL and RLS when persistence changes.
 - Section 11 uses `❓`, `⚠️`, `📌`.
+- Web tasks include capture/compare/correct and visual regression coverage. Link design contract in Section 7.
 - Remove template guidance before save.
 
 Existing `plan.md`: ask overwrite or cancel. Never create versioned plan file.
