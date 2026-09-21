@@ -79,6 +79,10 @@
 
 ## Imagery
 
+- [ ] Pinned design contract covers every target frame, state and viewport?
+- [ ] Browser captures compared against Figma with measured review and region diffs?
+- [ ] Visual gate passes on current source, contract, captures and aligned regression baseline?
+
 - [ ] WebP format used for raster images?
 - [ ] `width`, `height`, and `loading="lazy"` attributes set?
 - [ ] Alt text comes from resources (`@string.Format(Strings.X, ...)`) — never hardcoded?

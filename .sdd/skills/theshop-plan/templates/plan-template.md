@@ -1,14 +1,14 @@
 # Feature Implementation Plan Template
 
-> Canonical plan template, read by `{{command:theshop-plan}}` and enforced by `check-sdd-gates.ps1 plan`:
-> eleven numbered sections with the required title keywords, Section 7 as an agent-aligned
-> execution plan with sequential `TASK-nnn` ids (one step per implementation agent, a
-> contract-freeze gate before the parallel Infra ‖ Web steps, per-step completion gates, a
+> Canonical plan template, read by `$theshop-plan` and enforced by `check-sdd-gates.ps1 plan`:
+> eleven numbered sections with the required title keywords, Section 7 as an single-session layered
+> execution plan with sequential `TASK-nnn` ids (one step per layer, a
+> Application-contract checkpoint before Infrastructure then Web, per-step completion gates, a
 > deviation procedure), Section 8 mapping every spec AC to TASK ids, Section 11's ❓/⚠️/📌
 > vocabulary, and the Status footer.
 >
 > The plan is a **decision document with executable artifacts**: real SQL, real `Strings.resx`
-> keys, real Figma node ids — things downstream agents can act on literally. Keep it 3–6 pages;
+> keys, real Figma node ids — things `$theshop-execute` can act on literally. Keep it 3–6 pages;
 > past that, the feature is probably two features.
 >
 > Replace placeholders in `{curly braces}`. Delete guidance blockquotes when generating a real plan.
@@ -16,6 +16,8 @@
 ---
 
 # Implementation Plan — {Feature Title}
+
+**Feature:** `{slug}`
 
 > Companion to `.specs/{file_name}/spec.md`. This plan is technical (HOW); the spec is
 > non-technical (WHAT/WHY). Read the spec first.
@@ -111,37 +113,38 @@ feedback.}
 
 ## 7. Development Plan
 
-{Agent-aligned execution plan. **Task-id rules:** ids are continuous across the whole plan
+{Single-session layered execution plan for `$theshop-execute`. **Task-id rules:** ids are continuous across the whole plan
 (`TASK-001`, `TASK-002`, …), never reset per step, and stay stable once the plan is Resolved.
 Removed ids are not reused; newly discovered tasks take the next free id. One id = one committable
 outcome. Skip any step whose layer has no impact — say so in one line, don't leave empty scaffolding.}
 
-### Step 1 — Domain (`shop-domain-implementer`)
+### Step 1 — Domain
 
 **Depends on:** resolved plan.
 
 - [ ] **TASK-001** — {Create/extend `{Entity}` in `TheShop.Domain/Entities/` with {invariants}.}
 - [ ] **TASK-002** — {Create `{DomainException}` in `TheShop.Domain/Exceptions/`.}
-- [ ] **TASK-003** — {Domain unit tests for invariants (`{Entity}Tests.cs`), owned by `shop-test-writer` during implementation test verification. Domain implementer supplies literal API only.}
+- [ ] **TASK-003** — {Domain unit tests for invariants (`{Entity}Tests.cs`).}
 
-**Completion gate:** Domain builds · no outer-layer type leaked into Domain · public API reported for Application. Test specialist covers invariants before overall Implement completion.
+**Completion gate:** Domain builds · invariants covered by tests · no outer-layer type leaked into
+Domain · public API reported for the Application step.
 
-### Step 2 — Application (`shop-application-implementer`)
+### Step 2 — Application
 
 **Depends on:** Step 1's reported Domain API.
 
 - [ ] **TASK-004** — {`{Feature}Command` + handler + validator in `Features/{Feature}/Commands/{Command}/`.}
 - [ ] **TASK-005** — {`I{X}Repository` in `Common/Interfaces/`; DTOs + mapper under the feature folder.}
 - [ ] **TASK-006** — {New keys in `Strings.resx` (see Section 9) mirrored in `Strings.fr.resx` with `[TODO]` placeholders.}
-- [ ] **TASK-007** — {Application unit tests (`{Feature}HandlerTests.cs`), owned by `shop-test-writer` before Implement completion.}
+- [ ] **TASK-007** — {Application unit tests (`{Feature}HandlerTests.cs`).}
 
 **Completion gate:** command/query folders follow the feature-folder convention · handler translates
-every Section 9 outcome · all contracts consumed by Infra/Web are written and compiling.
+every Section 9 outcome · all contracts consumed by later layers are written and compiling.
 
-### Step 3 — Contract freeze
+### Step 3 — Application contract checkpoint
 
-{Freeze every contract Infrastructure or Web consumes. Infra and Web may start only when the rows
-they depend on are `Stable`. A frozen contract changes only via the deviation procedure below.}
+{Confirm every contract Infrastructure or Web consumes. Later layers may start only when the rows
+they depend on are `Stable`. A stable contract changes only via the deviation procedure below.}
 
 | Contract | Owner | Consumers | Status |
 |---|---|---|---|
@@ -149,9 +152,9 @@ they depend on are `Stable`. A frozen contract changes only via the deviation pr
 | `I{X}Repository` | Application | Infrastructure | Stable / Blocked |
 | `{X}Dto` shape | Application | Web | Stable / Blocked |
 
-### Step 4 — Infrastructure (`shop-infra-implementer`) — runs in parallel with Step 5
+### Step 4 — Infrastructure
 
-**Depends on:** contract freeze (`I{X}Repository` stable).
+**Depends on:** Application contract checkpoint (`I{X}Repository` stable).
 
 - [ ] **TASK-008** — {Migration: tables + indexes + RLS policies from Section 10, applied via Supabase MCP.}
 - [ ] **TASK-009** — {`{X}Record` in `Persistence/Records/` + mapper in `Persistence/Mappers/`.}
@@ -161,11 +164,15 @@ they depend on are `Stable`. A frozen contract changes only via the deviation pr
 **Completion gate:** migration applies cleanly · RLS policies match Section 10 verbatim · repository
 satisfies the frozen interface · no Infrastructure type leaks inward.
 
-### Step 5 — Web (`shop-ui-implementer`) — runs in parallel with Step 4
+### Step 5 — Web
 
-**Depends on:** contract freeze (command/DTO shapes stable).
+**Design contract:** `.specs/{feature}/design-contract.json` — frame/state/viewport/AC mapping,
+captured context and reference hashes, token/component mappings, critical regions and tolerances.
+Backend-only plans declare mode `backend` with reason; omit UI tasks.
 
-**Figma references** *(required when this step touches UI — re-fetched by `shop-ui-implementer` at
+**Depends on:** Application contract checkpoint. Infrastructure work completes first in same session.
+
+**Figma references** *(required when this step touches UI — re-fetched by `$theshop-execute` at
 implementation time; omit only for backend-only features and log the gap in Section 11)*
 
 - **File:** {full Figma file URL}
@@ -175,23 +182,26 @@ implementation time; omit only for backend-only features and log the gap in Sect
 
 - [ ] **TASK-012** — {Page/component work in `Pages/{Area}/` or `Components/{Feature}/`, matching the nodes above.}
 - [ ] **TASK-013** — {Wire to `Mediator.Send`; handle every applicable UI state (loading/empty/validation/conflict/success/failure/unauthorized).}
-- [ ] **TASK-014** — {`Routes.{…}` constants, `BusyKeys.{…}`, consume resource keys added by Application from Section 9.}
-- [ ] **TASK-015** — {bUnit component tests, owned by `shop-test-writer` before Implement completion.}
+- [ ] **TASK-014** — {`Routes.{…}` constants, `BusyKeys.{…}`, resource strings from Section 9.}
+- [ ] **TASK-015** — {bUnit component tests.}
 
 **Completion gate:** matches Figma nodes · MudBlazor-only, no hardcoded strings or design tokens
 (constitution rules 2–5) · consumes only frozen contracts · unauthorized users see the specified
 denied experience.
+
+**Visual evidence:** fresh browser captures, measured review, overlays/diffs and passing
+`visual/alignment.json`. Include capture/compare/correct tasks and E2E regression coverage.
 
 ### Step 6 — Integration & pipeline
 
 **Depends on:** Steps 4 and 5 complete.
 
 - [ ] **TASK-016** — Cross-layer verification: solution builds, DI resolves, migrations applied, primary + failure flows work end-to-end.
-- [ ] **TASK-017** — Test specialists write and run required unit/component tests before Implement completion. Record actual counts, member coverage, and remaining AC proof. Follow with `{{command:theshop-test}} {feature}`, `{{command:theshop-e2e}} {feature}` for user-facing work, and `{{command:theshop-review}} {feature}` when invoked. Document stays a separate manual invocation; never schedule it automatically.
+- [ ] **TASK-017** — Run `$theshop-test {feature}` → `$theshop-verify {feature}` (user-facing only) → `$theshop-document` when needed.
 
 ### Deviation procedure
 
-{When an agent wants to diverge from this plan or a frozen contract must change:}
+{When `$theshop-execute` must diverge from this plan or a stable contract must change:}
 
 - **Accept** a deviation only if it preserves approved behavior and layer boundaries, aligns better
   with existing project conventions, and doesn't weaken authorization/integrity or expand scope.
@@ -229,8 +239,7 @@ denied experience.
 | `Strings.{Key}` | "{…}" |
 | `Strings.{Key}` | "{…}" |
 
-All keys mirrored in `Strings.fr.resx` (`[TODO]` placeholder acceptable for the first pass — the
-review step's French-completeness gate catches stragglers).
+All keys mirrored in `Strings.fr.resx`. Complete French localization before shipping.
 
 ## 10. Database Schema & RLS Policies
 
@@ -257,7 +266,7 @@ CREATE POLICY "{policy_name}" ON {table}
 
 ## 11. Open Questions, Risks & Assumptions
 
-{Each item carries one of three labels — `{{command:theshop-resolve}}` walks this list:}
+{Each item carries one of three labels — `$theshop-resolve` walks this list:}
 
 - **❓ Open question:** {the spec didn't say, and the answer materially affects the plan. Must be answered before implementation.}
 - **⚠️ Risk:** {could go wrong even with a correct implementation; name the mitigation and the TASK that owns it.}
@@ -266,4 +275,4 @@ CREATE POLICY "{policy_name}" ON {table}
 ---
 **Status:** Draft · **Spec:** `.specs/{file_name}/spec.md` · **Created:** {YYYY-MM-DD}
 
-<!-- Status lifecycle: "Draft" → "Resolved" once {{command:theshop-resolve}} settles every ❓ and ratifies every 📌 in Section 11 (accepted ⚠️ risks may remain, labeled). {{command:theshop-implement}} warns while the plan is still Draft. -->
+<!-- Status lifecycle: "Draft" → "Resolved" once $theshop-resolve settles every ❓ and ratifies every 📌 in Section 11 (accepted ⚠️ risks may remain, labeled). $theshop-execute warns while the plan is still Draft. -->

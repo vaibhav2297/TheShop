@@ -1,6 +1,6 @@
 # Feature Specification Template
 
-> Canonical spec template, read by `{{command:theshop-spec}}` and enforced by `check-sdd-gates.ps1 spec`:
+> Canonical spec template, read by `$theshop-spec` and enforced by `check-sdd-gates.ps1 spec`:
 > exactly six numbered sections with these exact titles, the **Scope** and **Actors & Access**
 > sub-sections inside Section 1, the **Business Rules** table inside Section 4, sequential FR/AC
 > ids, Given/When/Then acceptance criteria, the Assumptions & Open Questions appendix, and the
@@ -15,11 +15,13 @@
 
 # {Feature Title}
 
+**Feature:** `{slug}`
+
 ## 1. Problem Statement
 
-{State supplied user goal and supported problem facts. One sentence is sufficient when input gives
-only a goal. Never invent current tools, history, causes, losses, or business costs to fill this
-section. Omit unsupported backstory; ask only when missing information changes product scope.}
+{2–4 sentences in plain language: who has the problem, when it occurs, and why it matters. Frame it
+from the user's or business's perspective — not the system's. Name the user, the scenario, and the
+cost of leaving it unsolved.}
 
 **Solution (one line):** {A single sentence describing what the feature will do for the user. No
 mention of how it's built.}
@@ -128,11 +130,11 @@ restrictions, and at least one failure/edge scenario.}
 ## Assumptions & Open Questions
 
 {A working appendix — not a product section. It aggregates every inline `(Assumption: …)` marker
-from the body plus any question a reviewer should answer, so `{{command:theshop-clarify}}` has one list to
+from the body plus any question a reviewer should answer, so `$theshop-clarify` has one list to
 walk. As each item is resolved, fold the decision into the section above and delete it from here.
 When the list is empty, write "None — all assumptions confirmed."}
 
-- **📌 Assumption:** {A default you chose to fill a non-blocking gap.} → *Resolve via `{{command:theshop-clarify}}`.*
+- **📌 Assumption:** {A default you chose to fill a non-blocking gap.} → *Resolve via `$theshop-clarify`.*
 - **❓ Open question:** {Something genuinely undecided that a reviewer should answer before the plan stage.}
 
 > ⚠️ Blocking, load-bearing uncertainties do **not** belong here — those are asked before the spec
@@ -141,4 +143,4 @@ When the list is empty, write "None — all assumptions confirmed."}
 ---
 **Status:** Draft — {N} open assumption(s)   ·   **Created:** {YYYY-MM-DD}
 
-<!-- Status lifecycle: "Draft — N open assumption(s)" → "Confirmed" once {{command:theshop-clarify}} resolves them all (N = 0). -->
+<!-- Status lifecycle: "Draft — N open assumption(s)" → "Confirmed" once $theshop-clarify resolves them all (N = 0). -->

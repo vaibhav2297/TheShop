@@ -1,99 +1,82 @@
 ---
 name: theshop-spec
-description: "Create product-level feature spec and status ledger; resolve blocking questions, log cheap defaults. Accepts --desc. Explicit invocation only."
+description: Create product spec at .specs/{slug}/spec.md. Use after $theshop-start. Product WHAT/WHY only; no technical plan.
+argument-hint: <feature-name> [--desc <description>]
+disable-model-invocation: true
 ---
 
-# Create Spec
+# $theshop-spec
 
-Write product WHAT/WHY at `.specs/{feature_name}/spec.md`. Explicit invocation only; never auto-trigger.
+Input: `$ARGUMENTS`.
 
-Do not add UI choices merely to fill a template: capacity counters, field clearing, toggle semantics, navigation, and reload behavior need supplied requirements or explicit open assumptions. Confirmed supplied choices never confirm these additions. Omit unnecessary choices; retain required but unresolved choices as questions.
+Create `.specs/{slug}/spec.md`. Next: `$theshop-clarify {slug}`.
 
-## Inputs
+## Input
 
-```
-{{command:theshop-spec}} <feature-name> [--desc <description>]
-```
+Parse: `<feature-name> [--desc <description>]`.
 
-Before `--desc`: feature name. After it: free-text description; no quoting needed. Without `--desc`, use entire input as name. Empty description means absent.
+No name: ask. Stop.
 
-Missing name, including input starting with `--desc`: ask for a short feature name and optional description. Wait. Never infer name from context or create a generic template.
+Read [feature identity](../theshop-start/references/feature-identity.md).
+Run `feature_identity.py resolve`; preserve full ID as `{slug}`.
+New spec requires numbered Start branch. Tracked legacy specs stay valid. Title: readable feature name.
 
-Treat description as authoritative product input. Include stated requirements, scope, and behavior; never re-ask answered questions. Still classify remaining uncertainty in Step 2. Acknowledge technical direction separately and defer it to `{{command:theshop-plan}}`. Surface contradictions or multiple features before writing.
+`--desc` is product input. Use stated facts. Ignore technical design; send it to `$theshop-plan`.
 
 ## Scope
 
-Write for product, design, QA, and stakeholders without codebase knowledge. Include user actions/goals, business rules, visible outcomes, eligibility, time/quantity limits, messages, completion conditions, and user-experience edge cases.
+Product WHAT and WHY. No API, schema, library, component, deployment, or performance design.
 
-Exclude endpoints, request/response shapes, database schemas, libraries/frameworks, performance metrics, component names/CSS/markup, code organization/deployment/testing, and infrastructure failure modes. Rewrite technical passages from user viewpoint.
+Ask blocking product questions before writing. Blocking means answer changes feature identity, access, scope, or expensive decision.
 
-Use observable business terms: an item appears before the next user action, rather than an unmeasurable claim that the cart is fast. Every requirement and AC must be externally checkable. Cross-reference FR IDs when an AC's relationship is unclear.
+Cheap unknown: choose default. Mark `(Assumption: ...)` in body and appendix.
 
-## Procedure
+Check only applicable: actors/access, English/French, accessibility, scope boundaries.
 
-### 1. Normalize feature name
+UI work: read [visual fidelity — Spec / Clarify](../theshop-plan/references/visual-fidelity.md).
+Record frames, viewports, states, responsive behavior in existing sections.
+Add visual Given/When/Then ACs. Missing behavior: explicit product question.
 
-Use lowercase, hyphen-separated alphanumerics for folder name. Convert spaces/underscores to hyphens; strip special characters. `Add To Cart` becomes `add-to-cart`; `user_authentication` becomes `user-authentication`. Preserve user casing/spacing for title, or Title Case a slug.
+## Write
 
-### 2. Gather context and classify uncertainty
+Read `templates/spec-template.md`. Follow exactly.
 
-Read obviously relevant existing specs, README, or product documents. Ask focused WHAT/WHY questions when one or two details materially change the spec.
+Follow `.sdd/README.md` artifact writing style for SDD prose.
 
-- **Blocking:** answer changes feature identity/scope or is expensive to reverse. Stop and ask before writing. Never record a blocking choice as an assumption.
-- **Resolvable default:** sensible default exists and changing it is cheap. Mark `(Assumption: …)` inline and list it in **Assumptions & Open Questions** for `{{command:theshop-clarify}}`.
-- If a wrong answer invalidates the spec, ask. If it changes one line, assume and mark. When uncertain, ask.
+Required:
 
-Mark every non-blocking judgment inline and in appendix, including inferred current-state claims and causes. Never present guesses as facts.
+- Six numbered sections only.
+- Scope and Actors & Access in section 1.
+- Sequential `FR-n`, `RULE-n`, `AC-n`.
+- Business Rules in section 4.
+- Every AC: Given, when, then.
+- Assumptions appendix and Status footer.
+- Remove template guidance before save.
 
-Prefer omission over invented background. A user goal alone can fill Problem Statement; do not infer that users currently use paper, memory, spreadsheets, or a broken workflow. Preserve undefined lifecycle terms exactly: `session ends` does not mean browser close, refresh, logout, or timeout unless input says so. Put implementation interpretation in Plan questions. Confirmation of supplied choices never confirms added choices.
+Existing `spec.md`: ask overwrite or cancel. Never create versioned spec file.
 
-Consider every applicability dimension; include only relevant content:
+Overwrite: preserve old file in Git history. Mark Plan, Implement, Test, Verify, Document rows stale. Existing downstream files require regeneration.
 
-- Roles/access: distinguish guest, registered customer, and admin capabilities.
-- Localization: consider English and French for Canadian product/legal needs; record currency, tax wording, date/number differences.
-- Accessibility: record observable WCAG expectations, keyboard access, announcements, and visible focus.
-- Boundaries: record explicit In Scope / Out of Scope in Section 1.
+## Gate and tracker
 
-### 3. Write from canonical template
+Save `.specs/{slug}/spec.md`. Run:
 
-Read `.sdd/skills/theshop-spec/templates/spec-template.md`; follow exactly, never reconstruct from memory. Remove authoring guidance blockquotes.
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 spec -Feature {slug}
+```
 
-Preserve six numbered sections; Section 1 Scope/In/Out and Actors & Access; Section 4 Business Rules with `RULE-n`; `**AC-n:**` using **Given …, when …, then …**; appendix below body and above status footer. Preserve FR/AC sequencing. Scope and appendix are unnumbered; add no extra top-level section such as Future Work.
+Gate fails: fix, rerun. Never report saved spec while red.
 
-Target 1–3 pages. If growing beyond that, flag possible feature split. Fold repeated prose; retain every requirement and exception.
+Create or update `.specs/{slug}/status.md` from `templates/status-template.md`.
 
-Page range is guidance, never a minimum. Each distinct required outcome needs explicit AC coverage, including localization, access/privacy, keyboard use, focus, announcements, clearing, and rejection preservation when supplied. Add `Covers FR-n` references where coverage would otherwise be unclear; do not substitute a generic happy-path AC for those outcomes.
+Set Spec: `Draft`; gate `✅ spec-gate pass`; evidence: FR, AC, open-assumption counts; today. Later rows stay `—`. Set Next step `$theshop-clarify {slug}`.
 
-### 4. Save and verify
+## Output
 
-Before saving, check factual fidelity and selected prose level:
+```markdown
+Saved `.specs/{slug}/spec.md`.
 
-- Trace claims and product choices to user input or read context. Omit unsupported history and causes; mark cheap defaults as assumptions. User-confirmed choices do not confirm new inferences.
-- Compare requirements, rules, edge cases, and ACs. Preserve identical limits, operation order, exceptions, and rejection behavior throughout. Resolve contradictions before running gates.
-- Apply selected Caveman level to prose; preserve schema, literals, and auto-clarity. Structural gate success proves neither factual fidelity nor style.
+{N} open assumption(s). Next: `$theshop-clarify {slug}`.
+```
 
-Create feature directory if absent. Save only `.specs/{feature_name}/spec.md`. Existing spec: ask overwrite or cancel. Never create `spec-v2.md`; use git history (`git log -- .specs/{feature_name}/spec.md`) for prior revisions.
-
-On overwrite, reset downstream status rows (Plan, Implement, Test, Verify, Review, Document) to `—`; add `stale: spec rewritten {date}` in Gate cells that previously had results. Clarify updates Spec row; no separate Clarify row exists. Keep existing `plan.md` / `test-manifest.json` on disk; reconcile through amendment/evidence contract before continuation.
-
-  ```bash
-  pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 spec -Feature {feature_name}
-  ```
-
-Gate verifies template structure, rule/FR/AC sequencing, Given/When/Then, appendix, and footer count. Exit 1: fix and rerun. Never report saved success while gate fails.
-
-### 5. Initialize or update ledger
-
-Read `references/status-tracker.md` before writing `.specs/{feature_name}/status.md`; use its exact template and vocabulary. Set Spec: `Draft`, `✅ spec-gate pass`, FR/AC/open-assumption counts, today's date. Set later rows to `—`; Next step: `{{command:theshop-clarify}} {feature_name}`.
-
-Existing ledger: update Spec rather than replacing whole file; apply Step 4 resets. Preserve entry checks, waivers, row ownership, and missing-ledger backfill from the reference.
-
-## Outputs and completion evidence
-
-Save spec and ledger only after blocking questions are resolved. Report saved path and open-assumption count briefly. Open assumptions: point to `{{command:theshop-clarify}}`; none: offer refinement. Required spec gate must pass before completion.
-
-## References
-
-- **Spec template:** `.sdd/skills/theshop-spec/templates/spec-template.md`; required in Step 3.
-- **Status tracker template:** `references/status-tracker.md`; required for ledger creation/update, including callers from later workflows.
-- **Examples:** `references/invocation-examples.md`; only when interaction examples are needed.
+No open assumptions: omit first line. Do not claim completion before gate passes.

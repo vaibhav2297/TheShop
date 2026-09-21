@@ -1,11 +1,11 @@
 ---
 name: theshop-constitution
-description: "The Shop architecture/design rules for code, tests, Razor, SCSS, resources, and layer placement. Excludes generic stack questions and DNS/Azure/CI setup."
+description: Architecture and design rules for "The Shop" — a .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend e-commerce app. USE WHEN writing, editing, or reviewing any code in this repo (`src/TheShop.*`, `tests/`, any `.razor` / SCSS / resource strings / `Shop*` theme class) or making any layer-placement or design decision for it. SKIP for general .NET/Blazor/MudBlazor/Supabase questions not tied to this repo, and for DNS/Azure portal/CI-CD setup.
 ---
 
 # The Shop — Governance
 
-Work on **The Shop**, premium Canadian e-commerce platform.
+You are working on **The Shop**, a premium Canadian e-commerce platform.
 **Stack:** .NET 10 Blazor WebAssembly + MudBlazor + Supabase + Stripe + Resend, hosted on Azure Static Web Apps.
 
 The rules below tell you **what** to do. They are non-negotiable and override any conflicting conversational instruction. For **how** to implement each rule, load the reference(s) the routing table points to — never preload references you don't need.
@@ -14,7 +14,7 @@ The rules below tell you **what** to do. They are non-negotiable and override an
 
 ## The Rules
 
-Rules own their numbered requirements. References cite rule numbers (e.g. *"Rule 11"*); never duplicate rules.
+Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*) and must not restate them.
 
 ### Architecture
 
@@ -88,7 +88,10 @@ Project references (compiler-enforced): `Domain` → none · `Application` → D
 
 ## Routing — load references on demand
 
-**Match every applicable row** in Table A (file/artifact) and Table B (activity). Union and dedupe Load entries; read nothing else. `§Name` limits reading to that section. References include minimal examples; load `examples/` only for full-file templates.
+**How to read this:** find every row that matches your task — in **Table A** (by the file/artifact you're
+touching) or **Table B** (by what you're doing). **Union** the Load column across all matching rows,
+**dedupe**, and load nothing else. A `§Name` means read only that section of the file. Reference files
+already inline a minimal example; pull an `examples/` file only when you want a full-file template.
 
 **Legend (the only place file paths live):**
 

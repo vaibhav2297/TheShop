@@ -3,7 +3,10 @@
 # .sdd/skills/theshop-constitution/SKILL.md.
 #
 # Modes:
-#   Path mode (-Path ...) Lints the given files/directories. Used by theshop-review
+#   Hook mode (no args)   PostToolUse hook on Edit|Write. Reads the hook JSON from
+#                         stdin, lints the edited file. Violations -> stderr, exit 2
+#                         (Claude Code feeds stderr back to the model immediately).
+#   Path mode (-Path ...) Lints the given files/directories. Used by $theshop-verify
 #                         or manually: pwsh .sdd/scripts/check-design-rules.ps1 -Path src
 #                         Violations -> stdout, exit 1.
 #
@@ -13,7 +16,8 @@
 
 [CmdletBinding()]
 param(
-    [string[]]$Path
+    [string[]]$Path,
+    [switch]$Changed
 )
 
 $ErrorActionPreference = 'Stop'
@@ -113,6 +117,15 @@ function Format-Report {
     return $sb.ToString()
 }
 
+if ($Changed) {
+    $Path = @(
+        (& git -C $repoRoot diff --name-only --diff-filter=ACM 2>$null) +
+        (& git -C $repoRoot diff --staged --name-only --diff-filter=ACM 2>$null) |
+        Sort-Object -Unique |
+        ForEach-Object { Join-Path $repoRoot $_ }
+    )
+}
+
 if ($Path) {
     # ---- Path mode ----
     $targets = foreach ($p in $Path) {
@@ -132,4 +145,17 @@ if ($Path) {
     exit 0
 }
 
-throw 'Path mode requires -Path. Runtime hooks must decode their own input and pass explicit paths.'
+# ---- Hook mode ----
+$raw = [Console]::In.ReadToEnd()
+if ([string]::IsNullOrWhiteSpace($raw)) { exit 0 }
+try { $payload = $raw | ConvertFrom-Json } catch { exit 0 }
+
+$file = $payload.tool_input.file_path
+if (-not $file) { $file = $payload.tool_response.filePath }
+if (-not $file -or -not (Test-Path -LiteralPath $file)) { exit 0 }
+
+$violations = @(Get-FileViolations $file)
+if ($violations.Count -eq 0) { exit 0 }
+
+[Console]::Error.WriteLine((Format-Report $violations))
+exit 2

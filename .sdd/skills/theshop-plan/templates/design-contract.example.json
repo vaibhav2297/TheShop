@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "feature": "replace-feature",
+  "mode": "figma",
+  "sourcePaths": [],
+  "environment": {
+    "browser": "chromium EXACT_VERSION",
+    "os": "EXACT_OS",
+    "deviceScaleFactor": 1,
+    "colorScheme": "light",
+    "reducedMotion": "reduce",
+    "timezone": "UTC",
+    "fonts": "EXACT_FAMILIES_AND_WEIGHTS; ready",
+    "fixture": "EXACT_FIXTURE_ID"
+  },
+  "surfaces": [{
+    "id": "desktop-default",
+    "route": "/replace-route",
+    "state": "default",
+    "locale": "en-CA",
+    "viewport": {"width": 1440, "height": 900},
+    "acceptanceCriteria": ["AC-1"],
+    "figma": {
+      "url": "https://www.figma.com/design/REPLACE/file?node-id=1-2",
+      "revision": "REPLACE_REVISION_OR_EXPORT_TIMESTAMP",
+      "reference": "visual/reference/desktop-default.png",
+      "referenceSha256": "REPLACE_SHA256",
+      "context": "visual/context/desktop-default.md",
+      "contextSha256": "REPLACE_SHA256"
+    },
+    "checks": {
+      "geometry": "REPLACE measured bounds and spacing",
+      "typography": "REPLACE family, weights, sizes, line heights, wrapping",
+      "assets": "REPLACE icons, images and crop",
+      "states": "REPLACE state and responsive expectations"
+    },
+    "regions": [
+      {"id": "whole-frame", "box": [0, 0, 1440, 900], "pixelThreshold": 16, "maxDiffRatio": 0.001, "rationale": "REPLACE calibrated rendering tolerance"},
+      {"id": "primary-action", "box": [100, 100, 300, 150], "pixelThreshold": 16, "maxDiffRatio": 0.001, "rationale": "REPLACE critical control bounds and tolerance"}
+    ]
+  }]
+}

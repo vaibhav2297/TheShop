@@ -1,81 +1,111 @@
 ---
 name: theshop-clarify
-description: "Resolve product assumptions in one feature spec; incorporate confirmed decisions and update status. Explicit invocation only."
+description: Resolve product-level assumptions and questions in one feature spec, then gate and confirm it.
+argument-hint: <feature-name>
+disable-model-invocation: true
 ---
 
 # Clarify Spec
 
-Resolve one spec's assumptions with user. Incorporate decisions into body before marking `Confirmed`. Explicit invocation only.
+Resolve open product decisions in `.specs/{feature}/spec.md`.
 
-## Inputs
+Stay at **WHAT/WHY**. Implementation belongs to `$theshop-plan`.
 
-Require feature name matching `.specs/{feature_name}/spec.md`. Strip trailing `.md`; normalize lowercase-hyphenated name as in `theshop-spec`.
+## Input
 
-Missing name: ask and wait; never guess from context. Missing spec: report path, direct user to `{{command:theshop-spec}} {name}`, and halt.
+Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{feature}`.
 
-## Scope
+Missing spec: halt; direct to `$theshop-spec {feature}`.
 
-Product WHAT/WHY only, readable without codebase knowledge. No endpoints, schemas, libraries, or performance metrics. Translate technical answers into visible behavior; implementation belongs in `{{command:theshop-plan}}`.
+Read the full spec. Collect:
 
-Edit one spec only. Note cross-feature dependencies in Constraints or inline and final report; never edit another spec. Target 1–3 pages; fold decisions into existing sentences.
+- appendix `📌 Assumption` and `❓ Open question` items
+- unmatched inline `(Assumption: ...)` markers
 
-## Procedure
+Note which Sections 1–6 each item affects.
 
-### 1. Read spec and collect open items
+UI work: read [visual fidelity — Spec / Clarify](../theshop-plan/references/visual-fidelity.md).
+Check frames/states/viewports and visual ACs before early exit.
+Missing responsive/state behavior: product questions.
 
-Read full spec. Collect appendix `📌 Assumption` / `❓ Open question` items plus inline `(Assumption: …)` markers absent from appendix. Reconcile duplicates: body locates decisions; appendix indexes them. Record affected sections for each item.
+If nothing is open or footer is already `Confirmed`, report and stop.
 
-### 2. Short-circuit when no work remains
+## Resolve
 
-Only an empty worklist with consistent `Confirmed` footer can short-circuit. Run spec/status gates before reporting no work. A `Confirmed` footer with open markers is inconsistent: process those items. Empty worklist with Draft footer requires Step 5–6 reconciliation, without inventing questions or user decisions.
+Walk document order. Ask one focused product question at a time.
 
-### 3. Resolve one decision at a time
+For each item:
 
-Follow document order. Ask focused WHAT/WHY question; offer logged default as *(Recommended)*, realistic alternatives, and “let me decide for you.” Use choices for discrete answers; plain language for open-ended answers.
+- offer logged/default value as **Recommended**
+- offer realistic alternatives
+- allow “use your judgment”
 
-- Confirm: ratify default.
-- Override: record user's value.
-- “You decide” / “use your judgment”: accept default; do not leave unresolved.
-- Deferral to a later pass: leave item open.
+Responses:
 
-Never batch unrelated questions. Tightly related items may share a turn if separately answerable. Resolve exposed blocking scope/identity gaps immediately; add new cheap sub-defaults to worklist. Never retain a load-bearing guess as a cheap default.
+- confirm: use default
+- override: use supplied value
+- delegate: accept default
 
-### 4. Incorporate each decision before removing its marker
+A delegated/default decision is resolved, not deferred.
 
-1. State settled fact in relevant Sections 1–6. Replace inline assumption marker. Update Scope for boundary changes, Constraints for rules, Functional Behaviors/Edge Cases for visible behavior, and ACs when completion conditions change.
-2. Remove resolved item from appendix only after body records decision.
-3. Keep appendix for still-open items. Never erase a decision or grow prose unnecessarily.
+If an answer exposes a load-bearing scope gap, resolve it now. Keep questions separately answerable.
 
-### 5. Recount and update footer
+Never ask about storage, endpoints, schema, libraries, or other HOW. Translate technical answers into user-visible behavior.
 
-Count remaining open items (`N`).
+## Fold decisions
 
-- `N = 0`: appendix reads `None — all assumptions confirmed.`; use footer:
+Follow `.sdd/README.md` artifact writing style for SDD prose.
 
-  ```
-  **Status:** Confirmed   ·   **Created:** {original date}   ·   **Clarified:** {today YYYY-MM-DD}
-  ```
+For each answer:
 
-- `N > 0`: retain unresolved items and `Draft — N open assumption(s)` with actual reduced count.
+1. Rewrite relevant body text as settled fact.
+2. Update scope, behaviors, constraints, edge cases, and ACs only where affected.
+3. Remove its appendix and inline assumption markers.
 
-Preserve **Created** date; add/update **Clarified** only. Never mark `Confirmed` with open items.
+Decisions live in Sections 1–6. Never delete an item without preserving its resolved meaning.
 
-### 6. Save, gate, and update ledger
+Fold into existing prose; do not bloat the spec.
 
-Save same spec path. Run mandatory exit gate:
+## Status
 
-```bash
-pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 spec -Feature {feature_name}
+Recount open items.
+
+Zero:
+
+- appendix: `None — all assumptions confirmed.`
+- footer: `Status: Confirmed`
+- preserve Created; add/update Clarified date
+
+Remaining items:
+
+- keep `Status: Draft — N open assumption(s)`
+- leave those items visible
+- preserve Created
+
+Never mark Confirmed with open items.
+
+## Gate and tracker
+
+Run:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 spec -Feature {feature}
 ```
 
-Gate checks structure, footer count, and empty appendix for `Confirmed`. Exit 1: fix and rerun; never claim confirmation while gate fails.
+Red: fix and rerun. Never confirm over a red gate.
 
-Update `.specs/{feature_name}/status.md` Spec row: `Confirmed` only at `N = 0`, otherwise `Draft`; Gate `✅ spec-gate pass`; resolved/open counts; today's date. Refresh **Last updated**. **Next step:** Plan only at `N = 0`; otherwise another Clarify pass. Missing ledger: read `.sdd/skills/theshop-spec/references/status-tracker.md` and create from its template first.
+Update `status.md`:
 
-## Outputs and completion evidence
+- Spec `Confirmed` only at zero open; otherwise `Draft`
+- Gate `✅ spec-gate pass`
+- Evidence: resolved count + remaining count
+- Date today; refresh `Last updated`
+- Next: `$theshop-plan {feature}`
 
-Report resolved count, notable changes (especially scope), new Status, and remaining items. State planning unblocked only when fully confirmed. Otherwise name open items and point to another clarify pass. Keep decision in body, appendix/footer counts consistent, and required gate passing.
+If tracker is missing, create it from the `theshop-spec` status template.
 
-## Examples
+## Output
 
-Read `references/invocation-examples.md` only when interaction examples are needed.
+Report resolved count, remaining count, material scope changes, status, and next command.
+
+Edit this spec only. Cross-feature dependency: note it here; do not edit another spec.

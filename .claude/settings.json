@@ -1,20 +1,19 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "permissions": {
-    "allow": [
-      "Bash(graphify *)"
-    ]
-  },
   "hooks": {
-    "PostToolUse": [
+    "Stop": [
       {
-        "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/scripts/check-design-rules.ps1\"",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.sdd/scripts/check-design-rules.ps1\" -Changed",
             "timeout": 30,
-            "statusMessage": "Checking design rules..."
+            "statusMessage": "Checking changed C# and Razor files..."
+          },
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.sdd/scripts/format-on-stop.ps1\"",
+            "timeout": 300,
+            "statusMessage": "Formatting changed C# and Razor files..."
           }
         ]
       }
@@ -25,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "graphify hook-guard search"
+            "command": "C:/Users/vaibh/.local/bin/graphify.EXE hook-guard search"
           }
         ]
       },
@@ -34,7 +33,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "graphify hook-guard read"
+            "command": "C:/Users/vaibh/.local/bin/graphify.EXE hook-guard read"
           }
         ]
       }
