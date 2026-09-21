@@ -57,6 +57,8 @@ If a decision exposes a deeper architectural gap, resolve it before continuing.
 
 ## Fold decisions
 
+Follow `.sdd/README.md` artifact writing style for SDD prose.
+
 For every settled item:
 
 1. Write the decision into relevant Sections 1–10.

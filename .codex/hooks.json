@@ -6,17 +6,28 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$(git rev-parse --show-toplevel)/.sdd/scripts/check-design-rules.ps1\" -Changed",
-            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"& (Join-Path ((git rev-parse --show-toplevel).Trim()) '.sdd/scripts/check-design-rules.ps1') -Changed\"",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$(git rev-parse --show-toplevel)/.sdd/scripts/check-design-rules.ps1\" -Changed > /dev/null 2>&1",
+            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"& (Join-Path ((git rev-parse --show-toplevel).Trim()) '.sdd/scripts/check-design-rules.ps1') -Changed *> $null; exit $LASTEXITCODE\"",
             "timeout": 30,
             "statusMessage": "Checking changed C# and Razor files..."
           },
           {
             "type": "command",
-            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$(git rev-parse --show-toplevel)/.sdd/scripts/format-on-stop.ps1\"",
-            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"& (Join-Path ((git rev-parse --show-toplevel).Trim()) '.sdd/scripts/format-on-stop.ps1')\"",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$(git rev-parse --show-toplevel)/.sdd/scripts/format-on-stop.ps1\" > /dev/null 2>&1",
+            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"& (Join-Path ((git rev-parse --show-toplevel).Trim()) '.sdd/scripts/format-on-stop.ps1') *> $null; exit $LASTEXITCODE\"",
             "timeout": 300,
             "statusMessage": "Formatting changed C# and Razor files..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "C:/Users/vaibh/.local/bin/graphify.EXE hook-check"
           }
         ]
       }

@@ -50,6 +50,8 @@ Never ask about storage, endpoints, schema, libraries, or other HOW. Translate t
 
 ## Fold decisions
 
+Follow `.sdd/README.md` artifact writing style for SDD prose.
+
 For each answer:
 
 1. Rewrite relevant body text as settled fact.

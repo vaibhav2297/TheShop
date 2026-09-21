@@ -15,6 +15,14 @@ Canonical SDD instructions live in `.sdd/`. Root `AGENTS.md` and `CLAUDE.md` del
 
 Feature artifacts remain in `.specs/{feature}/`.
 
+## Artifact writing style
+
+Write SDD artifacts using the active session writing style.
+
+If Caveman mode is active, use its current level (`lite`, `full`, `ultra`, or `wenyan-*`). Otherwise, use concise normal prose. This project rule overrides any general Caveman rule that persisted documents use normal prose.
+
+Style affects prose only. Preserve templates, headings, IDs, keywords, status values, code, commands, SQL, and `Given`/`When`/`Then` structure exactly.
+
 ## Skills
 
 `theshop-clarify`, `theshop-constitution`, `theshop-document`, `theshop-e2e`, `theshop-execute`, `theshop-plan`, `theshop-resolve`, `theshop-ship`, `theshop-spec`, `theshop-start`, `theshop-test`, `theshop-verify`.

@@ -35,6 +35,8 @@ Check only applicable: actors/access, English/French, accessibility, scope bound
 
 Read `templates/spec-template.md`. Follow exactly.
 
+Follow `.sdd/README.md` artifact writing style for SDD prose.
+
 Required:
 
 - Six numbered sections only.

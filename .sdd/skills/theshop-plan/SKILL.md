@@ -39,6 +39,8 @@ UI work: use supplied Figma reference. No reference: ask once for URL/node ID or
 
 Read `templates/plan-template.md`. Follow exactly.
 
+Follow `.sdd/README.md` artifact writing style for SDD prose.
+
 Required:
 
 - Eleven numbered sections.

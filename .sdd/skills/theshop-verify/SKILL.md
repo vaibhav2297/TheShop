@@ -49,9 +49,20 @@ Show compact checklist before driving.
 
 Use strongest available proof.
 
-### Tier 1 — existing automation
+### Tier 1 — E2E evidence
 
-If matching E2E journeys exist:
+Prefer a fresh matching E2E report. If both `e2e-manifest.json` and `e2e-report.md` exist, validate that:
+
+- manifest feature and every AC bucket match `spec.md`
+- report AC order/counts match manifest
+- report verdict is `✅ VERIFIED`
+- all E2E ACs passed with no skips
+- unit ACs cite matching passing evidence from `test-manifest.json` / Test row
+- report commit matches `HEAD`, and report date is today
+
+Valid report is Tier 1 proof. Map its `AC{n}_` evidence to ACs. Do not start environment or rerun journeys.
+
+Rerun matching journeys only when report or manifest is missing, stale, inconsistent, failed, skipped, or no longer matches current commit/spec. Then:
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File tests/TheShop.E2E.Tests/tools/start-e2e-env.ps1
