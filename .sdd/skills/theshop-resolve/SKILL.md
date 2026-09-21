@@ -13,7 +13,7 @@ Stay at **HOW**, but keep a plan—not implementation.
 
 ## Input
 
-Require one safe feature folder name. Strip optional `.md`; normalize lowercase-hyphenated.
+Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{feature}`.
 
 Missing plan: halt; direct to `$theshop-plan {feature}`.
 

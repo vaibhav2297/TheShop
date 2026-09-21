@@ -17,7 +17,9 @@ Parse: `<feature-name> [--desc <description>]`.
 
 No name: ask. Stop.
 
-Slug: lowercase kebab case. Title: readable feature name.
+Read [feature identity](../theshop-start/references/feature-identity.md).
+Run `feature_identity.py resolve`; preserve full ID as `{slug}`.
+New spec requires numbered Start branch. Tracked legacy specs stay valid. Title: readable feature name.
 
 `--desc` is product input. Use stated facts. Ignore technical design; send it to `$theshop-plan`.
 

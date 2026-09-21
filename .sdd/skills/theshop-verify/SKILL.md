@@ -13,7 +13,7 @@ Build, run, observe, report. Never edit source or tests. Failed behavior returns
 
 ## Input
 
-Require one safe feature folder name.
+Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{feature}`.
 
 Require `.specs/{feature}/spec.md` and `plan.md`: ACs, routes, Web scope, design mapping.
 

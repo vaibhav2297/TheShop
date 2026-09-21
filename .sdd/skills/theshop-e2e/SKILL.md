@@ -44,7 +44,8 @@ Never weaken/delete/skip assertions, add blind retries, or use fixed sleeps to f
 
 ## Input
 
-Require a safe feature folder name. Require:
+Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{feature}`.
+Require:
 
 - `spec.md`: oracle and ACs
 - `plan.md`: routes/Web scope

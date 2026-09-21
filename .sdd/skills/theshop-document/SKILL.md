@@ -69,6 +69,9 @@ Build failure: report it. Do not repair production behavior here.
 
 ## Tracker
 
+Feature supplied: read [feature identity](../theshop-start/references/feature-identity.md).
+Resolve full ID before tracker access. Never strip number.
+
 Follow `.sdd/README.md` artifact writing style for SDD prose.
 
 Only when a feature name was supplied and both gates pass:

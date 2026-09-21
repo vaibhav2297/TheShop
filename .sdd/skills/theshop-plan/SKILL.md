@@ -17,6 +17,8 @@ Parse `<feature-name> [--desc <technical direction>] [--figma <url|node-id>]`. F
 
 No name: ask. Stop.
 
+Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{slug}`.
+
 Require `.specs/{slug}/spec.md`. Missing: stop. Send user to `$theshop-spec`.
 
 `--desc`: technical direction. Use it only if spec scope and constitution allow it. Product-scope change: stop; send user to `$theshop-spec` or `$theshop-clarify`.

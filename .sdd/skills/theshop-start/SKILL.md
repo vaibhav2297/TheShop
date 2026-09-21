@@ -16,7 +16,9 @@ No code. No `.specs/`. No force, reset, delete, or overwrite.
 
 Empty `$ARGUMENTS`: ask feature name. Stop.
 
-Normalize: lowercase kebab case. Letters, digits, hyphens. State `feature/{slug}` before git changes.
+Read [feature identity](references/feature-identity.md). New ID: `NNN_feature-name`.
+After clean-tree/base checks: fetch refs, run `feature_identity.py next` per reference.
+Returned full ID becomes `{slug}`. State target before branch creation.
 
 ## Gates
 
@@ -46,6 +48,8 @@ Missing: stop. Ask base branch. Do not choose one.
 
 3. Confirm target absent:
 
+Choose numbered ID using fetched refs/spec folders. Existing name: resolve/resume; never allocate twice.
+
 ```bash
 git rev-parse --verify --quiet feature/{slug}
 git ls-remote --exit-code --heads origin feature/{slug}
@@ -58,6 +62,13 @@ Existing local or remote: stop. Ask switch to it or use another name. Never recr
 ```bash
 git checkout dev
 git pull origin dev
+git fetch origin
+python .sdd/scripts/feature_identity.py next "{original-feature-name}"
+```
+
+Use latest returned ID. Recheck target absence. Then:
+
+```bash
 git checkout -b feature/{slug}
 ```
 

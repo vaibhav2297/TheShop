@@ -17,6 +17,8 @@
 
 # Implementation Plan — {Feature Title}
 
+**Feature:** `{slug}`
+
 > Companion to `.specs/{file_name}/spec.md`. This plan is technical (HOW); the spec is
 > non-technical (WHAT/WHY). Read the spec first.
 

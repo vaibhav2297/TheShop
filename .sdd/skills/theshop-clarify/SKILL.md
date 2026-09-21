@@ -13,7 +13,7 @@ Stay at **WHAT/WHY**. Implementation belongs to `$theshop-plan`.
 
 ## Input
 
-Require one safe feature folder name. Strip optional `.md`; normalize lowercase-hyphenated.
+Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{feature}`.
 
 Missing spec: halt; direct to `$theshop-spec {feature}`.
 

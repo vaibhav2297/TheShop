@@ -15,7 +15,7 @@ No sub-agents. Do not split layers across sessions.
 
 ## Input
 
-Require one safe feature folder name: no separators or `..`.
+Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{feature}`.
 
 Require:
 

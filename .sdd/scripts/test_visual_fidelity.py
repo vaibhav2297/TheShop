@@ -77,6 +77,18 @@ class VisualGateTests(unittest.TestCase):
         self.assertTrue((self.visual / "alignment-images/desktop-overlay.png").is_file())
         self.assertTrue((self.visual / "regression-images/desktop-diff.png").is_file())
 
+    def test_numbered_feature_completes_visual_pipeline(self):
+        target = self.root / ".specs/005_pilot"
+        self.folder.rename(target)
+        self.folder = target
+        self.visual = target / "visual"
+        self.actual = self.visual / "actual/desktop.png"
+        self.contract["feature"] = "005_pilot"
+        vf.write(target / "design-contract.json", self.contract)
+        self.gate = vf.VisualGate(self.root, "005_pilot")
+        self.capture()
+        self.complete()
+
     def test_critical_region_catches_difference_hidden_by_whole_frame(self):
         with Image.open(self.actual) as img:
             img.putpixel((0, 0), (0, 0, 0))

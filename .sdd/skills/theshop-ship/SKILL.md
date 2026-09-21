@@ -13,7 +13,7 @@ Remote or irreversible actions require explicit confirmation.
 
 ## Input and branch
 
-Require feature name; normalize lowercase-hyphenated.
+Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{slug}`.
 
 Expected branch: `feature/{slug}`.
 

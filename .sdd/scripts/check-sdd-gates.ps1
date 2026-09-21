@@ -98,7 +98,7 @@ function Read-Doc([string]$RelPath) {
 
 # Visual comparison is separate from source lint and behavioral acceptance.
 function Test-VisualGate([string]$F, [string]$VisualMode = 'verify') {
-    if ($F -notmatch '^[a-z0-9]+(?:-[a-z0-9]+)*$') { Fail 'unsafe visual feature name'; return }
+    if ($F -notmatch '^(?:(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})_)?[a-z0-9]+(?:-[a-z0-9]+)*$') { Fail 'unsafe visual feature name'; return }
     if (-not (Get-Command python -ErrorAction SilentlyContinue)) { Fail 'Python required for visual evidence gate'; return }
     $output = & python (Join-Path $repoRoot '.sdd/scripts/visual-fidelity.py') $VisualMode --feature $F 2>&1
     if ($LASTEXITCODE -ne 0) { Fail "visual ${VisualMode}: $($output -join ' ')" }
@@ -142,6 +142,12 @@ function Get-ChangedPaths {
 function Test-SpecGate([string]$F) {
     $c = Read-Doc ".specs/$F/spec.md"
     if (-not $c) { Fail ".specs/$F/spec.md not found"; return }
+    if ($F -match '^\d+_') {
+        if ($c -notmatch ('(?m)^\*\*Feature:\*\*\s*`' + [regex]::Escape($F) + '`\s*$')) { Fail 'numbered spec missing matching **Feature:** ID' }
+    } else {
+        git -C $repoRoot cat-file -e "HEAD:.specs/$F/spec.md" *> $null
+        if ($LASTEXITCODE -ne 0) { Fail 'new specs require NNN_feature-name; run theshop-start first' }
+    }
 
     $expected = @('Problem Statement', 'Functional Requirements', 'Functional Behaviors',
                   'Constraints', 'Edge Cases & Error Handling', 'Acceptance Criteria')
@@ -222,6 +228,7 @@ function Test-PlanGate([string]$F) {
     Test-VisualGate $F 'plan'
     $c = Read-Doc ".specs/$F/plan.md"
     if (-not $c) { Fail ".specs/$F/plan.md not found"; return }
+    if ($F -match '^\d+_' -and $c -notmatch ('(?m)^\*\*Feature:\*\*\s*`' + [regex]::Escape($F) + '`\s*$')) { Fail 'numbered plan missing matching **Feature:** ID' }
 
     $keywords = @('Objective', 'Tech Stack', 'Architecture', 'Data Model', 'Design Decisions',
                   'Functional Flow', 'Development Plan', 'Acceptance Criteria', 'Validation',
@@ -686,6 +693,10 @@ function Test-ShipReadyGate([string]$F) {
 }
 
 # ------------------------------------------------------------------ dispatch --
+if ($Feature -and $Feature -notmatch '^(?:(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})_)?[a-z0-9]+(?:-[a-z0-9]+)*$') {
+    Fail 'unsafe feature ID; use NNN_feature-name or existing legacy feature-name'
+    Complete-Run $Mode
+}
 switch ($Mode) {
     'visual'   { if (-not $Feature) { throw 'visual mode requires -Feature' }; Test-VisualGate $Feature }
     'spec'     { if (-not $Feature) { throw 'spec mode requires -Feature' };     Test-SpecGate $Feature }

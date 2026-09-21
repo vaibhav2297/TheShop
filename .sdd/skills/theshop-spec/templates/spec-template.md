@@ -15,6 +15,8 @@
 
 # {Feature Title}
 
+**Feature:** `{slug}`
+
 ## 1. Problem Statement
 
 {2–4 sentences in plain language: who has the problem, when it occurs, and why it matters. Frame it

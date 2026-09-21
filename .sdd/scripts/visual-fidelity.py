@@ -58,7 +58,7 @@ def number(value, low, high, label):
 
 class VisualGate:
     def __init__(self, root, feature):
-        require(re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", feature), "Unsafe feature name")
+        require(re.fullmatch(r"(?:(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})_)?[a-z0-9]+(?:-[a-z0-9]+)*", feature), "Unsafe feature name")
         self.root = Path(root).resolve()
         self.feature = feature
         self.folder = inside(self.root, f".specs/{feature}")

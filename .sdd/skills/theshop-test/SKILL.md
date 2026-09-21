@@ -15,7 +15,7 @@ No sub-agents. Browser journeys belong to `$theshop-e2e`. Production fixes belon
 
 ## Input and authority
 
-Require one safe feature folder name: no separators or `..`.
+Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{feature}`.
 
 Require `.specs/{feature}/spec.md`. Read plan when present; spec wins behavioral conflicts.
 
