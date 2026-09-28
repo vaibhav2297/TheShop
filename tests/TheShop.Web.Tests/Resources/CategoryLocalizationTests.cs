@@ -6,16 +6,11 @@ using Xunit;
 namespace TheShop.Web.Tests.Resources;
 
 /// <summary>
-/// Verifies that every manage-categories resource string — the add/edit forms' labels/buttons/
-/// placeholders, the list's filter/sort/bulk-action strings, and every new error/outcome key —
-/// resolves in both English and French (AC-25). Reads the compiled
-/// <see cref="Strings.ResourceManager"/> directly against the invariant (English) and <c>fr</c>
-/// cultures, mirroring the approach used for manage-brands' own localization completeness test.
+/// Verifies that manage-categories resource keys resolve to English text.
 /// <see href=".specs/manage-categories/spec.md"/>
 /// </summary>
 public class CategoryLocalizationTests
 {
-    private static readonly CultureInfo French = CultureInfo.GetCultureInfo("fr");
 
     private static readonly string[] ErrorAndConfirmationKeys =
     [
@@ -110,71 +105,71 @@ public class CategoryLocalizationTests
     ];
 
     // =========================================================================
-    // Validation + confirmation messages — English + French (AC-25)
+    // Validation + confirmation messages — English (AC-25)
     // =========================================================================
 
     [Theory]
     [MemberData(nameof(ErrorAndConfirmationNameKeys))]
     [Trait("Feature", "manage-categories")]
-    public void ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglishAndFrench(string key)
+    public void ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglish(string key)
     {
-        AssertAvailableInBothCultures(key);
+        AssertAvailableInEnglish(key);
     }
 
     public static IEnumerable<object[]> ErrorAndConfirmationNameKeys() => ErrorAndConfirmationKeys.Select(k => (object[])[k]);
 
     // =========================================================================
-    // Add form labels/buttons/placeholders — English + French (AC-25)
+    // Add form labels/buttons/placeholders — English (AC-25)
     // =========================================================================
 
     [Theory]
     [MemberData(nameof(AddCategoryFormNameKeys))]
     [Trait("Feature", "manage-categories")]
-    public void AddCategoryFormString_ForEveryKey_IsAvailableInEnglishAndFrench(string key)
+    public void AddCategoryFormString_ForEveryKey_IsAvailableInEnglish(string key)
     {
-        AssertAvailableInBothCultures(key);
+        AssertAvailableInEnglish(key);
     }
 
     public static IEnumerable<object[]> AddCategoryFormNameKeys() => AddCategoryFormKeys.Select(k => (object[])[k]);
 
     // =========================================================================
-    // manage-categories list — English + French (AC-25)
+    // manage-categories list — English (AC-25)
     // =========================================================================
 
     [Theory]
     [MemberData(nameof(ManageCategoriesListNameKeys))]
     [Trait("Feature", "manage-categories")]
-    public void ManageCategoriesListString_ForEveryKey_IsAvailableInEnglishAndFrench(string key)
+    public void ManageCategoriesListString_ForEveryKey_IsAvailableInEnglish(string key)
     {
-        AssertAvailableInBothCultures(key);
+        AssertAvailableInEnglish(key);
     }
 
     public static IEnumerable<object[]> ManageCategoriesListNameKeys() => ManageCategoriesListKeys.Select(k => (object[])[k]);
 
     // =========================================================================
-    // Edit form strings — English + French (AC-25)
+    // Edit form strings — English (AC-25)
     // =========================================================================
 
     [Theory]
     [MemberData(nameof(EditCategoryFormNameKeys))]
     [Trait("Feature", "manage-categories")]
-    public void EditCategoryFormString_ForEveryKey_IsAvailableInEnglishAndFrench(string key)
+    public void EditCategoryFormString_ForEveryKey_IsAvailableInEnglish(string key)
     {
-        AssertAvailableInBothCultures(key);
+        AssertAvailableInEnglish(key);
     }
 
     public static IEnumerable<object[]> EditCategoryFormNameKeys() => EditCategoryFormKeys.Select(k => (object[])[k]);
 
     // =========================================================================
-    // Sort labels, including the new Oldest order — English + French (AC-25, AC-32)
+    // Sort labels, including the new Oldest order — English (AC-25, AC-32)
     // =========================================================================
 
     [Theory]
     [MemberData(nameof(SortNameKeys))]
     [Trait("Feature", "manage-categories")]
-    public void SortLabel_ForEveryKey_IsAvailableInEnglishAndFrench(string key)
+    public void SortLabel_ForEveryKey_IsAvailableInEnglish(string key)
     {
-        AssertAvailableInBothCultures(key);
+        AssertAvailableInEnglish(key);
     }
 
     public static IEnumerable<object[]> SortNameKeys() => SortKeys.Select(k => (object[])[k]);
@@ -183,22 +178,20 @@ public class CategoryLocalizationTests
     // Helpers
     // =========================================================================
 
-    private static void AssertAvailableInBothCultures(string key)
+    private static void AssertAvailableInEnglish(string key)
     {
         var english = Strings.ResourceManager.GetString(key, CultureInfo.InvariantCulture);
-        var french = Strings.ResourceManager.GetString(key, French);
 
         english.Should().NotBeNullOrWhiteSpace($"'{key}' must have an English resource string");
-        french.Should().NotBeNullOrWhiteSpace($"'{key}' must have a French resource string (AC-25)");
     }
 }
 
 // =============================================================================
 // AC → Test mapping
 // =============================================================================
-// AC-25: ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglishAndFrench,
-//         AddCategoryFormString_ForEveryKey_IsAvailableInEnglishAndFrench,
-//         ManageCategoriesListString_ForEveryKey_IsAvailableInEnglishAndFrench,
-//         EditCategoryFormString_ForEveryKey_IsAvailableInEnglishAndFrench,
-//         SortLabel_ForEveryKey_IsAvailableInEnglishAndFrench
-// AC-32: SortLabel_ForEveryKey_IsAvailableInEnglishAndFrench (Sort_Oldest specifically)
+// AC-25: ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglish,
+//         AddCategoryFormString_ForEveryKey_IsAvailableInEnglish,
+//         ManageCategoriesListString_ForEveryKey_IsAvailableInEnglish,
+//         EditCategoryFormString_ForEveryKey_IsAvailableInEnglish,
+//         SortLabel_ForEveryKey_IsAvailableInEnglish
+// AC-32: SortLabel_ForEveryKey_IsAvailableInEnglish (Sort_Oldest specifically)

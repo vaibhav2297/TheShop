@@ -9,7 +9,7 @@ Shoppers who browse several levels into The Shop — from Home into a category, 
 **In scope:**
 - Breadcrumb trails on storefront browsing pages **and** admin panel pages.
 - Clickable parent levels, with the current page shown as the final, non-clickable item.
-- Labels available in both English and French.
+- Labels available in English.
 
 **Out of scope:**
 - The Home page, the admin Dashboard landing, and the authentication screens — these show no trail.
@@ -27,7 +27,7 @@ Shoppers who browse several levels into The Shop — from Home into a category, 
 5. **FR-5:** A trail reflects the page's fixed place in the site (or admin) hierarchy — not the order in which the user happened to visit pages.
 6. **FR-6:** A level that represents a specific item (a category, a product, an order) shows that item's own name as the user would recognize it, not a generic label.
 7. **FR-7:** A visual separator distinguishes each level from the next.
-8. **FR-8:** All breadcrumb labels are shown in the site's active language and are available in both English and French.
+8. **FR-8:** All breadcrumb labels are available in English.
 
 ## 3. Functional Behaviors
 
@@ -43,16 +43,16 @@ Shoppers who browse several levels into The Shop — from Home into a category, 
 - **User does:** In the admin panel, goes Dashboard → Products → opens a specific product to edit (or Dashboard → Orders → opens one order).
 - **User sees:** A breadcrumb trail such as "Dashboard / Products / Wool Parka", with Dashboard and Products clickable and the edited item shown as the final, non-clickable level.
 
-### Behavior 4: View a breadcrumbed page in French
-- **User does:** Views any page that has a breadcrumb trail while the site language is French.
-- **User sees:** The breadcrumb labels — both the fixed ones (Home, Categories, Dashboard, Products) and item names where applicable — appear in their French equivalents.
+### Behavior 4: View a breadcrumbed page
+- **User does:** Views any page that has a breadcrumb trail.
+- **User sees:** Fixed breadcrumb labels appear in English. Item names appear as stored.
 
 ## 4. Constraints
 
 - The first item of a storefront trail is always **Home**; the first item of an admin trail is always the **Dashboard**.
 - The current page is always the final item in the trail and is never a link.
 - The Home page, the admin Dashboard landing, and the authentication screens (sign-in / sign-up) show no breadcrumb trail.
-- All breadcrumb text is drawn from the site's localized content and is available in English and French.
+- All fixed breadcrumb text comes from English resources. Item names appear as stored.
 - A breadcrumb reflects the site hierarchy, not the user's browsing history.
 - A level representing a specific item uses that item's actual name (category name, product name, order reference), not a placeholder.
 - A storefront product's trail follows the product's category path — Home → Category → [Sub-category] → Product. A product that belongs to no category falls back to Home → Products → {Product}.
@@ -78,7 +78,7 @@ Shoppers who browse several levels into The Shop — from Home into a category, 
 - [ ] **AC-5:** The trail shown for a given page is identical whether the user navigated there from a parent or opened it from a direct link. Verifies FR-5.
 - [ ] **AC-6:** A trail level that represents a specific item displays that item's actual name. Verifies FR-6.
 - [ ] **AC-7:** No breadcrumb trail appears on the Home page, the admin Dashboard landing, or the authentication screens.
-- [ ] **AC-8:** Every breadcrumb label appears in both English and French, matching the active site language. Verifies FR-8.
+- [ ] **AC-8:** Every fixed breadcrumb label appears in English. Item names appear as stored. Verifies FR-8.
 - [ ] **AC-9:** A very long label is shortened so the trail does not break or overflow the layout, on both desktop and small screens. Verifies the long-label constraint.
 - [ ] **AC-10:** The breadcrumb trail can be navigated by keyboard, is announced to assistive technology as breadcrumb navigation, and exposes the current page as the current location.
 

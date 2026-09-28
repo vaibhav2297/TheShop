@@ -540,8 +540,7 @@ function Test-ScopeGate {
     $allowed = @{
         'domain'      = @('src/TheShop.Domain/')
         'application' = @('src/TheShop.Application/',
-                          'src/TheShop.Web/Resources/Strings.resx',
-                          'src/TheShop.Web/Resources/Strings.fr.resx')
+                          'src/TheShop.Web/Resources/Strings.resx')
         'infra'       = @('src/TheShop.Infrastructure/', 'supabase/migrations/', 'supabase/seed.sql')
         'web'         = @('src/TheShop.Web/')
         'infra+web'   = @('src/TheShop.Infrastructure/', 'supabase/migrations/', 'supabase/seed.sql', 'src/TheShop.Web/')

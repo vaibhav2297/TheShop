@@ -240,11 +240,11 @@
       "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.Schema_CategoriesTable_HasNoSlugColumn"
     ] },
     { "id": "AC-25", "tests": [
-      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglishAndFrench",
-      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.AddCategoryFormString_ForEveryKey_IsAvailableInEnglishAndFrench",
-      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.ManageCategoriesListString_ForEveryKey_IsAvailableInEnglishAndFrench",
-      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.EditCategoryFormString_ForEveryKey_IsAvailableInEnglishAndFrench",
-      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.SortLabel_ForEveryKey_IsAvailableInEnglishAndFrench"
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglish",
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.AddCategoryFormString_ForEveryKey_IsAvailableInEnglish",
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.ManageCategoriesListString_ForEveryKey_IsAvailableInEnglish",
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.EditCategoryFormString_ForEveryKey_IsAvailableInEnglish",
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.SortLabel_ForEveryKey_IsAvailableInEnglish"
     ] },
     { "id": "AC-26", "tests": [
       "TheShop.Web.Tests.Pages.Admin.AddCategoryTests.Render_WithASelectedImage_RemoveButtonHasALocalizedAriaLabel"
@@ -290,7 +290,7 @@
       "TheShop.Infrastructure.Tests.Persistence.ManageCategoriesSchemaTests.Schema_IdxCategoriesCreatedAt_Exists",
       "TheShop.Web.Tests.Common.Sorting.CategorySortCatalogueTests.Slugs_MatchTheSharedVocabulary",
       "TheShop.Web.Tests.Common.Sorting.CategorySortCatalogueTests.Options_CoverEveryMemberOfTheEnum",
-      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.SortLabel_ForEveryKey_IsAvailableInEnglishAndFrench",
+      "TheShop.Web.Tests.Resources.CategoryLocalizationTests.SortLabel_ForEveryKey_IsAvailableInEnglish",
       "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.ChangeSort_WhenStaffChoosesNewest_ReQueriesWithNewestFromPageOne"
     ] }
   ]

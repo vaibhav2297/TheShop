@@ -143,7 +143,7 @@ For **high-risk operations** (role management, refunds, customer export), use `a
 3. **Gate the page/action** with `AuthorizeView Policy="@PolicyNames.Permission(...)"`, with `AccessDeniedView` in `NotAuthorized`.
 4. **Decorate the command/query** with `[RequiresPermission("module.action")]`.
 5. **RLS policy** on every table the capability touches, calling `(SELECT public.authorize('module.action'))` — `authorize_fresh` if the operation is sensitive.
-6. **Localize** — role names, permission names, and access-denied messages ship in English and French (`Strings.resx` / `Strings.fr.resx`).
+6. **Resource strings** — role names, permission names, and access-denied messages use English entries in `Strings.resx`.
 
 ---
 

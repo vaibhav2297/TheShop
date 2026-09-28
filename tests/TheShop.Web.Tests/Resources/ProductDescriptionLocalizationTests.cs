@@ -6,14 +6,13 @@ using Xunit;
 namespace TheShop.Web.Tests.Resources;
 
 /// <summary>
-/// Tests that every new product-description UI string has a real English and French resource
+/// Tests that every new product-description UI string has a real English resource
 /// entry (FR-8, AC-12) — no <c>[TODO]</c> placeholder, since AC-12 is a stated acceptance
 /// criterion rather than a review-gate cleanup.
 /// <see href=".specs/product-description/spec.md"/>
 /// </summary>
 public class ProductDescriptionLocalizationTests
 {
-    private static readonly CultureInfo French = CultureInfo.GetCultureInfo("fr");
 
     private static readonly string[] Keys =
     [
@@ -41,14 +40,11 @@ public class ProductDescriptionLocalizationTests
     [Theory]
     [MemberData(nameof(KeysData))]
     [Trait("Feature", "product-description")]
-    public void UiString_ForEveryNewKey_IsAvailableInEnglishAndFrench(string key)
+    public void UiString_ForEveryNewKey_IsAvailableInEnglish(string key)
     {
         var english = Strings.ResourceManager.GetString(key, CultureInfo.InvariantCulture);
-        var french = Strings.ResourceManager.GetString(key, French);
 
         english.Should().NotBeNullOrWhiteSpace($"'{key}' must have an English resource string");
-        french.Should().NotBeNullOrWhiteSpace($"'{key}' must have a French resource string (AC-12)");
-        french.Should().NotContain("[TODO]", $"'{key}' must be a real translation, not a placeholder (AC-12)");
     }
 
     [Fact]
@@ -64,4 +60,4 @@ public class ProductDescriptionLocalizationTests
 // =============================================================================
 // AC → Test mapping
 // =============================================================================
-// AC-12 (English/French interface text for every new control/message): UiString_ForEveryNewKey_IsAvailableInEnglishAndFrench
+// AC-12 (English interface text for every new control/message): UiString_ForEveryNewKey_IsAvailableInEnglish

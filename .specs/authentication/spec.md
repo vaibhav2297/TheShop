@@ -53,7 +53,7 @@ Customers of The Shop need a way to create an account and return to it later —
 - A user must wait at least 60 seconds between requesting one code and requesting another for the same email.
 - A given code can only be used once. Submitting it successfully invalidates it; requesting a new code invalidates any earlier code.
 - A user has at most 5 attempts to enter the correct code for a given session. After 5 failed attempts, the code is invalidated and they must restart the flow from the email screen.
-- All emails for codes are sent in English and French (matching the site's localized content).
+- All emails for codes are sent in English.
 - First name and last name are required at sign-up and cannot be left blank.
 - Date of birth must be a valid past date.
 
@@ -84,7 +84,7 @@ Customers of The Shop need a way to create an account and return to it later —
 - [ ] **AC-9:** Requesting a new code invalidates any previously sent code for the same email.
 - [ ] **AC-10:** A signed-in user remains signed in after closing and reopening the browser, until they sign out or their session expires. Verifies FR-8.
 - [ ] **AC-11:** Clicking "Sign out" ends the session and returns the user to the public view of the site. Verifies FR-9.
-- [ ] **AC-12:** All authentication screens, validation messages, and code emails are available in both English and French.
+- [ ] **AC-12:** All authentication screens, validation messages, and code emails are available in English.
 
 ---
 **Status:** Draft

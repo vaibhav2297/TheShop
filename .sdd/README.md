@@ -9,6 +9,8 @@ Canonical SDD instructions live in `.sdd/`. Root `AGENTS.md` and `CLAUDE.md` del
 
 ## Workflow
 
+The storefront supports English only. Add user-facing text to `Strings.resx`. Do not add language-specific resources or locale switching. Earlier feature plans and reports that mention French are historical; this policy supersedes them.
+
 `$theshop-start` → `$theshop-spec` → `$theshop-clarify` → `$theshop-plan` → `$theshop-resolve` → `$theshop-execute` → `$theshop-test` → `$theshop-verify` → `$theshop-ship`.
 
 `$theshop-document` is optional. Review is not an SDD stage.

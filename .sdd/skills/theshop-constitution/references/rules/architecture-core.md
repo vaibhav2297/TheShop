@@ -85,7 +85,6 @@ src/
     │   └── ShopTheme.cs
     ├── Resources/
     │   ├── Strings.resx
-    │   └── Strings.fr.resx
     ├── Common/
     │   ├── Routes.cs
     │   ├── BusyState.cs

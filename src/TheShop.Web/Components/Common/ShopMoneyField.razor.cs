@@ -77,7 +77,7 @@ public partial class ShopMoneyField : MudComponentBase
     public bool FullWidth { get; set; } = true;
 
     /// <summary>
-    /// Which side of the input carries the currency symbol, following the active culture.
+    /// Which side of the input carries the currency symbol in Canadian English.
     /// </summary>
     private static Adornment SymbolPlacement =>
         CurrencyFormatter.SymbolLeadsAmount ? Adornment.Start : Adornment.End;

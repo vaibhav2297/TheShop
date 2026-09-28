@@ -10,7 +10,7 @@ A shopper arriving at The Shop needs one place to see what's for sale and quickl
 - A paginated product grid with filtering and sort-by controls.
 - A product card showing the product image, name, price (sale price with struck-through original price when discounted), an Add-to-Cart button, and a Wishlist button.
 - The card **displays** the Add-to-Cart and Wishlist buttons; their actions are out of scope for this feature (see below).
-- English and French for all catalogue text.
+- English for all catalogue text.
 
 **Out of scope:**
 - The Add-to-Cart and Wishlist button **actions**, the Cart and Wishlist pages, and full cart/wishlist management — this feature only displays the buttons on the card; adding to the cart, saving to the wishlist, and any sign-in requirement are delivered by separate dedicated features.
@@ -32,7 +32,7 @@ A shopper arriving at The Shop needs one place to see what's for sale and quickl
 9. **FR-9:** Both guests and signed-in customers can browse the catalogue.
 10. **FR-10:** Within this feature, the Add-to-Cart and Wishlist buttons perform no action when activated; their behavior is delivered by their separate dedicated features.
 11. **FR-11:** Selecting a product card outside its action buttons takes the customer to that product's detail page.
-12. **FR-12:** All catalogue text — labels, buttons, filter and sort option names, and messages — is available in English and French and follows the active site language.
+12. **FR-12:** All catalogue text — labels, buttons, filter and sort option names, and messages — is available in English.
 
 ## 3. Functional Behaviors
 
@@ -58,7 +58,7 @@ A shopper arriving at The Shop needs one place to see what's for sale and quickl
 
 ## 4. Constraints
 
-- Prices are shown in Canadian dollars (CAD) using the site's currency format, in both languages.
+- Prices are shown in Canadian dollars (CAD) using Canadian English formatting.
 - When a product has no discount, only its single price is shown — no struck-through original price.
 - When a product is discounted, the sale price is always the prominent price and the original price (MRP) is the struck-through secondary price; no separate "% off" badge is shown — the struck-through original price alone conveys the discount.
 - Every product card reserves a consistent image area so cards stay aligned; a product without its own image shows a standard placeholder image.
@@ -93,7 +93,7 @@ A shopper arriving at The Shop needs one place to see what's for sale and quickl
 - [ ] **AC-10:** When no products match the active filters, an empty-state message is shown with a way to clear the filters.
 - [ ] **AC-11:** An out-of-stock product shows an out-of-stock indicator on its card, with the Add-to-Cart button hidden; its Wishlist button is still shown.
 - [ ] **AC-12:** A product without its own image shows a standard placeholder in the card's image area. Verifies FR-2.
-- [ ] **AC-13:** All catalogue text appears in both English and French, matching the active site language. Verifies FR-12.
+- [ ] **AC-13:** All catalogue text appears in English. Verifies FR-12.
 - [ ] **AC-14:** The catalogue and its controls are keyboard-operable with a visible focus indicator, and the Add-to-Cart and Wishlist buttons expose accessible labels.
 
 ---

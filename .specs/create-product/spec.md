@@ -17,7 +17,7 @@ The Shop's catalogue is what customers browse, filter, and buy from — but nobo
 - Per-variant configuration: each generated variant carries its own SKU, price, sale price, stock, and availability, and can be pinned to one of the product's gallery images.
 - Products without variants: a product can be saved with no option types at all, in which case its price and stock stay on the product itself.
 - Retiring the product's dedicated Flavour and Nicotine Strength fields: both are expressed as ordinary option types from now on, making a product's option types the single source of what varies about it.
-- Validation, confirmation, and error messages for every field, in English and French.
+- Validation, confirmation, and error messages for every field, in English.
 
 **Out of scope:**
 - Searching, filtering, sorting, and bulk actions on the product list — it is a plain paginated list only, and gains those capabilities in a later feature.
@@ -70,7 +70,7 @@ View, create, and edit are each governed by their own fine-grained permission, c
 24. **FR-24:** Attempting to leave either form with unsaved changes warns the staff member that their changes will be lost and lets them stay.
 25. **FR-25:** Images the product no longer uses — removed while editing, or belonging to a product that was never saved — are discarded rather than left stored.
 26. **FR-26:** A staff member without the relevant permission is not shown the capability, and a direct attempt to reach the list or either form is refused with the store's standard access-denied experience.
-27. **FR-27:** All text in this feature — headings, column and field labels, help text, option and variant table labels, buttons, confirmations, validation messages, empty-state text, and access-denied messages — is available in English and French and follows the active site language.
+27. **FR-27:** All text in this feature — headings, column and field labels, help text, option and variant table labels, buttons, confirmations, validation messages, empty-state text, and access-denied messages — is available in English.
 
 ## 3. Functional Behaviors
 
@@ -122,8 +122,8 @@ View, create, and edit are each governed by their own fine-grained permission, c
 
 - This is an admin-panel feature. View, create, and edit are each gated by their own fine-grained permission in line with the store's access model — never by an "is an admin" shortcut and never by a single blanket "manage products" permission.
 - The product list shows 10 products per page, newest first; the page size and order are fixed and not chosen by the staff member.
-- Prices are entered and shown in Canadian dollars (CAD) using the site's currency format, in both languages.
-- A product's name and description are stored exactly as the staff member types them and are not translated — one description is entered, with no separate English and French versions. All of the feature's own interface text is available in English and French.
+- Prices are entered and shown in Canadian dollars (CAD) using Canadian English formatting.
+- A product's name and description are stored exactly as the staff member types them. All interface text is available in English.
 - Option type names and values are likewise entered once, untranslated, and are shown to customers as typed.
 - Images must be of an accepted type and within a size limit: PNG, JPG, and WebP up to 2 MB each — the same limits the store applies to a brand logo and a category image. No limit is placed on how many images, option types, or variants a single product may have.
 - A product's edit address identifies the product by its own permanent identifier, so a saved link keeps working after the product is renamed.
@@ -222,7 +222,7 @@ View, create, and edit are each governed by their own fine-grained permission, c
 - [ ] **AC-33:** Given a user without the product-view permission, when they attempt to reach the product list — including by direct link — then they receive the store's standard access-denied experience. Verifies FR-26, RULE-20.
 - [ ] **AC-34:** Given a saved edit link for a product that no longer exists, when a staff member with the product-edit permission opens it, then a clear message says the product could not be found and offers a way back to the product list; and given the product was renamed since the link was saved, when the link is opened, then it still opens that product. Verifies FR-5.
 - [ ] **AC-35:** Given no products exist, when a staff member with the product-view permission opens the list, then an empty-state message explains none have been added, offering the add-product option only if they hold that permission. Verifies FR-1, FR-3.
-- [ ] **AC-36:** Given the site language is switched between English and French, when the product list, the add form, the edit form, the image gallery, the option and variant tables, every confirmation, and every validation, empty-state, and access-denied message are viewed, then all of the feature's text follows the active language. Verifies FR-27.
+- [ ] **AC-36:** When the product list, forms, image gallery, option and variant tables, confirmations, validation, empty-state, and access-denied messages are viewed, all feature text appears in English. Verifies FR-27.
 - [ ] **AC-37:** Given a keyboard-only or screen-reader user with all three permissions, when they page through the list and complete the add and edit forms — uploading, reordering and choosing a primary image, adding options, configuring variants, and confirming a variant-discarding change — then every control is reachable and operable by keyboard with a visible focus indicator, validation messages are announced and associated with their field or variant row, upload progress and variant-list changes are announced, and each confirmation prompt takes focus when it opens and returns focus when dismissed. Verifies the accessibility constraint.
 
 ---

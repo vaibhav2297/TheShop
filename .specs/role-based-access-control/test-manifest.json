@@ -136,10 +136,10 @@
     {
       "id": "AC-11",
       "tests": [
-        "TheShop.Web.Tests.Resources.RbacLocalizationTests.RoleDisplayName_ForEveryBuiltInRole_IsAvailableInEnglishAndFrench",
-        "TheShop.Web.Tests.Resources.RbacLocalizationTests.AccessDeniedMessage_ForEveryKey_IsAvailableInEnglishAndFrench",
-        "TheShop.Web.Tests.Resources.RbacLocalizationTests.AdminPanelString_ForEveryKey_IsAvailableInEnglishAndFrench",
-        "TheShop.Web.Tests.Resources.RbacLocalizationTests.PermissionDisplayName_ForEveryCataloguePermission_IsAvailableInEnglishAndFrench"
+        "TheShop.Web.Tests.Resources.RbacLocalizationTests.RoleDisplayName_ForEveryBuiltInRole_IsAvailableInEnglish",
+        "TheShop.Web.Tests.Resources.RbacLocalizationTests.AccessDeniedMessage_ForEveryKey_IsAvailableInEnglish",
+        "TheShop.Web.Tests.Resources.RbacLocalizationTests.AdminPanelString_ForEveryKey_IsAvailableInEnglish",
+        "TheShop.Web.Tests.Resources.RbacLocalizationTests.PermissionDisplayName_ForEveryCataloguePermission_IsAvailableInEnglish"
       ]
     }
   ]

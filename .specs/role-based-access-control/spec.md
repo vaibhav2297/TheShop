@@ -62,7 +62,7 @@ The Shop is run by more than one kind of person: customers shop, while staff man
 - The role and permission structure must accommodate future custom roles, runtime role administration, and store/region-scoped assignments without a redesign of how access is granted today.
 - Signed-in admin staff have shorter session lifetimes than customers: an admin session ends after 8 hours or on sign-out, whichever comes first, and returning to the admin panel after expiry requires signing in again. Customer session behavior is unchanged from the Authentication feature.
 - Sensitive operations that ship in the admin panel — such as changing store settings or deactivating an account — always require an explicit confirmation dialog before taking effect; no re-entry of a sign-in code is required.
-- All role names, permission names, and access-denied messages shown anywhere in the store are available in both English and French.
+- All role names, permission names, and access-denied messages shown anywhere in the store are available in English.
 - The first Super Admin account is established as part of store setup, before any other admin exists — there is no in-app flow for creating it.
 
 ## 5. Edge Cases & Error Handling
@@ -87,7 +87,7 @@ The Shop is run by more than one kind of person: customers shop, while staff man
 - [ ] **AC-8:** No user can change their own role assignments through the store — any such request is refused. Verifies FR-10.
 - [ ] **AC-9:** Any change that would leave the platform with zero Super Admins is rejected with a clear message and no change is made. Verifies FR-10.
 - [ ] **AC-10:** An unauthorized attempt via direct link or a stale open screen shows an access-denied message and changes nothing. Verifies FR-12.
-- [ ] **AC-11:** All role names, permission names, and access-denied messages are available in both English and French. Verifies the localization constraint.
+- [ ] **AC-11:** All role names, permission names, and access-denied messages are available in English. Verifies the resource-string constraint.
 
 ---
 

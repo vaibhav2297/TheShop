@@ -41,7 +41,7 @@ Staff who run The Shop already have permission to reach the admin area, but they
 5. **FR-5:** A module card is shown only when the admin holds that module's view permission; a module they cannot view is absent from the dashboard, not shown greyed-out or disabled.
 6. **FR-6:** The admin-panel entry point in the account menu leads to the `/admin` dashboard, rather than opening a single module's page directly.
 7. **FR-7:** If a module's count cannot be retrieved, that card still renders with its name and navigation, showing a neutral placeholder in place of the number rather than failing the whole dashboard.
-8. **FR-8:** Every label, heading, count description, and message on the dashboard is available in both English and French.
+8. **FR-8:** Every label, heading, count description, and message on the dashboard is available in English.
 
 ## 3. Functional Behaviors
 
@@ -69,7 +69,7 @@ Staff who run The Shop already have permission to reach the admin area, but they
 - The admin console renders within the store's existing shared chrome — the same header and footer customers see, including the cart and storefront navigation.
 - Counts are fetched when the dashboard is opened and re-fetched on refresh; they do not update live while the page is open.
 - A capability the admin lacks is absent from the dashboard, never merely disabled — hiding is by omission.
-- All dashboard text (titles, module names, count labels, access-denied and unavailable messages) is available in English and French.
+- All dashboard text (titles, module names, count labels, access-denied and unavailable messages) is available in English.
 - The dashboard is keyboard-reachable: every card and its navigation control can be focused and activated without a mouse, with a visible focus indicator, and each count is announced to assistive technology together with its module name.
 
 ### Business Rules
@@ -97,7 +97,7 @@ Staff who run The Shop already have permission to reach the admin area, but they
 - [ ] **AC-4:** Given a signed-in customer, when they follow a direct link to `/admin`, then they are shown an access-denied message and no dashboard content; given a signed-out visitor, they are redirected to sign-in. Verifies FR-1, RULE-1.
 - [ ] **AC-5:** Given a module whose count cannot be retrieved, when the dashboard loads, then that card still renders with its name and a working link and shows a neutral placeholder instead of a number, and the other cards display normally. Verifies FR-7, RULE-3.
 - [ ] **AC-6:** Given a signed-in admin, when they select the admin-panel entry in the account menu, then they land on the `/admin` dashboard. Verifies FR-6.
-- [ ] **AC-7:** Given the dashboard displayed in French, when the admin views it, then all titles, module names, count labels, and messages appear in French. Verifies FR-8.
+- [ ] **AC-7:** When the admin views the dashboard, all titles, module names, count labels, and messages appear in English. Verifies FR-8.
 
 ---
 
