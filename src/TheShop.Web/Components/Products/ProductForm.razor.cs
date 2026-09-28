@@ -132,10 +132,17 @@ public partial class ProductForm : MudComponentBase
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
-        if (_initialized || Mode != ProductFormMode.Edit || InitialData is not { } data)
+        if (_initialized)
             return;
 
         _initialized = true;
+
+        if (Mode != ProductFormMode.Edit || InitialData is not { } data)
+        {
+            _variantsSeeded = true;
+            return;
+        }
+
         _name = data.Name;
         _description = data.Description;
         _sku = data.Sku;
@@ -150,6 +157,22 @@ public partial class ProductForm : MudComponentBase
         // in it from the start — otherwise saving an untouched form would clear them.
         ApplyGallery([.. data.Images.OrderBy(image => image.Position)
             .Select(image => ShopUploadedImage.Existing(image.Id, image.Url))]);
+
+        _optionTypes = [.. data.OptionTypes.OrderBy(type => type.Position).Select(type => new OptionTypeInput(
+            type.Id,
+            type.Name,
+            [.. type.Values.OrderBy(value => value.Position)
+                .Select(value => new OptionValueInput(value.Id, value.Value))]))];
+        _variants = [.. data.Variants.Select(variant => new VariantInput(
+            variant.Id,
+            variant.OptionValueIds,
+            variant.Sku,
+            variant.OriginalPrice,
+            variant.SalePrice,
+            variant.IsAvailable,
+            variant.PinnedImageId))];
+        _variantLabels = data.Variants.ToDictionary(variant => variant.Id, variant => variant.Label);
+        _variantsSeeded = true;
     }
 
     private void OnNameChanged(string value)
