@@ -21,6 +21,12 @@ public sealed class CatalogueJourneyTests(PlaywrightFixture playwright) : E2ETes
         var catalogue = new CataloguePage(Page);
         await catalogue.GotoAsync();
 
+        // Newest-first default sort means other journeys' generated e2e-product-* rows can bury
+        // the seeded row past page one; the Elf Bar filter (also used by AC6) isolates it instead
+        // of relying on an unpolluted first page.
+        await catalogue.ExpandFilterGroupAsync(Strings.Filter_Brand);
+        await catalogue.ToggleFilterOptionAsync("Elf Bar");
+
         await catalogue.ProductName("Elf Bar BC5000").WaitForAsync(new() { Timeout = 15_000 });
     }
 
@@ -30,10 +36,13 @@ public sealed class CatalogueJourneyTests(PlaywrightFixture playwright) : E2ETes
         var catalogue = new CataloguePage(Page);
         await catalogue.GotoAsync();
 
-        await catalogue.ProductName("Elf Bar BC5000").WaitForAsync(new() { Timeout = 15_000 });
-        await catalogue.ProductName("Vaporesso XROS 3").WaitForAsync(new() { Timeout = 15_000 });
-
         await catalogue.ExpandFilterGroupAsync(Strings.Filter_Brand);
+        await catalogue.ToggleFilterOptionAsync("Vaporesso");
+        await catalogue.ProductName("Vaporesso XROS 3").WaitForAsync(new() { Timeout = 15_000 });
+        (await catalogue.ProductName("Elf Bar BC5000").CountAsync()).Should().Be(0,
+            "the Elf Bar product must be filtered out once only the Vaporesso brand is selected");
+
+        await catalogue.ToggleFilterOptionAsync("Vaporesso");
         await catalogue.ToggleFilterOptionAsync("Elf Bar");
 
         await catalogue.ProductName("Elf Bar BC5000").WaitForAsync(new() { Timeout = 15_000 });

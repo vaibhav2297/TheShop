@@ -33,8 +33,16 @@ public sealed class ManageProductsPage(IPage page) : ShopPage(page)
     public ILocator EditLink(string productName) =>
         Page.GetByRole(AriaRole.Link, new() { Name = string.Format(Strings.ManageProducts_EditAria, productName) });
 
-    /// <summary>Navigates to a specific product's edit form via its row's edit link.</summary>
-    public async Task GotoEditProductAsync(string productName) => await EditLink(productName).ClickAsync();
+    /// <summary>
+    /// Navigates to a specific product's edit form via its row's edit link. The list defaults to
+    /// name-ascending (manage-product FR-5) and pages at ten rows, so a freshly generated
+    /// <c>e2e-product-*</c> row is not reliably on page one; search narrows it first.
+    /// </summary>
+    public async Task GotoEditProductAsync(string productName)
+    {
+        await SearchAsync(productName);
+        await EditLink(productName).ClickAsync();
+    }
 
     /// <summary>
     /// The table row owning a product, matched on an exact name cell rather than substring text —
@@ -52,7 +60,7 @@ public sealed class ManageProductsPage(IPage page) : ShopPage(page)
 
     /// <summary>Locator for the next-page pagination button, by its accessible page number.</summary>
     public ILocator PageButton(int pageNumber) =>
-        Page.GetByRole(AriaRole.Button, new() { Name = pageNumber.ToString() });
+        Page.GetByRole(AriaRole.Button, new() { Name = $"Page {pageNumber}", Exact = true });
 
     /// <summary>Moves to a given page via the pagination control.</summary>
     public Task GotoPageAsync(int pageNumber) => PageButton(pageNumber).ClickAsync();
@@ -63,6 +71,7 @@ public sealed class ManageProductsPage(IPage page) : ShopPage(page)
     /// </summary>
     public async Task<Guid> GetProductIdAsync(string productName)
     {
+        await SearchAsync(productName);
         var href = await EditLink(productName).GetAttributeAsync("href");
         var match = System.Text.RegularExpressions.Regex.Match(
             href ?? string.Empty, @"/admin/products/([0-9a-fA-F-]{36})/edit");

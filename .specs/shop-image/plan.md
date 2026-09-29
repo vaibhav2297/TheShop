@@ -82,7 +82,7 @@ None added or modified.
 3. **One ratio definition.** C# registry owns reference dimensions; calculated ratio passes through a component-local CSS custom property composed by `StyleBuilder`. Static layout rules live in `_image.scss`; no duplicate numeric ratio map in SCSS. Consumer `Class`, `Style`, and root attributes remain forwarded. Use MudBlazor parameters for fit/position and utilities for color/spacing; dynamic ratio value is the remaining styling input under Rules 26–28.
 4. **Separate frame background from asset.** Use existing project styling; user confirmed no feature-specific Figma on 2026-09-12. Product-card frame uses `mud-tertiary-bg` and existing 16px inset expressed as `pa-4`, with square ratio and confirmed `Contain`. Keep action overlays owned by `ProductCard`; no tinting, background removal, or rewriting uploaded image pixels. Figma inspection is not an implementation prerequisite.
 5. **Provider isolation with compatibility.** Add `Infrastructure/Storage/PlaceholdImagePlaceholderProvider.cs`, implementing the new interface. Centralize existing URL syntax, `E8E8E8`, `7A7A7A`, and `raleway` there. Existing internal `PlaceholderImage.For(label)` delegates to shared formatter with 400×400 defaults; its three current consumers remain unchanged. Web regenerates recognized legacy placeholders at active preset dimensions. Reject provider URL parsing in Razor and unrelated repository/DTO refactoring. Constitution Rules 1–3 apply.
-6. **Mobile source selection through MudBlazor.** Only `Hero` and `CategoryBanner` subscribe to existing `IBrowserViewportService`; unsubscribe on disposal. Select source, preset, fallback dimensions, and intrinsic attributes together. CSS reserves desktop/mobile frame using corresponding variables before image arrival. Proposed mobile threshold: below 600 CSS pixels; see Section 11. No raw `<picture>` or separate hidden desktop/mobile image pair.
+6. **Mobile source selection through MudBlazor.** Only `Hero` and `CategoryBanner` subscribe to existing `IBrowserViewportService`; unsubscribe on disposal. Select source, preset, fallback dimensions, and intrinsic attributes together. CSS reserves desktop/mobile frame using corresponding variables before image arrival. Mobile threshold ratified: below 600 CSS pixels (MudBlazor Xs boundary); tablet/desktop use desktop ratio. No raw `<picture>` or separate hidden desktop/mobile image pair.
 7. **Source changes reset image failure state.** Resolve blank or recognized placeholder sources to named placeholder. Otherwise set real `Src` and generated `FallbackSrc`. Key inner `MudImage` by effective source/preset/label so reused rows, source changes, and language changes cannot retain an old fallback. Keep outer frame stable. MudImage's built-in fallback prevents repeated reassignment to the same failing URL.
 8. **Preserve content and authorization.** Never mutate stored source URLs, selection IDs, upload bytes, permissions, handlers, routes, or busy keys. Apply presets inside existing permission boundaries. Existing upload `PreviewSize` still controls parent slot; file-reading, validation, and removal semantics stay unchanged.
 
@@ -147,11 +147,11 @@ Infrastructure and Web start only after interface row becomes Stable during impl
 
 **Design baseline**
 
-- User confirmed no feature-specific Figma on 2026-09-12; use existing project styling. Earlier product-card node was not inspected and is not a required design source.
-- Product frame baseline: `ProductCard.razor`, `_producttile.scss`, `ShopColors.Tertiary`, and confirmed square/contained treatment. Apply Section 5 decision 4; preserve other callers' existing surrounding layouts. No Figma parity claim or reconnect requirement.
+- 2026-09-28: user supplied Figma node `2009-5162` (file `The-Vape-Shop`, `63Ieb8AduwMHoVHwzZ7UO3`) as design source. Capture blocked; see Section 11. Earlier 2026-09-12 note (no Figma) superseded.
+- Product frame baseline: `ProductCard.razor`, `_producttile.scss`, `ShopColors.Tertiary`, and confirmed square/contained treatment. Apply Section 5 decision 4; preserve other callers' existing surrounding layouts. Figma parity claimed only after `design-contract.json` captures node `2009-5162`.
 
 - [ ] **TASK-004** — Add `Theme/ShopImagePreset.cs`, `ShopImagePresetDefinition.cs`, `ShopImagePresets.cs`; add `Styles/components/_image.scss`, import through `Styles/TheShop.scss`. Implement all ten registry entries, frame rules, mobile variables, and caller-sized logo slot. No fixed responsive image width.
-- [ ] **TASK-005** — Add `Components/Common/ShopImage.razor` and `.razor.cs`; add Section 9 resource entries to English/French resources before caller adoption. Parameters: `ShopImagePreset Preset`, `string? Src`, `string? MobileSrc`, required `string Label`, required `string Alt`, `bool Decorative`, and `bool Lazy`. Default `Lazy = false`; callers opt in below fold. Inherit/forward `Class`, `Style`, `UserAttributes`; separate `ImageAttributes` for leaf image attributes. Methods: `OnParametersSet()`, `OnAfterRenderAsync(bool firstRender)`, private `Task OnViewportChangedAsync(BrowserViewportEventArgs args)`, `ValueTask DisposeAsync()`. Register viewport subscription only for adaptive presets. Implement Section 5 fallback reset and existing project frame styling.
+- [ ] **TASK-005** — Add `Components/Common/ShopImage.razor` and `.razor.cs`; add Section 9 resource entries to `Strings.resx` (English only) before caller adoption. Parameters: `ShopImagePreset Preset`, `string? Src`, `string? MobileSrc`, required `string Label`, required `string Alt`, `bool Decorative`, and `bool Lazy`. Default `Lazy = false`; callers opt in below fold. Inherit/forward `Class`, `Style`, `UserAttributes`; separate `ImageAttributes` for leaf image attributes. Methods: `OnParametersSet()`, `OnAfterRenderAsync(bool firstRender)`, private `Task OnViewportChangedAsync(BrowserViewportEventArgs args)`, `ValueTask DisposeAsync()`. Register viewport subscription only for adaptive presets. Implement Section 5 fallback reset and existing project frame styling.
 - [ ] **TASK-006** — Adopt `ShopImage` in `Components/Products/ProductCard.razor` and remove competing image width/height/padding/object-fit rules from `_producttile.scss`. Preserve overlay positions and callbacks. Frame owns inset once; no double padding. Remove store-logo fallback in this caller.
 - [ ] **TASK-007** — Adopt `Thumbnail` in `ShopImageUpload.razor`, `VariantImageDialog.razor`, `Pages/Admin/ManageProducts.razor`, `ManageCategories.razor`, and `EditCategory.razor`. Retain existing avatar/preview/dialog slot widths. Use `BrandLogo` for `ManageBrands.razor` and `EditBrand.razor`. Keep existing conditional upload/edit sections and selection behavior. Replace pointer-only variant-image selection wrapper with a MudBlazor button exposing selection, keyboard activation, and focus under AC-13; preserve callback and overlay. Pass resource-formatted descriptions and associated names/labels.
 - [ ] **TASK-008** — Adopt `BrandLogo` in `ShopAppBar.razor`, `ShopFooter.razor`, `Pages/Auth/SignIn.razor`, `SignInVerify.razor`, `SignUp.razor`, `SignUpVerify.razor`. Reserve existing caller slot sizes before load; cap them to available width. Retain links and surrounding text. Reuse `Strings.AppName`, `Strings.Product_ImageAlt`, existing upload labels, and Section 9 resources.
@@ -218,10 +218,10 @@ No Application validators, Domain exceptions, or new `Result.Fail` keys: this fe
 
 New UI resources, Web-owned:
 
-| Key | English | French |
-|---|---|---|
-| `Strings.ShopImage_Description` | Image of {0} | Image de {0} |
-| `Strings.ShopImage_BrandDescription` | Logo of {0} | Logo de {0} |
+| Key | English |
+|---|---|
+| `Strings.ShopImage_Description` | Image of {0} |
+| `Strings.ShopImage_BrandDescription` | Logo of {0} |
 
 Existing `Strings.Product_ImageAlt` remains product description template. `Strings.AppName` remains site-logo label. New upload previews use localized supplied label rather than exporting local filenames into placeholder requests. No changes to price, tax, date, or currency formatting.
 
@@ -231,9 +231,9 @@ No schema, migrations, indexes, buckets, or RLS changes. Existing storage paths 
 
 ## 11. Open Questions, Risks & Assumptions
 
-- **📌 Assumption:** Mobile banner presentation applies below 600 CSS pixels; tablet/desktop uses desktop ratio. Keep CSS threshold aligned with existing MudBlazor breakpoint service. Ratify before TASK-004/005.
-- **⚠️ Risk:** Remote Placehold outage can prevent fallback label rendering. TASK-005 bounds retries and preserves frame; offline local fallback is not confirmed product scope. Raise any proposed local fallback through spec clarification before adding behavior.
-- **⚠️ Risk:** Several presets lack existing destination screens. TASK-009 proves registry/component contracts; TASK-011 distinguishes unit-proven cases from actual browser layout evidence. No claim of browser-rendered geometry from bUnit alone.
+- ❓ **Open question:** Figma node `https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=2009-5162` supplied 2026-09-28. Figma MCP servers (`figma-console`, `framelink-figma`) failed to connect (`CONNECT_TIMEOUT`). `design-contract.json` (mode `figma`) needs node context, screenshot, revision, SHA-256, surface mappings, tolerances. Reconnect MCP or supply exported screenshot/measurements with provenance, then rerun `$theshop-resolve shop-image`.
+- ⚠️ Risk — ✅ Accepted: Remote Placehold outage can prevent fallback label rendering. TASK-005 bounds retries and preserves frame; offline local fallback is not product scope.
+- ⚠️ Risk — ✅ Accepted: Several presets lack existing destination screens. TASK-009 proves registry/component contracts; TASK-011 distinguishes unit-proven cases from browser layout evidence. No browser-geometry claim from bUnit alone.
 
 ---
 **Status:** Draft · **Spec:** `.specs/shop-image/spec.md` · **Created:** 2026-09-11

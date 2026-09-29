@@ -7,7 +7,7 @@
       "fqn": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests",
       "file": "tests/TheShop.E2E.Tests/Journeys/CreateProductJourneyTests.cs",
       "persona": "admin",
-      "tests": 20
+      "tests": 19
     },
     {
       "fqn": "TheShop.E2E.Tests.Journeys.CreateProductViewOnlyJourneyTests",
@@ -23,7 +23,7 @@
     }
   ],
   "acceptanceCriteria": [
-    { "id": "AC-1", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC1_Admin_sees_published_and_unpublished_products_with_pagination_and_no_search_controls" },
+    { "id": "AC-1", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC1_Admin_sees_published_and_unpublished_products_with_pagination_search_filter_and_sort_controls" },
     { "id": "AC-2", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC2_Moving_to_the_next_page_shows_the_next_set_in_the_same_order" },
     { "id": "AC-3", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductViewOnlyJourneyTests.AC3_View_only_staff_see_no_add_or_edit_controls_and_direct_links_are_denied" },
     { "id": "AC-4", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC4_Admin_creates_a_published_product_and_it_appears_in_the_catalogue" },
@@ -41,14 +41,14 @@
     { "id": "AC-16", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests.ToDomain_WithNoMinVariantPriceColumnAndNoEmbeddedVariants_MapsHasVariantsFalse" },
     { "id": "AC-17", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC17_The_form_states_customers_pay_the_lowest_variant_price_once_variants_exist" },
     { "id": "AC-18", "coverage": "unit", "evidence": "TheShop.Domain.Tests.Entities.ProductTests.Product_CarriesNoDedicatedFlavourOrNicotineProperty" },
-    { "id": "AC-19", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC19_A_minimal_draft_saves_as_unpublished_and_reopens_exactly_as_left" },
+    { "id": "AC-19", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC19_A_draft_without_a_price_is_refused_and_completing_it_saves_as_unpublished", "reason": "Rewritten (2026-09-29): price is now mandatory at every save, including Unpublished, per explicit product decision — the opposite of this AC's original wording and of spec.md RULE-15's exception list (name/SKU/category/brand only). spec.md and this AC's text still need a formal amendment via theshop-spec/theshop-clarify to match; this evidence covers current behavior, not the current spec text." },
     { "id": "AC-20", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC20_Publishing_an_incomplete_product_is_refused_listing_what_is_missing" },
     { "id": "AC-21", "coverage": "unit", "evidence": "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithBlankName_HasNameRequiredError" },
     { "id": "AC-22", "coverage": "unit", "evidence": "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WithADuplicateName_FailsWithNameAlreadyExists" },
     { "id": "AC-23", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.AddProductTests.Render_LoadsActiveCategoriesAndBrandsIntoTheForm" },
     { "id": "AC-24", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.EditProductTests.Render_WhenTheAssignedCategoryHasSinceBeenDeactivated_StillOffersItInTheForm" },
     { "id": "AC-25", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC25_A_sale_price_at_or_above_the_price_is_refused_and_a_valid_one_shows_the_discount" },
-    { "id": "AC-26", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC26_No_stock_quantity_control_exists_on_the_product_or_variant_rows" },
+    { "id": "AC-26", "coverage": "manual", "reason": "Test removed by explicit direction (2026-09-29): stock_quantity was dropped from products/product_variants by migration 0026_remove_product_stock.sql, so the browser has nothing to assert against. spec.md FR-8/RULE-6/RULE-8/RULE-14 and status.md still record stock-quantity as required and its removal as an open blocker — this manifest entry does not resolve that; a spec decision (theshop-spec/theshop-clarify) is still needed to either restore the feature or formally drop it." },
     { "id": "AC-27", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.InsertSkuRegistryRow_WithASkuAlreadyUsedByAnotherProduct_ThrowsUniqueViolation" },
     { "id": "AC-28", "coverage": "unit", "evidence": "TheShop.Domain.Tests.Entities.ProductOptionTypeTests.Create_WithDuplicateValuesIgnoringCaseAndSpaces_ThrowsDuplicateOptionValueException" },
     { "id": "AC-29", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.CreateProductJourneyTests.AC29_A_published_product_whose_every_variant_is_unavailable_shows_out_of_stock" },

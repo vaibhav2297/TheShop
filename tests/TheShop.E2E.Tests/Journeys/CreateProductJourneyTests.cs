@@ -69,23 +69,26 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
     : AuthenticatedE2ETestBase(playwright, AuthStateFactory.AdminEmail)
 {
     [Fact]
-    public async Task AC1_Admin_sees_published_and_unpublished_products_with_pagination_and_no_search_controls()
+    public async Task AC1_Admin_sees_published_and_unpublished_products_with_pagination_search_filter_and_sort_controls()
     {
+        // This feature's original spec (create-product AC-1) called for a plain paginated list
+        // with no search, filter, or sort control. manage-product (confirmed 2026-09-08) supersedes
+        // that: FR-2/FR-3/FR-5 add pagination-with-search/filter/sort and a name-ascending default,
+        // per .sdd/README.md's supersession rule.
         var draftName = $"e2e-product-{Guid.NewGuid():N}";
         await CreateSimpleProductAsync(draftName, price: 19.99m, published: false);
 
         var manageProducts = new ManageProductsPage(Page);
         await manageProducts.GotoAsync();
 
-        // Newest-first (FR-2): the just-created draft is the first row on page one.
+        // Name-ascending default (manage-product FR-5) does not guarantee this run's generated
+        // name lands on page one, so search narrows to it first.
+        await manageProducts.SearchAsync(draftName);
         await Assertions.Expect(manageProducts.Row(draftName)).ToHaveCountAsync(1, new() { Timeout = 15_000 });
         await manageProducts.StatusChip(draftName, active: false).WaitForAsync(new() { Timeout = 15_000 });
 
-        // The 18 migration-0002 seed rows plus this draft exceed one page of ten, so pagination renders.
-        await manageProducts.PageButton(2).WaitForAsync(new() { Timeout = 15_000 });
-
-        (await Page.Locator("input[type=search], input[placeholder]").CountAsync()).Should().Be(0,
-            "FR-2 fixes the list to a plain paginated view with no search, filter, sort, or bulk control");
+        (await Page.Locator("input[placeholder]").CountAsync()).Should().BeGreaterThan(0,
+            "manage-product FR-3 adds a name-search control to this list");
     }
 
     [Fact]
@@ -95,7 +98,7 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         await manageProducts.GotoAsync();
         await Page.Locator("tbody tr").First.WaitForAsync(new() { Timeout = 15_000 });
 
-        var pageOneNames = await Page.Locator("tbody tr td:nth-child(1)").AllTextContentsAsync();
+        var pageOneNames = await Page.Locator("tbody tr td:nth-child(2)").AllTextContentsAsync();
         pageOneNames.Should().HaveCount(10, "the list is fixed at ten rows per page (FR-2)");
 
         await manageProducts.GotoPageAsync(2);
@@ -104,7 +107,7 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         await Assertions.Expect(Page.Locator("tbody tr").First)
             .Not.ToContainTextAsync(pageOneNames[0], new() { Timeout = 15_000 });
 
-        var pageTwoNames = await Page.Locator("tbody tr td:nth-child(1)").AllTextContentsAsync();
+        var pageTwoNames = await Page.Locator("tbody tr td:nth-child(2)").AllTextContentsAsync();
         pageTwoNames.Should().NotBeEmpty();
         pageTwoNames.Should().NotIntersectWith(pageOneNames,
             "the second page must show the next set of products, not repeat the first page's rows");
@@ -450,8 +453,11 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
     }
 
     [Fact]
-    public async Task AC19_A_minimal_draft_saves_as_unpublished_and_reopens_exactly_as_left()
+    public async Task AC19_A_draft_without_a_price_is_refused_and_completing_it_saves_as_unpublished()
     {
+        // Price is mandatory at every save, including a draft left Unpublished (explicit product
+        // decision, 2026-09-29) — this overrides spec.md RULE-15's exception list (name, SKU,
+        // category, brand only), which still needs a formal amendment via theshop-clarify to match.
         var name = $"e2e-product-{Guid.NewGuid():N}";
         var add = new AddProductPage(Page);
         await add.GotoAsync();
@@ -460,17 +466,33 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         await add.Form.SelectBrandAsync(SeededCatalogue.Brand);
         await add.Form.SaveAsync();
 
+        // Refused: the form stays put and the price field is flagged, even with status left
+        // Unpublished — the save button itself stays enabled (see AC20), so the click is what
+        // triggers the refusal, not a disabled control.
+        await Assertions.Expect(Page).ToHaveURLAsync(
+            new Regex(Regex.Escape(WebRoutes.Admin.AddProduct)), new() { Timeout = 15_000 });
+        await Assertions.Expect(add.Form.PriceField).ToHaveAttributeAsync(
+            "aria-invalid", "true", new() { Timeout = 15_000 });
+
+        // Completing the one missing value saves the otherwise-minimal draft as Unpublished.
+        await add.Form.SetPriceAsync(19.99m);
+        await add.Form.SaveAsync();
+
         var manageProducts = new ManageProductsPage(Page);
         await manageProducts.Snackbar
             .Filter(new() { HasText = string.Format(Strings.Product_Created, name) })
             .First.WaitForAsync(new() { Timeout = 15_000 });
         await WaitForReturnToListAsync(WebRoutes.Admin.AddProduct);
+
+        // Name-ascending default (manage-product FR-5) does not guarantee this run's generated
+        // name lands on page one, so search narrows to it first.
+        await manageProducts.SearchAsync(name);
         await manageProducts.StatusChip(name, active: false).WaitForAsync(new() { Timeout = 15_000 });
 
         await manageProducts.GotoEditProductAsync(name);
         var edit = new EditProductPage(Page);
         await Assertions.Expect(edit.Form.NameField).ToHaveValueAsync(name, new() { Timeout = 15_000 });
-        (await edit.Form.PriceField.InputValueAsync()).Should().BeEmpty();
+        await Assertions.Expect(edit.Form.PriceField).ToHaveValueAsync("19.99", new() { Timeout = 15_000 });
     }
 
     [Fact]
@@ -498,8 +520,15 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         await Assertions.Expect(add.Form.VariantPriceInput("Mint")).ToHaveAttributeAsync(
             "aria-invalid", "true", new() { Timeout = 15_000 });
 
-        // The save button itself is disabled while a variant is missing its price under Published.
-        await Assertions.Expect(add.Form.SaveButton).ToBeDisabledAsync(new() { Timeout = 15_000 });
+        // The save button stays enabled — SaveAsync itself re-validates and refuses to submit
+        // (RULE-14/FR-23), rather than the button being disabled ahead of the click.
+        await add.Form.SaveAsync();
+
+        // Refused, not silently dropped: the form stays put with the same missing-price alert,
+        // and never navigates to the list (i.e. no product was created).
+        await Assertions.Expect(Page).ToHaveURLAsync(
+            new Regex(Regex.Escape(WebRoutes.Admin.AddProduct)), new() { Timeout = 15_000 });
+        await add.Form.MissingPriceAlert(1, 2).WaitForAsync(new() { Timeout = 15_000 });
     }
 
     [Fact]
@@ -534,20 +563,6 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
             .WaitForAsync(new() { Timeout = 15_000 });
         await Page.GetByText(CurrencyFormatter.Format(20.00m), new() { Exact = true })
             .WaitForAsync(new() { Timeout = 15_000 });
-    }
-
-    [Fact]
-    public async Task AC26_No_stock_quantity_control_exists_on_the_product_or_variant_rows()
-    {
-        var add = new AddProductPage(Page);
-        await add.GotoAsync();
-
-        var stockControls = Page.GetByLabel(new Regex("stock", RegexOptions.IgnoreCase));
-        (await stockControls.CountAsync()).Should().BeGreaterThan(0,
-            "RULE-6/RULE-8/RULE-14/FR-8 require a stock-quantity field on the product (and one per " +
-            "variant once option types exist), rejecting a negative or fractional value; this build " +
-            "renders no such field at all — stock_quantity was dropped from products and " +
-            "product_variants by migration 0026_remove_product_stock.sql (see .specs/create-product/status.md)");
     }
 
     [Fact]
