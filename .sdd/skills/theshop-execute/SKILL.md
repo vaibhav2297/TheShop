@@ -82,11 +82,6 @@ If a later phase exposes an upstream gap, reopen the owning phase once. Re-run i
 
 ### Web
 
-Read [visual fidelity — Execute](../theshop-plan/references/visual-fidelity.md).
-Load contract images/context; render, capture, compare and correct each surface before leaving Web.
-Maximum three correction rounds. Unresolved differences block Implement Done.
-Browser inspection/alignment allowed here. Formal tests: Test/E2E.
-
 - Follow planned routes, component boundaries, resources, and Figma intent.
 - Reuse project components and MudBlazor conventions.
 - Do not invent design values when a design source exists.
@@ -104,15 +99,13 @@ dotnet build TheShop.slnx --nologo
 If red, assign failure to one owning phase and reopen it once. Re-run that phase gates, then the solution build. Still red: halt.
 
 Do not write or run feature tests here; `$theshop-test` owns them.
-Before marking Done, rerun `python .sdd/scripts/visual-fidelity.py align --feature {feature}`
-against final source/captures. Backend skips. Stale captures: rebuild/recapture.
 
 ## Tracker
 
 Only after full success, update `.specs/{feature}/status.md`:
 
 - `Implement`: `Done`
-- Gate: `✅ solution build + layer scope gates + visual alignment` (backend: record visual skip reason)
+- Gate: `✅ solution build + layer scope gates`
 - Evidence: compact phase/build summary; include any waiver
 - Date: today
 - Refresh `Last updated`

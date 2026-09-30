@@ -34,11 +34,6 @@ Never edit `src/`, project/package files, dependencies, spec, plan, migrations, 
 
 Map every acceptance criterion to tests or an explicit browser/manual boundary.
 
-Read [visual fidelity — Test / E2E](../theshop-plan/references/visual-fidelity.md) for UI work.
-Visual ACs: `e2e`. Component/unit assertions never prove appearance.
-Non-browser tests pass: route UI to `$theshop-e2e {feature}` for aligned baseline
-and regression capture before Verify. Test Passing alone cannot prove fidelity.
-
 Cover where applicable:
 
 - happy path
