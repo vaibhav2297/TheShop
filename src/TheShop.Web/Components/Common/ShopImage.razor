@@ -1,0 +1,39 @@
+@inherits MudComponentBase
+
+<MudStack Class="@Classname"
+          Style="@Stylename"
+          Spacing="0"
+          UserAttributes="@RootAttributes">
+
+    @foreach (var branch in Branches)
+    {
+        @if (branch.ShowsImage)
+        {
+            <MudImage @key="@($"{branch.Key}-image")"
+                      Src="@branch.Src"
+                      Alt="@Alt"
+                      ObjectFit="@Fit"
+                      ObjectPosition="ObjectPosition.Center"
+                      Class="@branch.MediaClassname"
+                      data-shop-image-branch="@branch.Key" />
+        }
+        else
+        {
+            @* Named placeholder: sits inside the same reserved frame, so a missing or failed source
+               never collapses the space or moves surrounding content. *@
+            <MudStack @key="@($"{branch.Key}-placeholder")"
+                      Class="@branch.PlaceholderClassname"
+                      AlignItems="AlignItems.Center"
+                      Justify="Justify.Center"
+                      Spacing="0"
+                      UserAttributes="@PlaceholderAttributes">
+                <MudText Typo="Typo.caption"
+                         Align="Align.Center"
+                         Color="Color.Secondary"
+                         Class="shop-image__label"
+                         aria-hidden="true">@PlaceholderLabel</MudText>
+            </MudStack>
+        }
+    }
+
+</MudStack>

@@ -36,11 +36,11 @@
                         @if (_hasExistingImage)
                         {
                             <MudStack Spacing="2" AlignItems="AlignItems.Start">
-                                <MudImage Src="@_existingImageUrl"
-                                          Alt="@Strings.AddCategory_ImageLabel"
-                                          Width="120"
-                                          Height="120"
-                                          ObjectFit="ObjectFit.Cover" />
+                                <ShopImage Src="@_existingImageUrl"
+                                           Preset="ShopImagePreset.Thumbnail"
+                                           Alt="@Strings.AddCategory_ImageLabel"
+                                           PlaceholderLabel="@Strings.AddCategory_ImageLabel"
+                                           Style="width: 120px;" />
                                 <MudButton Variant="Variant.Text"
                                            Color="Color.Error"
                                            Disabled="@busy"

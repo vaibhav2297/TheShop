@@ -10,12 +10,12 @@
         <MudItem xs="12" md="3">
             <MudStack Spacing="4">
                 <MudStack Spacing="2">
-                    <MudLink Href="@Routes.Home" Underline="Underline.None">
-                        <MudImage Src="@ShopIcons.ImageAssets.LogoPrimary"
-                                  Alt="@Strings.AppName"
-                                  Width="120"
-                                  Height="120"
-                                  ObjectFit="ObjectFit.Contain" />
+                    <MudLink Href="@Routes.Home" Underline="Underline.None" Class="d-inline-flex">
+                        <ShopImage Src="@ShopIcons.ImageAssets.LogoPrimary"
+                                   Preset="ShopImagePreset.BrandLogo"
+                                   Alt="@Strings.AppName"
+                                   PlaceholderLabel="@Strings.AppName"
+                                   Style="width: 120px; height: 120px;" />
                     </MudLink>
                     <MudText Typo="Typo.body2" Color="Color.Secondary">@Strings.Footer_Tagline</MudText>
                 </MudStack>

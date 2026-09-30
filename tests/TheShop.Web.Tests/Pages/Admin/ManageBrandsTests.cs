@@ -464,6 +464,40 @@ public class ManageBrandsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "shop-image")]
+    public async Task Render_WhenBrandsExist_ShowsEachLogoWholeInItsReservedAvatarSpace()
+    {
+        var cut = await RenderListAsync();
+
+        var images = cut.FindComponents<ShopImage>();
+        images.Should().NotBeEmpty();
+        images.Should().OnlyContain(i => i.Instance.Preset == ShopImagePreset.BrandLogo);
+        cut.FindAll(".mud-avatar > [data-shop-image]").Should().HaveCount(images.Count);
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public async Task Render_WhenABrandHasNoLogo_ShowsItsNameInsteadOfABrokenImage()
+    {
+        var brand = new BrandListItemDto(Guid.NewGuid(), "Lost Mary", "No logo yet", string.Empty, true, 0);
+        SetUpKnownBrandsList([brand]);
+
+        var cut = await RenderListAsync();
+
+        cut.Find(".mud-avatar .shop-image__placeholder").TextContent.Trim().Should().Be("Lost Mary");
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public void ManageBrands_WithBrandLogoImages_KeepsTheBrandsViewAuthorizePolicy()
+    {
+        typeof(ManageBrands).GetCustomAttributes<AuthorizeAttribute>()
+            .Should().Contain(a => a.Policy == PolicyNames.Permission(PermissionCatalogue.Brands.View.Code));
+        typeof(ShopImage).GetCustomAttributes<AuthorizeAttribute>()
+            .Should().BeEmpty("image presets grant no access of their own");
+    }
+
+    [Fact]
     [Trait("Feature", "manage-brands")]
     public async Task Render_WhenBrandsSpanMultiplePages_ShowsPaginationControls()
     {

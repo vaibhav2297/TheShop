@@ -84,6 +84,27 @@ public class EditBrandTests : TestContext
     }
 
     // =========================================================================
+    // Existing logo treatment (shop-image AC-8, AC-13)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public async Task Render_WithAnExistingLogo_ContainsItInTheReservedLogoSpaceBesideTheRemoveAction()
+    {
+        var dto = ExampleDto(logoUrl: "https://example.com/wide-logo.svg");
+        SetUpExistingBrand(dto);
+        AuthorizeAsBrandEditor();
+
+        var cut = await RenderAsync(dto.Id);
+
+        var logo = cut.FindComponent<ShopImage>();
+        logo.Instance.Preset.Should().Be(ShopImagePreset.BrandLogo);
+        logo.Instance.Src.Should().Be("https://example.com/wide-logo.svg");
+        logo.Find("[data-shop-image]").GetAttribute("style").Should().Contain("width: 120px").And.Contain("height: 120px");
+        cut.FindAll("button").Should().Contain(b => b.TextContent.Contains(Strings.AddBrand_LogoRemove));
+    }
+
+    // =========================================================================
     // Permission gating — the page-level brands.edit gate, not the query, denies a direct link
     // (plan §5 Decision 11, AC-16)
     // =========================================================================

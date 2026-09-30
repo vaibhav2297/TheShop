@@ -382,6 +382,26 @@ public class ManageCategoriesTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "shop-image")]
+    public async Task Render_WhenCategoriesExist_ShowsEachImageWholeAsASquareThumbnail()
+    {
+        var cut = await RenderListAsync();
+
+        var images = cut.FindComponents<ShopImage>();
+        images.Should().NotBeEmpty();
+        images.Should().OnlyContain(i => i.Instance.Preset == ShopImagePreset.Thumbnail);
+        cut.FindAll(".mud-avatar > [data-shop-image]").Should().HaveCount(images.Count);
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public void ManageCategories_WithThumbnailImages_KeepsTheCategoriesViewAuthorizePolicy()
+    {
+        typeof(ManageCategories).GetCustomAttributes<AuthorizeAttribute>()
+            .Should().Contain(a => a.Policy == PolicyNames.Permission(PermissionCatalogue.Categories.View.Code));
+    }
+
+    [Fact]
     [Trait("Feature", "manage-categories")]
     public async Task Render_WhenCategoriesSpanMultiplePages_ShowsPaginationControls()
     {

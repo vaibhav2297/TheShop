@@ -61,6 +61,22 @@ public class ShopFooterTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "shop-image")]
+    public void Render_Always_KeepsTheLogoLinkNamedAndTheLogoWholeInItsReservedSpace()
+    {
+        var cut = Render<ShopFooter>();
+
+        var logo = cut.FindComponent<ShopImage>();
+        logo.Instance.Preset.Should().Be(ShopImagePreset.BrandLogo);
+        logo.Find("[data-shop-image]").GetAttribute("style").Should().Contain("width: 120px").And.Contain("height: 120px");
+
+        var link = cut.Find($"a:has(img[src='{ShopIcons.ImageAssets.LogoPrimary}'])");
+        link.HasAttribute("href").Should().BeTrue("the logo stays a keyboard-reachable link");
+        link.QuerySelector("img")!.GetAttribute("alt").Should().Be(Strings.AppName, "the image supplies the link's accessible name");
+        link.QuerySelectorAll("[tabindex], button").Should().BeEmpty("the image adds no extra keyboard stop");
+    }
+
+    [Fact]
     [Trait("Feature", "footer")]
     public void Render_Always_ShowsThreeSocialControlsWithAriaLabels()
     {

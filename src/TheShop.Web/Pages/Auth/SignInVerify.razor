@@ -102,11 +102,11 @@
                   Justify="Justify.Center"
                   Class="flex-1 my-4 me-4 mud-surface"
                   Spacing="4">
-            <MudImage Src="@ShopIcons.ImageAssets.LogoPrimary"
-                      Alt="@Strings.AppName"
-                      Width="280"
-                      Height="280"
-                      ObjectFit="ObjectFit.Contain" />
+            <ShopImage Src="@ShopIcons.ImageAssets.LogoPrimary"
+                       Preset="ShopImagePreset.BrandLogo"
+                       Alt="@Strings.AppName"
+                       PlaceholderLabel="@Strings.AppName"
+                       Style="width: 280px; height: 280px;" />
             <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Strings.App_Tagline</MudText>
         </MudStack>
     </MudItem>

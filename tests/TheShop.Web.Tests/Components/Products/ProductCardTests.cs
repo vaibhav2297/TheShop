@@ -7,6 +7,7 @@ using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Common;
+using TheShop.Web.Components.Common;
 using TheShop.Web.Components.Products;
 using TheShop.Web.Resources;
 using TheShop.Web.Theme;
@@ -169,7 +170,67 @@ public class ProductCardTests : TestContext
         var dto = BuildDto(imageUrl: blankImageUrl);
         var cut = Render<ProductCard>(p => p.Add(c => c.Product, dto));
 
-        cut.Find("img").GetAttribute("src").Should().Be(ShopIcons.ImageAssets.LogoPrimary);
+        // shop-image FR-5 supersedes the old storefront-logo fallback with a named placeholder.
+        cut.FindAll("img").Should().BeEmpty();
+        cut.Find(".media-section .shop-image__placeholder").TextContent.Trim().Should().Be(dto.Name);
+    }
+
+    // =========================================================================
+    // Shop image treatment (shop-image AC-1, AC-11, AC-12, AC-13)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public void Render_Always_ShowsTheWholeProductImageInASquareProductCardFrame()
+    {
+        var dto = BuildDto(imageUrl: "https://example.com/tall.webp");
+        var cut = Render<ProductCard>(p => p.Add(c => c.Product, dto));
+
+        var image = cut.FindComponent<ShopImage>().Instance;
+        image.Preset.Should().Be(ShopImagePreset.ProductCard);
+        image.Src.Should().Be("https://example.com/tall.webp");
+        cut.FindComponent<MudImage>().Instance.ObjectFit.Should().Be(ObjectFit.Contain);
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public void Render_Always_DescribesTheImageWithTheLocalizedProductName()
+    {
+        var dto = BuildDto(name: "Elf Bar BC5000");
+        var cut = Render<ProductCard>(p => p.Add(c => c.Product, dto));
+
+        cut.Find("img").GetAttribute("alt").Should().Be(string.Format(Strings.Product_ImageAlt, "Elf Bar BC5000"));
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public async Task ImageFails_WhenTheProductImageCannotLoad_ShowsTheProductNameAndKeepsTheActions()
+    {
+        var dto = BuildDto(name: "Elf Bar BC5000", imageUrl: "https://example.com/broken.webp", isInStock: true);
+        var cut = Render<ProductCard>(p => p.Add(c => c.Product, dto));
+
+        var image = cut.FindComponent<ShopImage>();
+        await cut.InvokeAsync(() => image.Instance.OnImageFailed("desktop", "https://example.com/broken.webp"));
+
+        cut.Find(".media-section .shop-image__placeholder").TextContent.Trim().Should().Be("Elf Bar BC5000");
+        cut.Find($"[aria-label='{Strings.AddToCart}']").Should().NotBeNull();
+        cut.Find($"[aria-label='{Strings.Wishlist_Add}']").Should().NotBeNull();
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public void ClickWishlistButton_WithTheShopImageTreatment_StillInvokesItsCallback()
+    {
+        var invoked = false;
+        var dto = BuildDto();
+        var cut = Render<ProductCard>(p => p
+            .Add(c => c.Product, dto)
+            .Add(c => c.OnToggleWishlist, EventCallback.Factory.Create(this, () => invoked = true)));
+
+        cut.Find($"[aria-label='{Strings.Wishlist_Add}']").Click();
+
+        invoked.Should().BeTrue();
+        cut.Find(".media-section [data-shop-image]").QuerySelectorAll("a, button, [tabindex]").Should().BeEmpty();
     }
 
     // =========================================================================

@@ -11,12 +11,12 @@
         @* Logo *@
         <MudItem xs="4"
                  Class="d-flex align-center">
-            <MudLink Href="@Routes.Home" Underline="Underline.None" Color="Color.Inherit">
-                <MudImage Src="@ShopIcons.ImageAssets.LogoIcon"
-                          Alt="@Strings.AppName"
-                          Width="52"
-                          Height="52"
-                          ObjectFit="ObjectFit.Contain" />
+            <MudLink Href="@Routes.Home" Underline="Underline.None" Color="Color.Inherit" Class="d-inline-flex">
+                <ShopImage Src="@ShopIcons.ImageAssets.LogoIcon"
+                           Preset="ShopImagePreset.BrandLogo"
+                           Alt="@Strings.AppName"
+                           PlaceholderLabel="@Strings.AppName"
+                           Style="width: 52px; height: 52px;" />
             </MudLink>
         </MudItem>
 

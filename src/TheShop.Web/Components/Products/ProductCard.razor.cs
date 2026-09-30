@@ -8,8 +8,9 @@ using TheShop.Web.Resources;
 namespace TheShop.Web.Components.Products;
 
 /// <summary>
-/// A single product tile on the catalogue grid. Renders the product image (with an
-/// icon placeholder fallback), name, and price (sale + struck original when discounted).
+/// A single product tile on the catalogue grid. Renders the whole product image in a square
+/// frame (the product name stands in when the image is missing or fails), name, and price
+/// (sale + struck original when discounted).
 /// The Add-to-Cart / Wishlist actions and the card-body click are currently empty
 /// callbacks — wired up by the Cart, Wishlist, and product-detail features respectively.
 /// </summary>

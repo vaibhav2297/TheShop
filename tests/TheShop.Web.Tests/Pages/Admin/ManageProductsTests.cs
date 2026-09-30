@@ -365,6 +365,33 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "shop-image")]
+    public async Task Render_WhenProductsExist_ShowsEachPrimaryImageWholeAsASquareThumbnail()
+    {
+        var item = Item("Elf Bar BC5000");
+        SetUpKnownProductsList([item]);
+
+        var cut = await RenderListAsync();
+
+        var image = cut.FindComponent<ShopImage>().Instance;
+        image.Preset.Should().Be(ShopImagePreset.Thumbnail);
+        image.Src.Should().Be(item.PrimaryImageUrl);
+        cut.Find(".mud-avatar > [data-shop-image] img").GetAttribute("alt").Should().Be("Elf Bar BC5000");
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public async Task Render_WhenAProductHasNoPrimaryImage_ShowsItsNameInTheThumbnailSpace()
+    {
+        var item = Item("Elf Bar BC5000") with { PrimaryImageUrl = string.Empty };
+        SetUpKnownProductsList([item]);
+
+        var cut = await RenderListAsync();
+
+        cut.Find(".mud-avatar .shop-image__placeholder").TextContent.Trim().Should().Be("Elf Bar BC5000");
+    }
+
+    [Fact]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenAProductIsUnpublished_ShowsInactiveStatus()
     {
