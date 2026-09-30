@@ -37,6 +37,11 @@ Inspect existing code only for reuse, naming, and layer placement. Do not invent
 
 UI work: use supplied Figma reference. No reference: ask once for URL/node ID or `skip`. `skip`: record missing design reference in Section 11. Backend work: skip Figma.
 
+Load [browser visual loop](../theshop-execute/references/visual-loop.md). Record visual scope and target table in Web step.
+Use direct Figma context plus screenshots. Do not create `design-contract.json`.
+`skip` waives Figma access only; Resolve still needs an accepted screenshot reference for UI verification.
+Include desktop/mobile and relevant states, deterministic data, readiness selectors and design-rule conflicts.
+
 ## Write
 
 Read `templates/plan-template.md`. Follow exactly.

@@ -11,15 +11,15 @@ namespace TheShop.E2E.Tests.Fixtures;
 public static class ShopBrowser
 {
     /// <summary>Creates a context pointed at the local app with Supabase config intercepted.</summary>
-    public static async Task<IBrowserContext> NewContextAsync(IBrowser browser, string? storageStatePath = null)
+    public static async Task<IBrowserContext> NewContextAsync(IBrowser browser, string? storageStatePath = null,
+        BrowserNewContextOptions? options = null)
     {
-        var context = await browser.NewContextAsync(new()
-        {
-            BaseURL = E2EEnvironment.AppBaseUrl,
-            StorageStatePath = storageStatePath is not null && File.Exists(storageStatePath)
-                ? storageStatePath
-                : null,
-        });
+        options ??= new();
+        options.BaseURL = E2EEnvironment.AppBaseUrl;
+        options.StorageStatePath = storageStatePath is not null && File.Exists(storageStatePath)
+            ? storageStatePath
+            : null;
+        var context = await browser.NewContextAsync(options);
 
         var e2eConfig = JsonSerializer.Serialize(new
         {

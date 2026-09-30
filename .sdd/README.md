@@ -33,6 +33,13 @@ Style affects prose only. Preserve templates, headings, IDs, keywords, status va
 
 `theshop-clarify`, `theshop-constitution`, `theshop-document`, `theshop-e2e`, `theshop-execute`, `theshop-plan`, `theshop-resolve`, `theshop-ship`, `theshop-spec`, `theshop-start`, `theshop-test`, `theshop-verify`.
 
+## UI fidelity
+
+[Browser visual loop](skills/theshop-execute/references/visual-loop.md) defines UI handoff and proof.
+Figma context + screenshots replace maintained design JSON. Plan lists targets; Execute renders, inspects and corrects.
+Verify and Ship require current reviewed evidence. Build/behavior checks alone cannot complete UI work.
+Legacy plans need explicit visual scope and target table before next Plan/Execute/Ship gate.
+
 ## Agent adapters
 
 Codex: `.agents/skills/theshop-*/SKILL.md`. Claude: `.claude/skills/theshop-*/SKILL.md`.

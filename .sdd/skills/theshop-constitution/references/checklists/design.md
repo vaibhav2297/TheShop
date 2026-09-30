@@ -63,7 +63,9 @@
 - [ ] Partial filenames start with `_` and are lowercase (`_field.scss`, not `Field.scss`)?
 - [ ] New utility families generated via `$list` + `@each` loop — not hand-written selectors?
 - [ ] Existing SCSS class reused before generating a new one?
-- [ ] New class is genuinely reusable (multiple call sites / plausible future reuse) — not a one-off that should have been inline `Style`?
+- [ ] New class has clear page/component/shared ownership? Responsive/state selectors use SCSS even with one caller; simple scalar values may use inline `Style`?
+- [ ] Design measurements remain exact when available utilities cannot express them?
+- [ ] Planned browser captures inspected against reference images, with current visual gate passing? Build and behavior checks alone do not establish fidelity.
 
 ## Web — pages, routes, busy state (Rules 20, 21, 22)
 

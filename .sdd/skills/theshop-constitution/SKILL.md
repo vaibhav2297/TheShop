@@ -59,7 +59,7 @@ Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*)
 
 ### Web — styling
 
-26. [styles] Styling priority — (1) MudBlazor parameters → (2) MudBlazor auto-generated classes (color families + spacing/flex utilities `pa-*`, `ma-*`, `gap-*`, `d-flex`, `align-center`, …) → (3) project SCSS class (only if genuinely reusable) → (4) inline `Style` (last resort, one-off only).
+26. [styles] Styling priority — (1) MudBlazor parameters → (2) MudBlazor auto-generated classes (color families + spacing/flex utilities `pa-*`, `ma-*`, `gap-*`, `d-flex`, `align-center`, …) → (3) project SCSS class for shared styles or precise page/component layout, responsive behavior and state overrides → (4) inline `Style` for simple one-off values. Use an earlier step only when it matches required design; never round design measurements to fit a utility. Page-owned SCSS is allowed under `Styles/layouts/`; reuse is not required for responsive/state selectors. Keep typography utilities and theme token rules.
 27. [styles] Compose classes with `CssBuilder`, inline styles with `StyleBuilder`. Never string-concatenate, interpolate, or ternary-build class/style strings.
 28. [styles] No `<style>` blocks in `.razor` files. No page-scoped `.css` files in `wwwroot/`. SCSS lives under `src/TheShop.Web/Styles/` only — `abstracts/`, `components/`, `layouts/`, `utilities/`. Partials are lowercase with a leading underscore. Generate utility families with `$list` + `@each` — never hand-write each selector.
 

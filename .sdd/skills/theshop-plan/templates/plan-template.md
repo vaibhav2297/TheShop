@@ -168,6 +168,19 @@ satisfies the frozen interface · no Infrastructure type leaks inward.
 
 **Depends on:** Application contract checkpoint. Infrastructure work completes first in same session.
 
+**Visual scope:** {required|none}
+
+{Backend-only: add **Visual exclusion:** with concrete reason; omit target table. UI work: fill table below.}
+
+### Visual targets
+
+| Surface | Route | Viewport | State | Reference |
+|---|---|---|---|---|
+| {unique-surface-id} | /{route} | 1440x900 | {data and visible state} | {exact Figma frame URL or accepted screenshot path} |
+
+{Record reference revision/capture date, responsive decisions, assets, readiness selector and required browser actions.
+Follow ../theshop-execute/references/visual-loop.md. No design JSON.}
+
 **Figma references** *(required when this step touches UI — re-fetched by `$theshop-execute` at
 implementation time; omit only for backend-only features and log the gap in Section 11)*
 
@@ -181,8 +194,8 @@ implementation time; omit only for backend-only features and log the gap in Sect
 - [ ] **TASK-014** — {`Routes.{…}` constants, `BusyKeys.{…}`, resource strings from Section 9.}
 - [ ] **TASK-015** — {bUnit component tests.}
 
-**Completion gate:** matches Figma nodes · MudBlazor-only, no hardcoded strings or design tokens
-(constitution rules 2–5) · consumes only frozen contracts · unauthorized users see the specified
+**Completion gate:** browser captures inspected against references; visual gate passes · MudBlazor-only, no hardcoded strings or design tokens
+· consumes only frozen contracts · unauthorized users see the specified
 denied experience.
 
 ### Step 6 — Integration & pipeline

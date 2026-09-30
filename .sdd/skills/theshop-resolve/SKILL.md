@@ -24,7 +24,9 @@ Read the full plan. Collect:
 
 Map each item to its destination in Sections 1–10: model/schema, design, flow, validation, RLS, AC mapping, or phase task.
 
-If no open item exists or footer is already `Resolved`, report and stop.
+Load [browser visual loop](../theshop-execute/references/visual-loop.md). Validate visual scope and targets, reference access,
+responsive/state decisions and MudBlazor conflicts. Replace legacy design-JSON requirements with direct reference capture.
+If no open item exists or footer is already `Resolved`, still run plan gate. Missing visual scope/targets require plan upgrade.
 
 ## Resolve
 

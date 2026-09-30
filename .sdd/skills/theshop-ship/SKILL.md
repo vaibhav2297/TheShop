@@ -29,9 +29,10 @@ When `.specs/{slug}/status.md` exists:
 pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 ship-ready -Feature {slug}
 ```
 
-Exit 1: quote every violation. Continue only after fix or explicit `proceed`. Record `⚠️ waived: shipped with {n} open ledger item(s)`.
+Exit 1: quote every violation. Missing, stale, failed or unreviewed visual evidence is a hard stop; return to Execute.
+For other ledger violations, continue only after fix or explicit `proceed`. Record `⚠️ waived: shipped with {n} open ledger item(s)`.
 
-No tracker: record `⏭️ no SDD tracker`; continue.
+No tracker: record `⏭️ no SDD tracker`; continue only after visual gate passes when feature plan exists.
 
 Check:
 
