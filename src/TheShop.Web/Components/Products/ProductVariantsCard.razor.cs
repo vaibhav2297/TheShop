@@ -105,7 +105,6 @@ public partial class ProductVariantsCard : MudComponentBase
         if (!_initialized)
         {
             LoadInitialState();
-            await NotifyAsync();
         }
 
         // The product's own SKU is itself auto-generated from its name and can change on every

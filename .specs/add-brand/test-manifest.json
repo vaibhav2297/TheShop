@@ -122,9 +122,9 @@
     {
       "id": "AC-9",
       "tests": [
-        "TheShop.Web.Tests.Resources.BrandLocalizationTests.ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglishAndFrench",
-        "TheShop.Web.Tests.Resources.BrandLocalizationTests.FormString_ForEveryKey_IsAvailableInEnglishAndFrench",
-        "TheShop.Web.Tests.Resources.BrandLocalizationTests.ManageBrandsShellString_ForEveryKey_IsAvailableInEnglishAndFrench"
+        "TheShop.Web.Tests.Resources.BrandLocalizationTests.ErrorOrConfirmationMessage_ForEveryKey_IsAvailableInEnglish",
+        "TheShop.Web.Tests.Resources.BrandLocalizationTests.FormString_ForEveryKey_IsAvailableInEnglish",
+        "TheShop.Web.Tests.Resources.BrandLocalizationTests.ManageBrandsShellString_ForEveryKey_IsAvailableInEnglish"
       ]
     },
     {

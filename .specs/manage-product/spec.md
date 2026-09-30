@@ -14,7 +14,7 @@ Admins need one screen to find products, manage availability, delete eligible pr
 - Single and bulk Activate, Deactivate, and Delete.
 - Add new product and edit selected product through existing flows, completed separately per user confirmation.
 - Deletion follows confirmed Brands/Categories policy: permanent, confirmation required, referenced records protected, eligible bulk items processed independently.
-- Existing product permissions; English/French interface text.
+- Existing product permissions; English interface text.
 
 **Out of scope:**
 - Defining or rebuilding Add/Edit fields, validation, images, pricing, stock, or variants; existing flows own those behaviors.
@@ -51,7 +51,7 @@ Permissions remain independent. Unauthorized controls are absent; direct attempt
 12. **FR-12:** Deletion refuses products referenced by other store records, including orders regardless of order status. Show referencing-record count and offer deactivation; preserve referenced product and records.
 13. **FR-13:** Bulk deletion confirms selected count and permanence, deletes eligible products, retains referenced products, and reports both counts with retained products named. Retained products remain selected.
 14. **FR-14:** Every action checks its own product permission when used, including direct attempts and bulk actions.
-15. **FR-15:** Interface labels, actions, confirmations, errors, and result messages follow active English/French language. Prices use CAD and active locale formatting, consistent with Product Catalogue.
+15. **FR-15:** Interface labels, actions, confirmations, errors, and result messages appear in English. Prices use CAD with Canadian English formatting, consistent with Product Catalogue.
 16. **FR-16:** Listing exposes understandable progress and action results. Loading, empty/no-match, missing-product, failure, partial bulk failure, and last-page recovery follow Section 5.
 17. **FR-17:** Price display, price matching, price sorting, and variant count include all non-deleted variants, including inactive and out-of-stock variants. Use each variant's current selling price, including applicable sale price. Deleted variants contribute neither prices nor count. Product-level status filter does not narrow variants used for these calculations.
 
@@ -131,7 +131,7 @@ FR-16 recovery states apply below except deletion outcomes already defined by FR
 - [ ] **AC-16:** Given five selected products with two referenced, when bulk Delete is confirmed, then three eligible products disappear; two remain selected and named; deleted/retained counts and reference counts appear. Covers FR-13.
 - [ ] **AC-17:** Given only referenced products selected, when bulk Delete is confirmed, then none are deleted; retained products remain selected with counts, names, and deactivation alternative. Covers FR-12, FR-13.
 - [ ] **AC-18:** Given absent or revoked product permission, when its capability is attempted, then unauthorized control is absent and direct action is refused without changes; guests receive existing sign-in experience. Covers FR-14, RULE-1.
-- [ ] **AC-19:** Given English or French active, when staff use listing/actions, then all interface text and result messages follow language and prices use locale-appropriate CAD format. Covers FR-15.
+- [ ] **AC-19:** When staff use listing and actions, all interface text and result messages appear in English. Prices use Canadian English CAD format. Covers FR-15.
 - [ ] **AC-20:** Given keyboard-only use, when staff operate listing controls and confirmations, then every control is reachable and operable with a visible focus indicator and an accessible name; focus enters the confirmation on open and returns to the listing on dismissal.
 - [ ] **AC-21:** Given loading, no products, or no matches, when listing is viewed, then corresponding FR-16 state appears; clearing no-match search/filters restores unrestricted results.
 - [ ] **AC-22:** Given last page contains one eligible product, when deletion completes, then nearest preceding valid page appears, or empty state if no results remain. Covers FR-16.

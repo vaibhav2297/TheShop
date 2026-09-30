@@ -142,9 +142,9 @@
       "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.ClearFilters_AfterSearchingAndFiltering_ReQueriesWithNoSearchAndNoStatusFilter"
     ] },
     { "id": "AC-19", "tests": [
-      "TheShop.Web.Tests.Resources.BrandLocalizationTests.ManageBrandsListString_ForEveryKey_IsAvailableInEnglishAndFrench",
-      "TheShop.Web.Tests.Resources.BrandLocalizationTests.EditBrandFormString_ForEveryKey_IsAvailableInEnglishAndFrench",
-      "TheShop.Web.Tests.Resources.BrandLocalizationTests.ManageBrandsErrorMessage_ForEveryKey_IsAvailableInEnglishAndFrench"
+      "TheShop.Web.Tests.Resources.BrandLocalizationTests.ManageBrandsListString_ForEveryKey_IsAvailableInEnglish",
+      "TheShop.Web.Tests.Resources.BrandLocalizationTests.EditBrandFormString_ForEveryKey_IsAvailableInEnglish",
+      "TheShop.Web.Tests.Resources.BrandLocalizationTests.ManageBrandsErrorMessage_ForEveryKey_IsAvailableInEnglish"
     ] },
     { "id": "AC-20", "tests": [
       "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_EditControl_LinksToTheBrandsIdKeyedEditRoute",

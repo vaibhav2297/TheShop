@@ -33,6 +33,7 @@ Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*)
 
 11. [design] No hardcoded user-facing strings, no magic-string resource keys. Compile-time-known keys: `@Strings.{Key}` typed accessor. Runtime keys (e.g. `result.Error`): `@Localizer[key]`. `Localizer["AddToCart"]` is forbidden.
 12. [design] Application layer returns resource keys via `nameof(Strings.{Key})`, never string literals.
+   The storefront supports English only. Keep user-facing text in `Strings.resx`; do not add translated resources or locale switching.
 
 ### Design — theme
 

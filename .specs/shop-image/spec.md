@@ -12,7 +12,7 @@ Shoppers and staff need consistent image proportions across screen sizes, coveri
 
 - All ten presets in FR-1; apply corresponding treatments to existing image placements.
 - Responsive display, whole-image preservation, photography crops, and mobile banner composition.
-- Accessible image descriptions and English/French presentation.
+- Accessible image descriptions and English presentation.
 
 **Out of scope:**
 
@@ -45,7 +45,7 @@ Guests and signed-in customers receive identical treatments on pages they may vi
 3. **FR-3:** Never stretch images. Whole-image treatments preserve all source content; photographic treatments may crop edges without altering source images. Center photographic crops, trimming excess edges evenly. Dedicated compositions retain their supplied framing when source and frame ratios match; otherwise center the remaining crop.
 4. **FR-4:** Heroes and category banners use their desktop ratios in desktop presentation and 4:5 in mobile presentation. Use dedicated mobile artwork when supplied. When mobile artwork is absent, reuse desktop artwork with centered 4:5 cropping under FR-3.
 5. **FR-5:** Image arrival does not move surrounding content after its frame appears. Missing or unviewable images use the existing named-placeholder treatment, displaying the associated name or supplied label. Placeholder proportions match selected preset; logo placeholders fit allocated logo space. Preserve frame size and responsive display width.
-6. **FR-6:** Meaningful images have understandable descriptions in active English/French language; product and brand names remain identifiable. Decorative images do not add redundant screen-reader descriptions. Placeholder labels follow active language where translated; proper product and brand names remain unchanged.
+6. **FR-6:** Meaningful images have understandable English descriptions; product and brand names remain identifiable. Decorative images do not add redundant screen-reader descriptions. Placeholder labels appear in English; proper product and brand names remain unchanged.
 7. **FR-7:** Image presentation preserves existing access restrictions and surrounding actions. Noninteractive images add no keyboard stops; existing image-linked actions retain keyboard activation, accessible names, and visible focus.
 
 ## 3. Functional Behaviors
@@ -104,7 +104,7 @@ Guests and signed-in customers receive identical treatments on pages they may vi
 - [ ] **AC-9:** Given a prepared social sharing image, when presented for sharing, then supplied composition remains 40:21 without distortion. Covers FR-1.
 - [ ] **AC-10:** Given each ratio-based treatment, when available width changes across phone, tablet, and desktop presentation, then height follows selected ratio and image stays inside allocated space; FR-4 mobile changes still apply. Covers FR-2, RULE-1.
 - [ ] **AC-11:** Given each image treatment, when its source is missing or fails to display, then a placeholder displays associated name or supplied label in preset proportions; logo placeholders fit allocated logo space. Image arrival or replacement preserves frame size, surrounding content positions, and actions. Covers FR-5.
-- [ ] **AC-12:** Given meaningful, decorative, and unavailable imagery, when active language changes between English and French, then descriptions and placeholder labels follow FR-6; proper product and brand names remain unchanged, and decorative images add no redundant description. Covers FR-6.
+- [ ] **AC-12:** Given meaningful, decorative, and unavailable imagery, descriptions and placeholder labels appear in English; proper product and brand names remain unchanged, and decorative images add no redundant description. Covers FR-6.
 - [ ] **AC-13:** Given an existing image-linked action, when reached and activated by keyboard, then accessible name, visible focus, and existing outcome remain available; noninteractive images add no keyboard stops. Covers FR-7.
 - [ ] **AC-14:** Given a guest, customer, or staff member without access to a restricted destination, when attempting to view it, then existing sign-in or access-denied experience remains; image presets grant no access. Covers FR-7, RULE-4.
 

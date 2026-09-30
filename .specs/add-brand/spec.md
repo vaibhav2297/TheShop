@@ -39,7 +39,7 @@ Adding brands is governed by a specific fine-grained permission, consistent with
 6. **FR-6:** After a successful save, the staff member sees a confirmation and is returned to the manage-brands page, and an Active brand becomes available wherever brands are used in the store (such as product assignment and the catalogue's brand filter).
 7. **FR-7:** An Inactive brand is not shown to customers anywhere in the store (including the catalogue's brand filter) and is not offered when assigning products to a brand; it remains visible to staff in the admin panel's brand list.
 8. **FR-8:** Invalid input is rejected with a clear, field-specific message, and everything the staff member has already entered is preserved so they can correct and resubmit.
-9. **FR-9:** All text in this feature — labels, buttons, validation messages, confirmations, and access-denied messages — is available in English and French and follows the active site language.
+9. **FR-9:** All text in this feature — labels, buttons, validation messages, confirmations, and access-denied messages — is available in English.
 
 ## 3. Functional Behaviors
 
@@ -62,7 +62,7 @@ Adding brands is governed by a specific fine-grained permission, consistent with
 ## 4. Constraints
 
 - This is an admin-panel capability, gated by a specific fine-grained permission in line with the store's access model — never by an "is an admin" shortcut.
-- The brand name and description are stored exactly as the staff member types them and are not translated — brand names are proper nouns, and a single description is entered (no separate English and French versions). All of the feature's own interface text is available in English and French.
+- The brand name and description are stored exactly as the staff member types them. All interface text is available in English.
 - The logo must be an image file of an accepted type and within a size limit: PNG, JPG, and WebP are accepted, up to 2 MB.
 - The form is fully operable by keyboard with a visible focus indicator, and validation messages are announced to screen-reader users and clearly associated with their fields.
 
@@ -95,7 +95,7 @@ Adding brands is governed by a specific fine-grained permission, consistent with
 - [ ] **AC-6:** Given only a brand name is entered — no logo, no description — when saved, then the brand is created successfully. Verifies FR-3, FR-4.
 - [ ] **AC-7:** Given the status is set to Inactive, when the brand is saved, then the brand exists in the admin panel's brand list but does not appear to customers anywhere in the store and is not offered when assigning products to a brand. Verifies FR-5, FR-7.
 - [ ] **AC-8:** Given a user without the brand-creation permission, when they attempt to reach the add-brand capability — including by direct link — then they receive the store's standard access-denied experience. Verifies FR-1 (access boundary).
-- [ ] **AC-9:** Given the site language is switched between English and French, when the add-brand form and its messages are viewed, then all of the feature's text follows the active language. Verifies FR-9.
+- [ ] **AC-9:** When the add-brand form and its messages are viewed, all feature text appears in English. Verifies FR-9.
 - [ ] **AC-10:** Given a keyboard-only or screen-reader user with the required permission, when they complete the form, then every control is reachable and operable by keyboard with a visible focus indicator, and validation messages are announced and associated with their fields. Verifies the accessibility constraint.
 
 ---

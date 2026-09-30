@@ -12,7 +12,7 @@ Staff need formatted product descriptions and separate specification name/value 
 - Rich-text description on existing add-product and edit-product forms.
 - Separate product specification name/value rows.
 - Saving, reopening, updating, and removing this content; preserving existing descriptions.
-- Revised description limit, validation, permissions, English/French interface text, and accessible editing.
+- Revised description limit, validation, permissions, English interface text, and accessible editing.
 
 **Out of scope:**
 - Rearranging existing specification rows. Rows hold the order they were added in; changing that order means removing and re-adding.
@@ -41,7 +41,7 @@ Existing permissions remain independent; product-view permission alone grants ne
 5. **FR-5:** Description and specifications save through existing product save action. Existing success, unsaved-change warning, and rejection-preservation behavior covers both. Content changes alone do not alter unrelated product details.
 6. **FR-6:** Existing product-create and product-edit permissions govern these capabilities; unauthorized attempts cannot change saved content.
 7. **FR-7:** Editing and reopening description cannot execute active content supplied through product text. Pasted content retains supported text formatting without introducing arbitrary fonts, colors, or page layouts. Unsupported formatting is removed with notice; readable text and supported formatting remain.
-8. **FR-8:** New labels, editing controls, help, validation, and result messages follow active English/French interface language. Staff-entered content remains as authored; switching interface language does not translate it.
+8. **FR-8:** New labels, editing controls, help, validation, and result messages appear in English. Staff-entered content remains as authored.
 9. **FR-9:** Every formatting and specification action is keyboard operable, has an accessible name and visible focus, and exposes validation and row changes to screen-reader users.
 
 ## 3. Functional Behaviors
@@ -98,7 +98,7 @@ Existing permissions remain independent; product-view permission alone grants ne
 - [ ] **AC-9:** Given missing or revoked permission, when creation or editing is attempted through controls or directly, then unauthorized action is refused without saved changes; create-only cannot edit and edit-only cannot create. Covers FR-6.
 - [ ] **AC-10:** Given pasted styled text containing supported emphasis and unsupported fonts/colors, when staff paste, save, and reopen, then readable text and emphasis remain, unsupported styling is absent, and removal notice appeared during editing. Covers FR-7.
 - [ ] **AC-11:** Given supplied description containing executable content or a link intended to execute code, when staff edit, save, reopen, or activate that link, then supplied code never executes. Covers FR-7, RULE-5.
-- [ ] **AC-12:** Given English or French active, when staff use formatting, row editing, validation, and save feedback, then all interface messages use selected language; authored description/specifications remain unchanged. Covers FR-8.
+- [ ] **AC-12:** When staff use formatting, row editing, validation, and save feedback, all interface messages appear in English; authored description and specifications remain unchanged. Covers FR-8.
 - [ ] **AC-13:** Given keyboard-only or screen-reader use, when staff apply every supported format and add/edit/remove rows, then controls are operable with accessible names and visible focus; row changes and field-associated errors are announced; row removal retains usable focus. Covers FR-9.
 - [ ] **AC-14:** Given unsaved description or specification changes, when staff attempt to leave through existing protected navigation, then existing unsaved-change warning applies and choosing to stay preserves edits. Covers FR-5.
 - [ ] **AC-15:** Given failed save or conflicting product edit, when staff attempt save, then existing failure/conflict guidance appears without false success or silent overwrite; local content remains available. Covers FR-5.

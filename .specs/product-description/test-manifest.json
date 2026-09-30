@@ -149,7 +149,7 @@
     {
       "id": "AC-12",
       "tests": [
-        "TheShop.Web.Tests.Resources.ProductDescriptionLocalizationTests.UiString_ForEveryNewKey_IsAvailableInEnglishAndFrench"
+        "TheShop.Web.Tests.Resources.ProductDescriptionLocalizationTests.UiString_ForEveryNewKey_IsAvailableInEnglish"
       ]
     },
     {

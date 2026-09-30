@@ -166,8 +166,8 @@
     {
       "id": "AC-13",
       "tests": [
-        "TheShop.Web.Tests.Common.CurrencyFormatterTests.Format_UnderFrenchCulture_RendersDollarSignSuffixed",
-        "TheShop.Web.Tests.Common.CurrencyFormatterTests.Format_SameAmountUnderEnglishAndFrenchCultures_ProducesDifferentText"
+        "TheShop.Web.Tests.Common.CurrencyFormatterTests.Format_UnderEnglishCulture_RendersDollarSignPrefixed",
+        "TheShop.Web.Tests.Common.CurrencyFormatterTests.Format_UnderAnotherCulture_UsesEnglishFormat"
       ]
     },
     {

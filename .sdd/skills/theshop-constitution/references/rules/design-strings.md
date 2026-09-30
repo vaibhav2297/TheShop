@@ -8,8 +8,7 @@
 
 ```
 src/TheShop.Web/Resources/
-├── Strings.resx              ← default (English)
-└── Strings.fr.resx           ← French translations
+└── Strings.resx              ← English
 ```
 
 One `Strings.resx` holds every user-facing string for the application. Scope keys via the naming convention (below) to avoid collisions.
@@ -18,7 +17,7 @@ One `Strings.resx` holds every user-facing string for the application. Scope key
 
 The strongly-typed C# accessor class that Rule 11 depends on (the `Strings` class — one property per resource key) is **generated at build time by a source generator** (`VocaDb.ResXFileCodeGenerator`, wired in `TheShop.Web.csproj`). It is emitted into the compilation in-memory: there is **no `Strings.Designer.cs` file on disk and none is committed** — the path is git-ignored and regenerates on every `dotnet build` (locally and on CI). The wiring requires no setup or maintenance.
 
-When adding strings, edit **only** `Strings.resx` / `Strings.fr.resx` and build. **Never create or edit a `Strings.Designer.cs` by hand** — the accessor regenerates from the `.resx` automatically.
+When adding strings, edit **only** `Strings.resx` and build. **Never create or edit a `Strings.Designer.cs` by hand** — the accessor regenerates from the `.resx` automatically.
 
 ```csharp
 // Source-generated at build time — not committed, never edit
@@ -35,11 +34,7 @@ public class Strings
 }
 ```
 
-Each property returns the localized value for the current culture automatically.
-
-### Why French resources from day one
-
-This is a Canadian e-commerce business. Quebec's Bill 96 strengthens French-language requirements for businesses operating in Quebec. Even if French translations are added later, **scaffold the file structure now** — adding `Strings.fr.resx` later becomes a content task, not an architectural one.
+Each property returns the English resource value.
 
 ---
 
@@ -209,6 +204,5 @@ Rule 11 covers every string a user reads. That includes:
 | `<MudButton>@Localizer["AddToCart"]</MudButton>` | `<MudButton>@Strings.AddToCart</MudButton>` |
 | Typo: `Localizer["AddtoCart"]` — silent runtime failure showing the literal key | Pattern 1 — typo fails at compile time |
 | Application: `Result.Fail<T>("ProductNotFound")` | `Result.Fail<T>(nameof(Strings.ProductNotFound))` |
-| Missing French translation: French page shows English | At minimum, add `[TODO]`-prefixed translation in `Strings.fr.resx` so the gap is visible |
 | Resource key with hyphen: `Add-to-cart` | Use snake-case / PascalCase only — keys become C# identifiers |
 | `Localizer[nameof(Strings.AddToCart)]` everywhere | Pattern 3 is for tests / scoped culture switching; default to Pattern 1 |

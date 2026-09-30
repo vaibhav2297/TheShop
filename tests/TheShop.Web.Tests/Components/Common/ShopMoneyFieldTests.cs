@@ -36,7 +36,7 @@ public class ShopMoneyFieldTests : TestContext
     private static void RestoreCulture() => CultureInfo.CurrentUICulture = OriginalUiCulture;
 
     // =========================================================================
-    // Currency adornment — symbol and placement follow the active culture
+    // Currency adornment uses Canadian English symbol and placement
     // =========================================================================
 
     [Fact]
@@ -59,15 +59,15 @@ public class ShopMoneyFieldTests : TestContext
 
     [Fact]
     [Trait("Feature", "create-product")]
-    public void Render_UnderFrenchCulture_AdornsTheSymbolAfterTheInput()
+    public void Render_UnderAnotherCulture_UsesCanadianEnglishMoneyFormat()
     {
-        UseCulture("fr-CA");
+        UseCulture("de-DE");
         try
         {
             var cut = Render<ShopMoneyField>(p => p.Add(c => c.Value, 24.99m));
 
-            cut.Markup.Should().Contain("$");
-            cut.Find(".mud-input-adornment-end").Should().NotBeNull();
+            cut.Find(".mud-input-adornment-start").Should().NotBeNull();
+            cut.Find("input").GetAttribute("value").Should().Be("24.99");
         }
         finally
         {
@@ -78,23 +78,6 @@ public class ShopMoneyFieldTests : TestContext
     // =========================================================================
     // Culture drives the editor, not just read-only display
     // =========================================================================
-
-    [Fact]
-    [Trait("Feature", "create-product")]
-    public void Render_UnderFrenchCulture_RendersTheAmountWithACommaDecimalSeparator()
-    {
-        UseCulture("fr-CA");
-        try
-        {
-            var cut = Render<ShopMoneyField>(p => p.Add(c => c.Value, 24.99m));
-
-            cut.Find("input").GetAttribute("value").Should().Be("24,99");
-        }
-        finally
-        {
-            RestoreCulture();
-        }
-    }
 
     [Fact]
     [Trait("Feature", "create-product")]
@@ -181,8 +164,6 @@ public class ShopMoneyFieldTests : TestContext
 // AC → Test mapping
 // =============================================================================
 // AC-1 (price entry): Render_UnderEnglishCulture_AdornsTheSymbolBeforeTheInput,
-//        Render_UnderFrenchCulture_AdornsTheSymbolAfterTheInput,
-//        Render_UnderFrenchCulture_RendersTheAmountWithACommaDecimalSeparator,
 //        Render_UnderEnglishCulture_RendersTheAmountToTwoDecimalPlaces,
 //        Render_Always_FloorsTheInputAtZeroSoMoneyCannotGoNegative
 // Rule 24 (Class/Style forwarding): Render_WithConsumerClass_ForwardsItToTheUnderlyingField

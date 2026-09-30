@@ -96,7 +96,7 @@
     {
       "id": "AC-7",
       "tests": [
-        "TheShop.Web.Tests.Resources.AdminConsoleLocalizationTests.DashboardString_ForEveryKey_IsAvailableInEnglishAndFrench"
+        "TheShop.Web.Tests.Resources.AdminConsoleLocalizationTests.DashboardString_ForEveryKey_IsAvailableInEnglish"
       ]
     }
   ]

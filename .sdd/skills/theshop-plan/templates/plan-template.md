@@ -135,7 +135,7 @@ Domain · public API reported for the Application step.
 
 - [ ] **TASK-004** — {`{Feature}Command` + handler + validator in `Features/{Feature}/Commands/{Command}/`.}
 - [ ] **TASK-005** — {`I{X}Repository` in `Common/Interfaces/`; DTOs + mapper under the feature folder.}
-- [ ] **TASK-006** — {New keys in `Strings.resx` (see Section 9) mirrored in `Strings.fr.resx` with `[TODO]` placeholders.}
+- [ ] **TASK-006** — {Add new keys to `Strings.resx` (see Section 9).}
 - [ ] **TASK-007** — {Application unit tests (`{Feature}HandlerTests.cs`).}
 
 **Completion gate:** command/query folders follow the feature-folder convention · handler translates
@@ -239,7 +239,7 @@ denied experience.
 | `Strings.{Key}` | "{…}" |
 | `Strings.{Key}` | "{…}" |
 
-All keys mirrored in `Strings.fr.resx`. Complete French localization before shipping.
+All user-facing strings use English keys in `Strings.resx`.
 
 ## 10. Database Schema & RLS Policies
 

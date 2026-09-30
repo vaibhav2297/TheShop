@@ -69,7 +69,7 @@
     {
       "id": "AC-12",
       "coverage": "unit",
-      "evidence": "TheShop.Web.Tests.Resources.ProductDescriptionLocalizationTests.UiString_ForEveryNewKey_IsAvailableInEnglishAndFrench"
+      "evidence": "TheShop.Web.Tests.Resources.ProductDescriptionLocalizationTests.UiString_ForEveryNewKey_IsAvailableInEnglish"
     },
     {
       "id": "AC-13",
