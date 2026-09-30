@@ -54,7 +54,7 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 m
 
 Red manifest: halt.
 
-Backend-only features require plan `Visual scope: none` with exclusion reason before writing a skipped `e2e-report.md`, marking Verify `Skipped`, and stopping.
+Backend-only features write a skipped `e2e-report.md`, mark Verify `Skipped`, and stop.
 
 ## Classify every AC
 
@@ -152,7 +152,7 @@ Confirm fixture stopped app and port 5218 is free. Stop any orphan it created. L
 
 ## Report and verdict
 
-Load [browser visual loop](../theshop-execute/references/visual-loop.md).
+Only when plan contains supplied Figma URL, load [browser visual loop](../theshop-execute/references/visual-loop.md) and apply following visual requirements. Without Figma, normal behavioral verdict rules apply.
 Run `pwsh -NoProfile -File .sdd/scripts/check-sdd-gates.ps1 visual -Feature {feature}` before setting Verify Verified.
 Missing/stale/failed visual evidence blocks VERIFIED; return to Execute. Behavioral results remain recorded separately.
 Browser regression baselines may only come from visually accepted captures. Never replace Figma references with current output.

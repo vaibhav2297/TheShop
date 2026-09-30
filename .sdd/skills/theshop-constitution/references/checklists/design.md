@@ -65,7 +65,7 @@
 - [ ] Existing SCSS class reused before generating a new one?
 - [ ] New class has clear page/component/shared ownership? Responsive/state selectors use SCSS even with one caller; simple scalar values may use inline `Style`?
 - [ ] Design measurements remain exact when available utilities cannot express them?
-- [ ] Planned browser captures inspected against reference images, with current visual gate passing? Build and behavior checks alone do not establish fidelity.
+- [ ] When Figma URL was supplied: planned browser captures inspected against reference images, with current visual gate passing? Without Figma, this check is not applicable.
 
 ## Web — pages, routes, busy state (Rules 20, 21, 22)
 

@@ -5,8 +5,9 @@ function Get-VisualField([string]$Text, [string]$Name) {
 }
 
 function Get-VisualTargets([string]$Plan) {
+    if ($Plan -notmatch '(?i)https?://(?:www\.)?figma\.com/(?:design|file|proto)/[^\s)>|]+') { return }
     $scope = Get-VisualField $Plan 'Visual scope'
-    if ($scope -notin @('required', 'none')) { throw 'plan requires **Visual scope:** required|none; upgrade legacy plans before execution.' }
+    if ($scope -ne 'required') { throw 'Figma URL provided: plan requires **Visual scope:** required and visual targets.' }
     $section = [regex]::Match($Plan, '(?ms)^### Visual targets\s*\r?\n(.*?)(?=^#{1,3} |\z)').Groups[1].Value
     $targets = @()
     foreach ($line in ($section -split '\r?\n')) {
@@ -20,9 +21,7 @@ function Get-VisualTargets([string]$Plan) {
         }
         $targets += [pscustomobject]@{ Surface=$cells[0]; Route=$cells[1]; Viewport=$cells[2]; State=$cells[3]; Reference=$cells[4] }
     }
-    if ($scope -eq 'none') {
-        if (!(Get-VisualField $Plan 'Visual exclusion') -or $targets.Count) { throw 'Visual scope none requires a Visual exclusion reason and no target rows.' }
-    } elseif (!$targets.Count) { throw 'UI plan requires at least one row under ### Visual targets.' }
+    if (!$targets.Count) { throw 'Figma URL provided: plan requires at least one row under ### Visual targets.' }
     if (@($targets.Surface | Select-Object -Unique).Count -ne $targets.Count) { throw 'duplicate visual surface ID.' }
     return $targets
 }
@@ -51,7 +50,9 @@ function Get-VisualSourceHash([string]$Root, [string]$Feature) {
 
 function Test-VisualEvidence([string]$Root, [string]$Feature, [switch]$PlanOnly) {
     try {
-        $plan = Get-Content -LiteralPath (Join-Path $Root ".specs/$Feature/plan.md") -Raw
+        $planPath = Join-Path $Root ".specs/$Feature/plan.md"
+        if (!(Test-Path -LiteralPath $planPath)) { return }
+        $plan = Get-Content -LiteralPath $planPath -Raw
         $targets = @(Get-VisualTargets $plan)
         if ($PlanOnly -or !$targets.Count) { return }
         $sourceHash = Get-VisualSourceHash $Root $Feature

@@ -35,10 +35,10 @@ Style affects prose only. Preserve templates, headings, IDs, keywords, status va
 
 ## UI fidelity
 
-[Browser visual loop](skills/theshop-execute/references/visual-loop.md) defines UI handoff and proof.
-Figma context + screenshots replace maintained design JSON. Plan lists targets; Execute renders, inspects and corrects.
-Verify and Ship require current reviewed evidence. Build/behavior checks alone cannot complete UI work.
-Legacy plans need explicit visual scope and target table before next Plan/Execute/Ship gate.
+[Browser visual loop](skills/theshop-execute/references/visual-loop.md) activates only when a Figma design URL is supplied and recorded in feature plan.
+With Figma: context + screenshots replace maintained design JSON; Execute renders, inspects and corrects; Verify/Ship require reviewed evidence.
+Without Figma: normal SDD flow, including ordinary build, design-rule and behavioral checks. No visual scope, target table, screenshot evidence or waiver required.
+Legacy plans with Figma URLs need visual scope and targets before next gate. Legacy plans without Figma remain valid.
 
 ## Agent adapters
 

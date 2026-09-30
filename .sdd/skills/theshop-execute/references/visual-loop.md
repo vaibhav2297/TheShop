@@ -1,14 +1,18 @@
 # Browser visual loop
 
 Canonical UI handoff for Plan, Resolve, Execute, E2E, Verify, Ship. No new workflow stage.
+Activate only when user supplies a Figma design URL; Plan preserves that URL so later stages retain the choice.
+No Figma URL: normal SDD flow. Do not require visual scope, target table, screenshots, reference approval or waiver.
+Do not prompt for Figma solely to enter this flow. Existing constitution, build, behavior and ordinary UI checks still apply.
+Supplied URL with unavailable MCP remains a design-access blocker; do not silently downgrade to normal flow or delete URL to bypass proof.
 Figma remains design authority. Do not create or require `design-contract.json` or copy node trees into maintained design files.
 Keep links, target states, viewport sizes, decisions in plan. Keep screenshots and review evidence under feature.
-Legacy plans: add visual scope and target table before execution; do not grandfather UI through missing evidence.
+Legacy plans with Figma URLs: add visual scope and targets before execution. No-Figma legacy plans need no upgrade.
 
 ## Plan and Resolve
 
-Use `**Visual scope:** required` for any rendered UI change, including styling, assets and shared components.
-Use `**Visual scope:** none` plus `**Visual exclusion:** {concrete backend-only reason}` only when rendered UI is unaffected.
+When Figma URL is provided, use `**Visual scope:** required` for its UI work, including styling, assets and shared components.
+Without Figma URL, omit visual scope and target table entirely.
 Record one row per screen/viewport/state needing proof. Include affected shared component callers and designed mobile/desktop variants.
 
 ```markdown
@@ -23,8 +27,8 @@ Record one row per screen/viewport/state needing proof. Include affected shared 
 ```
 
 Surface IDs: lowercase letters/digits/hyphens, unique. Routes: local absolute paths. Viewports: CSS pixels, `WIDTHxHEIGHT`.
-Reference: exact Figma frame URL, or path to explicitly accepted screenshot when Figma is unavailable/skipped.
-No reference: unresolved design gap, not permission to invent appearance. Record proposed reference and obtain decision through Resolve.
+Reference: exact supplied Figma frame URL. If MCP is unavailable, exported screenshot with provenance may stand in for live fetch; preserve URL.
+No supplied Figma URL: follow existing components, constitution and feature plan through normal SDD flow; do not claim Figma parity.
 For widths/states lacking designs, Resolve records expected responsive behavior. Do not claim Figma parity for inferred designs.
 Resolve MudBlazor, typography and token conflicts once. Keep accepted decisions in plan; do not ask repeatedly during execution.
 
@@ -116,10 +120,11 @@ Reference changes require fresh MCP inspection, export, capture and review. Offl
 
 ## E2E, Verify and Ship
 
+This section applies only to features with supplied Figma URLs. Without Figma, use normal E2E/Verify/Ship behavior.
 Keep behavioral checks and visual checks independent. E2E cannot mark Verify complete with failed visual evidence.
 Verify runs visual gate even when reusing fresh behavioral evidence. Inspect cited comparisons; stale evidence returns to Execute.
 Ship runs visual gate through ship-ready. No missing/stale/failed visual proof may be waived as ordinary ledger debt.
-Backend-only scope skips capture with explicit reason.
+No-Figma features skip capture automatically; no exclusion reason or waiver required.
 
 After fidelity passes, E2E can add browser screenshot regression checks for high-risk shared surfaces using approved captures.
 Keep accepted browser baselines separate from Figma references. Do not auto-update baselines after regression failures.

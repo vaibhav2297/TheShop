@@ -24,9 +24,10 @@ Read the full plan. Collect:
 
 Map each item to its destination in Sections 1–10: model/schema, design, flow, validation, RLS, AC mapping, or phase task.
 
-Load [browser visual loop](../theshop-execute/references/visual-loop.md). Validate visual scope and targets, reference access,
-responsive/state decisions and MudBlazor conflicts. Replace legacy design-JSON requirements with direct reference capture.
-If no open item exists or footer is already `Resolved`, still run plan gate. Missing visual scope/targets require plan upgrade.
+Only when plan contains supplied Figma URL, load [browser visual loop](../theshop-execute/references/visual-loop.md).
+Validate targets, reference access, responsive/state decisions and MudBlazor conflicts. Replace legacy design-JSON requirements with direct reference capture.
+If no open item exists or footer is already `Resolved`, still run plan gate. Missing visual scope/targets require upgrade only for Figma-driven plans.
+Without Figma URL, normal resolution; no visual scope, screenshot reference, evidence or waiver required.
 
 ## Resolve
 

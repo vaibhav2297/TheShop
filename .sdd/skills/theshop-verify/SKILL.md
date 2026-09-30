@@ -15,13 +15,13 @@ Build, run, observe, report. Never edit source or tests. Failed behavior returns
 
 Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{feature}`.
 
-Require `.specs/{feature}/spec.md` and `plan.md`; plan supplies visual scope and targets.
+Require `.specs/{feature}/spec.md`. Read plan when present; Figma-driven work requires plan with supplied URL and visual targets.
 
 The spec acceptance criteria are the oracle.
 
 ## Applicability
 
-Validate explicit visual scope in plan before deciding backend-only applicability. Missing scope returns to Plan.
+Only Figma-driven plans require explicit visual scope and targets. No Figma URL: normal applicability rules below.
 
 User-facing when any applies:
 
@@ -49,7 +49,7 @@ Show compact checklist before driving.
 
 ## Driver
 
-Load [browser visual loop](../theshop-execute/references/visual-loop.md).
+Only when plan contains supplied Figma URL, load [browser visual loop](../theshop-execute/references/visual-loop.md) and perform following visual checks. Without Figma, go directly to normal driver tiers.
 Run `pwsh -NoProfile -File .sdd/scripts/check-sdd-gates.ps1 visual -Feature {feature}`.
 Inspect per-surface review and image evidence. Behavioral Tier 1 proof does not replace visual proof.
 Failed, missing, stale or unreviewed evidence: Verify Pending; return to Execute for capture/correction. Do not edit source here.

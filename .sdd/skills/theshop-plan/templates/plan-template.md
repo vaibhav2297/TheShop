@@ -168,21 +168,20 @@ satisfies the frozen interface · no Infrastructure type leaks inward.
 
 **Depends on:** Application contract checkpoint. Infrastructure work completes first in same session.
 
-**Visual scope:** {required|none}
+{Include visual scope, targets and Figma references below only when user supplied Figma URL. Otherwise omit all three and use normal Web tasks/gates.}
 
-{Backend-only: add **Visual exclusion:** with concrete reason; omit target table. UI work: fill table below.}
+**Visual scope:** required
 
 ### Visual targets
 
 | Surface | Route | Viewport | State | Reference |
 |---|---|---|---|---|
-| {unique-surface-id} | /{route} | 1440x900 | {data and visible state} | {exact Figma frame URL or accepted screenshot path} |
+| {unique-surface-id} | /{route} | 1440x900 | {data and visible state} | {exact supplied Figma frame URL} |
 
 {Record reference revision/capture date, responsive decisions, assets, readiness selector and required browser actions.
 Follow ../theshop-execute/references/visual-loop.md. No design JSON.}
 
-**Figma references** *(required when this step touches UI — re-fetched by `$theshop-execute` at
-implementation time; omit only for backend-only features and log the gap in Section 11)*
+**Figma references** *(only when URL supplied — re-fetched by `$theshop-execute` at implementation time; otherwise omit without logging a gap)*
 
 - **File:** {full Figma file URL}
 - **Nodes:**
@@ -194,7 +193,7 @@ implementation time; omit only for backend-only features and log the gap in Sect
 - [ ] **TASK-014** — {`Routes.{…}` constants, `BusyKeys.{…}`, resource strings from Section 9.}
 - [ ] **TASK-015** — {bUnit component tests.}
 
-**Completion gate:** browser captures inspected against references; visual gate passes · MudBlazor-only, no hardcoded strings or design tokens
+**Completion gate:** {Figma URL supplied: browser captures inspected against references and visual gate passes; otherwise omit visual requirement} · MudBlazor-only, no hardcoded strings or design tokens
 · consumes only frozen contracts · unauthorized users see the specified
 denied experience.
 

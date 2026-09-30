@@ -82,7 +82,7 @@ If a later phase exposes an upstream gap, reopen the owning phase once. Re-run i
 
 ### Web
 
-- Load [browser visual loop](references/visual-loop.md). Complete planned captures, image inspection and correction before Web completes.
+- If plan contains supplied Figma URL, load [browser visual loop](references/visual-loop.md) and complete captures, inspection and correction before Web completes. Without Figma, use normal implementation/build/scope checks.
 - Follow planned routes, component boundaries, resources, and Figma intent.
 - Reuse project components and MudBlazor conventions.
 - Do not invent design values when a design source exists.
@@ -99,10 +99,11 @@ dotnet build TheShop.slnx --nologo
 
 If red, assign failure to one owning phase and reopen it once. Re-run that phase gates, then the solution build. Still red: halt.
 
-Browser capture and visual correction are required implementation checks for UI work. They are allowed here.
+With supplied Figma URL, browser capture and visual correction are required implementation checks. They are allowed here.
 Do not write or run feature tests here; `$theshop-test` and `$theshop-e2e` own them.
-Run `pwsh -NoProfile -File .sdd/scripts/check-sdd-gates.ps1 visual -Feature {feature}` after final source edit.
-Missing, stale, failed or unreviewed UI evidence blocks Implement Done even when build passes.
+For Figma-driven work, run `pwsh -NoProfile -File .sdd/scripts/check-sdd-gates.ps1 visual -Feature {feature}` after final source edit.
+Missing, stale, failed or unreviewed evidence blocks Figma-driven Implement Done even when build passes.
+Without Figma URL, no capture, visual evidence or waiver required; ordinary build/scope gates determine completion.
 
 ## Tracker
 
@@ -110,7 +111,7 @@ Only after full success, update `.specs/{feature}/status.md`:
 
 - `Implement`: `Done`
 - Gate: `✅ solution build + layer scope gates`
-- Evidence: compact phase/build summary plus visual gate and per-surface review links; include any waiver
+- Evidence: compact phase/build summary; add visual gate and per-surface review links only for Figma-driven work; include any waiver
 - Date: today
 - Refresh `Last updated`
 - Next: `$theshop-test {feature}`

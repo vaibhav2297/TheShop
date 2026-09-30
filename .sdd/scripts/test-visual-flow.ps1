@@ -61,7 +61,7 @@ try {
 ### Visual targets
 | Surface | Route | Viewport | State | Reference |
 |---|---|---|---|---|
-| dialog | / | 400x300 | open dialog | fixture reference |
+| dialog | / | 400x300 | open dialog | https://www.figma.com/design/fixture/Smoke?node-id=1-2 |
 "@ | Set-Content -LiteralPath "$featureRoot/plan.md"
     Set-Content -LiteralPath "$featureRoot/spec.md" -Value '# Visual fixture spec'
     Assert-True ((Get-Issues).Count -gt 0) 'missing captures fail gate'
@@ -91,13 +91,22 @@ try {
     Assert-True ($LASTEXITCODE -ne 0) 'dimension mismatch fails instead of stretching reference'
     & dotnet $dll --url 'https://example.com/' --output "$work/remote" --width 400 --height 300 --ready '#fixture'
     Assert-True ($LASTEXITCODE -ne 0) 'nonlocal capture rejected'
-    Assert-True (@(Get-VisualTargets "**Visual scope:** none`n**Visual exclusion:** backend-only persistence change").Count -eq 0) 'backend-only explicit exclusion works'
+    Assert-True (@(Get-VisualTargets '# UI plan without Figma').Count -eq 0) 'UI without Figma uses normal flow without scope or evidence'
+    Assert-True (@(Get-VisualTargets '**Visual scope:** none').Count -eq 0) 'no Figma requires no exclusion reason'
+    Assert-True (@(Get-VisualTargets 'Reference: reference.png').Count -eq 0) 'local screenshot alone does not trigger Figma flow'
+    Assert-True (@(Get-VisualTargets 'https://www.figma.com.example.org/design/fixture/Smoke').Count -eq 0) 'unrelated host does not trigger Figma flow'
     $rejected = $false
-    try { Get-VisualTargets '**Visual scope:** none' } catch { $rejected = $true }
-    Assert-True $rejected 'backend exclusion without reason rejected'
+    try { Get-VisualTargets "**Visual scope:** none`nhttps://www.figma.com/design/fixture/Smoke" } catch { $rejected = $true }
+    Assert-True $rejected 'provided Figma URL cannot be disabled with scope none'
     $rejected = $false
-    try { Get-VisualTargets '# Legacy UI plan' } catch { $rejected = $true }
-    Assert-True $rejected 'legacy plan without scope cannot bypass evidence'
+    try { Get-VisualTargets 'https://figma.com/file/fixture/Smoke' } catch { $rejected = $true }
+    Assert-True $rejected 'legacy Figma plan still requires visual targets'
+    $savedPlan = Get-Content -LiteralPath "$featureRoot/plan.md" -Raw
+    Set-Content -LiteralPath "$featureRoot/plan.md" -Value '# Normal UI plan without Figma'
+    Assert-True ((Get-Issues).Count -eq 0) 'no-Figma gate ignores old visual artifacts'
+    & pwsh -NoProfile -File "$PSScriptRoot/check-sdd-gates.ps1" visual -Feature $feature
+    Assert-True ($LASTEXITCODE -eq 0) 'visual gate dispatch does not block normal UI flow'
+    Set-Content -LiteralPath "$featureRoot/plan.md" -Value $savedPlan
     $badReference = "$work/not-image.png"
     Set-Content -LiteralPath $badReference -Value 'not an image'
     $rejected = $false
