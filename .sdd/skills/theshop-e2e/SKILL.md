@@ -9,9 +9,6 @@ disable-model-invocation: true
 
 Optional browser-proof helper. It may satisfy the Verify ledger row, but is not a mandatory workflow stage.
 
-Figma UI requires browser regression proof before Verify. Helper remains outside stage sequence.
-Read [visual fidelity — Test / E2E and Verify / Ship](../theshop-plan/references/visual-fidelity.md).
-
 Own one loop:
 
 `classify → write → gate → build → start → run → repair → report`
@@ -27,9 +24,6 @@ May edit:
 - `.specs/{feature}/e2e-manifest.json`
 - `.specs/{feature}/e2e-report.md`
 - Verify row in `.specs/{feature}/status.md`
-- `.specs/{feature}/visual/` captures, reviews, reports and initially aligned baselines
-
-Never edit references/context/contract to force green. Never auto-overwrite baselines.
 
 May inspect `src/` for routes and locator seams.
 
@@ -71,11 +65,6 @@ Exactly one bucket, in spec order:
 - `manual`: genuinely human-only; include reason
 
 Borderline → `e2e`. Manual is narrow.
-
-Visual ACs belong to `e2e`. Capture every design-contract surface using the existing harness.
-After fresh capture/review, run `align`, create `baseline` only if absent, then `regression`
-and `verify` with `.sdd/scripts/visual-fidelity.py --feature {feature}` (mode before flag).
-Missing browser/failing pixels block. Never substitute manual pass.
 
 Write `e2e-manifest.json` with feature, trait, date, journey files/FQNs/test counts, and every AC's bucket/evidence/reason.
 
@@ -163,6 +152,11 @@ Confirm fixture stopped app and port 5218 is free. Stop any orphan it created. L
 
 ## Report and verdict
 
+Only when plan contains supplied Figma URL, load [browser visual loop](../theshop-execute/references/visual-loop.md) and apply following visual requirements. Without Figma, normal behavioral verdict rules apply.
+Run `pwsh -NoProfile -File .sdd/scripts/check-sdd-gates.ps1 visual -Feature {feature}` before setting Verify Verified.
+Missing/stale/failed visual evidence blocks VERIFIED; return to Execute. Behavioral results remain recorded separately.
+Browser regression baselines may only come from visually accepted captures. Never replace Figma references with current output.
+
 Overwrite `e2e-report.md`; final response must match it.
 
 Include:
@@ -183,7 +177,6 @@ Verdicts:
 - `⏭️ SKIPPED`: backend-only
 
 Manual ACs stay `⚠️ Unverified`. Block VERIFIED until explicit confirmation through Verify.
-Figma UI requires visual gate pass. Behavioral success cannot waive it.
 
 Update Verify row accordingly; evidence links `e2e-report.md`; date today; next optional Document, otherwise Ship.
 

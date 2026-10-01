@@ -21,12 +21,6 @@ New IDs: `NNN_feature-name`, e.g. `005_manage-product`.
 Start chooses next number. Later stages preserve full ID. Legacy IDs stay valid.
 Feature stages load [feature identity](skills/theshop-start/references/feature-identity.md).
 
-UI features require the [visual fidelity contract](skills/theshop-plan/references/visual-fidelity.md).
-Plan captures Figma. Execute renders, compares, fixes. Test/E2E protects aligned baselines.
-Verify/Ship require fresh visual and behavioral proof. No new stage.
-Every plan needs `design-contract.json`: `figma` or `backend`. Existing features
-adopt on next Plan/Verify/Ship. Missing evidence fails.
-
 ## Artifact writing style
 
 Write SDD artifacts using the active session writing style.
@@ -38,6 +32,13 @@ Style affects prose only. Preserve templates, headings, IDs, keywords, status va
 ## Skills
 
 `theshop-clarify`, `theshop-constitution`, `theshop-document`, `theshop-e2e`, `theshop-execute`, `theshop-plan`, `theshop-resolve`, `theshop-ship`, `theshop-spec`, `theshop-start`, `theshop-test`, `theshop-verify`.
+
+## UI fidelity
+
+[Browser visual loop](skills/theshop-execute/references/visual-loop.md) activates only when a Figma design URL is supplied and recorded in feature plan.
+With Figma: context + screenshots replace maintained design JSON; Execute renders, inspects and corrects; Verify/Ship require reviewed evidence.
+Without Figma: normal SDD flow, including ordinary build, design-rule and behavioral checks. No visual scope, target table, screenshot evidence or waiver required.
+Legacy plans with Figma URLs need visual scope and targets before next gate. Legacy plans without Figma remain valid.
 
 ## Agent adapters
 

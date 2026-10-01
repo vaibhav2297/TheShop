@@ -27,7 +27,11 @@
                               Style="position: relative;"
                               @onclick="@(() => SelectImage(image.Id))">
 
-                        <MudImage Src="@image.Url" Alt="@VariantLabel" Width="120" Height="120" ObjectFit="ObjectFit.Cover" />
+                        <ShopImage Src="@image.Url"
+                                   Preset="ShopImagePreset.Thumbnail"
+                                   Alt="@VariantLabel"
+                                   PlaceholderLabel="@VariantLabel"
+                                   Style="width: 120px;" />
 
                         @if (selected)
                         {

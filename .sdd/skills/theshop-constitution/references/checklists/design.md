@@ -63,7 +63,9 @@
 - [ ] Partial filenames start with `_` and are lowercase (`_field.scss`, not `Field.scss`)?
 - [ ] New utility families generated via `$list` + `@each` loop — not hand-written selectors?
 - [ ] Existing SCSS class reused before generating a new one?
-- [ ] New class is genuinely reusable (multiple call sites / plausible future reuse) — not a one-off that should have been inline `Style`?
+- [ ] New class has clear page/component/shared ownership? Responsive/state selectors use SCSS even with one caller; simple scalar values may use inline `Style`?
+- [ ] Design measurements remain exact when available utilities cannot express them?
+- [ ] When Figma URL was supplied: planned browser captures inspected against reference images, with current visual gate passing? Without Figma, this check is not applicable.
 
 ## Web — pages, routes, busy state (Rules 20, 21, 22)
 
@@ -77,10 +79,6 @@
 - [ ] Feature-specific `@using` directives live in the `.razor` file — not in `_Imports.razor`?
 
 ## Imagery
-
-- [ ] Pinned design contract covers every target frame, state and viewport?
-- [ ] Browser captures compared against Figma with measured review and region diffs?
-- [ ] Visual gate passes on current source, contract, captures and aligned regression baseline?
 
 - [ ] WebP format used for raster images?
 - [ ] `width`, `height`, and `loading="lazy"` attributes set?

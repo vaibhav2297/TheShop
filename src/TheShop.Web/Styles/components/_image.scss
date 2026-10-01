@@ -1,0 +1,81 @@
+// ─── Shop image frames ───────────────────────────────────────────────────────
+// Styles for ShopImage. The root frame takes the caller's width and reserves its height from the
+// preset ratio before any image arrives; the image or named placeholder is laid over that frame so
+// neither can change its size. Fit and crop position come from MudImage parameters.
+
+// Below this width Hero and CategoryBanner switch to their 4:5 mobile branch. Branch hiding needs
+// !important because the placeholder is a MudStack, whose d-flex utility is itself !important.
+$shop-image-mobile-min: 600px;
+$shop-image-mobile-max: 599.98px;
+$shop-image-mobile-ratio: (4, 5);
+
+// Preset → desktop frame ratio as (width, height), emitted as an exact width / height ratio. BrandLogo has no entry: its caller reserves width and height.
+$shop-image-ratios: (
+    'product-card': (1, 1),
+    'product-detail': (1, 1),
+    'thumbnail': (1, 1),
+    'category-tile': (1, 1),
+    'category-banner': (16, 5),
+    'hero': (16, 9),
+    'mobile-banner': (4, 5),
+    'editorial': (4, 3),
+    'social-sharing': (40, 21),
+);
+
+// Presets that carry a separate mobile branch.
+$shop-image-responsive-presets: ('category-banner', 'hero');
+
+.shop-image {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+
+    .shop-image__media,
+    .shop-image__placeholder {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .shop-image__placeholder {
+        overflow: hidden;
+    }
+
+    // A long name wraps and clips inside the frame rather than growing it.
+    .shop-image__label {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        overflow: hidden;
+    }
+}
+
+@each $preset, $ratio in $shop-image-ratios {
+    .shop-image--#{$preset} {
+        aspect-ratio: #{nth($ratio, 1)} / #{nth($ratio, 2)};
+    }
+}
+
+.shop-image--brand-logo {
+    height: 100%;
+}
+
+@media (min-width: $shop-image-mobile-min) {
+    .shop-image .shop-image__branch--mobile {
+        display: none !important;
+    }
+}
+
+@media (max-width: $shop-image-mobile-max) {
+    @each $preset in $shop-image-responsive-presets {
+        .shop-image--#{$preset} {
+            aspect-ratio: #{nth($shop-image-mobile-ratio, 1)} / #{nth($shop-image-mobile-ratio, 2)};
+
+            .shop-image__branch--desktop {
+                display: none !important;
+            }
+        }
+    }
+}

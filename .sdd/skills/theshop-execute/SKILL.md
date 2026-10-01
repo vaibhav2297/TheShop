@@ -82,11 +82,7 @@ If a later phase exposes an upstream gap, reopen the owning phase once. Re-run i
 
 ### Web
 
-Read [visual fidelity — Execute](../theshop-plan/references/visual-fidelity.md).
-Load contract images/context; render, capture, compare and correct each surface before leaving Web.
-Maximum three correction rounds. Unresolved differences block Implement Done.
-Browser inspection/alignment allowed here. Formal tests: Test/E2E.
-
+- If plan contains supplied Figma URL, load [browser visual loop](references/visual-loop.md) and complete captures, inspection and correction before Web completes. Without Figma, use normal implementation/build/scope checks.
 - Follow planned routes, component boundaries, resources, and Figma intent.
 - Reuse project components and MudBlazor conventions.
 - Do not invent design values when a design source exists.
@@ -103,17 +99,19 @@ dotnet build TheShop.slnx --nologo
 
 If red, assign failure to one owning phase and reopen it once. Re-run that phase gates, then the solution build. Still red: halt.
 
-Do not write or run feature tests here; `$theshop-test` owns them.
-Before marking Done, rerun `python .sdd/scripts/visual-fidelity.py align --feature {feature}`
-against final source/captures. Backend skips. Stale captures: rebuild/recapture.
+With supplied Figma URL, browser capture and visual correction are required implementation checks. They are allowed here.
+Do not write or run feature tests here; `$theshop-test` and `$theshop-e2e` own them.
+For Figma-driven work, run `pwsh -NoProfile -File .sdd/scripts/check-sdd-gates.ps1 visual -Feature {feature}` after final source edit.
+Missing, stale, failed or unreviewed evidence blocks Figma-driven Implement Done even when build passes.
+Without Figma URL, no capture, visual evidence or waiver required; ordinary build/scope gates determine completion.
 
 ## Tracker
 
 Only after full success, update `.specs/{feature}/status.md`:
 
 - `Implement`: `Done`
-- Gate: `✅ solution build + layer scope gates + visual alignment` (backend: record visual skip reason)
-- Evidence: compact phase/build summary; include any waiver
+- Gate: `✅ solution build + layer scope gates`
+- Evidence: compact phase/build summary; add visual gate and per-surface review links only for Figma-driven work; include any waiver
 - Date: today
 - Refresh `Last updated`
 - Next: `$theshop-test {feature}`

@@ -24,10 +24,10 @@ Read the full plan. Collect:
 
 Map each item to its destination in Sections 1–10: model/schema, design, flow, validation, RLS, AC mapping, or phase task.
 
-Read [visual fidelity — Plan / Resolve](../theshop-plan/references/visual-fidelity.md).
-Validate `design-contract.json` with the visual plan gate before any early exit.
-Missing screenshots/mappings/fonts/responsive decisions/tolerances block.
-No open items/already `Resolved`: run plan gate before reporting completion.
+Only when plan contains supplied Figma URL, load [browser visual loop](../theshop-execute/references/visual-loop.md).
+Validate targets, reference access, responsive/state decisions and MudBlazor conflicts. Replace legacy design-JSON requirements with direct reference capture.
+If no open item exists or footer is already `Resolved`, still run plan gate. Missing visual scope/targets require upgrade only for Figma-driven plans.
+Without Figma URL, normal resolution; no visual scope, screenshot reference, evidence or waiver required.
 
 ## Resolve
 
@@ -113,4 +113,4 @@ If tracker is missing, create it from the `theshop-spec` status template.
 
 Report decisions, risk dispositions, remaining count, material schema/design changes, status, and next command.
 
-Edit only plan and design contract/context. Never change references to hide mismatches.
+Edit this plan only.

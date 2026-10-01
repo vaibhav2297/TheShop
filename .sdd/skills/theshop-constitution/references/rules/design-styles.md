@@ -31,7 +31,11 @@ Use these before writing anything new. Don't reach for project SCSS just because
 
 ### 3. Project SCSS-generated class
 
-If MudBlazor doesn't have a class and the styling is **genuinely reusable**, use one of the project's SCSS-generated utilities from `src/TheShop.Web/Styles/`. If a suitable class doesn't exist yet but the styling will be reused, **generate a new SCSS class** (rules below). Never write component-scoped CSS in a `<style>` block inside a `.razor` file.
+If MudBlazor parameters/utilities cannot match required design, use SCSS under `src/TheShop.Web/Styles/`.
+Reuse an existing class when suitable. Add page-owned layout selectors under `layouts/` or component selectors under `components/`
+for exact geometry, responsive behavior and state overrides, even with one caller. Namespace selectors beneath owning page/component.
+Use design-derived measurements; never approximate just to fit a utility. Theme tokens and typography utilities still apply.
+Generate utility families; ordinary layout/state selectors need no generation loop. Never add `<style>` blocks in Razor.
 
 ```razor
 <MudText Typo="Typo.h4" Class="fs-22 fw-600">Off-spec heading</MudText>
@@ -166,7 +170,7 @@ To add a new size or weight: **add the value to the list**, not a new selector.
 Generate SCSS only if **all** of the following are true:
 
 1. **MudBlazor doesn't already provide it.** Check emitted Mud classes (colour, spacing, flexbox, typography) before writing anything.
-2. **It will be reused.** Genuinely shared across multiple places. If you can only point to one call site and no plausible future one, use inline `Style` (step 4) instead.
+2. **It has clear ownership.** Shared utility, component styling, or page layout/responsive/state rule. Single-use responsive rules belong in SCSS; simple one-off scalar values may use inline `Style`.
 3. **It fits an existing partial or warrants a new one.** Don't sprinkle one-off rules into `_button.scss` if they belong in `_field.scss`. New family of styles → new partial under the right folder.
 
 If a class already exists, **use it directly.** Don't duplicate.
@@ -208,6 +212,6 @@ Even then, the styling lives on the call site as inline `Style` (via `StyleBuild
 | Reusable component's builder chain omits `.AddClass(Class)` at the end | Add it — silently dropping consumer `Class` is a Rule 24 violation |
 | Hand-written `.fs-{n}` selector for a new size | Add the number to `$font-sizes`, let `@each` generate it |
 | New `_Button.scss` (PascalCase) | Rename to `_button.scss` |
-| `<style>` block in `Product.razor` to add a one-off rule | Inline `Style` (via `StyleBuilder`) for one-off; new SCSS class for reusable |
-| New `wwwroot/css/cart.css` for cart-page overrides | Either MudBlazor utility, project SCSS, or inline `Style` — never a new page-scoped CSS file |
+| `<style>` block in `Product.razor` to add a one-off rule | Inline `StyleBuilder` for simple scalar value; owned SCSS for layout/responsive/state selectors |
+| New `wwwroot/css/cart.css` for cart-page overrides | Use page-owned partial under `Styles/layouts/`; no hand-authored CSS in wwwroot |
 | Duplicated class in a new partial when one already exists | Reuse the existing class — search before generating |

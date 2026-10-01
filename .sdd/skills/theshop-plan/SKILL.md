@@ -1,7 +1,7 @@
 ---
 name: theshop-plan
 description: Create technical plan at .specs/{slug}/plan.md from confirmed feature spec. Use after $theshop-clarify.
-argument-hint: <feature-name> [--desc <technical direction>] [--figma <url|node-id>]
+argument-hint: <feature-name> [--desc <technical direction>] [--figma <url>]
 disable-model-invocation: true
 ---
 
@@ -13,7 +13,7 @@ Create `.specs/{slug}/plan.md`. Technical HOW only. Next: `$theshop-resolve {slu
 
 ## Input
 
-Parse `<feature-name> [--desc <technical direction>] [--figma <url|node-id>]`. Flags may appear either order.
+Parse `<feature-name> [--desc <technical direction>] [--figma <url>]`. Flags may appear either order.
 
 No name: ask. Stop.
 
@@ -23,7 +23,7 @@ Require `.specs/{slug}/spec.md`. Missing: stop. Send user to `$theshop-spec`.
 
 `--desc`: technical direction. Use it only if spec scope and constitution allow it. Product-scope change: stop; send user to `$theshop-spec` or `$theshop-clarify`.
 
-`--figma`: URL or node ID. Use only for UI work.
+`--figma`: full Figma design URL. Use only for UI work. Preserve supplied URL in plan for downstream activation.
 
 ## Before write
 
@@ -35,10 +35,12 @@ Load `$theshop-constitution`. Read only routed references matching planned layer
 
 Inspect existing code only for reuse, naming, and layer placement. Do not invent types, routes, or UI primitives.
 
-Read [visual fidelity](references/visual-fidelity.md). Create `design-contract.json` for this feature.
-UI: fetch exact nodes, context, screenshots, asset/token mappings. Pin hashes.
-Missing reference/access: blocking Section 11 question. `skip` never proves fidelity.
-Backend-only: declare `{"version":1,"feature":"{slug}","mode":"backend","reason":"{concrete reason}"}`; no Figma fetch.
+UI work with supplied Figma URL: preserve URL in plan and activate visual flow. No URL: normal planning; do not ask for Figma or create a design-gap blocker. Backend work: skip Figma.
+
+Only with supplied Figma URL, load [browser visual loop](../theshop-execute/references/visual-loop.md). Record visual scope and target table in Web step.
+Use direct Figma context plus screenshots. Do not create `design-contract.json`.
+Without Figma URL, omit visual scope, target table and screenshot evidence requirements. `skip` without a previously supplied URL means normal flow.
+Include desktop/mobile and relevant states, deterministic data, readiness selectors and design-rule conflicts.
 
 ## Write
 
@@ -56,7 +58,6 @@ Required:
 - Section 9 covers every spec rule and edge case.
 - Section 10 uses literal runnable SQL and RLS when persistence changes.
 - Section 11 uses `❓`, `⚠️`, `📌`.
-- Web tasks include capture/compare/correct and visual regression coverage. Link design contract in Section 7.
 - Remove template guidance before save.
 
 Existing `plan.md`: ask overwrite or cancel. Never create versioned plan file.

@@ -1,0 +1,111 @@
+{
+  "feature": "shop-image",
+  "trait": "shop-image",
+  "writtenAt": "2026-09-30",
+  "journeys": [
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/ShopImageJourneyTests.cs",
+      "persona": "anonymous",
+      "tests": 11
+    },
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.ShopImageAdminJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/ShopImageAdminJourneyTests.cs",
+      "persona": "admin",
+      "tests": 2
+    },
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.ShopImageAccessDeniedJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/ShopImageAccessDeniedJourneyTests.cs",
+      "persona": "customer",
+      "tests": 1
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC1_Product_images_stay_whole_in_square_frames_for_tall_and_wide_sources",
+      "reason": "Real catalogue cards with intercepted tall/wide sources; ProductDetail has no destination screen, measured via ShopImageCompositionPage."
+    },
+    {
+      "id": "AC-2",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageAdminJourneyTests.AC2_Admin_thumbnails_stay_square_whole_and_inside_their_row_space",
+      "reason": "Real ManageCategories/ManageProducts thumbnails at 375/768/1440 px; cart/order rows have no screen, measured via composition in 96/56/32 px rows."
+    },
+    {
+      "id": "AC-3",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC3_Category_tile_photography_fills_a_square_frame_with_a_centered_crop",
+      "reason": "No production placement for this preset (spec §1 out of scope); real ShopImage markup rendered by HtmlRenderer and measured inside the running app via ShopImageCompositionPage (plan TASK-005 test-only composition)."
+    },
+    {
+      "id": "AC-4",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC4_Desktop_category_banner_and_hero_use_16_5_and_16_9_frames_with_centered_crops",
+      "reason": "No production placement for this preset (spec §1 out of scope); real ShopImage markup rendered by HtmlRenderer and measured inside the running app via ShopImageCompositionPage (plan TASK-005 test-only composition)."
+    },
+    {
+      "id": "AC-5",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC5_Dedicated_mobile_artwork_fills_a_4_5_frame_while_desktop_keeps_its_treatment",
+      "reason": "No production placement for this preset (spec §1 out of scope); real ShopImage markup rendered by HtmlRenderer and measured inside the running app via ShopImageCompositionPage (plan TASK-005 test-only composition)."
+    },
+    {
+      "id": "AC-6",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC6_Without_mobile_artwork_desktop_artwork_fills_a_4_5_frame_with_a_centered_crop",
+      "reason": "No production placement for this preset (spec §1 out of scope); real ShopImage markup rendered by HtmlRenderer and measured inside the running app via ShopImageCompositionPage (plan TASK-005 test-only composition)."
+    },
+    {
+      "id": "AC-7",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC7_Editorial_photography_fills_a_4_3_frame_without_stretching",
+      "reason": "No production placement for this preset (spec §1 out of scope); real ShopImage markup rendered by HtmlRenderer and measured inside the running app via ShopImageCompositionPage (plan TASK-005 test-only composition)."
+    },
+    {
+      "id": "AC-8",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageAdminJourneyTests.AC8_Wide_and_tall_brand_logos_stay_whole_in_original_proportions_within_their_space",
+      "reason": "Real ManageBrands avatar logos and app bar logo; resized allocations measured via composition."
+    },
+    {
+      "id": "AC-9",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC9_A_prepared_social_sharing_image_keeps_its_40_21_composition",
+      "reason": "No production placement for this preset (spec §1 out of scope); real ShopImage markup rendered by HtmlRenderer and measured inside the running app via ShopImageCompositionPage (plan TASK-005 test-only composition)."
+    },
+    {
+      "id": "AC-10",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC10_Every_ratio_frame_follows_available_width_across_phone_tablet_desktop_and_rotation",
+      "reason": "All nine ratio presets via composition at 375/599/600/768/1440 px and 812x375 landscape, plus real catalogue card."
+    },
+    {
+      "id": "AC-11",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC11_Missing_or_failed_images_show_named_placeholders_without_moving_the_card",
+      "reason": "Real catalogue: held image arrival and aborted image; every preset's missing-source placeholder via composition."
+    },
+    {
+      "id": "AC-12",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC12_Image_descriptions_and_placeholder_labels_are_english_and_decorative_images_stay_silent",
+      "reason": "Real catalogue alt text and failed-image placeholder; decorative semantics via composition."
+    },
+    {
+      "id": "AC-13",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageJourneyTests.AC13_Image_linked_actions_keep_keyboard_access_names_and_visible_focus",
+      "reason": "Real keyboard Tab walk on catalogue through app bar and footer logo links; Enter activates footer logo link."
+    },
+    {
+      "id": "AC-14",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ShopImageAccessDeniedJourneyTests.AC14_Restricted_image_lists_keep_their_access_denied_and_sign_in_experiences",
+      "reason": "Customer sees AccessDenied on /admin/brands; guest context redirected to sign-in from /admin/categories."
+    }
+  ]
+}

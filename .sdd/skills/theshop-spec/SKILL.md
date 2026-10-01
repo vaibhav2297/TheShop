@@ -33,10 +33,6 @@ Cheap unknown: choose default. Mark `(Assumption: ...)` in body and appendix.
 
 Check only applicable: actors/access, English text, accessibility, scope boundaries.
 
-UI work: read [visual fidelity — Spec / Clarify](../theshop-plan/references/visual-fidelity.md).
-Record frames, viewports, states, responsive behavior in existing sections.
-Add visual Given/When/Then ACs. Missing behavior: explicit product question.
-
 ## Write
 
 Read `templates/spec-template.md`. Follow exactly.

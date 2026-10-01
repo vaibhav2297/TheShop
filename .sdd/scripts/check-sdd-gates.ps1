@@ -4,7 +4,6 @@
 # prove its output meets the contract instead of asserting it.
 #
 # Modes:
-#   visual    -Feature x              current Figma alignment + browser regression evidence
 #   spec      -Feature x              spec.md template conformance (incl. Scope/Actors
 #                                     sub-sections, Business Rules RULE ids, Given/When/
 #                                     Then ACs), FR/AC id sequence, footer <-> appendix
@@ -43,7 +42,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory, Position = 0)]
-    [ValidateSet('spec', 'plan', 'manifest', 'compile', 'e2e', 'scope', 'snapshot', 'doc-only', 'status', 'ship-ready', 'visual')]
+    [ValidateSet('spec', 'plan', 'manifest', 'compile', 'e2e', 'visual', 'scope', 'snapshot', 'doc-only', 'status', 'ship-ready')]
     [string]$Mode,
 
     [string]$Feature,
@@ -58,6 +57,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+. (Join-Path $PSScriptRoot 'visual-evidence.ps1')
 
 # Emoji built from code points so matching never depends on this file's encoding.
 $PIN  = [char]::ConvertFromUtf32(0x1F4CC)   # pushpin   (assumption)
@@ -94,14 +94,6 @@ function Read-Doc([string]$RelPath) {
     $p = Join-Path $repoRoot $RelPath
     if (-not (Test-Path -LiteralPath $p)) { return $null }
     Get-Content -Raw -LiteralPath $p
-}
-
-# Visual comparison is separate from source lint and behavioral acceptance.
-function Test-VisualGate([string]$F, [string]$VisualMode = 'verify') {
-    if ($F -notmatch '^(?:(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})_)?[a-z0-9]+(?:-[a-z0-9]+)*$') { Fail 'unsafe visual feature name'; return }
-    if (-not (Get-Command python -ErrorAction SilentlyContinue)) { Fail 'Python required for visual evidence gate'; return }
-    $output = & python (Join-Path $repoRoot '.sdd/scripts/visual-fidelity.py') $VisualMode --feature $F 2>&1
-    if ($LASTEXITCODE -ne 0) { Fail "visual ${VisualMode}: $($output -join ' ')" }
 }
 
 function Get-NumberedSection([string]$Content, [int]$Number) {
@@ -225,7 +217,7 @@ function Test-SpecGate([string]$F) {
 
 # ---------------------------------------------------------------- plan gate --
 function Test-PlanGate([string]$F) {
-    Test-VisualGate $F 'plan'
+    foreach ($issue in @(Test-VisualEvidence $repoRoot $F -PlanOnly)) { Fail $issue }
     $c = Read-Doc ".specs/$F/plan.md"
     if (-not $c) { Fail ".specs/$F/plan.md not found"; return }
     if ($F -match '^\d+_' -and $c -notmatch ('(?m)^\*\*Feature:\*\*\s*`' + [regex]::Escape($F) + '`\s*$')) { Fail 'numbered plan missing matching **Feature:** ID' }
@@ -656,7 +648,7 @@ function Test-StatusGate([string]$F) {
 # whole pipeline is green and safe to land on dev; exit 1 lists what is still open so
 # the command can surface it and let the user ship anyway with a recorded waiver.
 function Test-ShipReadyGate([string]$F) {
-    Test-VisualGate $F
+    foreach ($issue in @(Test-VisualEvidence $repoRoot $F)) { Fail $issue }
     $doc = Read-Doc ".specs/$F/status.md"
     if (-not $doc) { Fail ".specs/$F/status.md not found - the feature has no SDD ledger to verify"; return }
     if ($doc -notmatch '\*\*Last updated:\*\*') { Fail "status.md missing '**Last updated:**' line" }
@@ -697,12 +689,12 @@ if ($Feature -and $Feature -notmatch '^(?:(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})
     Complete-Run $Mode
 }
 switch ($Mode) {
-    'visual'   { if (-not $Feature) { throw 'visual mode requires -Feature' }; Test-VisualGate $Feature }
     'spec'     { if (-not $Feature) { throw 'spec mode requires -Feature' };     Test-SpecGate $Feature }
     'plan'     { if (-not $Feature) { throw 'plan mode requires -Feature' };     Test-PlanGate $Feature }
     'manifest' { if (-not $Feature) { throw 'manifest mode requires -Feature' }; Test-ManifestGate $Feature }
     'compile'  { if (-not $Feature) { throw 'compile mode requires -Feature' };  Test-CompileGate $Feature }
     'e2e'      { if (-not $Feature) { throw 'e2e mode requires -Feature' };      Test-E2eGate $Feature }
+    'visual'   { if (-not $Feature) { throw 'visual mode requires -Feature' }; foreach ($issue in @(Test-VisualEvidence $repoRoot $Feature)) { Fail $issue } }
     'status'   { if (-not $Feature) { throw 'status mode requires -Feature' };   Test-StatusGate $Feature }
     'ship-ready' { if (-not $Feature) { throw 'ship-ready mode requires -Feature' }; Test-ShipReadyGate $Feature }
     'scope'    { Test-ScopeGate }

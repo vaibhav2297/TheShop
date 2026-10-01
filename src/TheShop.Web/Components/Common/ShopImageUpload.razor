@@ -57,10 +57,11 @@
                                       AlignItems="AlignItems.Center"
                                       Spacing="4">
 
-                                <MudImage Src="@image.PreviewUrl"
-                                          Alt="@PreviewAlt"
-                                          ObjectFit="ObjectFit.Cover"
-                                          Style="@ThumbnailStyle" />
+                                <ShopImage Src="@image.PreviewUrl"
+                                           Preset="@PreviewPreset"
+                                           Alt="@(PreviewAlt ?? string.Empty)"
+                                           PlaceholderLabel="@image.FileName"
+                                           Style="@ThumbnailStyle" />
 
                                 <MudStack Spacing="1" Class="info flex-grow-1">
 

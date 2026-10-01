@@ -6,15 +6,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-design-rules.ps1 -Changed > /dev/null 2>&1; hook_exit=$?; if [ \"$hook_exit\" -eq 0 ]; then printf '%s' '{\"continue\":true}'; fi; exit \"$hook_exit\"",
-            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"& .\\.sdd\\scripts\\check-design-rules.ps1 -Changed *> $null; $hookExit = $LASTEXITCODE; if ($hookExit -eq 0) { [Console]::Out.Write((@{ continue = $true } | ConvertTo-Json -Compress)) }; exit $hookExit\"",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/invoke-codex-stop.ps1 -Check design",
+            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/invoke-codex-stop.ps1 -Check design",
             "timeout": 30,
             "statusMessage": "Checking changed C# and Razor files..."
           },
           {
             "type": "command",
-            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/format-on-stop.ps1 > /dev/null 2>&1; hook_exit=$?; if [ \"$hook_exit\" -eq 0 ]; then printf '%s' '{\"continue\":true}'; fi; exit \"$hook_exit\"",
-            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"& .\\.sdd\\scripts\\format-on-stop.ps1 *> $null; $hookExit = $LASTEXITCODE; if ($hookExit -eq 0) { [Console]::Out.Write((@{ continue = $true } | ConvertTo-Json -Compress)) }; exit $hookExit\"",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/invoke-codex-stop.ps1 -Check format",
+            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/invoke-codex-stop.ps1 -Check format",
             "timeout": 300,
             "statusMessage": "Formatting changed C# and Razor files..."
           }

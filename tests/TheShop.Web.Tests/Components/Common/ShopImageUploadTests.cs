@@ -58,6 +58,47 @@ public class ShopImageUploadTests : TestContext
         cut.FindAll("img").Should().BeEmpty();
     }
 
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public void Render_ByDefault_ShowsEachPreviewAsAWholeSquareThumbnailInItsPreviewSize()
+    {
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [ExampleImage()])
+            .Add(c => c.PreviewSize, 48));
+
+        var preview = cut.FindComponent<ShopImage>();
+        preview.Instance.Preset.Should().Be(ShopImagePreset.Thumbnail);
+        preview.Find("[data-shop-image]").GetAttribute("style").Should().Contain("width:48px").And.Contain("height:48px");
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public void Render_WithTheBrandLogoPreviewPreset_ContainsEachLogoPreview()
+    {
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [ExampleImage()])
+            .Add(c => c.PreviewPreset, ShopImagePreset.BrandLogo));
+
+        cut.FindComponent<ShopImage>().Instance.Preset.Should().Be(ShopImagePreset.BrandLogo);
+        cut.FindComponent<MudImage>().Instance.ObjectFit.Should().Be(ObjectFit.Contain);
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public async Task PreviewFails_WhenTheSelectedFileCannotDisplay_ShowsItsFileNameAndKeepsTheRemoveAction()
+    {
+        var image = ExampleImage("broken-logo.png");
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [image])
+            .Add(c => c.RemoveLabel, "Remove logo"));
+
+        var preview = cut.FindComponent<ShopImage>();
+        await cut.InvokeAsync(() => preview.Instance.OnImageFailed("desktop", image.PreviewUrl));
+
+        cut.Find(".shop-image__placeholder").TextContent.Trim().Should().Be("broken-logo.png");
+        cut.Find("button.remove").GetAttribute("aria-label").Should().Be("Remove logo");
+    }
+
     // =========================================================================
     // Remove — the form returns to its no-logo state (Behavior 2 edge case)
     // =========================================================================
