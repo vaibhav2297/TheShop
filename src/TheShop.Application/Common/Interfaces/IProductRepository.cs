@@ -78,6 +78,13 @@ public interface IProductRepository
     Task<(Product Product, string RowVersion)?> GetForEditAsync(Guid id, CancellationToken ct);
 
     /// <summary>
+    /// Returns the full published aggregate — gallery, option types, specifications, and variants
+    /// — for the customer product-details page, or <c>null</c> when it does not exist or is
+    /// unpublished. Unpublished products stay hidden even from privileged callers.
+    /// </summary>
+    Task<Product?> GetPublishedByIdAsync(Guid id, CancellationToken ct);
+
+    /// <summary>
     /// Persists a newly created product — details, gallery, option types, and variants — in one
     /// transaction, returning its assigned <c>RowVersion</c> on success. Fails with a
     /// resource-key <see cref="Result{T}"/> on a concurrent uniqueness conflict; throws for

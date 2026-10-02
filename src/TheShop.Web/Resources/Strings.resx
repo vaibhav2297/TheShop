@@ -1714,4 +1714,37 @@
   <data name="Product_ActivateNotPublishable" xml:space="preserve">
     <value>{0} product(s) were skipped because they are missing a price.</value>
   </data>
+  <data name="ProductDetails_AddToBag" xml:space="preserve">
+    <value>Add to Bag</value>
+  </data>
+  <data name="ProductDetails_Favourite" xml:space="preserve">
+    <value>Favourite</value>
+  </data>
+  <data name="ProductDetails_Description" xml:space="preserve">
+    <value>Product description</value>
+  </data>
+  <data name="ProductDetails_Specifications" xml:space="preserve">
+    <value>Specifications</value>
+  </data>
+  <data name="ProductDetails_LoadFailed" xml:space="preserve">
+    <value>Product details could not be loaded. Try again.</value>
+  </data>
+  <data name="ProductDetails_Retry" xml:space="preserve">
+    <value>Try again</value>
+  </data>
+  <data name="ProductDetails_PriceUnavailable" xml:space="preserve">
+    <value>Price unavailable</value>
+  </data>
+  <data name="ImageGallery_Placeholder" xml:space="preserve">
+    <value>Image unavailable</value>
+  </data>
+  <data name="ImageGallery_SelectImage" xml:space="preserve">
+    <value>View image {0} of {1}</value>
+  </data>
+  <data name="ImageGallery_Previous" xml:space="preserve">
+    <value>Previous images</value>
+  </data>
+  <data name="ImageGallery_Next" xml:space="preserve">
+    <value>Next images</value>
+  </data>
 </root>

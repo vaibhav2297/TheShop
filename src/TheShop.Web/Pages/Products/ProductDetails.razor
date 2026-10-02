@@ -1,0 +1,276 @@
+@attribute [AllowAnonymous]
+
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Theme
+
+<PageTitle>@(_product?.Name ?? Strings.ProductDetail_PageTitle)</PageTitle>
+
+<BusyFor Key="@BusyKeys.Products.Details" Context="busy">
+
+    @if (busy)
+    {
+        <MudStack Class="shop-product-details" Spacing="0">
+            <MudGrid Spacing="8">
+                <MudItem xs="12" sm="7">
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="500px" />
+                </MudItem>
+                <MudItem xs="12" sm="5">
+                    <MudStack Spacing="4">
+                        <MudSkeleton SkeletonType="SkeletonType.Text" Width="30%" />
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="112px" />
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="232px" />
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+        </MudStack>
+    }
+    else if (_notFound)
+    {
+        <MudStack Class="shop-product-details"
+                  AlignItems="AlignItems.Center"
+                  Spacing="6"
+                  data-testid="product-details-not-found">
+
+            <MudText Typo="Typo.h4">@Strings.Product_NotFound</MudText>
+
+            <MudButton Variant="Variant.Outlined"
+                       Href="@Routes.Products">@Strings.Nav_Products</MudButton>
+
+        </MudStack>
+    }
+    else if (_loadFailed)
+    {
+        <MudStack Class="shop-product-details"
+                  AlignItems="AlignItems.Center"
+                  Spacing="6"
+                  data-testid="product-details-load-failed">
+
+            <MudText Typo="Typo.h6">@Strings.ProductDetails_LoadFailed</MudText>
+
+            <MudButton Variant="Variant.Outlined"
+                       OnClick="OnRetryAsync">@Strings.ProductDetails_Retry</MudButton>
+
+        </MudStack>
+    }
+    else if (_product is not null && _selection is not null)
+    {
+        <MudStack Class="shop-product-details"
+                  Spacing="0"
+                  data-testid="product-details-ready">
+
+            <MudElement HtmlTag="div"
+                        Class="shop-product-details__main"
+                        data-testid="product-details-main">
+
+                <ShopImageGallery Images="@_product.Images"
+                                  SelectedImageId="@_selection.SelectedImageId"
+                                  SelectedImageIdChanged="OnImageSelected"
+                                  ImageAlt="@string.Format(Strings.Product_ImageAlt, _product.Name)"
+                                  PlaceholderLabel="@Strings.ImageGallery_Placeholder"
+                                  data-testid="product-image-gallery" />
+
+                <MudStack Class="shop-product-details__info" Spacing="0">
+
+                    <MudStack Class="shop-product-details__name" Spacing="0">
+
+                        @if (_product.BrandName is not null)
+                        {
+                            <MudText Typo="Typo.subtitle1"
+                                     Color="Color.Secondary"
+                                     data-testid="product-details-brand">@_product.BrandName</MudText>
+                        }
+
+                        <MudText Typo="Typo.h3"
+                                 HtmlTag="h1"
+                                 data-testid="product-details-name">@_product.Name</MudText>
+
+                    </MudStack>
+
+                    @if (_product.OptionTypes.Count > 0 && _product.Variants.Count > 0)
+                    {
+                        <MudStack Class="shop-product-details__options"
+                                  Spacing="0"
+                                  data-testid="product-details-options">
+
+                            @foreach (var optionType in _product.OptionTypes)
+                            {
+                                <MudStack Class="shop-product-details__option-group"
+                                          Spacing="0"
+                                          role="group"
+                                          aria-label="@optionType.Name">
+
+                                    <MudText Typo="Typo.subtitle1"
+                                             Color="Color.Secondary">@optionType.Name</MudText>
+
+                                    <MudStack Row
+                                              Wrap="Wrap.Wrap"
+                                              Spacing="0"
+                                              Class="shop-product-details__option-values">
+
+                                        @foreach (var value in optionType.Values)
+                                        {
+                                            var valueId = value.Id;
+                                            var isSelected = IsOptionValueSelected(valueId);
+
+                                            <MudButton @key="valueId"
+                                                       Variant="Variant.Outlined"
+                                                       Disabled="@(!IsOptionValueSelectable(valueId))"
+                                                       Class="@OptionClassname(isSelected)"
+                                                       aria-pressed="@(isSelected ? "true" : "false")"
+                                                       data-testid="product-option-value"
+                                                       OnClick="@(() => OnOptionValueSelected(valueId))">@value.Value</MudButton>
+                                        }
+
+                                    </MudStack>
+
+                                </MudStack>
+                            }
+
+                        </MudStack>
+                    }
+
+                    <MudStack Row
+                              Wrap="Wrap.Wrap"
+                              AlignItems="AlignItems.Baseline"
+                              Spacing="0"
+                              Class="shop-product-details__price-row">
+
+                        <MudText Typo="Typo.h3"
+                                 Class="shop-product-details__price fs-48 fw-600"
+                                 data-testid="product-details-price">@(PriceText ?? Strings.ProductDetails_PriceUnavailable)</MudText>
+
+                        @if (OriginalPriceText is not null)
+                        {
+                            <MudText Typo="Typo.h4"
+                                     Color="Color.Secondary"
+                                     Class="shop-product-details__price fw-600 text-decoration-line-through"
+                                     data-testid="product-details-original-price">@OriginalPriceText</MudText>
+                        }
+
+                    </MudStack>
+
+                    <MudStack Row
+                              Wrap="Wrap.Wrap"
+                              AlignItems="AlignItems.Center"
+                              Spacing="0"
+                              Class="shop-product-details__actions">
+
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   EndIcon="@ShopIcons.Outlined.Shopping_Bag_01"
+                                   data-testid="product-details-add-to-bag">@Strings.ProductDetails_AddToBag</MudButton>
+
+                        <MudButton Variant="Variant.Outlined"
+                                   EndIcon="@ShopIcons.Outlined.Heart_01"
+                                   data-testid="product-details-favourite">@Strings.ProductDetails_Favourite</MudButton>
+
+                    </MudStack>
+
+                </MudStack>
+
+            </MudElement>
+
+            @if (HasDescription || HasSpecifications)
+            {
+                <MudExpansionPanels MultiExpansion
+                                    Elevation="0"
+                                    Square
+                                    Class="shop-product-details__sections"
+                                    data-testid="@SectionsTestId">
+
+                    @if (HasDescription)
+                    {
+                        <MudExpansionPanel @bind-Expanded="_descriptionExpanded"
+                                           HideIcon
+                                           Gutters="false"
+                                           data-testid="product-description-section">
+
+                            <TitleContent>
+                                <MudStack Row
+                                          AlignItems="AlignItems.Center"
+                                          Justify="Justify.SpaceBetween"
+                                          Spacing="0"
+                                          data-testid="product-description-toggle">
+
+                                    <MudText Typo="Typo.h4"
+                                             HtmlTag="h2"
+                                             Class="text-transform-uppercase">@Strings.ProductDetails_Description</MudText>
+
+                                    <MudIcon Icon="@(_descriptionExpanded ? ShopIcons.Outlined.Remove_Minus : ShopIcons.Outlined.Add_Plus)"
+                                             Class="shop-product-details__section-icon" />
+
+                                </MudStack>
+                            </TitleContent>
+
+                            <ChildContent>
+                                @if (!string.IsNullOrEmpty(_product.DescriptionHtml))
+                                {
+                                    <MudText Typo="Typo.subtitle1"
+                                             Color="Color.Secondary"
+                                             HtmlTag="div"
+                                             Class="shop-product-details__description"
+                                             data-testid="product-description-content">@((MarkupString)_product.DescriptionHtml)</MudText>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.subtitle1"
+                                             Color="Color.Secondary"
+                                             Class="shop-product-details__description shop-product-details__description--text"
+                                             data-testid="product-description-content">@_product.DescriptionText</MudText>
+                                }
+                            </ChildContent>
+
+                        </MudExpansionPanel>
+                    }
+
+                    @if (HasSpecifications)
+                    {
+                        <MudExpansionPanel @bind-Expanded="_specificationsExpanded"
+                                           HideIcon
+                                           Gutters="false"
+                                           data-testid="product-specifications-section">
+
+                            <TitleContent>
+                                <MudStack Row
+                                          AlignItems="AlignItems.Center"
+                                          Justify="Justify.SpaceBetween"
+                                          Spacing="0"
+                                          data-testid="product-specifications-toggle">
+
+                                    <MudText Typo="Typo.h4"
+                                             HtmlTag="h2"
+                                             Class="text-transform-uppercase">@Strings.ProductDetails_Specifications</MudText>
+
+                                    <MudIcon Icon="@(_specificationsExpanded ? ShopIcons.Outlined.Remove_Minus : ShopIcons.Outlined.Add_Plus)"
+                                             Class="shop-product-details__section-icon" />
+
+                                </MudStack>
+                            </TitleContent>
+
+                            <ChildContent>
+                                <MudGrid Spacing="8" data-testid="product-specifications-content">
+                                    @foreach (var specification in _product.Specifications)
+                                    {
+                                        <MudItem @key="specification.Id" xs="12" sm="6" md="3">
+                                            <MudStack Spacing="3">
+                                                <MudText Typo="Typo.subtitle1"
+                                                         Color="Color.Secondary">@specification.Name</MudText>
+                                                <MudText Typo="Typo.subtitle1"
+                                                         Class="fs-20">@specification.Value</MudText>
+                                            </MudStack>
+                                        </MudItem>
+                                    }
+                                </MudGrid>
+                            </ChildContent>
+
+                        </MudExpansionPanel>
+                    }
+
+                </MudExpansionPanels>
+            }
+
+        </MudStack>
+    }
+
+</BusyFor>

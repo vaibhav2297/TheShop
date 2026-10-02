@@ -26,6 +26,7 @@ public static class BusyKeys
     {
         public const string Catalogue = "products.catalogue";
         public const string Filters = "products.filters";
+        public const string Details = "products.details";
         public const string ManageList = "products.manage-list";
         public const string LoadProduct = "products.load";
         public const string SaveProduct = "products.save";

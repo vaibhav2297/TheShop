@@ -24,9 +24,9 @@ namespace TheShop.Web.Pages.Products;
 /// (<see cref="CatalogueQueryState"/>): every change writes the URL, and a single
 /// <see cref="ApplyStateAsync"/> path re-sends <see cref="GetProductCataloguePageQuery"/> with
 /// the current criteria — whether the change came from the user, a shared link, or browser
-/// Back/Forward. Filters and sort reset to page 1. Add-to-Cart, Wishlist, and card-body
-/// navigation are display-only for this feature — their callbacks are wired by the Cart,
-/// Wishlist, and product-detail features.
+/// Back/Forward. Filters and sort reset to page 1. Selecting a card opens its product-details
+/// page; Add-to-Cart and Wishlist are display-only — their callbacks are wired by the Cart and
+/// Wishlist features.
 /// </summary>
 [Route(Routes.Products)]
 public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
@@ -36,6 +36,7 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private CatalogueFiltersDto? _filters;
     private Paginator<ProductSummaryDto> _products = default!;
@@ -156,6 +157,9 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
         _sort = sort;
         return PushStateAsync(BuildState() with { Page = 1 });
     }
+
+    private void OnProductSelected(Guid productId) =>
+        Navigation.NavigateTo(Routes.ProductDetails(productId));
 
     private Task OnPageChangedAsync(int page) =>
         PushStateAsync(BuildState() with { Page = page });

@@ -10,6 +10,15 @@ public static class Routes
     public const string NotFound = "/not-found";
     public const string Cart = "/cart";
     public const string Products = "/products";
+
+    /// <summary>
+    /// The public product-details page, id-keyed. Open to guests and signed-in customers; only
+    /// published products resolve.
+    /// </summary>
+    public const string ProductDetailsPattern = "/products/{id:guid}";
+
+    /// <summary>Builds the product-details URL for a specific product.</summary>
+    public static string ProductDetails(Guid id) => $"/products/{id}";
     public const string Categories = "/categories";
     public const string Brands = "/brands";
     public const string Deals = "/deals";

@@ -310,6 +310,29 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
         if (response is null)
             return null;
 
+        var product = await LoadAggregateAsync(response, ct);
+        return (product, response.UpdatedAt.ToString("O"));
+    }
+
+    /// <inheritdoc/>
+    public async Task<Product?> GetPublishedByIdAsync(Guid id, CancellationToken ct)
+    {
+        var response = await client
+            .From<ProductRecord>()
+            .Where(x => x.Id == id)
+            .Filter(IsPublishedColumn, Operator.Equals, PublishedValue)
+            .Single(ct);
+
+        return response is null ? null : await LoadAggregateAsync(response, ct);
+    }
+
+    /// <summary>
+    /// Loads the owned children of <paramref name="response"/> — gallery, option types and values,
+    /// specifications, and variants with their option links — and assembles the aggregate.
+    /// </summary>
+    private async Task<Product> LoadAggregateAsync(ProductRecord response, CancellationToken ct)
+    {
+        var id = response.Id;
         var imageRecords = await client.From<ProductImageRecord>().Where(x => x.ProductId == id).Get(ct);
         var optionTypeRecords = await client.From<ProductOptionTypeRecord>().Where(x => x.ProductId == id).Get(ct);
         var typeIds = optionTypeRecords.Models.Select(t => t.Id).ToList();
@@ -332,8 +355,7 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
                     variantOptionValueRecords.Where(l => l.VariantId == v.Id).Select(l => l.OptionValueId))))
             .ToList();
 
-        var product = response.ToDomain(ResolveImagePublicUrl, images, optionTypes, specifications, variants);
-        return (product, response.UpdatedAt.ToString("O"));
+        return response.ToDomain(ResolveImagePublicUrl, images, optionTypes, specifications, variants);
     }
 
     /// <inheritdoc/>

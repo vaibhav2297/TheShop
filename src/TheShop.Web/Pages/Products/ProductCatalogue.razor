@@ -86,7 +86,8 @@
                             @foreach (var product in _products.Items)
                             {
                                 <MudItem xs="12" sm="6" md="4" xl="3">
-                                    <ProductCard Product="@product" />
+                                    <ProductCard Product="@product"
+                                             OnSelect="@(() => OnProductSelected(product.Id))" />
                                 </MudItem>
                             }
                         </MudGrid>

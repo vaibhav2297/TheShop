@@ -10,6 +10,7 @@
 @use 'components/otpinput';
 @use 'components/imageupload';
 @use 'components/image';
+@use 'components/imagegallery';
 @use 'components/breadcrumbs';
 @use 'components/producttile';
 @use 'components/chip';
@@ -18,3 +19,5 @@
 @use 'components/bulkactionbar';
 @use 'components/dialog';
 @use 'components/rich-text-editor';
+
+@use 'layouts/productdetails';

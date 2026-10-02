@@ -1,0 +1,80 @@
+@inherits MudComponentBase
+
+@using TheShop.Web.Resources
+@using TheShop.Web.Theme
+
+<MudStack Class="@Classname"
+          Style="@Stylename"
+          Spacing="0"
+          UserAttributes="@UserAttributes">
+
+    <MudStack Class="shop-image-gallery__stage mud-tertiary"
+              AlignItems="AlignItems.Center"
+              Justify="Justify.Center"
+              Spacing="0">
+
+        <ShopImage Src="@SelectedImage?.Url"
+                   Preset="ShopImagePreset.ProductDetail"
+                   Alt="@ImageAlt"
+                   PlaceholderLabel="@PlaceholderLabel"
+                   Class="shop-image-gallery__image"
+                   data-testid="image-gallery-selected-image" />
+
+    </MudStack>
+
+    @if (Images.Count > 0)
+    {
+        <MudStack Row
+                  Spacing="0"
+                  AlignItems="AlignItems.Stretch"
+                  Class="shop-image-gallery__rail">
+
+            <MudIconButton Icon="@ShopIcons.Outlined.Chevron_Left_MD"
+                           aria-label="@Strings.ImageGallery_Previous"
+                           Disabled="@(!CanNavigate)"
+                           Color="Color.Primary"
+                           Class="shop-image-gallery__nav"
+                           OnClick="ScrollPreviousAsync"
+                           data-testid="image-gallery-previous" />
+
+            <MudStack Row
+                      Spacing="0"
+                      Class="shop-image-gallery__window"
+                      UserAttributes="@WindowAttributes">
+
+                @for (var i = 0; i < Images.Count; i++)
+                {
+                    var image = Images[i];
+                    var position = i + 1;
+                    var isSelected = image.Id == SelectedImage?.Id;
+
+                    <MudButton @key="image.Id"
+                               Variant="Variant.Text"
+                               Class="@PreviewClassname(isSelected)"
+                               aria-label="@string.Format(Strings.ImageGallery_SelectImage, position, Images.Count)"
+                               aria-pressed="@(isSelected ? "true" : "false")"
+                               data-testid="@(isSelected ? "product-image-preview-selected" : "product-image-preview")"
+                               OnClick="@(() => SelectAsync(image.Id))">
+
+                        <ShopImage Src="@image.Url"
+                                   Preset="ShopImagePreset.Thumbnail"
+                                   PlaceholderLabel="@PlaceholderLabel"
+                                   Class="shop-image-gallery__thumb" />
+
+                    </MudButton>
+                }
+
+            </MudStack>
+
+            <MudIconButton Icon="@ShopIcons.Outlined.Chevron_Right_MD"
+                           aria-label="@Strings.ImageGallery_Next"
+                           Disabled="@(!CanNavigate)"
+                           Color="Color.Primary"
+                           Class="shop-image-gallery__nav"
+                           OnClick="ScrollNextAsync"
+                           data-testid="image-gallery-next" />
+
+        </MudStack>
+    }
+
+</MudStack>

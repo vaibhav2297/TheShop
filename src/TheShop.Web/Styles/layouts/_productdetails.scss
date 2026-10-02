@@ -1,0 +1,137 @@
+// ─── Product details page ────────────────────────────────────────────────────
+// Layout for Pages/Products/ProductDetails. Desktop geometry follows the product-details design:
+// 64px × 32px page padding, a 3fr / 2fr gallery/information split 32px apart (806.4 / 537.6 at
+// 1440px), 42px between information blocks, a 1px-ruled option block with 32px padding, and
+// collapsible description/specification sections ruled above with 32px padding and 24px between
+// title and content. Below MudBlazor's Xs breakpoint (600px) the gallery stacks above the
+// information with 16px side padding.
+
+$product-details-xs-max: 599.98px;
+$product-details-rule: 1px solid var(--mud-palette-lines-default);
+
+.shop-product-details {
+    padding: 64px 32px;
+    gap: 64px;
+
+    .shop-product-details__main {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+        column-gap: 32px;
+        align-items: start;
+    }
+
+    .shop-product-details__info {
+        gap: 42px;
+        min-width: 0;
+    }
+
+    .shop-product-details__name {
+        gap: 8px;
+    }
+
+    .shop-product-details__options {
+        gap: 32px;
+        padding: 32px 0;
+        border-top: $product-details-rule;
+        border-bottom: $product-details-rule;
+    }
+
+    .shop-product-details__option-group {
+        gap: 16px;
+    }
+
+    .shop-product-details__option-values {
+        gap: 8px;
+    }
+
+    // Option values are data, shown exactly as authored rather than in button title case.
+    .shop-product-details__option {
+        min-width: 0;
+        height: 32px;
+        padding: 0 12px;
+        border: $product-details-rule;
+        border-radius: 0;
+        font-family: var(--mud-typography-body2-family);
+        font-size: var(--mud-typography-body2-size);
+        font-weight: var(--mud-typography-body2-weight);
+        letter-spacing: var(--mud-typography-body2-letterspacing);
+        text-transform: none;
+
+        &.shop-product-details__option--selected {
+            border-color: var(--mud-palette-primary);
+        }
+    }
+
+    .shop-product-details__price-row {
+        column-gap: 8px;
+    }
+
+    // Approved price-only tracking: the body letter-spacing token instead of the heading's.
+    .shop-product-details__price {
+        letter-spacing: var(--mud-typography-body1-letterspacing);
+    }
+
+    .shop-product-details__actions {
+        gap: 24px;
+
+        .mud-button-icon-end {
+            margin-inline: 12px 0;
+
+            .mud-icon-root {
+                width: 22px;
+                height: 22px;
+            }
+        }
+    }
+
+    .shop-product-details__option,
+    .shop-product-details__actions .mud-button-root,
+    .shop-product-details__sections .mud-expand-panel-header {
+        &:focus-visible {
+            outline: 2px solid var(--mud-palette-primary);
+            outline-offset: 2px;
+        }
+    }
+
+    .shop-product-details__sections {
+        .mud-expand-panel {
+            margin: 0;
+            border-top: $product-details-rule;
+            border-bottom: none;
+
+            .mud-expand-panel-header {
+                padding: 32px 0;
+            }
+
+            .mud-expand-panel-content {
+                padding: 0 0 32px;
+            }
+
+            &.mud-panel-expanded .mud-expand-panel-header {
+                padding-bottom: 24px;
+            }
+        }
+    }
+
+    .shop-product-details__section-icon {
+        width: 32px;
+        height: 32px;
+        margin: 12px;
+    }
+
+    .shop-product-details__description--text {
+        white-space: pre-line;
+    }
+}
+
+@media (max-width: $product-details-xs-max) {
+    .shop-product-details {
+        padding: 32px 16px;
+        gap: 32px;
+
+        .shop-product-details__main {
+            grid-template-columns: minmax(0, 1fr);
+            row-gap: 32px;
+        }
+    }
+}
