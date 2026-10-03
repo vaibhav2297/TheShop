@@ -1,38 +1,79 @@
 @use '../abstracts/text-style';
 
-// Figma Text Field 170:136; label remains associated even for placeholder-led designs.
+// Figma 2950:17591 / Text Field 170:136: outlined-only, with an associated floating label.
 .shop-field {
     display: flex;
     flex-direction: column;
     gap: var(--shop-space-1);
 }
 
-.shop-field-label {
-    @include text-style.apply(caption);
-    // Accessible visible label: preserve the existing medium emphasis.
-    font-weight: var(--shop-typography-subtitle-2-font-weight);
-}
-
 .shop-field-control {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--shop-space-1);
-    min-block-size: 61px;
-    padding: 18.5px 14px;
-    background-color: var(--shop-color-tertiary-lighter);
+    min-block-size: var(--shop-field-min-height);
+    padding: var(--shop-field-padding-block) var(--shop-field-padding-inline);
+    background: transparent;
+    box-shadow: inset 0 0 0 var(--shop-field-border-width) var(--shop-color-lines-input);
 
     &:focus-within {
-        box-shadow: inset 0 calc(-1 * var(--shop-focus-width)) var(--shop-color-primary);
+        box-shadow: inset 0 0 0 var(--shop-focus-width) var(--shop-color-primary);
     }
 
     &:has(.shop-field-input[aria-invalid='true']) {
-        box-shadow: inset 0 calc(-1 * var(--shop-focus-width)) var(--shop-color-error);
+        box-shadow: inset 0 0 0 var(--shop-focus-width) var(--shop-color-error);
     }
 }
 
+.shop-field-label {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: calc(var(--shop-field-padding-inline) - var(--shop-space-1));
+    max-inline-size: calc(100% - 2 * var(--shop-field-padding-inline));
+    padding-inline: var(--shop-space-1);
+    overflow: hidden;
+    background: transparent;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(body-1);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(-50%);
+    transition-property: inset-block-start, inset-inline-start, font-size, color, background-color;
+    transition-duration: var(--shop-field-label-transition-duration);
+    transition-timing-function: var(--shop-field-label-transition-easing);
+    cursor: text;
+}
+
+.shop-field-control:has(> .shop-field-icon) .shop-field-label {
+    inset-inline-start: calc(var(--shop-field-padding-inline) + var(--shop-field-icon-size));
+    max-inline-size: calc(100% - 2 * var(--shop-field-padding-inline) - var(--shop-field-icon-size) - var(--shop-space-1));
+}
+
+.shop-field-control:is(:focus-within, :has(.shop-field-input:not(:placeholder-shown)), :has(.shop-field-input:autofill)) .shop-field-label {
+    inset-block-start: 0;
+    inset-inline-start: calc(var(--shop-field-padding-inline) - var(--shop-space-1));
+    max-inline-size: calc(100% - 2 * var(--shop-field-padding-inline));
+    background-color: var(--shop-color-surface-default);
+    font-size: var(--shop-typography-caption-font-size);
+}
+
+.shop-field-control:focus-within .shop-field-label {
+    color: var(--shop-color-text-primary);
+}
+
+.shop-field-control:has(.shop-field-input[aria-invalid='true']) .shop-field-label {
+    color: var(--shop-color-error);
+}
+
+.shop-field-control:has(.shop-field-input:disabled) .shop-field-label {
+    color: var(--shop-color-text-disabled);
+    cursor: not-allowed;
+}
+
 .shop-field-icon {
-    inline-size: 24px;
-    block-size: 24px;
+    inline-size: var(--shop-field-icon-size);
+    block-size: var(--shop-field-icon-size);
 }
 
 .shop-field-input {
@@ -47,8 +88,7 @@
     @include text-style.apply(body-1);
 
     &::placeholder {
-        color: var(--shop-color-text-secondary);
-        opacity: 1;
+        opacity: 0;
     }
 
     &:disabled {
@@ -64,11 +104,26 @@
 }
 
 @media (forced-colors: active) {
-    // Forced colors suppress box shadows; retain focus on the whole control.
+    .shop-field-control {
+        outline: var(--shop-field-border-width) solid CanvasText;
+        outline-offset: calc(-1 * var(--shop-field-border-width));
+    }
+
     .shop-field-control:focus-within {
         outline: var(--shop-focus-width) solid Highlight;
         outline-offset: var(--shop-focus-offset);
     }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shop-field-label {
+        transition: none;
+    }
+}
+
+.shop-field-hint {
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(caption);
 }
 
 .shop-field-error {

@@ -2,14 +2,11 @@ using Bunit;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Domain.Enums;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using Xunit;
-using MudBlazor.Extensions;
 
 namespace TheShop.Web.Tests.Components.Common;
 
@@ -40,12 +37,6 @@ public class ShopSortSelectTests : TestContext
     {
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
-
-        var popoverService = Substitute.For<IPopoverService>();
-        popoverService.PopoverOptions.Returns(new PopoverOptions());
-        Services.Replace(ServiceDescriptor.Singleton(popoverService));
-
         var localizer = Substitute.For<IStringLocalizer<Strings>>();
         localizer[Arg.Any<string>()].Returns(call =>
         {
@@ -63,7 +54,9 @@ public class ShopSortSelectTests : TestContext
             .Add(c => c.Sort, ProductSortOption.NewestFirst)
             .Add(c => c.Options, FiveProductOptions));
 
-        cut.FindComponents<MudSelectItem<ProductSortOption>>().Should().HaveCount(5);
+        cut.FindAll("[role='option']").Should().HaveCount(5);
+        cut.FindAll("[role='option'] span").Select(option => option.TextContent)
+            .Should().Equal(FiveProductOptions.Select(option => option.LabelKey));
     }
 
     [Fact]
@@ -74,7 +67,8 @@ public class ShopSortSelectTests : TestContext
             .Add(c => c.Sort, ProductSortOption.NewestFirst)
             .Add(c => c.Options, FiveProductOptions));
 
-        cut.FindComponent<MudSelect<ProductSortOption>>().Instance.GetState(x => x.Value).Should().Be(ProductSortOption.NewestFirst);
+        cut.FindComponent<ShopSelect<ProductSortOption>>().Instance.Value.Should().Be(ProductSortOption.NewestFirst);
+        cut.Find("[aria-selected='true']").TextContent.Should().Contain(nameof(Strings.Sort_Newest));
     }
 
     [Fact]
@@ -87,8 +81,8 @@ public class ShopSortSelectTests : TestContext
             .Add(c => c.Options, FiveProductOptions)
             .Add(c => c.SortChanged, sort => received = sort));
 
-        var select = cut.FindComponent<MudSelect<ProductSortOption>>();
-        await cut.InvokeAsync(() => select.Instance.ValueChanged.InvokeAsync(ProductSortOption.PriceLowToHigh));
+        var select = cut.FindComponent<ShopSelect<ProductSortOption>>();
+        await cut.InvokeAsync(() => select.Instance.SelectAsync(cut.FindAll("[role='option']")[1].Id));
 
         received.Should().Be(ProductSortOption.PriceLowToHigh);
     }

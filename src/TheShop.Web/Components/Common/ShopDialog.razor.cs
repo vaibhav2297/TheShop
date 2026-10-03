@@ -13,8 +13,8 @@ public partial class ShopDialog : ComponentBase, IAsyncDisposable
     /// <summary>Already-localized title markup, including an appropriate heading; supplies the dialog's accessible name.</summary>
     [Parameter, EditorRequired] public RenderFragment? TitleContent { get; set; }
 
-    /// <summary>Optional width cap. Null retains the theme default; None retains only viewport gutters.</summary>
-    [Parameter] public ShopMaxWidth? MaxWidth { get; set; }
+    /// <summary>Optional width cap. Omitted, null, or None fits content within viewport gutters.</summary>
+    [Parameter] public ShopMaxWidth? MaxWidth { get; set; } = ShopMaxWidth.None;
 
     /// <summary>ID of the concise description in the body, when available.</summary>
     [Parameter] public string? DescriptionId { get; set; }
@@ -35,7 +35,7 @@ public partial class ShopDialog : ComponentBase, IAsyncDisposable
     private bool _disposed;
 
     private string CssClass => ShopCssClass.Join("shop-native", "shop-dialog",
-        MaxWidth is { } width ? ShopCssClass.Modifier("shop-dialog-width", width, nameof(MaxWidth)) : null);
+        ShopCssClass.Modifier("shop-dialog-width", MaxWidth ?? ShopMaxWidth.None, nameof(MaxWidth)));
 
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)

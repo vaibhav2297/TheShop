@@ -1,0 +1,28 @@
+@inherits InputCheckbox
+
+<div class="@RootClass">
+    <label class="shop-checkbox-label" for="@InputId">
+        <span class="shop-checkbox-control">
+            <input @attributes="InputAttributes"
+                   id="@InputId"
+                   name="@NameAttributeValue"
+                   class="@InputClass"
+                   type="checkbox"
+                   value="@bool.TrueString"
+                   disabled="@Disabled"
+                   aria-invalid="@InvalidAttribute"
+                   @bind:get="CurrentValue"
+                   @bind:set="SetValue"
+                   @ref="Element" />
+            <ShopIcon Icon="@ShopIcons.Outlined.Checkbox_Unchecked" Class="shop-checkbox-icon shop-checkbox-unchecked" />
+            <ShopIcon Icon="@ShopIcons.Outlined.Checkbox_Check" Class="shop-checkbox-icon shop-checkbox-checked" />
+        </span>
+        <span class="shop-checkbox-text">@Label</span>
+    </label>
+    @if (EditContext is not null)
+    {
+        <div id="@ErrorId" class="shop-checkbox-error" aria-live="polite">
+            <ValidationMessage For="@ValueExpression" />
+        </div>
+    }
+</div>

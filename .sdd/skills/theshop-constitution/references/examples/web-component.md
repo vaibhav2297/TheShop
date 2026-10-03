@@ -45,9 +45,9 @@ Use `ShopColor` for the color role, `ShopVariant.Filled`, `.Outlined`, or `.Text
 
 ## Validated input is a different contract
 
-Read `Components/Common/ShopTextInput.razor` and `.razor.cs` for the input example. It derives from `InputBase<string?>`, not `ShopComponentBase`, and binds `CurrentValueAsString` on `oninput`. This preserves binding, parsing, field notifications, validation classes, and `EditContext` behavior while supporting immediate updates required by existing forms.
+Read `Components/Common/ShopTextField.razor` and `.razor.cs` for the input example. It derives from `InputBase<string?>`, not `ShopComponentBase`, and binds `CurrentValueAsString` on `oninput`, guarding disabled updates. This preserves binding, parsing, field notifications, validation classes, and `EditContext` behavior while supporting immediate updates required by existing forms.
 
-Input attributes target the actual input. The owning form supplies an associated label, stable helper/error IDs, validation, and a disabled value from `BusyFor`. Prefer built-in Blazor inputs when their update behavior already meets the requirement; do not wrap every native element.
+Input attributes target the actual input. The component owns the required floating Label, optional StartIcon/HelperText, generated or caller-supplied input ID, helper/error associations, and EditContext-driven ValidationMessage. It has no Variant/Placeholder option and renders no visible placeholder. The owning form supplies binding, validation rules, and a disabled value from `BusyFor`. Prefer built-in Blazor inputs when their update behavior already meets the requirement; do not wrap every native element.
 
 ## What stays outside the component
 

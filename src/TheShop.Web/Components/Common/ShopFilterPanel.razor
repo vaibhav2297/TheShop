@@ -58,15 +58,11 @@
                                 {
                                     var isChecked = IsSelected(group.Key, option.Value);
 
-                                    <MudCheckBox T="bool"
-                                                 Value="@isChecked"
-                                                 Color="Color.Primary"
-                                                 UncheckedColor="Color.Secondary"
-                                                 ValueChanged="@(isChecked => OnOptionToggledAsync(group.Key, option.Value, isChecked))">
-
-                                        <MudText Typo="@(isChecked ? Typo.subtitle2 : Typo.body2)">@option.Label</MudText>
-
-                                    </MudCheckBox>
+                                    <ShopCheckbox @key="option.Value"
+                                                  Label="@option.Label"
+                                                  Value="@isChecked"
+                                                  ValueExpression="@(() => isChecked)"
+                                                  ValueChanged="@(chosen => OnOptionToggledAsync(group.Key, option.Value, chosen))" />
                                 }
 
                             </MudStack>
@@ -93,15 +89,11 @@
                                 {
                                     var isChecked = option.Value == selectedValue;
 
-                                    <MudCheckBox T="bool"
-                                                 Value="@isChecked"
-                                                 Color="Color.Primary"
-                                                 UncheckedColor="Color.Secondary"
-                                                 ValueChanged="@(chosen => OnSingleSelectChangedAsync(group.Key, chosen ? option.Value : null))">
-
-                                        <MudText Typo="@(isChecked ? Typo.subtitle2 : Typo.body2)">@option.Label</MudText>
-
-                                    </MudCheckBox>
+                                    <ShopCheckbox @key="option.Value"
+                                                  Label="@option.Label"
+                                                  Value="@isChecked"
+                                                  ValueExpression="@(() => isChecked)"
+                                                  ValueChanged="@(chosen => OnSingleSelectChangedAsync(group.Key, chosen ? option.Value : null))" />
                                 }
 
                             </MudStack>

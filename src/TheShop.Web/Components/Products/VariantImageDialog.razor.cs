@@ -4,7 +4,7 @@ using TheShop.Application.Features.Products.DTOs;
 namespace TheShop.Web.Components.Products;
 
 /// <summary>
-/// The variant image pin picker (FR-16, AC-10a; Figma node <c>2680:14477</c>): shows the
+/// The variant image pin picker (FR-16, AC-10a; Figma node <c>2946:14712</c>): shows the
 /// product's own gallery and, when this variant shares an option value with sibling variants,
 /// an "Apply To" choice between pinning this variant alone or every variant sharing that value.
 /// Owned by the variants card; cancellation is distinct from saving an empty selection.
@@ -40,7 +40,6 @@ public partial class VariantImageDialog : ComponentBase
     private Guid? _selectedImageId;
     private bool _applyToAllSharing;
     private bool _completed;
-    private readonly string _scopeName = $"variant-image-scope-{Guid.NewGuid():N}";
 
     private bool ShowScopeChoice => SharedScopeLabel is not null && SharedScopeCount > 1;
 

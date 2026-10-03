@@ -41,10 +41,16 @@ public class VariantImageDialogTests : TestContext
         selected.GetAttribute("type").Should().Be("button");
         selected.GetAttribute("aria-pressed").Should().Be("true");
         selected.GetAttribute("aria-label").Should().Be(string.Format(Strings.VariantImage_ImageLabel, 1, "Mango"));
+        selected.QuerySelector(".shop-variant-image-selected-icon")!.GetAttribute("aria-hidden").Should().Be("true");
+        cut.FindComponents<ShopIcon>().Should().ContainSingle(c =>
+            c.Instance.Class == "shop-variant-image-selected-icon" && c.Instance.Icon == TheShop.Web.Theme.ShopIcons.Outlined.Check);
         await cut.Find($"[data-image-id='{_second.Id}']").ClickAsync(new());
         cut.FindAll("[aria-pressed='true']").Should().ContainSingle();
+        cut.Find($"[data-image-id='{_first.Id}']").QuerySelector(".shop-variant-image-selected-icon").Should().BeNull();
+        cut.Find($"[data-image-id='{_second.Id}']").QuerySelector(".shop-variant-image-selected-icon").Should().NotBeNull();
         await cut.Find($"[data-image-id='{_second.Id}']").ClickAsync(new());
         cut.FindAll("[aria-pressed='true']").Should().BeEmpty();
+        cut.FindAll(".shop-variant-image-selected-icon").Should().BeEmpty();
         await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
         await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
         await cut.InvokeAsync(() => cut.FindComponent<ShopDialog>().Instance.DismissAsync());
@@ -70,7 +76,7 @@ public class VariantImageDialogTests : TestContext
     }
 
     [Fact]
-    public async Task Scope_SharedVariants_UsesExclusiveNativeRadiosAndReturnsChoice()
+    public async Task Scope_SharedVariants_UsesExclusiveShopCheckboxesAndReturnsChoice()
     {
         VariantImagePinResult? result = null;
         var cut = Render<VariantImageDialog>(p => p
@@ -79,10 +85,21 @@ public class VariantImageDialogTests : TestContext
             .Add(c => c.SharedScopeCount, 2)
             .Add(c => c.OnCompleted, value => result = value));
         cut.Find("fieldset legend").TextContent.Should().Be(Strings.VariantImage_ApplyToLabel);
-        cut.FindAll("input[type='radio']").Should().HaveCount(2);
-        cut.Find("input[value='this']").HasAttribute("checked").Should().BeTrue();
-        cut.Find("input[value='all']").Change("all");
-        cut.Find("input[value='this']").HasAttribute("checked").Should().BeFalse();
+        cut.FindAll("input[type='radio']").Should().BeEmpty();
+        cut.FindAll("input[type='checkbox']").Should().HaveCount(2);
+        cut.FindComponents<ShopCheckbox>().Should().OnlyContain(c => c.Instance.Size == TheShop.Web.Common.UI.ShopSize.Medium);
+        cut.Find("[data-testid='variant-image-scope-this']").HasAttribute("checked").Should().BeTrue();
+        cut.Find("[data-testid='variant-image-scope-all']").Change(true);
+        cut.Find("[data-testid='variant-image-scope-this']").HasAttribute("checked").Should().BeFalse();
+        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeTrue();
+        cut.Find("[data-testid='variant-image-scope-all']").Change(false);
+        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeTrue("one scope must remain selected");
+        cut.Find("[data-testid='variant-image-scope-this']").Change(true);
+        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeFalse();
+        cut.Find("[data-testid='variant-image-scope-this']").HasAttribute("checked").Should().BeTrue();
+        cut.Find("[data-testid='variant-image-scope-this']").Change(false);
+        cut.Find("[data-testid='variant-image-scope-this']").HasAttribute("checked").Should().BeTrue("one scope must remain selected");
+        cut.Find("[data-testid='variant-image-scope-all']").Change(true);
         await cut.Find("[data-image-id]").ClickAsync(new());
         await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
         result.Should().Be(new VariantImagePinResult(_first.Id, true));
@@ -98,7 +115,7 @@ public class VariantImageDialogTests : TestContext
             .Add(c => c.SharedScopeLabel, "Color = Red")
             .Add(c => c.SharedScopeCount, 2)
             .Add(c => c.OnCompleted, value => result = value));
-        cut.Find("input[value='all']").Change("all");
+        cut.Find("[data-testid='variant-image-scope-all']").Change(true);
         cut.Render(p => p.Add(c => c.GalleryImages, []).Add(c => c.SharedScopeCount, 1));
         cut.FindAll("fieldset, [data-image-id]").Should().BeEmpty();
         cut.Find(".shop-variant-image-empty").TextContent.Should().Be(Strings.VariantImage_NoImages);

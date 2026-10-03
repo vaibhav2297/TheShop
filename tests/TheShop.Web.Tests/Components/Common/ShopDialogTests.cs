@@ -32,7 +32,15 @@ public class ShopDialogTests : TestContext
         var cut = Render<ShopDialog>(p => p.Add(x => x.TitleContent, Title).Add(x => x.MaxWidth, width));
         cut.Find("dialog").ClassList.Should().Contain("shop-dialog-width-" + suffix);
         cut.Render(p => p.Add(x => x.MaxWidth, (ShopMaxWidth?)null));
-        cut.Find("dialog").ClassName.Should().Be("shop-native shop-dialog");
+        cut.Find("dialog").ClassName.Should().Be("shop-native shop-dialog shop-dialog-width-none");
+    }
+
+    [Fact]
+    public void MaxWidth_Omitted_UsesNone()
+    {
+        var cut = Render<ShopDialog>(p => p.Add(x => x.TitleContent, Title));
+        cut.Instance.MaxWidth.Should().Be(ShopMaxWidth.None);
+        cut.Find("dialog").ClassList.Should().Contain("shop-dialog-width-none");
     }
 
     [Fact]

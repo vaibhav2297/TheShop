@@ -1,7 +1,10 @@
 @use '../abstracts/text-style';
 
-// Figma Snackbar 2948:17575: one appearance for every notification kind.
+// Figma 2947:15676 / Snackbar 2948:17575: 16px padding, 24px gap, one appearance for every kind.
 .shop-notification-host {
+    // Application cap, not measured Figma geometry.
+    --shop-notification-max-width: 24rem;
+
     position: fixed;
     inset-inline: 0;
     inset-block-end: var(--shop-space-4);
@@ -18,6 +21,7 @@
 }
 
 .shop-notification {
+    --shop-notification-icon-size: 18px;
     --shop-color-focus-ring: var(--shop-color-primary-contrast);
 
     display: flex;

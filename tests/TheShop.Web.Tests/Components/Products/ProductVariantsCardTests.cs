@@ -34,7 +34,7 @@ public class ProductVariantsCardTests : TestContext
         var picker = cut.FindComponent<VariantImageDialog>();
         picker.Instance.SharedScopeCount.Should().Be(2);
         if (shared)
-            picker.Find("input[value='all']").Change("all");
+            picker.Find("[data-testid='variant-image-scope-all']").Change(true);
         await picker.Find("[data-image-id]").ClickAsync(new());
         await picker.Find("[data-testid='variant-image-save']").ClickAsync(new());
         changes.Should().ContainSingle();

@@ -22,22 +22,13 @@
                 <p class="shop-auth-instruction" id="signin-instruction">@Strings.Login_Instruction</p>
                 <EditForm EditContext="@_editContext" OnSubmit="OnSendCodeAsync" novalidate>
                     <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
-                        <div class="shop-field">
-                            <label class="shop-field-label" for="signin-email">@Strings.Email_Label</label>
-                            <div class="shop-field-control">
-                                <ShopIcon Icon="@ShopIcons.Outlined.Mention" Class="shop-field-icon" />
-                                <ShopTextInput id="signin-email" type="email" name="email"
-                                           @bind-Value="_model.Email"
-                                           class="shop-field-input"
-                                           placeholder="@Strings.Email_Placeholder"
-                                           autocomplete="email" required disabled="@busy"
-                                           aria-describedby="signin-instruction signin-error"
-                                           data-testid="signin-email" />
-                            </div>
-                            <div id="signin-error" class="shop-field-error" aria-live="polite">
-                                <ValidationMessage For="@(() => _model.Email)" />
-                            </div>
-                        </div>
+                        <ShopTextField id="signin-email" type="email" name="email"
+                                       @bind-Value="_model.Email"
+                                       Label="@Strings.Email_Label"
+                                       StartIcon="@ShopIcons.Outlined.Mention"
+                                       autocomplete="email" required Disabled="@busy"
+                                       aria-describedby="signin-instruction"
+                                       data-testid="signin-email" />
 
                         <div class="shop-auth-actions">
                             <ShopButton Type="submit" Size="ShopSize.Large"

@@ -11,19 +11,12 @@ The following excerpt uses the actual page's members and controls; it is not a s
 ```razor
 <EditForm EditContext="@_editContext" OnSubmit="OnSendCodeAsync" novalidate>
     <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
-        <label class="shop-field-label" for="signin-email">@Strings.Email_Label</label>
-        <ShopTextInput id="signin-email"
-                       type="email"
-                       name="email"
-                       class="shop-field-input"
+        <ShopTextField id="signin-email" type="email" name="email"
                        @bind-Value="_model.Email"
-                       autocomplete="email"
-                       required
-                       disabled="@busy"
-                       aria-describedby="signin-error" />
-        <div id="signin-error" class="shop-field-error" aria-live="polite">
-            <ValidationMessage For="@(() => _model.Email)" />
-        </div>
+                       Label="@Strings.Email_Label"
+                       StartIcon="@ShopIcons.Outlined.Mention"
+                       autocomplete="email" required Disabled="@busy"
+                       aria-describedby="signin-instruction" />
         <ShopButton Type="submit" Disabled="@(!CanSubmit)" Loading="@busy">
             @Strings.Auth_Login_Submit
         </ShopButton>
@@ -33,7 +26,7 @@ The following excerpt uses the actual page's members and controls; it is not a s
 
 The full page also supplies field instructions, a decorative icon, and its loading indicator. Copy the complete relevant contract, not only this shortened excerpt.
 
-`ShopTextInput` derives from `InputBase<string?>` and updates on `oninput`. This preserves the existing immediate email-validation behavior while retaining `EditContext`, field notifications, and parsing contracts. Ordinary fields without this requirement can use built-in Blazor inputs directly.
+`ShopTextField` derives from `InputBase<string?>` and updates on `oninput`. It owns the outlined shell, associated floating label, optional icon/helper, and validation-message region. It has no visible placeholder or variant API; its internal blank placeholder only supports CSS empty-state detection. The page owns validation rules and busy state. Native attributes target the input; external descriptions merge with generated helper/error IDs (`signin-email-error` here). This preserves immediate email validation, `EditContext`, field notifications, and parsing contracts without repeating field markup on each page.
 
 ## Code-behind contract
 

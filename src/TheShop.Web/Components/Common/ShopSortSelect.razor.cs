@@ -1,19 +1,19 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
+using TheShop.Web.Common.UI;
 using TheShop.Web.Resources;
 
 namespace TheShop.Web.Components.Common;
 
 /// <summary>
-/// Sort-order picker. A thin <see cref="MudSelect{T}"/> wrapper generic over a feature's own sort
+/// Sort-order picker. A thin <see cref="ShopSelect{TValue}"/> wrapper generic over a feature's own sort
 /// enum (<c>ProductSortOption</c>, <c>BrandSortOption</c>, …) — the page owns the current value,
 /// supplies the fixed <see cref="Options"/> list, and re-queries when <see cref="SortChanged"/>
 /// fires. Feature-agnostic — used by both the product catalogue and manage-brands (plan §5
 /// Decision 4); the sort enums themselves stay per-feature and compile-time-checked.
 /// </summary>
 /// <typeparam name="TSort">The feature's sort-option enum.</typeparam>
-public partial class ShopSortSelect<TSort> : MudComponentBase where TSort : struct, Enum
+public partial class ShopSortSelect<TSort> : ShopComponentBase where TSort : struct, Enum
 {
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
 
@@ -31,6 +31,9 @@ public partial class ShopSortSelect<TSort> : MudComponentBase where TSort : stru
     /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyList<(TSort Value, string LabelKey)> Options { get; set; } = [];
+
+    private IReadOnlyList<ShopSelectOption<TSort>> SelectOptions =>
+        Options.Select(option => new ShopSelectOption<TSort>(option.Value, Localizer[option.LabelKey])).ToArray();
 
     private Task OnValueChangedAsync(TSort value) => SortChanged.InvokeAsync(value);
 }

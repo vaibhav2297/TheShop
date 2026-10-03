@@ -96,11 +96,14 @@ public sealed class NativeDialogJourneyTests(PlaywrightFixture playwright) : E2E
         await Assertions.Expect(dialog).ToHaveAccessibleNameAsync(Strings.ManageBrands_DeleteConfirmTitle);
         var dimensions = await dialog.EvaluateAsync<double[]>("""
             el => [el.getBoundingClientRect().width, parseFloat(getComputedStyle(el.querySelector('header')).paddingTop),
-                parseFloat(getComputedStyle(el.querySelector('h2')).fontSize)]
+                parseFloat(getComputedStyle(el.querySelector('h2')).fontSize),
+                parseFloat(getComputedStyle(el.querySelector('.shop-dialog-content')).paddingTop),
+                parseFloat(getComputedStyle(el.querySelector('footer')).paddingTop)]
             """);
-        dimensions[0].Should().BeApproximately(Math.Min(500d, width - 32d), 1,
-            "Windows fractional scaling can round viewport-relative widths");
-        dimensions.Skip(1).Should().Equal(24d, 24d);
+        await Assertions.Expect(dialog).ToHaveClassAsync("shop-native shop-dialog shop-dialog-width-none");
+        dimensions[0].Should().BeGreaterThan(0).And.BeLessThanOrEqualTo(width - 31d,
+            "content-sized confirmation must remain within viewport gutters");
+        dimensions.Skip(1).Should().Equal(16d, 24d, 24d, 16d);
         (await Page.GetByTestId("dialog-close").EvaluateAsync<double[]>("el => [el.getBoundingClientRect().width, el.getBoundingClientRect().height]"))
             .Should().Equal([48d, 48d], "the close action uses the Figma Text/Medium icon-button size");
         await trigger.FocusAsync();
@@ -198,7 +201,7 @@ public sealed class NativeDialogJourneyTests(PlaywrightFixture playwright) : E2E
         await using var renderer = new HtmlRenderer(services, services.GetRequiredService<ILoggerFactory>());
         (ShopMaxWidth? Width, double Cap)[] cases =
         [
-            (null, 500), (ShopMaxWidth.ExtraSmall, 444), (ShopMaxWidth.Small, 600),
+            (null, double.PositiveInfinity), (ShopMaxWidth.ExtraSmall, 444), (ShopMaxWidth.Small, 600),
             (ShopMaxWidth.Medium, 960), (ShopMaxWidth.Large, 1280), (ShopMaxWidth.ExtraLarge, 1920),
             (ShopMaxWidth.ExtraExtraLarge, 2560), (ShopMaxWidth.None, double.PositiveInfinity)
         ];
@@ -227,12 +230,25 @@ public sealed class NativeDialogJourneyTests(PlaywrightFixture playwright) : E2E
                     const rect = el.getBoundingClientRect();
                     const result = [rect.width, rect.left, innerWidth - rect.right, rect.height,
                         closedDisplay === 'none' ? 1 : 0];
+                    el.querySelector('.shop-dialog-content').textContent = 'Long wrapping content '.repeat(80);
+                    result.push(el.getBoundingClientRect().width, el.scrollWidth - el.clientWidth);
                     module.dispose(el);
                     el.remove();
                     return result;
                 }
                 """, html);
-            dimensions[0].Should().BeApproximately(Math.Min(cap, viewportWidth - 32d), 1, $"width choice {width}");
+            if (width is null or ShopMaxWidth.None)
+            {
+                dimensions[0].Should().BeLessThan(viewportWidth - 32d,
+                    "None must hug short content instead of filling the viewport");
+                dimensions[5].Should().BeGreaterThan(dimensions[0], "None expands when content needs more width");
+            }
+            else
+            {
+                dimensions[0].Should().BeApproximately(Math.Min(cap, viewportWidth - 32d), 1, $"width choice {width}");
+            }
+            dimensions[5].Should().BeApproximately(Math.Min(cap, viewportWidth - 32d), 1);
+            dimensions[6].Should().BeLessThanOrEqualTo(1, "long content must wrap within the cap");
             dimensions[1].Should().BeGreaterThanOrEqualTo(15);
             dimensions[2].Should().BeGreaterThanOrEqualTo(15);
             dimensions[3].Should().BeLessThan(450, "short content must not stretch to viewport height");

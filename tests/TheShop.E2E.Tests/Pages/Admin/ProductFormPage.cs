@@ -191,10 +191,10 @@ public sealed class ProductFormPage(IPage page)
 
     public Task SelectPinDialogImageAsync(int index) => DialogSurface.Locator(".shop-variant-image-option").Nth(index).ClickAsync();
 
-    public ILocator ApplyToAllSharingRadio(int sharedCount, string sharedScopeLabel) =>
+    public ILocator ApplyToAllSharingCheckbox(int sharedCount, string sharedScopeLabel) =>
         DialogSurface.GetByLabel(string.Format(Strings.VariantImage_ApplyToAllSharing, sharedCount, sharedScopeLabel));
 
-    public ILocator ThisVariantOnlyRadio => DialogSurface.GetByLabel(Strings.VariantImage_ThisVariantOnly);
+    public ILocator ThisVariantOnlyCheckbox => DialogSurface.GetByLabel(Strings.VariantImage_ThisVariantOnly);
 
     public ILocator PinDialogSaveButton => DialogSurface.GetByRole(AriaRole.Button, new() { Name = Strings.VariantImage_Save });
 

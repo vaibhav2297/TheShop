@@ -1,7 +1,13 @@
 @use '../abstracts/text-style';
 
-// Figma 2680:14477: 32px sections, 16px gallery gaps, 120px thumbnails.
+// Figma 2946:14712: 32px sections, 16px gallery gaps, inset images in 120px tiles.
 .shop-variant-image {
+    // 120px tile, 100px image, 18px check in a 24px corner slot.
+    --shop-variant-image-tile-size: 7.5rem;
+    --shop-variant-image-padding: 0.625rem;
+    --shop-variant-image-check-size: 1.125rem;
+    --shop-variant-image-check-inset: 0.1875rem;
+
     display: grid;
     gap: var(--shop-space-8);
 }
@@ -33,11 +39,11 @@
 
 .shop-variant-image-option {
     position: relative;
-    inline-size: 120px;
+    inline-size: var(--shop-variant-image-tile-size);
     max-inline-size: 100%;
-    padding: 0;
+    padding: var(--shop-variant-image-padding);
     border: 0;
-    background: var(--shop-color-surface-subtle);
+    background: var(--shop-color-tertiary);
     color: var(--shop-color-primary);
     cursor: pointer;
 
@@ -45,6 +51,7 @@
         content: '';
         position: absolute;
         inset: 0;
+        box-sizing: border-box;
         border: 1px solid var(--shop-color-primary);
         pointer-events: none;
     }
@@ -57,9 +64,10 @@
 
 .shop-variant-image-selected-icon {
     position: absolute;
-    inset-block-start: var(--shop-space-1);
-    inset-inline-end: var(--shop-space-1);
-    background-color: var(--shop-color-surface-default);
+    inset-block-start: var(--shop-variant-image-check-inset);
+    inset-inline-end: var(--shop-variant-image-check-inset);
+    inline-size: var(--shop-variant-image-check-size);
+    block-size: var(--shop-variant-image-check-size);
 }
 
 .shop-variant-image-scope {
@@ -69,20 +77,6 @@
     border: 0;
 
     > legend { margin-block-end: var(--shop-space-2); }
-}
-
-.shop-variant-image-choice {
-    display: flex;
-    align-items: center;
-    gap: var(--shop-space-4);
-    min-block-size: 48px;
-    cursor: pointer;
-
-    > input {
-        flex-shrink: 0;
-        margin: var(--shop-space-2);
-        accent-color: var(--shop-color-primary);
-    }
 }
 
 @media (forced-colors: active) {

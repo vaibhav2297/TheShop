@@ -322,7 +322,7 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         // AC-10a: pinning with the shared scope covers every variant sharing that option value...
         await add.Form.OpenPinDialogAsync("Mango / 20mg");
         await add.Form.SelectPinDialogImageAsync(0);
-        await add.Form.ApplyToAllSharingRadio(2, "Flavour = Mango").ClickAsync();
+        await add.Form.ApplyToAllSharingCheckbox(2, "Flavour = Mango").ClickAsync();
         await add.Form.ConfirmPinDialogAsync();
 
         await add.Form.VariantChangeImageButton("Mango / 20mg").WaitForAsync(new() { Timeout = 15_000 });

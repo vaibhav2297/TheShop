@@ -37,7 +37,7 @@ Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*)
 
 ### Design — theme
 
-13. [design] Visual values belong in `Styles/tokens/` and emit `--shop-*` CSS variables. SCSS owns colors, typography, spacing, and theme values; `Theme/ShopIcons.cs` remains the trusted SVG/asset registry. Do not maintain permanent duplicate C# palettes.
+13. [design] Shared design values belong in `Styles/tokens/` and emit `--shop-*` CSS variables. Component-only geometry and appearance decisions belong in the owning `Styles/components/` partial, with local custom properties scoped to the component when needed. SCSS owns colors, typography, spacing, and theme values; `Theme/ShopIcons.cs` remains the trusted SVG/asset registry. Do not maintain permanent duplicate C# palettes.
 14. [design] Use native semantic HTML, project SCSS, and Blazor built-in inputs. Add small `Shop*` components for repeated behavior or meaningful compositions. Do not replace MudBlazor with another broad UI suite or reproduce layout/text wrappers such as `ShopStack`, `ShopGrid`, or `ShopText`.
 15. [design] Apply semantic `--shop-*` color tokens through owned component/layout classes. Choose tokens by their text, surface, border, or state role. No hex values in `.razor`; no new `--mud-*` consumers.
 16. [design] Use semantic headings, paragraphs, and inline elements for text. Heading levels follow document hierarchy independently of visual size. Preserve a page heading for navigation focus.

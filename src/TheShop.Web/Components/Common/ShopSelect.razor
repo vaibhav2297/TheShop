@@ -1,0 +1,49 @@
+@typeparam TValue
+@inherits InputBase<TValue>
+
+<div class="shop-native shop-select" @ref="_element">
+    <div class="@ControlClass">
+        <button @attributes="TriggerAttributes"
+                id="@InputId"
+                name="@NameAttributeValue"
+                type="button"
+                role="combobox"
+                class="@TriggerClass"
+                disabled="@Disabled"
+                aria-labelledby="@LabelId"
+                aria-invalid="@InvalidAttribute"
+                aria-haspopup="listbox"
+                aria-controls="@ListId"
+                aria-expanded="false"
+                data-selected="@SelectedId">
+            <span class="shop-select-value">@SelectedLabel</span>
+            <ShopIcon Icon="@ShopIcons.Outlined.Caret_Down_MD" Class="shop-select-caret" />
+        </button>
+        <label id="@LabelId" for="@InputId" class="shop-select-label">@Label</label>
+    </div>
+    <div id="@ListId" class="shop-select-options" role="listbox" aria-labelledby="@LabelId" popover="manual">
+        @foreach (var entry in _entries)
+        {
+            <div @key="entry.Id"
+                 id="@entry.Id"
+                 class="shop-select-option"
+                 role="option"
+                 aria-selected="@IsSelected(entry.Option.Value).ToString().ToLowerInvariant()"
+                 aria-disabled="@entry.Option.Disabled.ToString().ToLowerInvariant()"
+                 data-option-id="@entry.Id">
+                <span>@entry.Option.Label</span>
+                <ShopIcon Icon="@ShopIcons.Outlined.Check" Class="shop-select-check" />
+            </div>
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(HelperText))
+    {
+        <div id="@HelperId" class="shop-field-hint">@HelperText</div>
+    }
+    @if (EditContext is not null)
+    {
+        <div id="@ErrorId" class="shop-field-error" aria-live="polite">
+            <ValidationMessage For="@ValueExpression" />
+        </div>
+    }
+</div>

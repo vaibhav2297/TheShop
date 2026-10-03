@@ -25,7 +25,9 @@ Do not introduce replacement C# color/typography registries or a runtime theme s
 
 ## Token setup
 
-`ShopMaxWidth` carries width choices only; `tokens/_sizing.scss` owns their numeric caps. These owner-approved values are not Figma breakpoints. `_theme.scss` owns the separate 500px dialog default (`--shop-dialog-max-width`); dialog modifiers consume the shared scale locally. `None` removes the cap, not viewport gutters.
+`ShopMaxWidth` carries width choices only; `tokens/_sizing.scss` owns their numeric caps. These owner-approved values are not Figma breakpoints. `ShopDialog` defaults to `ShopMaxWidth.None` (explicit null also resolves to None), with content-sized width and viewport gutters. There is no separate 500px fallback. Named dialog modifiers consume the shared scale locally.
+
+Keep component-only dimensions and appearance decisions in their owning component partial, not global `:root` tokens. Declare reusable component custom properties on the closest owning selector; descendants inherit them. Backdrop-specific properties belong on `::backdrop` itself. `_theme.scss` retains genuinely shared contracts: field chrome/motion used by TextField and Select, focus, control radius, interaction states, and application stacking. Colors, typography, spacing and named maximum widths retain their shared token owners. Do not copy these shared scales into component palettes or create a variable for every one-off declaration.
 
 Use `--shop-*` CSS custom properties for values consumed at runtime. Sass variables are for compile-time helpers and generation, not a second manually maintained palette. Current declarations include:
 

@@ -129,15 +129,15 @@ public sealed class NativeNotificationJourneyTests(PlaywrightFixture playwright)
             await Assertions.Expect(bar).ToHaveAttributeAsync("class", "shop-notification");
             await Assertions.Expect(bar).ToHaveCSSAsync("background-color", "rgb(23, 23, 23)");
             await Assertions.Expect(bar).ToHaveCSSAsync("color", "rgb(255, 255, 255)");
-            await Assertions.Expect(bar).ToHaveCSSAsync("padding", "24px");
+            await Assertions.Expect(bar).ToHaveCSSAsync("padding", "16px");
             await Assertions.Expect(bar).ToHaveCSSAsync("gap", "24px");
             await Assertions.Expect(bar).ToHaveCSSAsync("border-top-width", "0px");
             await Assertions.Expect(bar.Locator(".shop-notification-message")).ToHaveCSSAsync("font-size", "14px");
             await Assertions.Expect(bar.Locator(".shop-notification-message")).ToHaveCSSAsync("font-weight", "500");
             await Assertions.Expect(bar.Locator("svg")).ToHaveCSSAsync("width", "18px");
             var barBounds = (await bar.BoundingBoxAsync())!;
-            barBounds.Width.Should().BeApproximately(241, 2);
-            barBounds.Height.Should().BeApproximately(66, 1);
+            barBounds.Width.Should().BeApproximately(225, 2);
+            barBounds.Height.Should().BeApproximately(50, 1);
             (barBounds.X + barBounds.Width / 2).Should().BeApproximately(viewportWidth / 2, 1);
             var dismissBounds = (await bar.GetByTestId("notification-dismiss").BoundingBoxAsync())!;
             dismissBounds.Width.Should().BeGreaterThanOrEqualTo(24);

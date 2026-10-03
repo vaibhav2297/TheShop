@@ -1,8 +1,11 @@
 @use '../abstracts/text-style';
 @use '../tokens/sizing';
 
-// Figma 2680:14477 chrome: 500px wide, 24px sections, H5 heading.
+// Figma 2946:14712: 16px header/actions, 24px body, H5 heading; width is caller-owned.
 .shop-dialog {
+    // Named modifiers opt into a shared cap; None/default is content-sized below.
+    --shop-dialog-max-width: none;
+
     inline-size: calc(100% - 2 * var(--shop-space-4));
     max-inline-size: var(--shop-dialog-max-width);
     max-block-size: calc(100dvh - 2 * var(--shop-space-4));
@@ -22,6 +25,10 @@
     }
 
     &::backdrop {
+        // Backdrop owns its custom property; do not rely on pseudo-element inheritance.
+        // Application opacity, not a named Figma paint style.
+        --shop-color-dialog-backdrop: rgb(0 0 0 / 50%);
+
         background-color: var(--shop-color-dialog-backdrop);
     }
 }
@@ -33,7 +40,8 @@
 }
 
 .shop-dialog-width-none {
-    --shop-dialog-max-width: none;
+    inline-size: fit-content;
+    max-inline-size: calc(100% - 2 * var(--shop-space-4));
 }
 
 .shop-dialog-header {
@@ -42,7 +50,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--shop-space-2);
-    padding: var(--shop-space-6);
+    padding: var(--shop-space-4);
     border-block-end: 1px solid var(--shop-color-lines-divider);
 }
 
@@ -75,7 +83,7 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: var(--shop-space-2);
-    padding: var(--shop-space-6);
+    padding: var(--shop-space-4);
     border-block-start: 1px solid var(--shop-color-lines-divider);
 }
 

@@ -40,11 +40,11 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         await OpenSignInAsync();
         var email = Page.GetByTestId("signin-email");
         var submit = Page.GetByTestId("signin-submit");
-        var error = Page.Locator("#signin-error");
+        var error = Page.Locator("#signin-email-error");
 
         await Assertions.Expect(submit).ToBeDisabledAsync();
         await Assertions.Expect(Page.Locator("label[for='signin-email']")).ToHaveTextAsync(Strings.Email_Label);
-        await Assertions.Expect(email).ToHaveAttributeAsync("aria-describedby", "signin-instruction signin-error");
+        await Assertions.Expect(email).ToHaveAttributeAsync("aria-describedby", "signin-instruction signin-email-error");
         await AssertNoOverflowAsync();
         await SavePageAsync($"signin-{width}-empty");
 
@@ -88,6 +88,192 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         await AssertNoOverflowAsync();
         await SavePageAsync($"signin-{width}-invalid");
         _backendRequests.Should().Be(0, "typing and visual checks must not request an OTP or backend data");
+    }
+
+    [Theory]
+    [InlineData(390, false)]
+    [InlineData(1440, true)]
+    public async Task SignIn_OutlinedField_AnimatesLabelAndPreservesValueAndFocusStates(int width, bool withoutVendorCss)
+    {
+        await Page.SetViewportSizeAsync(width, 900);
+        await OpenSignInAsync();
+        if (withoutVendorCss)
+        {
+            await Page.EvaluateAsync("""
+                () => {
+                    for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                    }
+                    document.getElementById('blazor-error-ui').style.display = 'none';
+                }
+                """);
+        }
+        var field = Page.Locator(".shop-field-control");
+        var label = field.Locator("label");
+        var input = Page.GetByTestId("signin-email");
+        await Assertions.Expect(input).ToHaveAccessibleNameAsync(Strings.Email_Label);
+        await Assertions.Expect(input).ToHaveAttributeAsync("placeholder", " ");
+        await Assertions.Expect(label).ToHaveCSSAsync("font-size", "16px");
+        await Assertions.Expect(label).ToHaveCSSAsync("font-weight", "400");
+        await Assertions.Expect(label).ToHaveCSSAsync("color", "rgb(122, 122, 122)");
+        await Assertions.Expect(field).ToHaveCSSAsync("background-color", "rgba(0, 0, 0, 0)");
+        (await field.EvaluateAsync<string>("el => getComputedStyle(el).boxShadow"))
+            .Should().Be("rgb(224, 224, 224) 0px 0px 0px 1px inset");
+        var initial = (await field.BoundingBoxAsync())!;
+        initial.Height.Should().BeApproximately(61, 0.1f);
+        var initialLabel = (await label.BoundingBoxAsync())!;
+        (initialLabel.Y + initialLabel.Height / 2).Should().BeApproximately(initial.Y + initial.Height / 2, 0.5f);
+        (initialLabel.X - initial.X).Should().BeApproximately(38, 0.1f, "label padding places its text at x=42 after the 24px icon");
+        (await input.EvaluateAsync<string>("el => getComputedStyle(el, '::placeholder').opacity")).Should().Be("0");
+        await SavePageAsync($"outlined-field-{width}-placeholder");
+
+        // Inspect the actual transition while it runs, rather than just its declared duration.
+        (await input.EvaluateAsync<bool>("""
+            async el => {
+                el.focus();
+                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                return el.parentElement.querySelector('label').getAnimations()
+                    .some(animation => animation.effect.getTiming().duration === 240);
+            }
+            """)).Should().BeTrue();
+        await Assertions.Expect(input).ToBeFocusedAsync();
+        await Assertions.Expect(input).ToHaveValueAsync("");
+        await Assertions.Expect(label).ToHaveCSSAsync("font-size", "12px");
+        await Assertions.Expect(label).ToHaveCSSAsync("top", "0px");
+        await Assertions.Expect(label).ToHaveCSSAsync("left", "10px");
+        await Assertions.Expect(label).ToHaveCSSAsync("color", "rgb(23, 23, 23)");
+        await Assertions.Expect(label).ToHaveCSSAsync("transition-timing-function", "cubic-bezier(0.4, 0, 0.2, 1)");
+        await Assertions.Expect(label).ToHaveCSSAsync("background-color", "rgb(255, 255, 255)");
+        await Assertions.Expect(input).ToHaveCSSAsync("outline-style", "none");
+        (await field.EvaluateAsync<string>("el => getComputedStyle(el).boxShadow"))
+            .Should().Be("rgb(23, 23, 23) 0px 0px 0px 2px inset");
+        (await input.EvaluateAsync<string>("el => getComputedStyle(el, '::placeholder').opacity")).Should().Be("0");
+        await SavePageAsync($"outlined-field-{width}-focused-empty");
+
+        await input.FillAsync("native-ui@example.invalid");
+        await Page.Keyboard.PressAsync("Tab");
+        await Assertions.Expect(label).ToHaveCSSAsync("font-size", "12px");
+        await Assertions.Expect(label).ToHaveCSSAsync("color", "rgb(122, 122, 122)");
+        await SavePageAsync($"outlined-field-{width}-normal");
+        await label.ClickAsync();
+        await Assertions.Expect(input).ToBeFocusedAsync();
+        await input.FillAsync("");
+        await Assertions.Expect(label).ToHaveCSSAsync("font-size", "12px");
+        // Sample the return transition deterministically, then let it finish normally.
+        var midpoint = await input.EvaluateAsync<double[]>("""
+            async el => {
+                el.blur();
+                const label = el.parentElement.querySelector('label');
+                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                const animations = label.getAnimations();
+                try {
+                    for (const animation of animations) { animation.pause(); animation.currentTime = 120; }
+                    const style = getComputedStyle(label);
+                    const alpha = style.backgroundColor.match(/[\d.]+/g);
+                    return [parseFloat(style.top), parseFloat(style.left), parseFloat(style.fontSize),
+                        alpha.length === 4 ? Number(alpha[3]) : 1, animations.length];
+                } finally {
+                    for (const animation of animations) animation.play();
+                }
+            }
+            """);
+        midpoint[0].Should().BeGreaterThan(0).And.BeLessThan(30.5);
+        midpoint[1].Should().BeGreaterThan(10).And.BeLessThan(38);
+        midpoint[2].Should().BeGreaterThan(12).And.BeLessThan(16);
+        midpoint[3].Should().BeGreaterThan(0).And.BeLessThan(1);
+        midpoint[4].Should().BeGreaterThan(0);
+        await Assertions.Expect(label).ToHaveCSSAsync("font-size", "16px");
+        await Assertions.Expect(label).ToHaveCSSAsync("background-color", "rgba(0, 0, 0, 0)");
+        var afterClear = (await field.BoundingBoxAsync())!;
+        afterClear.Width.Should().BeApproximately(initial.Width, 0.1f);
+        afterClear.Height.Should().BeApproximately(initial.Height, 0.1f);
+
+        // Native value restoration (including browser autofill) must not need a Blazor focus flag.
+        await input.EvaluateAsync("el => el.value = 'restored@example.invalid'");
+        await Assertions.Expect(label).ToHaveCSSAsync("font-size", "12px");
+        await Assertions.Expect(label).ToHaveCSSAsync("top", "0px");
+        await input.FillAsync("invalid");
+        await Assertions.Expect(input).ToHaveAttributeAsync("aria-invalid", "true");
+        await Assertions.Expect(label).ToHaveCSSAsync("color", "rgb(255, 66, 66)");
+        (await field.EvaluateAsync<string>("el => getComputedStyle(el).boxShadow"))
+            .Should().Be("rgb(255, 66, 66) 0px 0px 0px 2px inset");
+
+        await Page.EmulateMediaAsync(new() { ReducedMotion = ReducedMotion.Reduce });
+        await Assertions.Expect(label).ToHaveCSSAsync("transition-duration", "0s");
+        await Page.EmulateMediaAsync(new() { ForcedColors = ForcedColors.Active });
+        await Assertions.Expect(field).ToHaveCSSAsync("outline-style", "solid");
+        await Assertions.Expect(input).ToHaveCSSAsync("outline-style", "none");
+        await Page.EmulateMediaAsync(new() { ForcedColors = ForcedColors.None });
+        await Page.EvaluateAsync("() => document.documentElement.style.fontSize = '32px'");
+        await input.FillAsync("native-ui@example.invalid");
+        await Assertions.Expect(label).ToHaveCSSAsync("font-size", "24px");
+        (await field.BoundingBoxAsync())!.Height.Should().BeApproximately(122, 0.1f);
+        await AssertNoOverflowAsync();
+        _backendRequests.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task TextFields_WithoutVendorStyles_KeepIndependentLabelsAndDescriptions()
+    {
+        await Page.SetViewportSizeAsync(390, 900);
+        await OpenSignInAsync();
+        await using var services = new ServiceCollection().AddLogging().BuildServiceProvider();
+        await using var renderer = new HtmlRenderer(services, services.GetRequiredService<ILoggerFactory>());
+        string? value = null;
+        var html = await renderer.Dispatcher.InvokeAsync(async () =>
+        {
+            var parameters = new Dictionary<string, object?>
+            {
+                [nameof(ShopTextField.Label)] = Strings.Email_Label,
+                [nameof(ShopTextField.HelperText)] = Strings.Login_Instruction,
+                [nameof(ShopTextField.ValueExpression)] = (System.Linq.Expressions.Expression<Func<string?>>)(() => value)
+            };
+            var first = await renderer.RenderComponentAsync<ShopTextField>(ParameterView.FromDictionary(parameters));
+            parameters[nameof(ShopTextField.Value)] = "saved@example.invalid";
+            parameters[nameof(ShopTextField.Disabled)] = true;
+            parameters[nameof(ShopTextField.StartIcon)] = ShopIcons.Outlined.Mention;
+            var second = await renderer.RenderComponentAsync<ShopTextField>(ParameterView.FromDictionary(parameters));
+            return first.ToHtmlString() + second.ToHtmlString();
+        });
+        await Page.EvaluateAsync("""
+            html => {
+                for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                }
+                document.getElementById('app').style.display = 'none';
+                document.getElementById('blazor-error-ui').style.display = 'none';
+                const host = document.createElement('main');
+                host.id = 'text-field-probe';
+                host.className = 'shop-native';
+                host.style.cssText = 'display:grid;gap:32px;padding:24px';
+                host.innerHTML = html;
+                document.body.appendChild(host);
+            }
+            """, html);
+        var fields = Page.Locator("#text-field-probe .shop-field");
+        var firstInput = fields.Nth(0).Locator("input");
+        var secondInput = fields.Nth(1).Locator("input");
+        (await firstInput.GetAttributeAsync("id")).Should().NotBe(await secondInput.GetAttributeAsync("id"));
+        foreach (var field in await fields.AllAsync())
+        {
+            var input = field.Locator("input");
+            await Assertions.Expect(input).ToHaveAccessibleNameAsync(Strings.Email_Label);
+            await Assertions.Expect(input).ToHaveAttributeAsync("placeholder", " ");
+            (await input.GetAttributeAsync("aria-describedby")).Should().Be(await field.Locator(".shop-field-hint").GetAttributeAsync("id"));
+            (await field.Locator(".shop-field-control").BoundingBoxAsync())!.Height.Should().BeApproximately(61, 0.1f);
+        }
+        await Assertions.Expect(fields.Nth(0).Locator("svg")).ToHaveCountAsync(0);
+        await Assertions.Expect(fields.Nth(0).Locator("label")).ToHaveCSSAsync("left", "10px");
+        await fields.Nth(0).Locator("label").ClickAsync();
+        await Assertions.Expect(firstInput).ToBeFocusedAsync();
+        await Assertions.Expect(fields.Nth(0).Locator("label")).ToHaveCSSAsync("font-size", "12px");
+        await Assertions.Expect(firstInput).ToHaveValueAsync("");
+        await Assertions.Expect(secondInput).ToBeDisabledAsync();
+        await Assertions.Expect(secondInput).ToHaveValueAsync("saved@example.invalid");
+        await Assertions.Expect(fields.Nth(1).Locator("label")).ToHaveCSSAsync("font-size", "12px");
+        await Page.Locator("#text-field-probe").ScreenshotAsync(new() { Path = EvidencePath("text-fields-label-only") });
+        await AssertNoOverflowAsync();
+        _backendRequests.Should().Be(0);
     }
 
     [Theory]
@@ -504,14 +690,17 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
                 <div class="shop-product-card-title">Product title</div>
                 <div class="shop-product-card-price">$100.00</div>
                 <s class="shop-product-card-original-price">$120.00</s>
-                <div class="shop-field-label">Email</div>
+                <div class="shop-field-control">
+                    <input id="typography-field" class="shop-field-input" placeholder=" " />
+                    <label for="typography-field" class="shop-field-label">Email</label>
+                </div>
                 <div class="shop-image-label">Image unavailable</div>`)
             """);
         (string Class, int Size, int Weight)[] consumers =
         [
             ("shop-product-card-brand", 16, 500), ("shop-product-card-title", 20, 400),
             ("shop-product-card-price", 20, 500), ("shop-product-card-original-price", 16, 500),
-            ("shop-field-label", 12, 500), ("shop-image-label", 12, 400)
+            ("shop-field-label", 16, 400), ("shop-image-label", 12, 400)
         ];
         foreach (var expected in consumers)
         {

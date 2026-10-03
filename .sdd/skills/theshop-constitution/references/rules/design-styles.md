@@ -57,6 +57,8 @@ Token names in examples are illustrative: use the actual semantic token for that
 
 CSS custom properties own runtime design values: colors, typography, spacing, radii, shadows, and theme roles. Components consume semantic roles rather than copying palette values or binding to legacy `--mud-*` properties. Keep raw palette values in their token owner, not repeated through Razor and component partials.
 
+Global tokens are shared design contracts, not a collection of every component measurement. Component-only geometry and appearance values belong in their owning partial, as ordinary declarations or component-scoped custom properties when reuse, variants, or dynamic overrides need them. Do not emit component-private defaults on `:root`. Keep genuinely shared field chrome/motion, focus, interaction states, and layer ordering shared; consume global color/typography/spacing scales directly. Define pseudo-element-specific defaults on the pseudo-element when inheritance is not guaranteed.
+
 Sass variables own compile-time concerns such as breakpoints, mixin arguments, and utility-generation maps. They are not a second permanent copy of the runtime theme. Media-query breakpoints need compile-time values; ordinary `var()` substitution cannot be used as a media-query condition.
 
 ## Modern Sass modules

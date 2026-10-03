@@ -11,7 +11,7 @@ Verification checklist for the canonical constitution. Apply native requirements
 
 ## Theme and styling
 
-- [ ] Visual values belong to Styles/tokens and resolve through semantic --shop-* custom properties.
+- [ ] Shared design values belong to Styles/tokens; component-only values stay in their owning partial and custom properties are scoped to the component, not :root.
 - [ ] Temporary C# theme ownership is limited to existing Mud consumers and tracked for removal.
 - [ ] Project classes use component-prefixed kebab-case, with no BEM double underscores or double hyphens.
 - [ ] Static styles stay in the correct centralized SCSS partial; no Razor style blocks or new CSS isolation.

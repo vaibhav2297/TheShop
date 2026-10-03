@@ -55,6 +55,29 @@ public class ShopFilterPanelTests : TestContext
     private static FilterGroupDto PriceGroup() =>
         new("price", "Filter_Price", FilterKind.Range, [], new RangeFilterDto(0m, 100m));
 
+    [Fact]
+    public void Render_UpdatedSelectionsAndOptions_PreservesNativeLabelsAndStableIdentity()
+    {
+        var cut = Render<ShopFilterPanel>(p => p.Add(c => c.Groups, [CategoryGroup(), StatusGroup()]));
+        var inputs = cut.FindAll("input[type='checkbox']");
+        var ids = inputs.Select(input => input.Id).ToArray();
+        ids.Should().OnlyHaveUniqueItems();
+        foreach (var input in inputs)
+            cut.Find($"label[for='{input.Id}']").TextContent.Should().NotBeNullOrWhiteSpace();
+
+        cut.Render(p => p.Add(c => c.SelectedFilters,
+            [new AppliedFilterDto("category", ["cat-2"]), new AppliedFilterDto("status", ["inactive"])]));
+        cut.FindAll("input[type='checkbox']").Select(input => input.Id).Should().Equal(ids);
+        cut.FindAll("input[type='checkbox']").Select(input => input.HasAttribute("checked"))
+            .Should().Equal(false, true, false, true);
+
+        cut.Render(p => p.Add(c => c.SelectedFilters, []));
+        cut.FindAll("input[type='checkbox']").Should().OnlyContain(input => !input.HasAttribute("checked"));
+        var reversed = CategoryGroup() with { Options = CategoryGroup().Options.Reverse().ToArray() };
+        cut.Render(p => p.Add(c => c.Groups, [reversed, StatusGroup()]));
+        cut.FindAll("input[type='checkbox']").Select(input => input.Id).Should().Equal(ids[1], ids[0], ids[2], ids[3]);
+    }
+
     private static FilterGroupDto RatingGroup() =>
         new("rating", "Filter_Rating", FilterKind.Range, [], new RangeFilterDto(1m, 5m));
 
@@ -68,7 +91,7 @@ public class ShopFilterPanelTests : TestContext
     {
         var cut = Render<ShopFilterPanel>(p => p.Add(c => c.Groups, [CategoryGroup()]));
 
-        cut.FindComponents<MudCheckBox<bool>>().Should().HaveCount(2);
+        cut.FindAll("input[type='checkbox']").Should().HaveCount(2);
     }
 
     [Fact]
@@ -95,8 +118,8 @@ public class ShopFilterPanelTests : TestContext
             .Add(c => c.Groups, [CategoryGroup()])
             .Add(c => c.FilterToggled, (FilterToggle t) => received = t));
 
-        var checkbox = cut.FindComponents<MudCheckBox<bool>>()[0];
-        await cut.InvokeAsync(() => checkbox.Instance.ValueChanged.InvokeAsync(true));
+        var checkbox = cut.FindAll("input[type='checkbox']")[0];
+        await checkbox.ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = true });
 
         received.Should().NotBeNull();
         received!.GroupKey.Should().Be("category");
@@ -114,8 +137,8 @@ public class ShopFilterPanelTests : TestContext
             .Add(c => c.SelectedFilters, [new AppliedFilterDto("category", ["cat-1"])])
             .Add(c => c.FilterToggled, (FilterToggle t) => received = t));
 
-        var checkbox = cut.FindComponents<MudCheckBox<bool>>()[0];
-        await cut.InvokeAsync(() => checkbox.Instance.ValueChanged.InvokeAsync(false));
+        var checkbox = cut.FindAll("input[type='checkbox']")[0];
+        await checkbox.ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = false });
 
         received.Should().NotBeNull();
         received!.GroupKey.Should().Be("category");
@@ -319,7 +342,7 @@ public class ShopFilterPanelTests : TestContext
     {
         var cut = Render<ShopFilterPanel>(p => p.Add(c => c.Groups, [StatusGroup()]));
 
-        cut.FindComponents<MudCheckBox<bool>>().Should().HaveCount(2);
+        cut.FindAll("input[type='checkbox']").Should().HaveCount(2);
     }
 
     [Fact]
@@ -332,7 +355,7 @@ public class ShopFilterPanelTests : TestContext
             .Add(c => c.Groups, [StatusGroup()])
             .Add(c => c.SelectedFilters, []));
 
-        cut.FindComponents<MudCheckBox<bool>>().Should().OnlyContain(c => !c.Instance.Value);
+        cut.FindAll("input[type='checkbox']").Should().OnlyContain(c => !c.HasAttribute("checked"));
     }
 
     [Fact]
@@ -343,9 +366,9 @@ public class ShopFilterPanelTests : TestContext
             .Add(c => c.Groups, [StatusGroup()])
             .Add(c => c.SelectedFilters, [new AppliedFilterDto("status", ["inactive"])]));
 
-        var checkboxes = cut.FindComponents<MudCheckBox<bool>>();
-        checkboxes[0].Instance.GetState(x => x.Value).Should().BeFalse("active"); // rendered first per StatusGroup()'s option order
-        checkboxes[1].Instance.GetState(x => x.Value).Should().BeTrue("inactive");
+        var checkboxes = cut.FindAll("input[type='checkbox']");
+        checkboxes[0].HasAttribute("checked").Should().BeFalse("active");
+        checkboxes[1].HasAttribute("checked").Should().BeTrue("inactive");
     }
 
     [Fact]
@@ -357,8 +380,8 @@ public class ShopFilterPanelTests : TestContext
             .Add(c => c.Groups, [StatusGroup()])
             .Add(c => c.SingleSelectChanged, (ValueTuple<string, string?> t) => received = t));
 
-        var checkbox = cut.FindComponents<MudCheckBox<bool>>()[1]; // "inactive"
-        await cut.InvokeAsync(() => checkbox.Instance.ValueChanged.InvokeAsync(true));
+        var checkbox = cut.FindAll("input[type='checkbox']")[1]; // "inactive"
+        await checkbox.ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = true });
 
         received.Should().NotBeNull();
         received!.Value.GroupKey.Should().Be("status");
@@ -377,8 +400,8 @@ public class ShopFilterPanelTests : TestContext
             .Add(c => c.SelectedFilters, [new AppliedFilterDto("status", ["inactive"])])
             .Add(c => c.SingleSelectChanged, (ValueTuple<string, string?> t) => received = t));
 
-        var checkbox = cut.FindComponents<MudCheckBox<bool>>()[1]; // "inactive"
-        await cut.InvokeAsync(() => checkbox.Instance.ValueChanged.InvokeAsync(false));
+        var checkbox = cut.FindAll("input[type='checkbox']")[1]; // "inactive"
+        await checkbox.ChangeAsync(new Microsoft.AspNetCore.Components.ChangeEventArgs { Value = false });
 
         received.Should().NotBeNull();
         received!.Value.GroupKey.Should().Be("status");

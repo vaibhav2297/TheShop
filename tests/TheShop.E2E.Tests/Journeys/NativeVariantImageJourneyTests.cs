@@ -101,22 +101,74 @@ public sealed class NativeVariantImageJourneyTests(PlaywrightFixture playwright)
         metrics[0].Should().BeApproximately(Math.Min(600d, width - 32d), 1,
             "the picker explicitly selects ShopMaxWidth.Small");
         metrics.Skip(1).Should().Equal(120d, 120d, 32d, 16d);
+        foreach (var option in await options.AllAsync())
+        {
+            var imageGeometry = await option.EvaluateAsync<double[]>("""
+                el => {
+                    const tile = el.getBoundingClientRect();
+                    const image = el.querySelector('.shop-image').getBoundingClientRect();
+                    return [image.width, image.height, image.left - tile.left, image.top - tile.top];
+                }
+                """);
+            imageGeometry.Should().Equal(100d, 100d, 10d, 10d);
+            await Assertions.Expect(option).ToHaveCSSAsync("background-color", "rgb(232, 232, 232)");
+            await Assertions.Expect(option).ToHaveCSSAsync("border-top-width", "0px");
+        }
+        var selectedIcon = options.First.Locator(".shop-variant-image-selected-icon");
+        var iconGeometry = await selectedIcon.EvaluateAsync<double[]>("""
+            el => {
+                const icon = el.getBoundingClientRect();
+                const tile = el.parentElement.getBoundingClientRect();
+                return [icon.width, icon.height, icon.top - tile.top, tile.right - icon.right];
+            }
+            """);
+        iconGeometry.Should().Equal(18d, 18d, 3d, 3d);
+        await Assertions.Expect(selectedIcon).ToHaveCSSAsync("background-color", "rgba(0, 0, 0, 0)");
+        await Assertions.Expect(selectedIcon).ToHaveAttributeAsync("aria-hidden", "true");
+        (string Selector, string Padding)[] sectionPaddings =
+        [
+            (".shop-dialog-header", "16px"), (".shop-dialog-content", "24px"), (".shop-dialog-actions", "16px")
+        ];
+        string[] sides = ["top", "right", "bottom", "left"];
+        foreach (var (selector, padding) in sectionPaddings)
+            foreach (var side in sides)
+                await Assertions.Expect(dialog.Locator(selector)).ToHaveCSSAsync($"padding-{side}", padding);
         (await options.First.EvaluateAsync<bool>("""
             el => {
-                const border = parseFloat(getComputedStyle(el, '::after').borderTopWidth);
-                return border > 0 && Math.abs(border - 1) <= 1 / devicePixelRatio + 0.01;
+                const style = getComputedStyle(el, '::after');
+                const border = parseFloat(style.borderTopWidth);
+                return border > 0 && Math.abs(border - 1) <= 1 / devicePixelRatio + 0.01
+                    && style.borderTopColor === 'rgb(23, 23, 23)' && style.boxSizing === 'border-box'
+                    && ['top', 'right', 'bottom', 'left'].every(side => style[side] === '0px');
             }
             """)).Should().BeTrue("the 1px selected border must survive fractional display scaling without changing image dimensions");
+        (await options.Nth(1).EvaluateAsync<string>("el => getComputedStyle(el, '::after').content")).Should().Be("none");
         (await dialog.EvaluateAsync<bool>("el => el.scrollWidth <= el.clientWidth + 1")).Should().BeTrue();
         await options.First.FocusAsync();
         await Page.Keyboard.PressAsync("Enter");
         await Page.Keyboard.PressAsync("Space");
         (await Page.EvaluateAsync<int>("() => window.pickerProbe.activated")).Should().Be(2);
-        var thisVariant = dialog.GetByRole(AriaRole.Radio, new() { Name = Strings.VariantImage_ThisVariantOnly });
+        var thisVariant = dialog.GetByRole(AriaRole.Checkbox, new() { Name = Strings.VariantImage_ThisVariantOnly });
+        var allVariants = dialog.GetByTestId("variant-image-scope-all");
+        await Assertions.Expect(dialog.GetByRole(AriaRole.Radio)).ToHaveCountAsync(0);
+        await Assertions.Expect(dialog.GetByRole(AriaRole.Checkbox)).ToHaveCountAsync(2);
+        await Assertions.Expect(thisVariant).ToBeCheckedAsync();
+        await Assertions.Expect(allVariants).Not.ToBeCheckedAsync();
+        foreach (var checkbox in await dialog.Locator(".shop-checkbox").AllAsync())
+        {
+            (await checkbox.Locator(".shop-checkbox-control").BoundingBoxAsync())!.Width.Should().BeApproximately(48, 0.1f);
+            (await checkbox.Locator("svg:visible").BoundingBoxAsync())!.Width.Should().BeApproximately(24, 0.1f);
+            await Assertions.Expect(checkbox.Locator(".shop-checkbox-text")).ToHaveCSSAsync("font-size", "16px");
+        }
         await thisVariant.FocusAsync();
-        await Page.Keyboard.PressAsync("ArrowUp");
-        await Assertions.Expect(dialog.Locator("input[value='all']")).ToBeCheckedAsync();
-        await Assertions.Expect(thisVariant).Not.ToBeCheckedAsync();
+        await Page.Keyboard.PressAsync("Shift+Tab");
+        await Assertions.Expect(allVariants).ToBeFocusedAsync();
+        await Assertions.Expect(dialog.Locator(".shop-checkbox").First.Locator("svg:visible")).ToHaveCSSAsync("outline-style", "solid");
+        // Native Space toggling is browser-owned; bUnit covers the live Blazor scope exclusivity.
+        await Page.Keyboard.PressAsync("Space");
+        await Assertions.Expect(allVariants).ToBeCheckedAsync();
+        await Page.Keyboard.PressAsync("Space");
+        await Assertions.Expect(allVariants).Not.ToBeCheckedAsync();
         var directory = Path.Combine(AppContext.BaseDirectory, "native-ui-evidence");
         Directory.CreateDirectory(directory);
         await Page.ScreenshotAsync(new() { Path = Path.Combine(directory, $"variant-image-{width}.png") });

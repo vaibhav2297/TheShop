@@ -1,0 +1,31 @@
+@inherits InputBase<string?>
+
+<div class="shop-field">
+    <div class="shop-field-control">
+        @if (!string.IsNullOrEmpty(StartIcon))
+        {
+            <ShopIcon Icon="@StartIcon" Class="shop-field-icon" />
+        }
+        <input @attributes="InputAttributes"
+               id="@InputId"
+               name="@NameAttributeValue"
+               class="@InputClass"
+               disabled="@Disabled"
+               aria-invalid="@InvalidAttribute"
+               placeholder=" "
+               @bind:get="CurrentValueAsString"
+               @bind:set="SetValue"
+               @bind:event="oninput" />
+        <label class="shop-field-label" for="@InputId">@Label</label>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(HelperText))
+    {
+        <div id="@HelperId" class="shop-field-hint">@HelperText</div>
+    }
+    @if (EditContext is not null)
+    {
+        <div id="@ErrorId" class="shop-field-error" aria-live="polite">
+            <ValidationMessage For="@ValueExpression" />
+        </div>
+    }
+</div>

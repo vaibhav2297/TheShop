@@ -29,7 +29,7 @@
                                    Alt="@VariantLabel" PlaceholderLabel="@VariantLabel" />
                         @if (selected)
                         {
-                            <ShopIcon Icon="@ShopIcons.Outlined.Circle_Check" Class="shop-variant-image-selected-icon" />
+                            <ShopIcon Icon="@ShopIcons.Outlined.Check" Class="shop-variant-image-selected-icon" />
                         }
                     </button>
                 }
@@ -38,16 +38,18 @@
             {
                 <fieldset class="shop-variant-image-scope">
                     <legend class="shop-variant-image-label">@Strings.VariantImage_ApplyToLabel</legend>
-                    <label class="shop-variant-image-choice">
-                        <input type="radio" name="@_scopeName" value="all" checked="@_applyToAllSharing"
-                               @onchange="@(() => _applyToAllSharing = true)" />
-                        <span>@string.Format(Strings.VariantImage_ApplyToAllSharing, SharedScopeCount, SharedScopeLabel)</span>
-                    </label>
-                    <label class="shop-variant-image-choice">
-                        <input type="radio" name="@_scopeName" value="this" checked="@(!_applyToAllSharing)"
-                               @onchange="@(() => _applyToAllSharing = false)" />
-                        <span>@Strings.VariantImage_ThisVariantOnly</span>
-                    </label>
+                    <ShopCheckbox Label="@string.Format(Strings.VariantImage_ApplyToAllSharing, SharedScopeCount, SharedScopeLabel)"
+                                  Size="ShopSize.Medium"
+                                  Value="@_applyToAllSharing"
+                                  ValueExpression="@(() => _applyToAllSharing)"
+                                  ValueChanged="@(_ => _applyToAllSharing = true)"
+                                  data-testid="variant-image-scope-all" />
+                    <ShopCheckbox Label="@Strings.VariantImage_ThisVariantOnly"
+                                  Size="ShopSize.Medium"
+                                  Value="@(!_applyToAllSharing)"
+                                  ValueExpression="@(() => _applyToAllSharing)"
+                                  ValueChanged="@(_ => _applyToAllSharing = false)"
+                                  data-testid="variant-image-scope-this" />
                 </fieldset>
             }
         </div>

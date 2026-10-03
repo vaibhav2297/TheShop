@@ -68,31 +68,32 @@ Handle applicable default, hover, pressed, focus, disabled, loading, and error s
 
 `ShopDialog` accepts `TitleContent`, `DialogContent`, and `DialogActions`. Title markup supplies the accessible name through the component's unique wrapper ID; callers provide a semantic heading and localized text. Only the middle content region scrolls; header/actions remain visible. Keep safe initial focus on an action carrying `data-dialog-initial-focus` and preserve native modal dismissal/focus restoration.
 
-Use the separate shared `ShopMaxWidth` enum for `MaxWidth`, not control `ShopSize`. Omitted/null preserves the 500px theme default; explicit choices consume the SCSS sizing scale, and `None` retains viewport gutters without a named cap. Do not put pixel widths or per-value switches in Razor/C#.
+Use the separate shared `ShopMaxWidth` enum for `MaxWidth`, not control `ShopSize`. Omitted/null resolves to `ShopMaxWidth.None`: content-sized within viewport gutters, with no separate 500px fallback. Named choices consume the shared SCSS sizing scale. Do not put pixel widths or per-value switches in Razor/C#.
 
 ## Notifications
 
 Inject `IShopNotificationService` for operation feedback and call `Show` with localized plain text plus `ShopNotificationKind`. The scoped service owns bounded messages/timers; `ShopUiHost` owns the single `ShopNotificationHost`. Do not reintroduce `ISnackbar` or snackbar providers. Preserve existing inline validation and operation failure channels.
 
-All current operation results use a polite live region. Notifications never take focus; hover or focus pauses expiry. Text is encoded, with a resource-named dismiss action. Keep notification kinds in the API/model, but render one identical bar for every kind: Figma Snackbar `2948:17575`, primary background, primary-contrast text/icon, subtitle-2 typography, 24px padding/gap, and an 18px close icon. No visible kind labels or severity accents. Place bottom-center at notification layer 1500; native modal top-layer ordering still wins. Numeric layout tokens belong in `_theme.scss`, appearance in `_notification.scss`. See `UI_MIGRATION_GUIDE.md` section 8.3 for timing, overflow, navigation, and accessible dismiss sizing.
+All current operation results use a polite live region. Notifications never take focus; hover or focus pauses expiry. Text is encoded, with a resource-named dismiss action. Keep notification kinds in the API/model, but render one identical bar for every kind: Figma Snackbar `2948:17575`, primary background, primary-contrast text/icon, subtitle-2 typography, 16px padding and 24px gap, and an 18px close icon. No visible kind labels or severity accents. Place bottom-center at notification layer 1500; native modal top-layer ordering still wins. Component-only width/icon values belong in `_notification.scss`; the application notification layer remains in `_theme.scss`. See `UI_MIGRATION_GUIDE.md` section 8.3 for timing, overflow, navigation, and accessible dismiss sizing.
 
 ## Labels and validation
 
 Associate visible labels with input IDs. Placeholders supplement labels; they never replace them. Associate helper/error text using `aria-describedby`, and expose invalid state when applicable. Group related choices with `fieldset` and `legend`.
 
+`ShopTextField` follows outlined-only Figma set `170:136` (section `2950:17591`), with no `Variant` or `Placeholder` parameter. Its required real label floats on focus or when populated; no visible placeholder text appears. A forced blank-space placeholder supports CSS state detection only. Shared SCSS handles motion, autofill/nonempty values, reduced motion, full-outline validation, and forced colors without page-owned focus flags. It replaces the former `ShopTextInput` directly, preserving its InputBase immediate-binding contract. See `UI_MIGRATION_GUIDE.md` section 7.3 for measurements and API ownership.
+
 ```razor
-<label class="shop-field-label" for="email">@Strings.Email_Label</label>
-<InputText id="email"
-           class="shop-field-input"
-           @bind-Value="Model.Email"
-           aria-describedby="email-hint" />
-<span id="email-hint" class="shop-field-hint">@Strings.Email_Hint</span>
-<ValidationMessage For="@(() => Model.Email)" />
+<ShopTextField id="email" type="email"
+               Label="@Strings.Email_Label"
+               @bind-Value="Model.Email"
+               autocomplete="email" />
 ```
 
-This example belongs in an `EditForm`. Add a stable error ID to the described-by relationship when the chosen error renderer supports it. Repeated instances need unique IDs, not copies of the example ID.
+This example belongs in an `EditForm`. `ShopTextField` owns its ValidationMessage/error region, optional HelperText, and their ARIA associations. It generates a stable unique input ID when none is supplied; explicit IDs remain caller-owned and must be unique. AdditionalAttributes and lowercase class/style target the input, not its wrapper. Caller description IDs are merged with owned hint/error IDs. Label owns accessible naming; disabled, value binding, blank placeholder, and validation-invalid state take precedence over conflicting attributes. Pages supply validation rules and busy-derived Disabled; do not duplicate field labels/errors in page markup.
 
 Custom `InputBase<TValue>` controls preserve `Value`, `ValueChanged`, `ValueExpression`, parsing errors, field notification, and the surrounding `EditContext`. Do not replace validated input behavior with an unrelated component wrapper. Preserve existing required, culture, numeric, date, and selection semantics.
+
+`ShopCheckbox` specializes the built-in `InputCheckbox` with the Figma `2031:9937` two-state design. Required `Label` owns the accessible name; shared `ShopSize` selects Small/Medium/Large geometry (Medium default). Native attributes/classes target the input; generated IDs and associated validation errors follow the input contract above. No Color, Variant, or tri-state API without a real design requirement. The browser owns checked/keyboard behavior; native disabled plus a guarded handler prevent updates. Use `@bind-Value`, or provide ValueExpression alongside Value/ValueChanged. See migration guide section 7.5 for measured icon/target sizes and inferred accessibility states. Keep required-true validation in the form; HTML required is not an EditContext validator. Do not detach a required consent checkbox from MudForm validation during a partial migration.
 
 Await asynchronous validation from the submission path; avoid `async void` validation handlers. Do not dispatch before validation completes. Application failures remain resource keys translated in Web; do not redesign the result contract for a control replacement.
 

@@ -51,6 +51,28 @@ public class SignInTests : TestContext
     // =========================================================================
 
     [Fact]
+    public void Render_TextField_KeepsAssociatedFloatingLabelAndNativeInputContract()
+    {
+        var cut = Render<SignIn>();
+        var input = cut.Find("#signin-email");
+        var control = cut.Find(".shop-field-control");
+        var label = control.QuerySelector("label")!;
+
+        label.GetAttribute("for").Should().Be(input.Id);
+        label.TextContent.Should().Be(Strings.Email_Label);
+        label.ClassList.Should().Contain("shop-field-label");
+        input.GetAttribute("placeholder").Should().Be(" ");
+        input.GetAttribute("autocomplete").Should().Be("email");
+        input.GetAttribute("aria-describedby").Should().Be("signin-instruction signin-email-error");
+        input.HasAttribute("required").Should().BeTrue();
+        cut.FindAll("label[for='signin-email']").Should().HaveCount(1);
+        input.HasAttribute("variant").Should().BeFalse();
+        input.Input("native-ui@example.invalid");
+        cut.Find("#signin-email").GetAttribute("value").Should().Be("native-ui@example.invalid");
+        cut.Find("button[type=submit]").HasAttribute("disabled").Should().BeFalse();
+    }
+
+    [Fact]
     [Trait("Feature", "authentication")]
     public async Task OnSendCodeAsync_WhenMediatorReturnsSuccess_ShowsSuccessSnackbarAndNavigates()
     {
@@ -105,7 +127,7 @@ public class SignInTests : TestContext
 
         await _mediator.DidNotReceive().Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
         var error = string.IsNullOrWhiteSpace(email) ? Strings.Email_Required : Strings.Email_Invalid;
-        cut.Find("#signin-error").TextContent.Should().Contain(error);
+        cut.Find("#signin-email-error").TextContent.Should().Contain(error);
         cut.Find("input[type='email']").GetAttribute("aria-invalid").Should().Be("true");
         cut.Find("input[type='email']").GetAttribute("value").Should().Be(email);
     }
@@ -194,11 +216,11 @@ public class SignInTests : TestContext
         var cut = Render<SignIn>();
         cut.Find("input[type='email']").Input("invalid");
         await cut.Find("form").SubmitAsync(EventArgs.Empty);
-        cut.Find("#signin-error").TextContent.Should().Contain(Strings.Email_Invalid);
+        cut.Find("#signin-email-error").TextContent.Should().Contain(Strings.Email_Invalid);
 
         cut.Find("input[type='email']").Input("user@example.com");
 
-        cut.Find("#signin-error").TextContent.Should().BeNullOrWhiteSpace();
+        cut.Find("#signin-email-error").TextContent.Should().BeNullOrWhiteSpace();
         // InputBase removes aria-invalid after recovery; omission means the field is not invalid.
         cut.Find("input[type='email']").GetAttribute("aria-invalid").Should().NotBe("true");
         cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeFalse();
@@ -218,12 +240,12 @@ public class SignInTests : TestContext
         var input = cut.Find("input[type='email']");
         input.Should().NotBeNull();
         cut.Find($"label[for='{input.Id}']").TextContent.Should().Be(Strings.Email_Label);
-        input.GetAttribute("aria-describedby")!.Split(' ').Should().Contain("signin-error");
+        input.GetAttribute("aria-describedby")!.Split(' ').Should().Contain("signin-email-error");
         input.GetAttribute("autocomplete").Should().Be("email");
         input.HasAttribute("required").Should().BeTrue();
         // Valid InputBase controls may omit aria-invalid instead of rendering an explicit false.
         input.GetAttribute("aria-invalid").Should().NotBe("true");
-        cut.Find("#signin-error").GetAttribute("aria-live").Should().Be("polite");
+        cut.Find("#signin-email-error").GetAttribute("aria-live").Should().Be("polite");
         cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeTrue();
     }
 
