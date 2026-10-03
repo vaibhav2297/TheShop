@@ -1,0 +1,33 @@
+@use '../abstracts/text-style';
+
+.shop-filter-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--shop-space-6);
+    min-inline-size: 0;
+}
+
+.shop-filter-title {
+    @include text-style.apply(subtitle-1);
+}
+
+.shop-filter-options {
+    display: flex;
+    flex-direction: column;
+}
+
+.shop-filter-range {
+    padding-block: var(--shop-space-2);
+}
+
+.shop-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.shop-filter-empty {
+    margin: 0;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(body-1);
+}
+

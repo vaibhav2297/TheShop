@@ -1,181 +1,80 @@
-@* Components/Common/ShopFilterPanel.razor *@
-@inherits MudComponentBase
-
-@using TheShop.Web.Resources
+@using TheShop.Web.Common.UI
 @using TheShop.Domain.Enums
+@inherits ShopComponentBase
 
-<MudStack Class="@Class"
-          Style="@Style"
-          Spacing="6"
-          AlignItems="AlignItems.Stretch">
-
+<div @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
     @if (Groups is { Count: > 0 })
     {
-        <MudExpansionPanels MultiExpansion
-                            Elevation="0"
-                            Square
-                            Outlined>
-
+        <div class="shop-filter-groups">
             @foreach (var group in Groups)
             {
-                @if (group.Kind == FilterKind.MultiSelect)
-                {
-                    var selectedCount = CountSelected(group.Key);
-
-                    <MudExpansionPanel Icon="@ShopIcons.Outlined.Caret_Down_MD"
-                                       Class="mud-transparent">
-
-                        <TitleContent>
-
-                            <MudStack Row
-                                      AlignItems="AlignItems.Center"
-                                      Justify="Justify.SpaceBetween"
-                                      Spacing="2">
-
-                                <MudText Typo="Typo.subtitle1">@Localizer[group.LabelKey]</MudText>
-
-                                @if (selectedCount > 0)
-                                {
-                                    <MudChip T="string"
-                                             Size="Size.Small"
-                                             Variant="Variant.Outlined">
-
-                                        <MudText Typo="Typo.caption"
-                                                 Color="Color.Primary">@selectedCount</MudText>
-
-                                    </MudChip>
-                                }
-
-                            </MudStack>
-
-                        </TitleContent>
-
-                        <ChildContent>
-
-                            <MudStack Spacing="0">
-
+                <ShopExpander @key="group.Key">
+                    <TitleContent>
+                        <span class="shop-filter-title">@Localizer[group.LabelKey]</span>
+                    </TitleContent>
+                    <OverviewContent>
+                        @if (group.Kind == FilterKind.MultiSelect && CountSelected(group.Key) is var count && count > 0)
+                        {
+                            <ShopChip Size="ShopSize.Small">@count</ShopChip>
+                        }
+                        else if (group.Kind == FilterKind.Range && group.Range is not null)
+                        {
+                            @RangeHeaderText(group.Key)
+                        }
+                    </OverviewContent>
+                    <ChildContent>
+                        @if (group.Kind == FilterKind.MultiSelect)
+                        {
+                            <div class="shop-filter-options">
                                 @foreach (var option in group.Options)
                                 {
                                     var isChecked = IsSelected(group.Key, option.Value);
-
-                                    <ShopCheckbox @key="option.Value"
-                                                  Label="@option.Label"
-                                                  Value="@isChecked"
-                                                  ValueExpression="@(() => isChecked)"
+                                    <ShopCheckbox @key="option.Value" Label="@option.Label"
+                                                  Value="@isChecked" ValueExpression="@(() => isChecked)"
                                                   ValueChanged="@(chosen => OnOptionToggledAsync(group.Key, option.Value, chosen))" />
                                 }
-
-                            </MudStack>
-                        </ChildContent>
-
-                    </MudExpansionPanel>
-                }
-                else if (group.Kind == FilterKind.SingleSelect)
-                {
-                    var selectedValue = SelectedSingleValue(group.Key);
-
-                    <MudExpansionPanel Icon="@ShopIcons.Outlined.Caret_Down_MD"
-                                       Class="mud-transparent">
-
-                        <TitleContent>
-                            <MudText Typo="Typo.subtitle1">@Localizer[group.LabelKey]</MudText>
-                        </TitleContent>
-
-                        <ChildContent>
-
-                            <MudStack Spacing="0">
-
+                            </div>
+                        }
+                        else if (group.Kind == FilterKind.SingleSelect)
+                        {
+                            var selectedValue = SelectedSingleValue(group.Key);
+                            <div class="shop-filter-options">
                                 @foreach (var option in group.Options)
                                 {
                                     var isChecked = option.Value == selectedValue;
-
-                                    <ShopCheckbox @key="option.Value"
-                                                  Label="@option.Label"
-                                                  Value="@isChecked"
-                                                  ValueExpression="@(() => isChecked)"
+                                    <ShopCheckbox @key="option.Value" Label="@option.Label"
+                                                  Value="@isChecked" ValueExpression="@(() => isChecked)"
                                                   ValueChanged="@(chosen => OnSingleSelectChangedAsync(group.Key, chosen ? option.Value : null))" />
                                 }
-
-                            </MudStack>
-                        </ChildContent>
-
-                    </MudExpansionPanel>
-                }
-                else
-                {
-                    <MudExpansionPanel Icon="@ShopIcons.Outlined.Caret_Down_MD"
-                                       Class="mud-transparent">
-
-                        <TitleContent>
-
-                            <MudStack Row
-                                      AlignItems="AlignItems.Center"
-                                      Justify="Justify.SpaceBetween"
-                                      Spacing="2">
-
-                                <MudText Typo="Typo.subtitle1">@Localizer[group.LabelKey]</MudText>
-
-                                @if (group.Range is not null)
-                                {
-                                    <MudText Typo="Typo.caption"
-                                             Color="Color.Secondary">@RangeHeaderText(group.Key)</MudText>
-                                }
-
-                            </MudStack>
-
-                        </TitleContent>
-
-                        <ChildContent>
-
-                            @if (group.Range is { } range)
-                            {
-                                var thumbs = Thumbs(group.Key);
-
-                                <MudRangeSlider T="decimal"
-                                                Immediate
-                                                ValueLabel
-                                                Class="py-2"
-                                                Min="@range.Min"
-                                                Max="@range.Max"
-                                                Variant="Variant.Filled"
-                                                Color="Color.Primary"
-                                                Value="thumbs.Min"
-                                                ValueChanged="@(value => OnRangeMinChangedAsync(group.Key, value))"
-                                                UpperValue="thumbs.Max"
-                                                UpperValueChanged="@(value => OnRangeMaxChangedAsync(group.Key, value))"
-                                                LabelText="@RangeFormatter(group.Key, thumbs.Min)"
-                                                UpperLabelText="@RangeFormatter(group.Key, thumbs.Max)" />
-
-                            }
-
-                        </ChildContent>
-
-                    </MudExpansionPanel>
-                }
+                            </div>
+                        }
+                        else if (group.Range is { } range)
+                        {
+                            var thumbs = Thumbs(group.Key);
+                            <MudRangeSlider T="decimal" Immediate ValueLabel Class="shop-filter-range"
+                                            Min="@range.Min" Max="@range.Max" Variant="Variant.Filled" Color="Color.Primary"
+                                            Value="thumbs.Min"
+                                            ValueChanged="@(value => OnRangeMinChangedAsync(group.Key, value))"
+                                            UpperValue="thumbs.Max"
+                                            UpperValueChanged="@(value => OnRangeMaxChangedAsync(group.Key, value))"
+                                            LabelText="@RangeFormatter(group.Key, thumbs.Min)"
+                                            UpperLabelText="@RangeFormatter(group.Key, thumbs.Max)" />
+                        }
+                    </ChildContent>
+                </ShopExpander>
             }
-
-        </MudExpansionPanels>
-
+        </div>
         @if (HasActiveFilters)
         {
-            <MudStack Row
-                      AlignItems="AlignItems.Center"
-                      Justify="Justify.FlexEnd">
-
-                <MudButton Variant="Variant.Text"
-                           Color="Color.Primary"
-                           Size="Size.Small"
-                           OnClick="OnClearFiltersAsync">
+            <div class="shop-filter-actions">
+                <ShopButton Variant="ShopVariant.Text" Size="ShopSize.Small" OnClick="OnClearFiltersAsync">
                     @Strings.Filter_Clear
-                </MudButton>
-
-            </MudStack>
+                </ShopButton>
+            </div>
         }
     }
     else
     {
-        <MudText Typo="Typo.body1"
-                 Color="Color.Secondary">@Strings.No_Filters</MudText>
+        <p class="shop-filter-empty">@Strings.No_Filters</p>
     }
-
-</MudStack>
+</div>

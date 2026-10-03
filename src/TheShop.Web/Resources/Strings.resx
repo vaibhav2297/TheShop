@@ -1723,4 +1723,16 @@
   <data name="Notification_Success" xml:space="preserve"><value>Success</value></data>
   <data name="Notification_Warning" xml:space="preserve"><value>Warning</value></data>
   <data name="Notification_Error" xml:space="preserve"><value>Error</value></data>
+  <data name="Pagination_Label" xml:space="preserve">
+    <value>Pagination</value>
+  </data>
+  <data name="Pagination_Previous" xml:space="preserve">
+    <value>Previous page</value>
+  </data>
+  <data name="Pagination_Next" xml:space="preserve">
+    <value>Next page</value>
+  </data>
+  <data name="Pagination_Page" xml:space="preserve">
+    <value>Page {0}</value>
+  </data>
 </root>

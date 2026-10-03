@@ -81,6 +81,23 @@ public class ShopFilterPanelTests : TestContext
     private static FilterGroupDto RatingGroup() =>
         new("rating", "Filter_Rating", FilterKind.Range, [], new RangeFilterDto(1m, 5m));
 
+    [Fact]
+    public void NativeExpanders_KeepIndependentOpenStateAcrossSelectionAndGroupReordering()
+    {
+        var cut = Render<ShopFilterPanel>(p => p.Add(c => c.Groups, [CategoryGroup(), StatusGroup()]));
+        cut.FindAll(".shop-expander-trigger")[0].Click();
+        var categoryId = cut.FindAll(".shop-expander-trigger")[0].Id;
+        cut.Render(p => p.Add(c => c.SelectedFilters, [new AppliedFilterDto("category", ["cat-1"])])
+            .Add(c => c.Groups, [StatusGroup(), CategoryGroup()]));
+        var triggers = cut.FindAll(".shop-expander-trigger");
+        triggers[0].GetAttribute("aria-expanded").Should().Be("false");
+        triggers[1].Id.Should().Be(categoryId);
+        triggers[1].GetAttribute("aria-expanded").Should().Be("true");
+        cut.Find("span.shop-chip").TextContent.Trim().Should().Be("1");
+        cut.FindAll(".shop-expander-trigger button").Should().BeEmpty();
+        cut.FindAll(".mud-expand-panel, .mud-chip").Should().BeEmpty();
+    }
+
     // =========================================================================
     // Renders one control per backend group (plan §5 decision 4)
     // =========================================================================

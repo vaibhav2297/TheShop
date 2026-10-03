@@ -1,0 +1,31 @@
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
+
+<div @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+    <h3 class="shop-expander-heading">
+        <button id="@_headerId" type="button" class="shop-expander-trigger"
+                disabled="@Disabled" aria-expanded="@_expanded.ToString().ToLowerInvariant()"
+                aria-controls="@_contentId" @onclick="ToggleAsync">
+            <span class="shop-expander-title">
+                @if (TitleContent is not null)
+                {
+                    @TitleContent
+                }
+                else
+                {
+                    @Title
+                }
+            </span>
+            @if (OverviewContent is not null)
+            {
+                <span class="shop-expander-overview">@OverviewContent</span>
+            }
+            <ShopIcon Icon="@ToggleIcon" Class="shop-expander-icon" />
+        </button>
+    </h3>
+    <div id="@_contentId" class="shop-expander-content" hidden="@(!_expanded)"
+         aria-labelledby="@_headerId">
+        @ChildContent
+    </div>
+</div>
+

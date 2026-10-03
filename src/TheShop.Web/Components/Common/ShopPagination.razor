@@ -1,16 +1,41 @@
-@* Components/Common/ShopPagination.razor *@
-@inherits MudComponentBase
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
 
-<MudPagination Rectangular
-               Class="@Class"
-               Style="@Style"
-               Selected="@Page"
-               NextIcon="@ShopIcons.Outlined.Arrow_Right_SM"
-               BeforeIcon="@ShopIcons.Outlined.Arrow_Left_SM"
-               Size="Size.Large"
-               SelectedChanged="OnSelectedChangedAsync"
-               Count="@TotalPages"
-               BoundaryCount="2"
-               MiddleCount="5"
-               Variant="Variant.Outlined"
-               Color="Color.Primary" />
+@if (TotalPages > 0)
+{
+    <nav @attributes="AdditionalAttributes" class="@ClassName" style="@Style" aria-label="@Strings.Pagination_Label">
+        <ul class="shop-pagination-items">
+            <li>
+                <button type="button" class="shop-pagination-control shop-pagination-arrow"
+                        aria-label="@Strings.Pagination_Previous" disabled="@(Disabled || CurrentPage <= 1)"
+                        @onclick="PreviousAsync">
+                    <ShopIcon Icon="@ShopIcons.Outlined.Arrow_Left_MD" Class="shop-pagination-icon" />
+                </button>
+            </li>
+            @foreach (var item in PageItems)
+            {
+                <li @key="item">
+                    @if (item is { } page)
+                    {
+                        <button type="button" class="shop-pagination-control"
+                                aria-label="@PageLabel(page)" aria-current="@(page == CurrentPage ? "page" : null)"
+                                disabled="@Disabled" @onclick="@(() => SelectAsync(page))">@(page)</button>
+                    }
+                    else
+                    {
+                        <span class="shop-pagination-ellipsis" aria-hidden="true">
+                            <ShopIcon Icon="@ShopIcons.Outlined.More_Horizontal" Class="shop-pagination-icon" />
+                        </span>
+                    }
+                </li>
+            }
+            <li>
+                <button type="button" class="shop-pagination-control shop-pagination-arrow"
+                        aria-label="@Strings.Pagination_Next" disabled="@(Disabled || CurrentPage >= TotalPages)"
+                        @onclick="NextAsync">
+                    <ShopIcon Icon="@ShopIcons.Outlined.Arrow_Right_MD" Class="shop-pagination-icon" />
+                </button>
+            </li>
+        </ul>
+    </nav>
+}

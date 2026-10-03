@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
+using TheShop.Web.Common.UI;
 using TheShop.Application.Common.Filtering;
 using TheShop.Domain.Enums;
 using TheShop.Web.Resources;
@@ -17,8 +17,10 @@ namespace TheShop.Web.Components.Common;
 /// callbacks. Feature-agnostic — used by both the product catalogue and manage-brands (plan §5
 /// Decision 4).
 /// </summary>
-public partial class ShopFilterPanel : MudComponentBase, IDisposable
+public partial class ShopFilterPanel : ShopComponentBase, IDisposable
 {
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-filter-panel", Class);
+
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
 
     /// <summary>The backend-driven filter groups to render.</summary>

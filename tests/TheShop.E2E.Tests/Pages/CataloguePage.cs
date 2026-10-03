@@ -13,11 +13,13 @@ public sealed class CataloguePage(IPage page) : ShopPage(page)
 
     /// <summary>
     /// Expands a collapsed filter group panel by its heading (e.g. Strings.Filter_Brand).
-    /// MudExpansionPanel's header renders as a plain div with no ARIA role, so GetByRole can't
-    /// target it — clicking the label text itself bubbles to the header's click handler.
     /// </summary>
-    public async Task ExpandFilterGroupAsync(string groupLabel) =>
-        await Page.GetByText(groupLabel, new() { Exact = true }).ClickAsync();
+    public async Task ExpandFilterGroupAsync(string groupLabel)
+    {
+        var trigger = Page.Locator(".shop-expander-trigger").Filter(new() { HasText = groupLabel });
+        if (await trigger.GetAttributeAsync("aria-expanded") == "false")
+            await trigger.ClickAsync();
+    }
 
     /// <summary>Locator for a filter option's checkbox by its visible label — the group must already be expanded.</summary>
     public ILocator FilterOption(string optionLabel) =>
