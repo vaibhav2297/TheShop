@@ -1,87 +1,60 @@
-# Example — Reusable Web component
+# Example — Native reusable Web component
 
-Canonical reusable component using `MudComponentBase` + Pattern B (`CssBuilder` / `StyleBuilder`). Shows Rules 23, 24, 27 in one file.
+Use the existing `src/TheShop.Web/Components/Common/ShopButton.razor` and `.razor.cs` as the visual-control example. For a composed feature view, read `Components/Products/ProductCard.razor` and `.razor.cs`. These are working implementations, not instructions to create another wrapper.
 
-### `.razor`
+## Visual component root
+
+`ShopButton` derives from `ShopComponentBase`, whose only shared parameters are `Class`, `Style`, and `AdditionalAttributes`. The actual button root follows this pattern:
 
 ```razor
-@* Components/Common/ShopAlert.razor *@
-@inherits MudComponentBase
-
-<MudPaper Class="@Classname"
-          Style="@Stylename"
-          Elevation="0">
-    @if (Icon is not null)
-    {
-        <MudIcon Icon="@Icon" Class="me-2" />
-    }
-    <MudText Typo="Typo.body2">
-        @ChildContent
-    </MudText>
-</MudPaper>
+<button @attributes="AdditionalAttributes"
+        type="@ButtonType"
+        class="@ClassName"
+        style="@Style"
+        disabled="@Disabled"
+        @onclick="OnClickAsync">
+    @ChildContent
+</button>
 ```
 
-### `.razor.cs`
+The full implementation also renders optional `ShopIcon` children using trusted `ShopIcons` fragments. Its internal content span preserves label/icon geometry and accessible naming while `Loading` shows only a centered spinner. Effective disabling is `Disabled || Loading`; the component owns `aria-busy` and a visually hidden status sibling. `ShopIconButton` forwards `Loading` to this shared implementation. The attribute splat precedes component-owned attributes so callers cannot override the effective type, disabled state, or handler. The handler also guards disabled dispatch. Default type is `button`, not `submit`.
+
+Use `ShopCssClass.Join` for component-prefixed class composition in code-behind. ProductCard's actual composition is:
 
 ```csharp
-// Components/Common/ShopAlert.razor.cs
-using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using MudBlazor.Utilities;
-
-namespace TheShop.Web.Components.Common;
-
-public partial class ShopAlert : MudComponentBase
-{
-    [Parameter] public string? Icon { get; set; }
-    [Parameter] public bool Dense { get; set; }
-    [Parameter] public bool Square { get; set; }
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    protected string Classname =>
-        new CssBuilder("mud-alert")
-            .AddClass("mud-dense", Dense)
-            .AddClass("mud-square", Square)
-            .AddClass(Class)               // consumer's Class last — Rule 24
-            .Build();
-
-    protected string Stylename =>
-        new StyleBuilder()
-            .AddStyle("margin-top", "4px")
-            .AddStyle(Style)               // consumer's Style last — Rule 24
-            .Build();
-}
+private string ClassName => ShopCssClass.Join("shop-native", "shop-product-card", Class);
 ```
 
-### Consumer call site
+Forward styles and attributes to the documented root. Class-name order does not determine CSS specificity or override priority. Static component appearance belongs in SCSS, not a generated inline-style builder.
+
+## Existing consumer example
+
+ProductCard renders an independently named wishlist action:
 
 ```razor
-<ShopAlert Icon="@ShopIcons.Info"
-           Dense="true"
-           Class="my-2"                       @* consumer wins on the same axis if overlap *@
-           Style="max-width: 480px;">
-    @Strings.Cart_EmptyHint
-</ShopAlert>
+<ShopIconButton Color="ShopColor.Surface"
+                Class="shop-product-card-action shop-product-card-wishlist"
+                Label="@Strings.Wishlist_Add"
+                Icon="@ShopIcons.Outlined.Heart_01"
+                OnClick="OnToggleWishlistAsync" />
 ```
 
-Highlights:
-- `MudComponentBase` inheritance gives `Class`, `Style`, `UserAttributes` to the component for free (Rule 23). No need to redeclare those parameters.
-- Both `Classname` and `Stylename` builders end with `.AddClass(Class)` / `.AddStyle(Style)` so the consumer's value wins last (Rule 24).
-- Conditional classes use `CssBuilder.AddClass(name, condition)` — no string interpolation (Rule 27).
-- Text content uses `<MudText Typo="...">` (Rule 16). No raw `<p>` or `<span>`.
-- Icon comes from `ShopIcons` (Rule 19); the component renders `<MudIcon Icon="@Icon" />` so consumers pass `ShopIcons.Info`, `ShopIcons.Warning`, etc.
+The icon is decorative; the button owns its accessible name. `ShopIconButton` composes the shared native button without a DOM wrapper and defaults to Medium; select `Size="ShopSize.Small"` or `Size="ShopSize.Large"` when appropriate. Each variant has independently inspected icon-button geometry. Keep cart, wishlist, and selection actions separate rather than nesting buttons or links. Navigation uses a native anchor with a centralized route; a button remains appropriate for an existing callback-only action without an implemented destination.
 
-### Pattern A alternative — root has no internal classes/styles
+Use `ShopColor` for the color role, `ShopVariant.Filled`, `.Outlined`, or `.Text` for treatment, and `ShopSize` for relative size. These choices are independent; component-owned SCSS defines their appearance. Components expose only meaningful choices rather than inheriting unused parameters from the base. Do not invent properties based on historical vendor components. Component classes use single hyphens (`shop-button-icon`, `shop-button-small`); theme values use CSS variables (`--shop-color-primary`).
 
-If a wrapper component genuinely has no internal styling, the simpler pattern works — pass `Class` and `Style` straight through:
+## Validated input is a different contract
 
-```razor
-@* Components/Common/ShopSection.razor *@
-@inherits MudComponentBase
+Read `Components/Common/ShopTextInput.razor` and `.razor.cs` for the input example. It derives from `InputBase<string?>`, not `ShopComponentBase`, and binds `CurrentValueAsString` on `oninput`. This preserves binding, parsing, field notifications, validation classes, and `EditContext` behavior while supporting immediate updates required by existing forms.
 
-<MudGrid Class="@Class" Style="@Style">
-    @ChildContent
-</MudGrid>
-```
+Input attributes target the actual input. The owning form supplies an associated label, stable helper/error IDs, validation, and a disabled value from `BusyFor`. Prefer built-in Blazor inputs when their update behavior already meets the requirement; do not wrap every native element.
 
-Use Pattern A only when the root element has no class or style of its own.
+## What stays outside the component
+
+Business rules remain in Domain/Application; shared work state stays in `BusyState`. A visual base must not absorb services, form validation, loading, or arbitrary rendering policy. Extract repeated behavior or stable composition, not a single-use layout merely to shorten a parent.
+
+During migration, unconverted controls may retain Mud dependencies. New native controls use owned SCSS and must work without vendor CSS; remove transitional bridges with their last consumers.
+
+## Verification references
+
+`ShopButtonTests.cs`, `ShopIconButtonTests.cs`, `ShopIconTests.cs`, and `ProductCardTests.cs` under `tests/TheShop.Web.Tests/Components/` cover native semantics, event callbacks, attribute precedence, resource-backed names, sizes, and content behavior. `Common/UI/ShopCssClassTests.cs` covers the reusable enum modifier helper. Verify focus, forced colors, Figma sizing, and responsive presentation in a browser; markup assertions alone do not prove appearance.

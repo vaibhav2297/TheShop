@@ -1,69 +1,60 @@
-@* Components/Products/VariantImageDialog.razor *@
-
+@using TheShop.Web.Common.UI
 @using TheShop.Web.Components.Common
-@using TheShop.Web.Theme
 
-<ShopDialog Title="@Strings.VariantImage_Title" CloseLabel="@Strings.Close">
-    <ChildContent>
-        <MudStack Spacing="8">
-
-            <MudStack Spacing="1">
-                <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.VariantImage_VariantFieldLabel</MudText>
-                <MudText Typo="Typo.h6">@VariantLabel</MudText>
-            </MudStack>
-
+<ShopDialog OnDismiss="CancelAsync"
+            MaxWidth="ShopMaxWidth.Small">
+    <TitleContent>
+        <h2 class="shop-dialog-title">@Strings.VariantImage_Title</h2>
+    </TitleContent>
+    <DialogContent>
+        <div class="shop-variant-image">
+            <div class="shop-variant-image-description">
+                <p class="shop-variant-image-label">@Strings.VariantImage_VariantFieldLabel</p>
+                <p class="shop-variant-image-name">@VariantLabel</p>
+            </div>
             @if (GalleryImages.Count == 0)
             {
-                <MudText Typo="Typo.body1" Color="Color.Secondary">@Strings.VariantImage_NoImages</MudText>
+                <p class="shop-variant-image-empty">@Strings.VariantImage_NoImages</p>
             }
-
-            <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="4">
-                @foreach (var image in GalleryImages)
+            <div class="shop-variant-image-gallery">
+                @for (var index = 0; index < GalleryImages.Count; index++)
                 {
+                    var image = GalleryImages[index];
                     var selected = _selectedImageId == image.Id;
-
-                    <MudPaper Elevation="0"
-                              Class="@ThumbnailClassname(selected)"
-                              Style="position: relative;"
-                              @onclick="@(() => SelectImage(image.Id))">
-
-                        <ShopImage Src="@image.Url"
-                                   Preset="ShopImagePreset.Thumbnail"
-                                   Alt="@VariantLabel"
-                                   PlaceholderLabel="@VariantLabel"
-                                   Style="width: 120px;" />
-
+                    <button @key="image.Id" type="button" class="shop-variant-image-option"
+                            aria-label="@string.Format(Strings.VariantImage_ImageLabel, index + 1, VariantLabel)"
+                            aria-pressed="@(selected ? "true" : "false")"
+                            data-image-id="@image.Id" @onclick="@(() => SelectImage(image.Id))">
+                        <ShopImage Src="@image.Url" Preset="ShopImagePreset.Thumbnail"
+                                   Alt="@VariantLabel" PlaceholderLabel="@VariantLabel" />
                         @if (selected)
                         {
-                            <MudIcon Icon="@ShopIcons.Outlined.Circle_Check" Color="Color.Primary" Style="position: absolute; top: 4px; right: 4px;" />
+                            <ShopIcon Icon="@ShopIcons.Outlined.Circle_Check" Class="shop-variant-image-selected-icon" />
                         }
-                    </MudPaper>
+                    </button>
                 }
-            </MudStack>
-
+            </div>
             @if (ShowScopeChoice)
             {
-                <MudStack Spacing="1">
-                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.VariantImage_ApplyToLabel</MudText>
-                    <MudStack Spacing="1">
-                        <MudCheckBox T="bool"
-                                     Value="@_applyToAllSharing"
-                                     ValueChanged="@((bool v) => _applyToAllSharing = v)"
-                                     Color="Color.Primary"
-                                     Label="@string.Format(Strings.VariantImage_ApplyToAllSharing, SharedScopeCount, SharedScopeLabel)" />
-                        <MudCheckBox T="bool"
-                                     Value="@(!_applyToAllSharing)"
-                                     ValueChanged="@((bool v) => _applyToAllSharing = !v)"
-                                     Color="Color.Primary"
-                                     Label="@Strings.VariantImage_ThisVariantOnly" />
-                    </MudStack>
-                </MudStack>
+                <fieldset class="shop-variant-image-scope">
+                    <legend class="shop-variant-image-label">@Strings.VariantImage_ApplyToLabel</legend>
+                    <label class="shop-variant-image-choice">
+                        <input type="radio" name="@_scopeName" value="all" checked="@_applyToAllSharing"
+                               @onchange="@(() => _applyToAllSharing = true)" />
+                        <span>@string.Format(Strings.VariantImage_ApplyToAllSharing, SharedScopeCount, SharedScopeLabel)</span>
+                    </label>
+                    <label class="shop-variant-image-choice">
+                        <input type="radio" name="@_scopeName" value="this" checked="@(!_applyToAllSharing)"
+                               @onchange="@(() => _applyToAllSharing = false)" />
+                        <span>@Strings.VariantImage_ThisVariantOnly</span>
+                    </label>
+                </fieldset>
             }
-
-        </MudStack>
-    </ChildContent>
-    <Actions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Confirm">@Strings.VariantImage_Save</MudButton>
-        <MudButton Variant="Variant.Outlined" OnClick="Cancel">@Strings.Cancel</MudButton>
-    </Actions>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <ShopButton OnClick="ConfirmAsync" data-testid="variant-image-save">@Strings.VariantImage_Save</ShopButton>
+        <ShopButton Variant="ShopVariant.Outlined" OnClick="CancelAsync"
+                    data-dialog-initial-focus data-testid="variant-image-cancel">@Strings.Cancel</ShopButton>
+    </DialogActions>
 </ShopDialog>

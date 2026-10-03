@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using Bunit;
 using FluentAssertions;
 using MediatR;
@@ -34,7 +35,7 @@ namespace TheShop.Web.Tests.Pages.Products;
 public class ProductCatalogueTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
     private readonly List<GetProductCataloguePageQuery> _receivedPageQueries = [];
 
@@ -43,7 +44,7 @@ public class ProductCatalogueTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();

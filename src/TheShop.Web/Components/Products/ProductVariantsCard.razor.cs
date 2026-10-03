@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using TheShop.Web.Common.Dialogs;
 using MudBlazor;
 using MudBlazor.Utilities;
 using TheShop.Application.Features.Products.DTOs;
@@ -18,7 +19,7 @@ namespace TheShop.Web.Components.Products;
 /// </summary>
 public partial class ProductVariantsCard : MudComponentBase
 {
-    [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private IShopDialogService ConfirmDialogs { get; set; } = default!;
 
     /// <summary>
     /// The product's own SKU, from which every variant SKU is derived (FR-15). Read live on every
@@ -88,6 +89,8 @@ public partial class ProductVariantsCard : MudComponentBase
     private List<VariantRow> _variants = [];
     private bool _initialized;
     private string? _lastProductSku;
+    private sealed record PinSelection(VariantRow Variant, string? ScopeLabel, int ScopeCount, Guid? ScopeValueId);
+    private PinSelection? _pinSelection;
 
     private bool IsFlagged(VariantRow variant) => FlaggedVariantIds.Contains(variant.Id);
 
@@ -117,6 +120,8 @@ public partial class ProductVariantsCard : MudComponentBase
         }
 
         await PruneRemovedPinsAsync();
+        if (Disabled || (_pinSelection is { } selection && !_variants.Contains(selection.Variant)))
+            _pinSelection = null;
     }
 
     private void RefreshVariantSkus()
@@ -289,34 +294,26 @@ public partial class ProductVariantsCard : MudComponentBase
         return NotifyAsync();
     }
 
-    private async Task OpenPinDialogAsync(VariantRow variant)
+    private void OpenPinDialog(VariantRow variant)
     {
+        if (Disabled || _pinSelection is not null || !_variants.Contains(variant))
+            return;
         var (scopeLabel, scopeCount) = FindSharedScope(variant);
+        _pinSelection = new(variant, scopeLabel, scopeCount, FindSharedOptionValueId(variant));
+    }
 
-        var parameters = new DialogParameters<VariantImageDialog>
-        {
-            { x => x.VariantLabel, variant.Label },
-            { x => x.GalleryImages, GalleryImages },
-            { x => x.CurrentImageId, variant.PinnedImageId },
-            { x => x.SharedScopeLabel, scopeLabel },
-            { x => x.SharedScopeCount, scopeCount },
-        };
-
-        // The gallery grid needs more room than the default dialog width (Small) affords.
-        var options = new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-        };
-
-        var dialog = await DialogService.ShowAsync<VariantImageDialog>(variant.Label, parameters, options);
-        var result = await dialog.Result;
-        if (result is not { Canceled: false, Data: VariantImagePinResult pin })
+    private async Task CompletePinAsync(PinSelection selection, VariantImagePinResult? pin)
+    {
+        if (!ReferenceEquals(_pinSelection, selection))
+            return;
+        _pinSelection = null;
+        if (pin is null || Disabled || !_variants.Contains(selection.Variant) ||
+            (pin.ImageId is Guid imageId && !GalleryImages.Any(image => image.Id == imageId)))
             return;
 
         if (pin.ApplyToAllSharing)
         {
-            var sharedValueId = FindSharedOptionValueId(variant);
+            var sharedValueId = selection.ScopeValueId;
             if (sharedValueId is Guid valueId)
             {
                 foreach (var affected in _variants.Where(v => v.OptionValueIds.Contains(valueId)))
@@ -325,7 +322,7 @@ public partial class ProductVariantsCard : MudComponentBase
         }
         else
         {
-            variant.PinnedImageId = pin.ImageId;
+            selection.Variant.PinnedImageId = pin.ImageId;
         }
 
         await NotifyAsync();
@@ -367,20 +364,10 @@ public partial class ProductVariantsCard : MudComponentBase
         return null;
     }
 
-    private async Task<bool> ConfirmRemovalAsync(int affectedCount)
-    {
-        var parameters = new DialogParameters<ShopConfirmDialog>
-        {
-            { x => x.TitleText, Strings.ProductVariants_RemoveOptionConfirmTitle },
-            { x => x.BodyText, string.Format(Strings.ProductVariants_RemoveOptionConfirmBody, affectedCount) },
-            { x => x.ConfirmLabel, Strings.ProductVariants_RemoveOptionConfirm },
-            { x => x.ConfirmColor, Color.Error },
-        };
-
-        var dialog = await DialogService.ShowAsync<ShopConfirmDialog>(Strings.ProductVariants_RemoveOptionConfirmTitle, parameters);
-        var result = await dialog.Result;
-        return result is { Canceled: false };
-    }
+    private Task<bool> ConfirmRemovalAsync(int affectedCount) =>
+        ConfirmDialogs.ConfirmAsync(new(Strings.ProductVariants_RemoveOptionConfirmTitle,
+            string.Format(Strings.ProductVariants_RemoveOptionConfirmBody, affectedCount),
+            Strings.ProductVariants_RemoveOptionConfirm, true));
 
     private void RecomputeVariants()
     {

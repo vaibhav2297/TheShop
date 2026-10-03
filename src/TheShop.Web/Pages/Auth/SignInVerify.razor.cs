@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
@@ -19,7 +20,7 @@ public partial class SignInVerify : ComponentBase, IDisposable
 {
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
 
@@ -68,7 +69,7 @@ public partial class SignInVerify : ComponentBase, IDisposable
 
             if (result.IsSuccess)
             {
-                Snackbar.Add(Strings.Auth_SignedIn, Severity.Success);
+                Notifications.Show(Strings.Auth_SignedIn, ShopNotificationKind.Success);
 
                 var destination = !string.IsNullOrWhiteSpace(ReturnUrl)
                     ? ReturnUrl
@@ -82,12 +83,12 @@ public partial class SignInVerify : ComponentBase, IDisposable
                 // Too many attempts: redirect back to email entry
                 if (key == nameof(Strings.Auth_TooManyAttempts))
                 {
-                    Snackbar.Add(Localizer[key], Severity.Error);
+                    Notifications.Show(Localizer[key], ShopNotificationKind.Error);
                     Nav.NavigateTo(Routes.Auth.SignIn, replace: true);
                     return;
                 }
 
-                Snackbar.Add(Localizer[key], Severity.Error);
+                Notifications.Show(Localizer[key], ShopNotificationKind.Error);
 
                 // Clear the digits on failure so the user types fresh
                 _otp = string.Empty;
@@ -106,12 +107,12 @@ public partial class SignInVerify : ComponentBase, IDisposable
 
             if (result.IsSuccess)
             {
-                Snackbar.Add(Strings.Auth_CodeSent, Severity.Success);
+                Notifications.Show(Strings.Auth_CodeSent, ShopNotificationKind.Success);
                 StartCooldown(result.Value.ResendCooldownSeconds);
             }
             else
             {
-                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], Severity.Error);
+                Notifications.Show(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], ShopNotificationKind.Error);
             }
         });
     }

@@ -1,5 +1,7 @@
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
+using TheShop.Web.Common.Dialogs;
 using Bunit.TestDoubles;
 using FluentAssertions;
 using MediatR;
@@ -35,7 +37,7 @@ namespace TheShop.Web.Tests.Pages.Admin;
 public class EditProductTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public EditProductTests()
@@ -45,9 +47,10 @@ public class EditProductTests : TestContext
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddMudServices();
+        Services.AddSingleton(Substitute.For<IShopDialogService>());
         var popoverService = Substitute.For<IPopoverService>();
         popoverService.PopoverOptions.Returns(new PopoverOptions());
         Services.Replace(ServiceDescriptor.Singleton(popoverService));

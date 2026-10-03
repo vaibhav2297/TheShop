@@ -1,42 +1,90 @@
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using MudBlazor.Utilities;
+using Microsoft.JSInterop;
+using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
-/// <summary>
-/// Reusable dialog chrome — title with an optional close button, a content slot, and an actions
-/// slot — composed by every dialog in the admin surface (<see cref="ShopConfirmDialog"/>,
-/// <c>VariantImageDialog</c>) instead of each redeclaring the same <see cref="MudDialog"/>
-/// header/content/actions structure. All text is supplied by the caller as already-localized
-/// strings (Rule 11 Pattern 1 at the call site) — the dialog itself resolves no resource keys.
-/// </summary>
-public partial class ShopDialog : MudComponentBase
+/// <summary>Native modal chrome with browser-managed inertness, focus, and dismissal.</summary>
+public partial class ShopDialog : ComponentBase, IAsyncDisposable
 {
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private ILogger<ShopDialog> Logger { get; set; } = default!;
 
-    /// <summary>The dialog's title.</summary>
-    [Parameter, EditorRequired]
-    public string Title { get; set; } = string.Empty;
+    /// <summary>Already-localized title markup, including an appropriate heading; supplies the dialog's accessible name.</summary>
+    [Parameter, EditorRequired] public RenderFragment? TitleContent { get; set; }
 
-    /// <summary>The dialog's body content.</summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    /// <summary>Optional width cap. Null retains the theme default; None retains only viewport gutters.</summary>
+    [Parameter] public ShopMaxWidth? MaxWidth { get; set; }
 
-    /// <summary>The dialog's action buttons.</summary>
-    [Parameter]
-    public RenderFragment? Actions { get; set; }
+    /// <summary>ID of the concise description in the body, when available.</summary>
+    [Parameter] public string? DescriptionId { get; set; }
 
-    /// <summary>Whether the header shows a close (X) button. Defaults to <c>true</c>.</summary>
-    [Parameter]
-    public bool ShowCloseButton { get; set; } = true;
+    /// <summary>Feature-owned body content.</summary>
+    [Parameter] public RenderFragment? DialogContent { get; set; }
 
-    /// <summary>Localized ARIA label for the close button.</summary>
-    [Parameter]
-    public string? CloseLabel { get; set; }
+    /// <summary>Action buttons; the safe initial action carries data-dialog-initial-focus.</summary>
+    [Parameter] public RenderFragment? DialogActions { get; set; }
 
-    protected string Classname => new CssBuilder("shop-dialog").AddClass(Class).Build();
-    protected string Stylename => new StyleBuilder().AddStyle(Style).Build();
+    /// <summary>Raised on close, Escape, backdrop dismissal, or failure to initialize the browser modal.</summary>
+    [Parameter] public EventCallback OnDismiss { get; set; }
 
-    private void Close() => MudDialog.Cancel();
+    private readonly string _titleId = $"shop-dialog-title-{Guid.NewGuid():N}";
+    private ElementReference _element;
+    private IJSObjectReference? _module;
+    private DotNetObjectReference<ShopDialog>? _reference;
+    private bool _disposed;
+
+    private string CssClass => ShopCssClass.Join("shop-native", "shop-dialog",
+        MaxWidth is { } width ? ShopCssClass.Modifier("shop-dialog-width", width, nameof(MaxWidth)) : null);
+
+    /// <inheritdoc/>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _disposed)
+            return;
+        try
+        {
+            var module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/shopDialog.js");
+            if (_disposed)
+            {
+                await module.DisposeAsync();
+                return;
+            }
+            _module = module;
+            _reference = DotNetObjectReference.Create(this);
+            await module.InvokeVoidAsync("show", _element, _reference);
+        }
+        catch (JSException exception)
+        {
+            Logger.LogError(exception, "The native dialog could not be opened.");
+            if (!_disposed)
+                await OnDismiss.InvokeAsync();
+        }
+    }
+
+    /// <summary>Synchronizes browser dismissal with the owning request's cancellation.</summary>
+    [JSInvokable]
+    public Task DismissAsync() => _disposed ? Task.CompletedTask : OnDismiss.InvokeAsync();
+
+    /// <inheritdoc/>
+    public async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+            return;
+        _disposed = true;
+        try
+        {
+            if (_module is not null)
+            {
+                await _module.InvokeVoidAsync("dispose", _element);
+                await _module.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException) { }
+        catch (ObjectDisposedException) { }
+        finally
+        {
+            _reference?.Dispose();
+        }
+    }
 }

@@ -1,232 +1,78 @@
-# Design — Theme Setup (building the `Shop*` theme classes)
+# Design — Theme Setup (tokens and icon registry)
 
-> Implementation guide for Rule 13 from `SKILL.md`, plus the registry/wiring shape behind Rules 15, 16, 18, 19. Covers **building** the `Shop`-prefixed theme classes — `ShopColors`, `ShopIcons`, `ShopTypography` (token registries) and `ShopTheme` (MudBlazor wiring). Load this **only** when creating or editing files under `src/TheShop.Web/Theme/`. For **applying** the theme in pages and components (color priority, typography utilities, icon usage, imagery), see `design-theme.md`. The rules themselves live in `SKILL.md`; this file does not restate them.
+Implementation guide for Rule 13 and the ownership behind Rules 15, 16, 18, 19. Load when editing `Styles/tokens/` or `Theme/ShopIcons.cs`. For applying these values, see `design-theme.md`.
 
----
+## Ownership
 
-## `Shop` prefix convention (Rule 13)
+All paths below are relative to `src/TheShop.Web/`.
 
-- Uppercase `S`: `ShopColors`, not `shopColors` or `SHOP_COLORS`.
-- Singular concept + plural collection: `ShopColors`, not `ShopColor`.
-- Place under `src/TheShop.Web/Theme/`.
-- One class per concept, one file per class.
-- `static` class for token registries; instance class only for `ShopTheme` (which builds the MudBlazor theme object).
-
-| Concept | Class | Type |
-|---|---|---|
-| Color tokens | `ShopColors` | static |
-| Icon registry | `ShopIcons` | static |
-| Typography tokens | `ShopTypography` | static |
-| MudBlazor theme | `ShopTheme` | instance |
-
-```csharp
-// ✅
-public static class ShopColors { }
-public static class ShopIcons { }
-public class ShopTheme { }            // instance — produces MudTheme
-
-// ❌
-public static class Colors { }         // collides with MudBlazor
-public static class AppColors { }      // doesn't match convention
-public static class Color { }          // singular
-```
-
----
-
-## `ShopColors` — token registry
-
-```csharp
-namespace TheShop.Web.Theme;
-
-public static class ShopColors
-{
-    // Brand
-    public const string Primary = "#101010";        // confirmed
-    public const string Secondary = "";             // TODO: from Figma
-    public const string Tertiary = "";              // TODO: from Figma
-    public const string Accent = "";                // TODO: from Figma
-
-    // Backgrounds
-    public const string Background = "";            // TODO: from Figma
-    public const string Surface = "";               // TODO: from Figma
-
-    // Text
-    public const string TextPrimary = "";           // TODO: from Figma
-    public const string TextSecondary = "";         // TODO: from Figma
-    public const string TextDisabled = "";          // TODO: from Figma
-
-    // Borders
-    public const string BorderPrimary = "";         // TODO: from Figma
-    public const string BorderSecondary = "";       // TODO: from Figma
-
-    // Semantic
-    public const string Success = "";               // TODO: from Figma
-    public const string Warning = "";               // TODO: from Figma
-    public const string Error = "";                 // TODO: from Figma
-    public const string Info = "";                  // TODO: from Figma
-
-    // Dark mode
-    public static class Dark
-    {
-        public const string Background = "";        // TODO: from Figma
-        public const string Surface = "";           // TODO: from Figma
-        public const string TextPrimary = "";       // TODO: from Figma
-        public const string TextSecondary = "";     // TODO: from Figma
-    }
-}
-```
-
----
-
-## `ShopIcons` — registry (custom SVG only, Rule 19)
-
-This project uses **custom SVG icons only**. Material Design icons are not used. Each constant holds the SVG `<path d="..."/>` markup, named by **semantics** (`Cart`), never visuals (`ShoppingBag`).
-
-```csharp
-namespace TheShop.Web.Theme;
-
-public static class ShopIcons
-{
-    // Custom SVG icon paths. Each constant holds the SVG <path d="..."/> markup.
-    //
-    // Adding an icon:
-    //   1. Get the SVG file from your designer / export from Figma
-    //   2. Extract the <path d="..."/> markup
-    //   3. Add it as a new constant with a SEMANTIC name (Cart, not ShoppingBag)
-    //
-    // Semantic names (Cart, Login) survive icon swaps. Visual names (ShoppingBag, Door) don't.
-}
-```
-
-For how to reference these constants in markup (`<MudIcon Icon="@ShopIcons.Cart" />`), see `design-theme.md` §Icons.
-
----
-
-## `ShopTypography` — token registry
-
-```csharp
-namespace TheShop.Web.Theme;
-
-public static class ShopTypography
-{
-    // TODO: Update all values from the Figma typography styles.
-    // Values are wired into MudBlazor via ShopTheme so <MudText Typo="Typo.h1"> picks up H1 automatically.
-
-    public const string FontFamilyPrimary = "";     // TODO: from Figma
-    public const string FontFamilyHeading = "";     // TODO: from Figma (or same as Primary)
-
-    public const string WeightLight = "300";
-    public const string WeightRegular = "400";
-    public const string WeightMedium = "500";
-    public const string WeightSemibold = "600";
-    public const string WeightBold = "700";
-
-    // Per-Typo tokens — H1..H6, Body1..2, Subtitle1..2, Caption, Overline, Button
-    public const string H1_Size = "";
-    public const string H1_Weight = "";
-    public const string H1_LineHeight = "";
-    // ... etc.
-}
-```
-
-Available `Typo` values: `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `subtitle1`, `subtitle2`, `body1`, `body2`, `button`, `caption`, `overline`, `inherit`.
-
----
-
-## `ShopTheme` — wires the tokens into MudBlazor
-
-```csharp
-namespace TheShop.Web.Theme;
-using MudBlazor;
-
-public class ShopTheme
-{
-    public MudTheme BuildTheme() => new()
-    {
-        PaletteLight = BuildLightPalette(),
-        PaletteDark = BuildDarkPalette(),
-        Typography = BuildTypography(),
-        LayoutProperties = BuildLayout(),
-    };
-
-    private PaletteLight BuildLightPalette() => new()
-    {
-        Primary = ShopColors.Primary,
-        Secondary = ShopColors.Secondary,
-        Tertiary = ShopColors.Tertiary,
-        Background = ShopColors.Background,
-        Surface = ShopColors.Surface,
-        AppbarBackground = ShopColors.Background,
-        DrawerBackground = ShopColors.Surface,
-        TextPrimary = ShopColors.TextPrimary,
-        TextSecondary = ShopColors.TextSecondary,
-        Success = ShopColors.Success,
-        Warning = ShopColors.Warning,
-        Error = ShopColors.Error,
-        Info = ShopColors.Info,
-        LinesDefault = ShopColors.BorderSecondary,
-        LinesInputs = ShopColors.BorderSecondary,
-    };
-
-    private PaletteDark BuildDarkPalette() => new()
-    {
-        Primary = ShopColors.Primary,
-        Background = ShopColors.Dark.Background,
-        Surface = ShopColors.Dark.Surface,
-        TextPrimary = ShopColors.Dark.TextPrimary,
-        TextSecondary = ShopColors.Dark.TextSecondary,
-    };
-
-    private Typography BuildTypography() => new()
-    {
-        Default = new DefaultTypography
-        {
-            FontFamily = [ShopTypography.FontFamilyPrimary],
-            FontSize = ShopTypography.Body1_Size,
-            LineHeight = ShopTypography.Body1_LineHeight,
-            FontWeight = ShopTypography.WeightRegular,
-        },
-        H1 = new H1Typography { FontSize = ShopTypography.H1_Size, FontWeight = ShopTypography.H1_Weight, LineHeight = ShopTypography.H1_LineHeight },
-        H2 = new H2Typography { FontSize = ShopTypography.H2_Size, FontWeight = ShopTypography.H2_Weight, LineHeight = ShopTypography.H2_LineHeight },
-        H3 = new H3Typography { FontSize = ShopTypography.H3_Size, FontWeight = ShopTypography.H3_Weight, LineHeight = ShopTypography.H3_LineHeight },
-        H4 = new H4Typography { FontSize = ShopTypography.H4_Size, FontWeight = ShopTypography.H4_Weight, LineHeight = ShopTypography.H4_LineHeight },
-        H5 = new H5Typography { FontSize = ShopTypography.H5_Size, FontWeight = ShopTypography.H5_Weight, LineHeight = ShopTypography.H5_LineHeight },
-        H6 = new H6Typography { FontSize = ShopTypography.H6_Size, FontWeight = ShopTypography.H6_Weight, LineHeight = ShopTypography.H6_LineHeight },
-        Body1 = new Body1Typography { FontSize = ShopTypography.Body1_Size, FontWeight = ShopTypography.Body1_Weight, LineHeight = ShopTypography.Body1_LineHeight },
-        Body2 = new Body2Typography { FontSize = ShopTypography.Body2_Size, FontWeight = ShopTypography.Body2_Weight, LineHeight = ShopTypography.Body2_LineHeight },
-        Button = new ButtonTypography { FontSize = ShopTypography.Button_Size, FontWeight = ShopTypography.WeightMedium, TextTransform = "none" },
-    };
-
-    private LayoutProperties BuildLayout() => new()
-    {
-        DefaultBorderRadius = "8px",
-        AppbarHeight = "64px",
-    };
-}
-```
-
-Registered in DI and consumed by `MainLayout.razor`:
-
-```razor
-@inject ShopTheme Theme
-
-<MudThemeProvider Theme="@Theme.BuildTheme()" />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
-
-<MudLayout>
-    @* layout content *@
-</MudLayout>
-```
-
----
-
-## Common mistakes (setup)
-
-| Mistake | Fix |
+| File / folder | Responsibility |
 |---|---|
-| `public static class AppColors { }` | `public static class ShopColors { }` (Rule 13) |
-| `public static class Colors { }` | Collides with MudBlazor — use `ShopColors` |
-| Icon constant named `ShoppingBag` (visual) | Rename to `Cart` (semantic) — survives icon swaps (Rule 19) |
-| Editing `Strings.Designer.cs`-style generated theme output by hand | Theme classes are hand-authored registries — edit `ShopColors` / `ShopTypography` source directly |
+| `Styles/tokens/_colors.scss` | Semantic text, surface, border, action, and status colors |
+| `Styles/tokens/_typography.scss` | Font families, sizes, weights, line heights, tracking |
+| `Styles/tokens/_spacing.scss` | Shared spacing scale, emitted as CSS custom properties |
+| `Styles/tokens/_sizing.scss` | Shared named maximum widths, emitted as `--shop-max-width-*` |
+| `Styles/tokens/_theme.scss` | Theme decisions such as control radii, focus and interaction tokens |
+| `Styles/abstracts/` | Sass-only helpers, functions, maps, breakpoint constants; emits no CSS |
+| `Styles/base/` | Reset, document, typography, accessibility defaults |
+| `Styles/components/` | Component appearance and states |
+| `Styles/layouts/` | Page and shell geometry |
+| `Styles/utilities/` | Small justified, generated utility families |
+| `Styles/TheShop.scss` | Ordered `@use` entry point |
+| `Theme/ShopIcons.cs` | Trusted application SVG registry |
+
+Do not introduce replacement C# color/typography registries or a runtime theme service to hold static CSS values. Existing `ShopColors`, `ShopTypography`, and `ShopTheme` remain only while unconverted Mud consumers need them.
+
+## Token setup
+
+`ShopMaxWidth` carries width choices only; `tokens/_sizing.scss` owns their numeric caps. These owner-approved values are not Figma breakpoints. `_theme.scss` owns the separate 500px dialog default (`--shop-dialog-max-width`); dialog modifiers consume the shared scale locally. `None` removes the cap, not viewport gutters.
+
+Use `--shop-*` CSS custom properties for values consumed at runtime. Sass variables are for compile-time helpers and generation, not a second manually maintained palette. Current declarations include:
+
+```scss
+// Styles/tokens/_colors.scss
+:root {
+    --shop-color-text-primary: #171717;
+    --shop-color-surface-default: #fff;
+    --shop-color-primary: #171717;
+    --shop-color-primary-contrast: #fff;
+}
+```
+
+This is an excerpt, not a replacement file. The full palette mirrors 22 Figma paint styles. Omit the `Brand/` and `Semantic/` groups in CSS names; retain `text-`, `surface-`, and `lines-`. Consume these tokens directly. The seven migration aliases (`action`, `on-action`, `field`, `surface`, `surface-muted`, `surface-placeholder`, and `border` under `--shop-color-`) have been removed; do not recreate them. The four `--shop-button-*` color override properties have also been removed: button and icon-button treatments consume Figma colors directly. Internal size properties and the distinct state/accessibility tokens in `_theme.scss` remain supported. Reuse existing tokens; add a semantic token only when a real design need exists. Do not add empty values or speculative dark-mode tokens.
+
+Typography mirrors the 13 `Typography/*` Figma text styles as `--shop-typography-{style}-{property}`: H1–H6, Subtitle 1/2, Body 1/2, Button, Caption, Overline. `_typography.scss` owns the map and emits family, size, weight, line-height, letter-spacing, and text-transform properties. Sizes use rem; AUTO line height maps to `normal`. `abstracts/_text-style.scss` applies those variables without alias tokens or standalone selectors. Keep component-specific exceptions documented in their owner; do not change a named style to fit one consumer. See `UI_MIGRATION_GUIDE.md` section 5.1 for the inspected values and mapping.
+
+The owner also approved four white semantic contrast defaults in `_colors.scss`: info-contrast, success-contrast, warning-contrast, and error-contrast. These extend the 22 inspected styles; they are not claimed Figma measurements. Filled button labels consume their role's contrast token, while outlined/text labels consume the base role color. Do not add separate button text-color overrides. `_theme.scss` owns interaction backgrounds; the separate error-text token was removed at the owner's request. Native form validation messages and invalid borders use `--shop-color-error` directly. That text on white measures approximately 3.44:1, below the 4.5:1 small-text threshold. White defaults and bright base-colored text have further documented contrast gaps in `UI_MIGRATION_GUIDE.md` section 6.2; token naming is not accessibility proof. Resolve these palette limitations before production accessibility sign-off.
+
+Use lowercase partial names with leading `_`, four-space indentation, semicolons, and one declaration per line. Load modules with `@use`; use `@forward` only for a deliberate shared API. Keep `abstracts/` free of emitted rules. Each partial imports the helpers it uses. Never edit generated `wwwroot/css/TheShop.css`.
+
+Classes use single-hyphen, component-prefixed kebab-case (`.shop-button-filled`, `.shop-button-icon`), not BEM `__`/`--`. This restriction does not apply to the required leading `--` of custom properties.
+
+## Figma and interaction decisions
+
+Visual source: [The Vape Shop component foundations](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=197-2570).
+
+Inspect the relevant component node before assigning measured values. Preserve existing rendered behavior where the supplied design does not specify a replacement. Record missing or ambiguous states and chosen treatments separately from measured design values. Accessibility requirements still apply: do not suppress focus, remove labels, or assume a bright status swatch has sufficient text contrast.
+
+Component resting variants, interactive states, and responsive behavior require browser verification. Token extraction alone is not proof of Figma parity.
+
+## Base styles and coexistence
+
+Base styles provide shared document defaults; they do not own component variants or page layouts. While vendor components remain, scope native defaults to migrated surfaces and test mixed screens before changing global selectors.
+
+Keep existing Mud providers, styles, scripts, registrations, and C# theme values until their final consumers are replaced and verified. Track those temporary bridges explicitly. The final native theme comes from compiled SCSS, without Mud theme DI or a permanent parallel C# palette.
+
+## `ShopIcons` registry
+
+Keep `Theme/ShopIcons.cs` as the custom SVG registry. New icons use semantic names describing their action or meaning. Reuse existing entries instead of duplicating paths or introducing another icon suite.
+
+When adding an icon:
+
+1. Obtain the approved SVG asset and inspect its markup.
+2. Store the trusted SVG fragment expected by `ShopIcon`, not an extra outer `<svg>` root.
+3. Preserve the component's view box contract, stroke attributes, and `currentColor` where appropriate.
+4. Exclude scripts, event handlers, external resource references, and untrusted markup.
+5. Add a semantic constant and consume it through the shared icon component.
+
+`ShopIcon` is decorative. The containing control owns its resource-backed accessible name. Its raw-markup rendering is safe only for reviewed application constants; never route product descriptions, uploaded SVGs, API responses, or user input through that sink.

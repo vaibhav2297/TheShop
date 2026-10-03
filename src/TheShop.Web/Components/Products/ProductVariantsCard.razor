@@ -209,7 +209,7 @@
                                                Color="@(variant.PinnedImageId is null ? Color.Default : Color.Primary)"
                                                StartIcon="@ShopIcons.Outlined.ImagePlaceHoler"
                                                Disabled="@Disabled"
-                                               OnClick="@(() => OpenPinDialogAsync(variant))">
+                                               OnClick="@(() => OpenPinDialog(variant))">
                                         @(variant.PinnedImageId is null ? Strings.ProductVariants_PinImage : Strings.ProductVariants_ChangeImage)
                                     </MudButton>
                                 </MudTd>
@@ -221,3 +221,11 @@
         </ChildContent>
     </MudExpansionPanel>
 </MudExpansionPanels>
+
+@if (_pinSelection is { } selection)
+{
+    <VariantImageDialog @key="selection" VariantLabel="@selection.Variant.Label"
+                        GalleryImages="@GalleryImages" CurrentImageId="@selection.Variant.PinnedImageId"
+                        SharedScopeLabel="@selection.ScopeLabel" SharedScopeCount="@selection.ScopeCount"
+                        OnCompleted="@((VariantImagePinResult? result) => CompletePinAsync(selection, result))" />
+}

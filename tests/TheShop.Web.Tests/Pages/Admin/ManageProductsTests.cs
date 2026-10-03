@@ -1,5 +1,7 @@
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
+using TheShop.Web.Common.Dialogs;
 using Bunit.TestDoubles;
 using FluentAssertions;
 using MediatR;
@@ -44,9 +46,9 @@ namespace TheShop.Web.Tests.Pages.Admin;
 public class ManageProductsTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
-    private readonly IDialogService _dialogService = Substitute.For<IDialogService>();
+    private readonly IShopDialogService _dialogService = Substitute.For<IShopDialogService>();
     private readonly List<GetAdminProductsPageQuery> _receivedQueries = [];
 
     public ManageProductsTests()
@@ -54,7 +56,7 @@ public class ManageProductsTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
@@ -138,10 +140,8 @@ public class ManageProductsTests : TestContext
     /// </summary>
     private void SetUpConfirmDialogResult(bool confirmed)
     {
-        var dialogReference = Substitute.For<IDialogReference>();
-        dialogReference.Result.Returns(Task.FromResult<DialogResult?>(confirmed ? DialogResult.Ok(true) : DialogResult.Cancel()));
-        _dialogService.ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>())
-                      .Returns(Task.FromResult(dialogReference));
+        _dialogService.ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>())
+            .Returns(confirmed);
     }
 
     private async Task<IRenderedComponent<ManageProducts>> RenderListAsync()
@@ -388,7 +388,7 @@ public class ManageProductsTests : TestContext
 
         var cut = await RenderListAsync();
 
-        cut.Find(".mud-avatar .shop-image__placeholder").TextContent.Trim().Should().Be("Elf Bar BC5000");
+        cut.Find(".mud-avatar .shop-image-placeholder").TextContent.Trim().Should().Be("Elf Bar BC5000");
     }
 
     [Fact]
@@ -747,8 +747,8 @@ public class ManageProductsTests : TestContext
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageProducts_DeleteAria, product.Name)}']");
         await cut.InvokeAsync(() => deleteButton.ClickAsync(new MouseEventArgs()));
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
-        _snackbar.DidNotReceive().Add(Arg.Any<string>(), Severity.Success);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
+        _notifications.DidNotReceive().Show(Arg.Any<string>(), ShopNotificationKind.Success);
     }
 
     // =========================================================================
@@ -768,7 +768,7 @@ public class ManageProductsTests : TestContext
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageProducts_DeleteAria, product.Name)}']");
         await cut.InvokeAsync(() => deleteButton.ClickAsync(new MouseEventArgs()));
 
-        _snackbar.Received(1).Add(string.Format(Strings.Product_InUse, product.Name, 3), Severity.Warning);
+        _notifications.Received(1).Show(string.Format(Strings.Product_InUse, product.Name, 3), ShopNotificationKind.Warning);
     }
 
     // =========================================================================
@@ -812,7 +812,7 @@ public class ManageProductsTests : TestContext
         var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
-        _snackbar.Received(1).Add(string.Format(Strings.Product_BulkDeletePartial, 3, 2), Severity.Warning);
+        _notifications.Received(1).Show(string.Format(Strings.Product_BulkDeletePartial, 3, 2), ShopNotificationKind.Warning);
         cut.FindComponent<ShopBulkActionBar>().Instance.SelectedCount.Should().Be(2,
             "the referenced products stay selected so the staff member can act on them next (AC-16)");
     }
@@ -832,7 +832,7 @@ public class ManageProductsTests : TestContext
         var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
-        _snackbar.Received(1).Add(Strings.Product_BulkDeleteAllBlocked, Severity.Warning);
+        _notifications.Received(1).Show(Strings.Product_BulkDeleteAllBlocked, ShopNotificationKind.Warning);
     }
 
     [Fact]
@@ -869,7 +869,7 @@ public class ManageProductsTests : TestContext
         var chip = cut.FindComponent<MudChip<string>>();
         await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new MouseEventArgs()));
 
-        await _dialogService.DidNotReceive().ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>());
+        await _dialogService.DidNotReceive().ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(
             Arg.Is<SetProductStatusCommand>(c => c.ProductIds.Count == 1 && c.ProductIds[0] == items[0].Id && c.IsActive),
             Arg.Any<CancellationToken>());
@@ -889,7 +889,7 @@ public class ManageProductsTests : TestContext
         var chip = cut.FindComponent<MudChip<string>>();
         await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new MouseEventArgs()));
 
-        await _dialogService.Received(1).ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>());
+        await _dialogService.Received(1).ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(Arg.Is<SetProductStatusCommand>(c => !c.IsActive), Arg.Any<CancellationToken>());
     }
 
@@ -926,7 +926,7 @@ public class ManageProductsTests : TestContext
         var activateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkSetActive));
         await cut.InvokeAsync(() => activateButton.Instance.OnClick.InvokeAsync());
 
-        await _dialogService.DidNotReceive().ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>());
+        await _dialogService.DidNotReceive().ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(
             Arg.Is<SetProductStatusCommand>(c => c.ProductIds.Count == 2 && c.IsActive), Arg.Any<CancellationToken>());
     }
@@ -946,8 +946,8 @@ public class ManageProductsTests : TestContext
         var activateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkSetActive));
         await cut.InvokeAsync(() => activateButton.Instance.OnClick.InvokeAsync());
 
-        _snackbar.Received(1).Add(string.Format(Strings.ManageProducts_ActivatedSuccess, 1), Severity.Success);
-        _snackbar.Received(1).Add(string.Format(Strings.ManageProducts_ActivateSkipped, 1), Severity.Warning);
+        _notifications.Received(1).Show(string.Format(Strings.ManageProducts_ActivatedSuccess, 1), ShopNotificationKind.Success);
+        _notifications.Received(1).Show(string.Format(Strings.ManageProducts_ActivateSkipped, 1), ShopNotificationKind.Warning);
     }
 
     [Fact]
@@ -967,7 +967,7 @@ public class ManageProductsTests : TestContext
 
         await _mediator.Received(1).Send(
             Arg.Is<SetProductStatusCommand>(c => c.ProductIds.Count == 3 && !c.IsActive), Arg.Any<CancellationToken>());
-        _snackbar.Received(1).Add(string.Format(Strings.ManageProducts_DeactivatedSuccess, 3), Severity.Success);
+        _notifications.Received(1).Show(string.Format(Strings.ManageProducts_DeactivatedSuccess, 3), ShopNotificationKind.Success);
     }
 
     [Fact]

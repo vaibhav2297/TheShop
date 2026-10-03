@@ -1,217 +1,143 @@
-# Design — CSS, Inline Styles, SCSS
+# Design — CSS and SCSS
 
-> Implementation guide for Rules 26, 27, 28 from `SKILL.md`. Covers the priority order for styling, `CssBuilder` / `StyleBuilder` patterns, SCSS folder layout and naming, and when to fall back to inline `Style`. The rules themselves live in `SKILL.md`; this file does not restate them.
+Implementation guidance for project-owned styling. Use CSS-first SCSS, semantic custom properties, and the approved Figma component design. Styles require neither a UI framework nor a separate workflow gate.
 
----
+## Ownership
 
-## The four steps in the priority order (Rule 26)
+All authored application styles live under `src/TheShop.Web/Styles/`:
 
-When you need to alter the look or layout of a MudBlazor component, work down this list. Move to the next step **only when the current one cannot produce the result.**
-
-### 1. MudBlazor parameters
-
-Most styling lives on MudBlazor itself — `Variant`, `Color`, `Size`, `Dense`, `Outlined`, `Elevation`, `Spacing`, `Justify`, `Align`. This is the cleanest path and the most resilient to MudBlazor upgrades.
-
-```razor
-<MudPaper Elevation="2" Outlined="true" Class="pa-4">…</MudPaper>
+```text
+Styles/
+  TheShop.scss
+  abstracts/    # Sass helpers and compile-time constants; no emitted CSS
+  tokens/       # --shop-* colors, typography, spacing, and theme values
+  base/         # Document defaults, reset, typography, accessibility
+  components/   # Owned component appearance and states
+  layouts/      # Page and shell geometry, responsive layout
+  utilities/    # Small genuinely shared utility families
 ```
 
-### 2. MudBlazor auto-generated CSS classes
+Reuse existing partials where ownership matches. New partials use lowercase kebab-case with a leading underscore, such as `_product-card.scss`. `TheShop.scss` loads emitting modules in an intentional order. Each partial loads its own Sass dependencies; imports elsewhere do not establish a global namespace.
 
-If parameters can't express it, reach for MudBlazor's emitted utility classes:
+Static presentation belongs in SCSS even with one caller. `base/` contains document defaults, not product-card or button rules. During coexistence, scope reset changes carefully to avoid changing unconverted controls.
 
-- Colour families: `mud-theme-*`, `mud-{name}-text`, `mud-{name}-bg`, `mud-border-{name}`, `mud-icon-{name}` — see `design-theme.md` for the full family table.
-- Spacing / layout: `pa-*` (padding), `ma-*` (margin), `gap-*`, `d-flex`, `align-center`, `justify-space-between`, …
+Button-related ownership is split: `_icon.scss` owns standalone `.shop-icon` defaults; `_button.scss` owns the shared button foundation, color/variant treatments, text-button sizes, and `.shop-button-icon` adornments; `_icon-button.scss` owns icon-only geometry. Load them in that order in `TheShop.scss` to preserve icon sizing. Surface is a shared button color role, not an icon-only recipe. Product-card styles position cart/wishlist actions, but do not redefine shared button colors or padding. Use direct Figma-backed colors and explicit accessibility tokens in owned treatment classes, not product-level button-color aliases.
 
-```razor
-<MudStack Class="gap-2 align-center">…</MudStack>
-```
+Do not add Razor `<style>` blocks, `.razor.css` isolation files, or handwritten page CSS under `wwwroot/`. Never edit generated CSS. Existing vendor overrides and template CSS are transitional migration inputs, not templates for new styles.
 
-Use these before writing anything new. Don't reach for project SCSS just because a class might exist later.
+## Naming: component-prefixed kebab-case
 
-### 3. Project SCSS-generated class
-
-If MudBlazor parameters/utilities cannot match required design, use SCSS under `src/TheShop.Web/Styles/`.
-Reuse an existing class when suitable. Add page-owned layout selectors under `layouts/` or component selectors under `components/`
-for exact geometry, responsive behavior and state overrides, even with one caller. Namespace selectors beneath owning page/component.
-Use design-derived measurements; never approximate just to fit a utility. Theme tokens and typography utilities still apply.
-Generate utility families; ordinary layout/state selectors need no generation loop. Never add `<style>` blocks in Razor.
-
-```razor
-<MudText Typo="Typo.h4" Class="fs-22 fw-600">Off-spec heading</MudText>
-```
-
-### 4. Inline `Style` — last resort
-
-Only when:
-- The styling is genuinely one-off and won't be reused.
-- There is no foreseeable future reuse — single page, single block.
-- A class would be more overhead than benefit (e.g. `Style="max-width: 480px"` for a one-off container).
-
-Even here, build the style with `StyleBuilder` (below) — never string concatenation.
-
-```razor
-<MudPaper Style="@CardStyle">…</MudPaper>
-```
-
----
-
-## `CssBuilder` (Rule 27)
-
-When a component (or page) needs to conditionally compose multiple CSS classes, use MudBlazor's `CssBuilder`. Never concatenate class strings with `+`, `string.Format`, interpolation, or ternary expressions.
-
-```csharp
-// ✅ In *.razor.cs
-protected string Classname => new CssBuilder("mud-alert")
-    .AddClass("mud-dense", Dense)
-    .AddClass("mud-square", Square)
-    .AddClass(Class)             // forward consumer's Class — Rule 24
-    .Build();
-
-protected string SomeClassname => new CssBuilder("mud-toolbar-appbar")
-    .AddClass(SomeClass)
-    .Build();
-```
-
-```razor
-@* In *.razor *@
-<MudGrid Class="@Classname">
-    <SomeComponent Class="@SomeClassname" />
-</MudGrid>
-
-@* ❌ string concatenation *@
-<MudGrid Class="@($"mud-alert {(Dense ? "mud-dense" : "")} {Class}")">…</MudGrid>
-```
-
-`CssBuilder.AddClass(name, condition: bool)` only emits the class when the predicate is true — that's the entire point.
-
----
-
-## `StyleBuilder` (Rule 27)
-
-When inline styles are necessary (step 4), build them with `StyleBuilder` and expose the result as a property. Never concatenate style strings by hand.
-
-```csharp
-// ✅ In *.razor.cs
-private string Stylename => new StyleBuilder()
-    .AddStyle("margin-top", "4px")
-    .AddStyle("max-width", $"{_maxWidth}px", when: _maxWidth > 0)
-    .AddStyle(Style)             // forward consumer's Style — Rule 24
-    .Build();
-```
-
-```razor
-@* In *.razor *@
-<MudGrid Style="@Stylename">…</MudGrid>
-
-@* ❌ string concatenation *@
-<MudGrid Style="@($"margin-top: 4px; max-width: {_maxWidth}px;")">…</MudGrid>
-```
-
----
-
-## SCSS — location and structure (Rule 28)
-
-All SCSS lives under `src/TheShop.Web/Styles/`. There is **no other allowed location** for project stylesheets.
-
-```
-src/TheShop.Web/Styles/
-├── TheShop.scss               ← root entry — imports the partials below
-├── abstracts/                 ← tokens, theme variables, type/colour utilities
-│   ├── _colors.scss
-│   ├── _typography.scss
-│   └── _variables.scss
-├── components/                ← per-component-family styles
-│   ├── _button.scss
-│   ├── _field.scss
-│   └── _picker.scss
-├── layouts/                   ← page-shell styles
-│   └── _main.scss
-└── utilities/                 ← utility-class collections
-    ├── borders/
-    ├── flexbox/
-    └── spacing/
-```
-
-- `abstracts/` — design tokens, theme variables, shared SCSS variables, mixins. The `fs-*` / `fw-*` typography utilities live in `_typography.scss`.
-- `components/` — styles scoped to a component family (`_button.scss`, `_field.scss`). One file per family.
-- `layouts/` — page-shell styles (`_main.scss` for `MainLayout`).
-- `utilities/` — broad utility-class collections. Split into subfolders as a collection grows.
-
-### Naming
-
-- Partials start with an underscore and are lowercase: `_typography.scss`, `_button.scss`. **Never** `Typography.scss` or `typography.scss`.
-- Generated utility classes use short prefixes by concern: `fs-*` (font-size), `fw-*` (font-weight). Spacing/margin utilities come from MudBlazor (`pa-*`, `ma-*`) — don't duplicate them.
-
-### Generation discipline
-
-**Always** generate utility families from a `$list` + `@each` loop. **Never** hand-write each selector.
+Use single hyphens in class names. Do not introduce BEM `__` or `--` inside class names.
 
 ```scss
-// ✅ Good — one source of truth, generate the family
-$font-sizes: (10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 34, 48, 60, 96);
+.shop-button { }
+.shop-button-icon { }
+.shop-button-filled { }
+.shop-button-small { }
 
-@each $size in $font-sizes {
-    .fs-#{$size} {
-        font-size: #{$size}px !important;
+.shop-product-card { }
+.shop-product-card-image { }
+.shop-product-card-title { }
+```
+
+Combine base and variant classes. Prefer native state selectors such as `:hover`, `:focus-visible`, and `:disabled`. Avoid global names such as `.title`, `.primary`, and `.active`. Namespace layout and utility selectors with `shop-` too.
+
+The leading double hyphen in a CSS custom property is required syntax, not BEM:
+
+```scss
+.shop-button-filled {
+    color: var(--shop-color-primary-contrast);
+    background-color: var(--shop-color-primary);
+}
+```
+
+Token names in examples are illustrative: use the actual semantic token for that role, or add an intentional token in `tokens/`. Never silently reference an undefined custom property.
+
+## CSS tokens versus Sass values
+
+CSS custom properties own runtime design values: colors, typography, spacing, radii, shadows, and theme roles. Components consume semantic roles rather than copying palette values or binding to legacy `--mud-*` properties. Keep raw palette values in their token owner, not repeated through Razor and component partials.
+
+Sass variables own compile-time concerns such as breakpoints, mixin arguments, and utility-generation maps. They are not a second permanent copy of the runtime theme. Media-query breakpoints need compile-time values; ordinary `var()` substitution cannot be used as a media-query condition.
+
+## Modern Sass modules
+
+Use `@use` with explicit namespaces. Use `@forward` only to expose an intentional shared module API, not as another entry point that repeats emitted CSS. Do not add Sass `@import` or rely on global built-in functions.
+
+```scss
+@use 'sass:list';
+@use '../abstracts/breakpoints' as breakpoints;
+
+$image-ratio: (4, 5);
+
+.shop-editorial-image {
+    aspect-ratio: #{list.nth($image-ratio, 1)} / #{list.nth($image-ratio, 2)};
+}
+
+@media (min-width: breakpoints.$medium) {
+    .shop-product-catalogue {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+```
+
+The breakpoint module/member above demonstrate the pattern; use the project's actual names. Likewise, prefer `map.get()` over deprecated global `map-get()`.
+
+Generate repeated utility families from a map/list and `@each`, not copied rules per value. Do not build a general utility framework for hypothetical callers. Ordinary component/layout selectors need no generation loop.
+
+## Selectors and formatting
+
+- Four spaces, opening braces on the same line, one declaration per line, trailing semicolons, and a final newline.
+- Shallow component selectors. Nest states, pseudo-elements, or responsive rules when useful; do not mirror the DOM tree in SCSS.
+- Prefer classes. Avoid ID selectors, deep descendants, tag-qualified component selectors, and routine `!important`.
+- Consistent declaration grouping: layout/position, dimensions/spacing, borders/background, typography, interaction, then transitions.
+- Prefer logical properties such as `padding-inline` and `margin-block` when they express intent.
+- Scalable text/spacing units, `normal` line-height for Figma AUTO (unitless ratios for explicit heights), and no fixed-height text containers. `px` remains appropriate for thin borders and Figma's measured tracking.
+- Mobile-first responsive layout where practical. Choose Grid/Flexbox from layout needs, not a vendor wrapper API.
+- Preserve visible keyboard focus, usable targets, reduced-motion preferences, and text/state contrast. Validation cannot rely on color alone.
+- Animate named properties, not `transition: all`; do not add motion without a design or interaction purpose.
+
+```scss
+.shop-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:focus-visible {
+        outline: 2px solid var(--shop-color-focus-ring);
+        outline-offset: 2px;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
     }
 }
 
-// ❌ Bad — hand-writing every variant
-.fs-22 { font-size: 22px !important; }
-.fs-23 { font-size: 23px !important; }
-.fs-24 { font-size: 24px !important; }
+.shop-button-icon {
+    inline-size: 1em;
+    block-size: 1em;
+    flex-shrink: 0;
+}
 ```
 
-To add a new size or weight: **add the value to the list**, not a new selector.
+Place variant selectors beside the base selector, not behind deeply nested ancestors. CSS specificity, cascade order, and layers determine precedence; the order of names in the HTML `class` attribute does not.
 
-### When to write SCSS at all
+## Composition and dynamic styles
 
-Generate SCSS only if **all** of the following are true:
+Keep conditional composition in code-behind using `ShopCssClass.Join`:
 
-1. **MudBlazor doesn't already provide it.** Check emitted Mud classes (colour, spacing, flexbox, typography) before writing anything.
-2. **It has clear ownership.** Shared utility, component styling, or page layout/responsive/state rule. Single-use responsive rules belong in SCSS; simple one-off scalar values may use inline `Style`.
-3. **It fits an existing partial or warrants a new one.** Don't sprinkle one-off rules into `_button.scss` if they belong in `_field.scss`. New family of styles → new partial under the right folder.
-
-If a class already exists, **use it directly.** Don't duplicate.
-
-### When inline `Style` is right
-
-- Styling does not repeat anywhere else.
-- No realistic future reuse — a one-off layout tweak on a single page.
-- Producing a class would be more code than the inline value (e.g. `Style="max-width: 480px"` for one container).
-
-Even then, the styling lives on the call site as inline `Style` (via `StyleBuilder`) — not in a `<style>` block, not in a new CSS file.
-
----
-
-## Forbidden — what you must never do (Rule 28)
-
-```razor
-@* ❌ <style> block inside a .razor *@
-<style>
-    .product-page-header { font-size: 22px; }
-</style>
-
-@* ❌ a new CSS file just for one page *@
-@* wwwroot/css/product-page.css *@
-
-@* ❌ SCSS partial without leading underscore or with capital letters *@
-@* Styles/components/Button.scss *@
+```csharp
+private string ClassName => ShopCssClass.Join(
+    "shop-product-card",
+    Compact ? "shop-product-card-compact" : null,
+    Class);
 ```
 
----
+Forward classes and exposed styles to the documented root. Do not retain a vendor dependency for `CssBuilder`/`StyleBuilder` or build a replacement framework.
 
-## Common mistakes
+Inline styles are for genuinely dynamic values, not fixed one-off layout. Prefer constrained custom properties populated from validated numeric values, with culture-invariant formatting and fixed units. Do not interpolate untrusted CSS, resource text, URLs, or arbitrary server content. Static width limits, spacing, and typography stay in SCSS.
 
-| Mistake | Fix |
-|---|---|
-| Skipped step 1, went straight to a custom class | Verify no MudBlazor parameter, no MudBlazor utility class fits before generating SCSS |
-| Class composed via `string.Format` / interpolation / ternary | Use `CssBuilder.AddClass(name, condition)` |
-| Style composed via `string.Format` / interpolation | Use `StyleBuilder.AddStyle(prop, val, when)` |
-| Reusable component's builder chain omits `.AddClass(Class)` at the end | Add it — silently dropping consumer `Class` is a Rule 24 violation |
-| Hand-written `.fs-{n}` selector for a new size | Add the number to `$font-sizes`, let `@each` generate it |
-| New `_Button.scss` (PascalCase) | Rename to `_button.scss` |
-| `<style>` block in `Product.razor` to add a one-off rule | Inline `StyleBuilder` for simple scalar value; owned SCSS for layout/responsive/state selectors |
-| New `wwwroot/css/cart.css` for cart-page overrides | Use page-owned partial under `Styles/layouts/`; no hand-authored CSS in wwwroot |
-| Duplicated class in a new partial when one already exists | Reuse the existing class — search before generating |
+## Coexistence and verification
+
+Native controls must work without vendor CSS. Existing Mud consumers may temporarily retain their classes/overrides; remove each bridge with its final consumer rather than deleting all shared styling at once. Do not add new `mud-*` or `--mud-*` dependencies to native components.
+
+Check converted and unconverted screens after shared changes. Verify responsive geometry, focus/disabled/error states, overflow, and wrapping in the browser. Use Figma for measured appearance without sacrificing semantic behavior. Sass compilation proves syntax, not visual fidelity or accessibility.

@@ -1,5 +1,7 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using TheShop.Web.Common.Dialogs;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using TheShop.Application.Common.Filtering;
@@ -36,8 +38,8 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
     private const string StatusInactiveValue = "inactive";
 
     [Inject] private IMediator Mediator { get; set; } = default!;
-    [Inject] private IDialogService DialogService { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopDialogService DialogService { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
@@ -170,7 +172,7 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
         if (result.IsSuccess)
             return result.Value;
 
-        Snackbar.Add(Localizer[result.Error!], Severity.Error);
+        Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
         return PagedResult<CategoryListItemDto>.Empty(request);
     }
 
@@ -230,7 +232,7 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
             Strings.ManageCategories_DeactivateConfirmTitle,
             string.Format(Strings.ManageCategories_DeactivateConfirmBody, category.Name),
             Strings.ManageCategories_BulkDeactivate,
-            Color.Primary);
+            false);
 
         if (confirmed)
             await ApplyStatusChangeAsync([category.Id], false);
@@ -249,7 +251,7 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
             string.Format(Strings.ManageCategories_BulkDeactivateConfirmTitle, ids.Count),
             string.Format(Strings.ManageCategories_BulkDeactivateConfirmBody, ids.Count),
             Strings.ManageCategories_BulkDeactivate,
-            Color.Primary);
+            false);
 
         if (confirmed)
             await ApplyStatusChangeAsync(ids, false);
@@ -269,12 +271,12 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
                 var result = await Mediator.Send(new SetCategoryStatusCommand(ids, isActive));
                 if (!result.IsSuccess)
                 {
-                    Snackbar.Add(Localizer[result.Error!], Severity.Error);
+                    Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
                     return;
                 }
 
                 var messageKey = isActive ? Strings.ManageCategories_ActivatedSuccess : Strings.ManageCategories_DeactivatedSuccess;
-                Snackbar.Add(string.Format(messageKey, result.Value.ChangedCount), Severity.Success);
+                Notifications.Show(string.Format(messageKey, result.Value.ChangedCount), ShopNotificationKind.Success);
 
                 _selectedItems.Clear();
                 _blockedIds.Clear();
@@ -293,7 +295,7 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
             Strings.ManageCategories_DeleteConfirmTitle,
             string.Format(Strings.ManageCategories_DeleteConfirmBody, category.Name),
             Strings.ManageCategories_BulkDelete,
-            Color.Error);
+            true);
 
         if (confirmed)
             await ApplyDeleteAsync([category.Id]);
@@ -309,7 +311,7 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
             string.Format(Strings.ManageCategories_BulkDeleteConfirmTitle, ids.Count),
             string.Format(Strings.ManageCategories_BulkDeleteConfirmBody, ids.Count),
             Strings.ManageCategories_BulkDelete,
-            Color.Error);
+            true);
 
         if (confirmed)
             await ApplyDeleteAsync(ids);
@@ -326,7 +328,7 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
                 var result = await Mediator.Send(new DeleteCategoriesCommand(ids));
                 if (!result.IsSuccess)
                 {
-                    Snackbar.Add(Localizer[result.Error!], Severity.Error);
+                    Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
                     return;
                 }
 
@@ -355,14 +357,14 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
     {
         if (outcome.DeletedCount == 1)
         {
-            Snackbar.Add(Strings.ManageCategories_DeletedSuccess, Severity.Success);
+            Notifications.Show(Strings.ManageCategories_DeletedSuccess, ShopNotificationKind.Success);
             _selectedItems.Clear();
             return;
         }
 
         var blocked = outcome.Blocked[0];
         _blockedIds.Add(blocked.Id);
-        Snackbar.Add(string.Format(Strings.Category_InUse, blocked.Name, blocked.ProductCount), Severity.Warning);
+        Notifications.Show(string.Format(Strings.Category_InUse, blocked.Name, blocked.ProductCount), ShopNotificationKind.Warning);
     }
 
     /// <summary>
@@ -373,20 +375,20 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
     {
         if (outcome.Blocked.Count == 0)
         {
-            Snackbar.Add(string.Format(Strings.ManageCategories_BulkDeletedSuccess, outcome.DeletedCount), Severity.Success);
+            Notifications.Show(string.Format(Strings.ManageCategories_BulkDeletedSuccess, outcome.DeletedCount), ShopNotificationKind.Success);
             _selectedItems.Clear();
             return;
         }
 
         if (outcome.DeletedCount == 0 && outcome.Blocked.Count == requestedCount)
         {
-            Snackbar.Add(Strings.Category_BulkDeleteAllBlocked, Severity.Warning);
+            Notifications.Show(Strings.Category_BulkDeleteAllBlocked, ShopNotificationKind.Warning);
         }
         else
         {
-            Snackbar.Add(
+            Notifications.Show(
                 string.Format(Strings.Category_BulkDeletePartial, outcome.DeletedCount, outcome.Blocked.Count),
-                Severity.Warning);
+                ShopNotificationKind.Warning);
         }
 
         // The blocked categories are still present in _categories.Items (only the reload below
@@ -399,20 +401,8 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
         _selectedItems = _categories.Items.Where(c => blockedIds.Contains(c.Id)).ToHashSet();
     }
 
-    private async Task<bool> ConfirmAsync(string title, string body, string confirmLabel, Color confirmColor)
-    {
-        var parameters = new DialogParameters<ShopConfirmDialog>
-        {
-            { x => x.TitleText, title },
-            { x => x.BodyText, body },
-            { x => x.ConfirmLabel, confirmLabel },
-            { x => x.ConfirmColor, confirmColor },
-        };
-
-        var dialog = await DialogService.ShowAsync<ShopConfirmDialog>(title, parameters);
-        var result = await dialog.Result;
-        return result is { Canceled: false };
-    }
+    private Task<bool> ConfirmAsync(string title, string body, string confirmLabel, bool destructive) =>
+        DialogService.ConfirmAsync(new(title, body, confirmLabel, destructive));
 
     private static string StatusToValue(CategoryStatusFilter status) => status switch
     {

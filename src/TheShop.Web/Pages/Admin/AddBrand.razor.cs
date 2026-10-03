@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
@@ -29,7 +30,7 @@ public partial class AddBrand : ComponentBase
 
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
@@ -83,12 +84,12 @@ public partial class AddBrand : ComponentBase
 
             if (result.IsSuccess)
             {
-                Snackbar.Add(Strings.Brand_Created, Severity.Success);
+                Notifications.Show(Strings.Brand_Created, ShopNotificationKind.Success);
                 Nav.NavigateTo(Routes.Admin.ManageBrands);
             }
             else
             {
-                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Brand_CreateFailed)], Severity.Error);
+                Notifications.Show(Localizer[result.Error ?? nameof(Strings.Brand_CreateFailed)], ShopNotificationKind.Error);
             }
         });
     }

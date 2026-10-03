@@ -1,0 +1,28 @@
+:root {
+    // Application placement/cap; Figma Snackbar 2948:17575 owns the icon size.
+    --shop-notification-max-width: 24rem;
+    --shop-notification-icon-size: 18px;
+    --shop-layer-notification: 1500;
+    // Figma dialog chrome default; explicit shared width choices override it locally.
+    --shop-dialog-max-width: 500px;
+    --shop-radius-control: 0;
+    --shop-focus-width: 2px;
+    --shop-focus-offset: 3px;
+    --shop-color-focus-ring: var(--shop-color-text-primary);
+
+    // Interaction states are inferred; the supplied button set defines resting variants only.
+    --shop-color-action-hover: #333;
+    --shop-color-action-pressed: #000;
+    --shop-color-action-disabled: var(--shop-color-tertiary);
+    --shop-color-on-disabled: var(--shop-color-text-secondary);
+
+    // Filled interaction backgrounds preserve the existing darker hover/pressed treatments.
+    --shop-color-secondary-hover: #595959;
+    --shop-color-info-hover: #075ca8;
+    --shop-color-success-hover: #146c37;
+    --shop-color-warning-hover: #805400;
+    --shop-color-error-hover: #b42318;
+
+    // Application modal backdrop; opacity is not a named Figma paint style.
+    --shop-color-dialog-backdrop: rgb(0 0 0 / 50%);
+}

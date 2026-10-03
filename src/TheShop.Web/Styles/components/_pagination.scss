@@ -1,4 +1,4 @@
-﻿@import "../abstracts/_variables.scss";
+@use '../abstracts/variables';
 
 .mud-pagination {
 
@@ -18,7 +18,7 @@
     &-outlined {
         .mud-pagination-item-selected {
 
-            @each $color in $shop-palette-colors {
+            @each $color in variables.$shop-palette-colors {
                 .mud-button-outlined-#{$color} {
                     background-color: transparent;
                 }

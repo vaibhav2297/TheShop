@@ -1,0 +1,64 @@
+@use '../abstracts/text-style';
+
+// Figma Snackbar 2948:17575: one appearance for every notification kind.
+.shop-notification-host {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: var(--shop-space-4);
+    margin-inline: auto;
+    z-index: var(--shop-layer-notification);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--shop-space-2);
+    inline-size: min(var(--shop-notification-max-width), calc(100% - 2 * var(--shop-space-4)));
+    max-block-size: calc(100dvh - 2 * var(--shop-space-4));
+    overflow: auto;
+    pointer-events: none;
+}
+
+.shop-notification {
+    --shop-color-focus-ring: var(--shop-color-primary-contrast);
+
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    max-inline-size: 100%;
+    gap: var(--shop-space-6);
+    padding: var(--shop-space-4);
+    border: 0;
+    border-radius: var(--shop-radius-control);
+    background-color: var(--shop-color-primary);
+    color: var(--shop-color-primary-contrast);
+    overflow-wrap: anywhere;
+    pointer-events: auto;
+}
+
+.shop-notification-message {
+    flex: 1;
+    min-inline-size: 0;
+    margin: 0;
+    @include text-style.apply(subtitle-2);
+}
+
+// Notification-owned chrome, not a new shared button variant. Negative margins
+// preserve Figma's 18px footprint while the native button has a 24px hit target.
+.shop-notification-dismiss {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--shop-space-6);
+    block-size: var(--shop-space-6);
+    margin: calc((var(--shop-notification-icon-size) - var(--shop-space-6)) / 2);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.shop-notification-dismiss-icon {
+    inline-size: var(--shop-notification-icon-size);
+    block-size: var(--shop-notification-icon-size);
+}

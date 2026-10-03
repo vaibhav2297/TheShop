@@ -1,0 +1,81 @@
+@use '../abstracts/text-style';
+
+// Figma Text Field 170:136; label remains associated even for placeholder-led designs.
+.shop-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--shop-space-1);
+}
+
+.shop-field-label {
+    @include text-style.apply(caption);
+    // Accessible visible label: preserve the existing medium emphasis.
+    font-weight: var(--shop-typography-subtitle-2-font-weight);
+}
+
+.shop-field-control {
+    display: flex;
+    align-items: center;
+    gap: var(--shop-space-1);
+    min-block-size: 61px;
+    padding: 18.5px 14px;
+    background-color: var(--shop-color-tertiary-lighter);
+
+    &:focus-within {
+        box-shadow: inset 0 calc(-1 * var(--shop-focus-width)) var(--shop-color-primary);
+    }
+
+    &:has(.shop-field-input[aria-invalid='true']) {
+        box-shadow: inset 0 calc(-1 * var(--shop-focus-width)) var(--shop-color-error);
+    }
+}
+
+.shop-field-icon {
+    inline-size: 24px;
+    block-size: 24px;
+}
+
+.shop-field-input {
+    inline-size: 100%;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--shop-color-text-primary);
+    @include text-style.apply(body-1);
+
+    &::placeholder {
+        color: var(--shop-color-text-secondary);
+        opacity: 1;
+    }
+
+    &:disabled {
+        color: var(--shop-color-text-secondary);
+        cursor: not-allowed;
+    }
+
+    // The field chrome owns focus/error indication, never an inner text rectangle.
+    &:focus,
+    &[aria-invalid='true'] {
+        outline: none;
+    }
+}
+
+@media (forced-colors: active) {
+    // Forced colors suppress box shadows; retain focus on the whole control.
+    .shop-field-control:focus-within {
+        outline: var(--shop-focus-width) solid Highlight;
+        outline-offset: var(--shop-focus-offset);
+    }
+}
+
+.shop-field-error {
+    color: var(--shop-color-error);
+    @include text-style.apply(caption);
+
+    .validation-message {
+        color: inherit;
+    }
+}

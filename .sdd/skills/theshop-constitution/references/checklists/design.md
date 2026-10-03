@@ -1,88 +1,59 @@
 # Checklist — Design
 
-> Verification gate for Strings, Theme, Web, Components, and Styles rules from `SKILL.md`. Loaded by reviewer agents or when explicitly verifying UI code. Yes/no only — no rationale. If any answer is "no", **stop and fix it** before declaring the task complete.
+Verification checklist for the canonical constitution. Apply native requirements to new and converted surfaces. Record remaining legacy consumers during migration; do not remove their providers before replacements are verified.
 
----
+## Strings and boundaries
 
-## Strings (Rules 11, 12)
+- [ ] User-facing text, accessible labels, and errors use typed Strings accessors or runtime resource keys.
+- [ ] English-only resources remain intact; generated accessors are not edited.
+- [ ] Routes stay centralized and authorization/business contracts remain unchanged.
+- [ ] Pages dispatch through Application; common controls do not fetch feature data.
 
-- [ ] All user-facing text comes from `Strings.resx`? No hardcoded English in any `.razor` file?
-- [ ] Static keys accessed via `@Strings.{Key}` directly — never `@Localizer["{Key}"]`?
-- [ ] `@Localizer[...]` is used **only** for runtime keys (e.g. `@Localizer[result.Error]`)?
-- [ ] Resource keys follow the `{Context}_{Purpose}` naming convention?
-- [ ] Resource keys are valid C# identifiers (no hyphens, no spaces, no leading digits)?
-- [ ] Only `.resx` files edited for new strings — `Strings.Designer.cs` left untouched (it auto-generates on build)?
-- [ ] Application layer returns resource keys via `nameof(Strings.{Key})` — never magic-string literals?
+## Theme and styling
 
-## Theme — Shop prefix (Rule 13)
+- [ ] Visual values belong to Styles/tokens and resolve through semantic --shop-* custom properties.
+- [ ] Temporary C# theme ownership is limited to existing Mud consumers and tracked for removal.
+- [ ] Project classes use component-prefixed kebab-case, with no BEM double underscores or double hyphens.
+- [ ] Static styles stay in the correct centralized SCSS partial; no Razor style blocks or new CSS isolation.
+- [ ] Sass modules use @use, local namespaces, and module-qualified built-ins.
+- [ ] Selectors remain shallow; no routine !important or global resets that break unconverted controls.
+- [ ] Typography uses semantic HTML; visual size does not dictate heading level.
+- [ ] Icons use trusted ShopIcons fragments, not user HTML or external SVG strings.
+- [ ] Conditional classes use the small project helper; class order is not claimed to override CSS specificity.
+- [ ] Shared utility families are generated from maps/lists only when actually needed.
 
-- [ ] Every theme class uses the `Shop` prefix (`ShopColors`, `ShopIcons`, `ShopTypography`, `ShopTheme`)?
-- [ ] Theme classes live under `src/TheShop.Web/Theme/`?
-- [ ] Token registries are `static` classes? `ShopTheme` is an instance class?
+## Components and forms
 
-## Theme — Colours (Rule 15)
+- [ ] Extractions have repeated behavior or established design-consistency responsibility.
+- [ ] ComponentBase or ShopComponentBase owns presentation; validated inputs use built-in controls or InputBase.
+- [ ] Class, Style, and unmatched attributes reach the documented element.
+- [ ] Enforced disabled/type/accessibility attributes cannot be negated by attribute splatting.
+- [ ] Buttons default to type=button; submit buttons are explicit; navigation uses anchors.
+- [ ] Native controls retain keyboard activation, visible focus, disabled, hover, and pressed states.
+- [ ] Focus remains visible in forced colors; reduced-motion preferences are respected.
+- [ ] Inputs have associated labels; placeholders are supplementary.
+- [ ] Hints/errors are associated; aria-invalid and validation messages agree.
+- [ ] EditContext notifications, parsing, validation, and binding timing match the required behavior.
+- [ ] Submit paths await validation and guard duplicate work; failed forms do not dispatch commands.
+- [ ] Dialog focus, dismissal, cancellation, and completion are verified where affected.
 
-- [ ] Step 1 first: `Color="Color.{Enum}"` parameter used where available?
-- [ ] Step 2 when needed: the **most specific** MudBlazor auto-generated class used (e.g. `mud-error-text` for text only, not `mud-theme-error`)?
-- [ ] No hardcoded hex values anywhere in `.razor` files?
-- [ ] If neither enum nor Mud class could express the colour, was the user asked before any alternative was used?
+## Lifecycle and loading
 
-## Theme — Icons (Rule 19)
+- [ ] Code-behind and centralized routes remain intact.
+- [ ] BusyState/BusyKeys/BusyFor remain the work-state source; no page-local _isBusy.
+- [ ] Loading indicators are scoped through BusyFor or ShopLoadingOverlay.
+- [ ] Events, JS references, cancellation registrations, and subscriptions are disposed.
+- [ ] Image geometry is reserved before loading; failures keep meaningful alt/placeholder semantics.
+- [ ] Image presets and mobile artwork rules survive source changes and failure recovery.
 
-- [ ] All icons come from `ShopIcons`?
-- [ ] No `Icons.Material.*` references anywhere?
-- [ ] Icon constants use **semantic** names (`Cart`) — not visual names (`ShoppingBag`)?
+## Verification
 
-## Theme — Typography (Rules 16, 18)
+- [ ] Behavioral tests target native controls and preserved outcomes, not removed Mud internals.
+- [ ] Converted controls render correctly without vendor CSS.
+- [ ] Desktop/mobile, zoom, long content, keyboard focus, and validation states are checked.
+- [ ] Supplied Figma nodes and screenshots were inspected; browser results are compared with those references.
+- [ ] Inferred states and accessibility deviations are recorded, not claimed as exact Figma parity.
+- [ ] Existing and converted consumers work during coexistence.
+- [ ] Unavailable checks are reported honestly, not treated as passed.
 
-- [ ] All text uses `<MudText Typo="...">`? No `<span>`, `<p>`, `<h1>`–`<h6>` for content?
-- [ ] No inline `font-size`, `font-weight`, or `line-height` styles?
-- [ ] Off-spec sizes/weights composed with `fs-*` / `fw-*` utility classes from `_typography.scss`?
-- [ ] New sizes/weights added to `$font-sizes` / `$font-weights` lists — not hand-written `.fs-{n}` selectors?
-- [ ] Need a structural typography variant (font family, line-height)? User was asked first?
-
-## Components — extraction and forwarding (Rules 14, 17, 23, 24, 25)
-
-- [ ] Did you decide to extract vs inline correctly? The new reusable component satisfies an *extract* trigger (repeats today, design-consistency-critical, clearly nameable single responsibility) AND no *avoid* signal (single use, future-proofing, many flag parameters, only logic repeats, tiny markup)?
-- [ ] Only MudBlazor components used? No custom buttons, inputs, or raw HTML primitives?
-- [ ] If MudBlazor cannot meet the requirement, was the user asked before introducing an alternative (Rule 14)?
-- [ ] Every reusable component inherits from `MudBlazor.MudComponentBase` (directly or transitively)?
-- [ ] Every reusable component forwards `Class` and `Style` to its root — Pattern A (direct passthrough) or Pattern B (builder chain ending with `.AddClass(Class)` / `.AddStyle(Style)`)?
-- [ ] All interactive states handled (hover, focus, disabled, loading where applicable)?
-- [ ] Component variants follow MudBlazor patterns (`Variant.Filled` / `Variant.Outlined` / `Variant.Text`; sizes; colours)?
-- [ ] `MudTextField` uses `Placeholder` — never `Label`? If a visible label was needed, was a sibling `<MudText Typo="Typo.caption">` used instead?
-
-## Styles — CSS / inline / SCSS (Rules 26, 27, 28)
-
-- [ ] Styling landed on the lowest step of the priority order it could? (1: Mud parameters → 2: Mud auto-generated classes → 3: project SCSS class → 4: inline `Style`)
-- [ ] Conditional classes composed with `CssBuilder` — never string concatenation / interpolation / ternary?
-- [ ] Inline styles composed with `StyleBuilder` — never string concatenation / interpolation?
-- [ ] No `<style>` blocks inside any `.razor` file?
-- [ ] No new page-scoped `*.css` files in `wwwroot/`?
-- [ ] SCSS lives under `src/TheShop.Web/Styles/` in the right folder (`abstracts/`, `components/`, `layouts/`, `utilities/`)?
-- [ ] Partial filenames start with `_` and are lowercase (`_field.scss`, not `Field.scss`)?
-- [ ] New utility families generated via `$list` + `@each` loop — not hand-written selectors?
-- [ ] Existing SCSS class reused before generating a new one?
-- [ ] New class has clear page/component/shared ownership? Responsive/state selectors use SCSS even with one caller; simple scalar values may use inline `Style`?
-- [ ] Design measurements remain exact when available utilities cannot express them?
-- [ ] When Figma URL was supplied: planned browser captures inspected against reference images, with current visual gate passing? Without Figma, this check is not applicable.
-
-## Web — pages, routes, busy state (Rules 20, 21, 22)
-
-- [ ] Page has a sibling `.razor.cs` partial class for any `@code` logic beyond ~5 lines?
-- [ ] Markup file has no `@code` block (only directives + render tree)?
-- [ ] `[Route(Routes.X)]` lives on the code-behind partial — not `@page "/..."` in markup?
-- [ ] No hardcoded route strings — every `Href`, `NavigateTo`, redirect uses `Routes.X`?
-- [ ] No `_isBusy` field anywhere — busy state goes through `await BusyState.RunAsync(BusyKeys.X, ...)`?
-- [ ] Spinner is inside `<BusyFor Key="@BusyKeys.X" Context="busy">` or `<ShopLoadingOverlay />` — never hand-rolled `MudProgressCircular`?
-- [ ] `BusyKeys` constants used at every call site — no magic strings like `"sign-in"`?
-- [ ] Feature-specific `@using` directives live in the `.razor` file — not in `_Imports.razor`?
-
-## Imagery
-
-- [ ] WebP format used for raster images?
-- [ ] `width`, `height`, and `loading="lazy"` attributes set?
-- [ ] Alt text comes from resources (`@string.Format(Strings.X, ...)`) — never hardcoded?
-- [ ] `MudImage` used where appropriate?
-
-For architecture / tests / documentation verification, run `checklists/code-generation.md`.
+Use code-generation.md for architecture, tests, and public API documentation checks.

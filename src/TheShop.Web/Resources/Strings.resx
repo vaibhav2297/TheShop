@@ -1714,4 +1714,13 @@
   <data name="Product_ActivateNotPublishable" xml:space="preserve">
     <value>{0} product(s) were skipped because they are missing a price.</value>
   </data>
+  <data name="VariantImage_ImageLabel" xml:space="preserve">
+    <value>Image {0} for {1}</value>
+  </data>
+  <data name="Notification_RegionLabel" xml:space="preserve"><value>Notifications</value></data>
+  <data name="Notification_Dismiss" xml:space="preserve"><value>Dismiss notification</value></data>
+  <data name="Notification_Info" xml:space="preserve"><value>Information</value></data>
+  <data name="Notification_Success" xml:space="preserve"><value>Success</value></data>
+  <data name="Notification_Warning" xml:space="preserve"><value>Warning</value></data>
+  <data name="Notification_Error" xml:space="preserve"><value>Error</value></data>
 </root>

@@ -1,110 +1,59 @@
-# Example — Web page
+# Example — Native Web page
 
-Canonical Blazor page split into `.razor` (markup) + `.razor.cs` (logic). Shows the **dispatch via IMediator → handle Result → update state + toast** pattern enforced by Rules 4, 10, 11, 16, 19, 20, 21, 22.
+Use the existing `src/TheShop.Web/Pages/Auth/SignIn.razor`, `SignIn.razor.cs`, and `SignInFormModel.cs` as the current worked example. Do not invent a product-details route or cart implementation from historical sample code.
 
-### `.razor`
+## Markup contract
+
+The page uses semantic `section`, `header`, `h1`, `p`, and `nav` elements. Its sign-up link targets `Routes.Auth.SignUp`; the native button submits an `EditForm`. All labels, instructions, and status text come from `Strings`.
+
+The following excerpt uses the actual page's members and controls; it is not a standalone component:
 
 ```razor
-@* Pages/Products/ProductDetail.razor *@
-@using TheShop.Web.Resources
-@using TheShop.Web.Components.Common
-
-<PageTitle>@Strings.ProductDetail_PageTitle</PageTitle>
-
-@if (Product is null)
-{
-    <ShopLoadingOverlay />
-}
-else
-{
-    <MudCard>
-        <MudText Typo="Typo.h4">@Product.Name</MudText>
-        <MudText Typo="Typo.body1">@Product.Price.Format()</MudText>
-
-        <BusyFor Key="@BusyKeys.Cart.AddItem" Context="busy">
-            <MudButton OnClick="@AddToCartAsync"
-                       Color="Color.Primary"
-                       Variant="Variant.Filled"
-                       StartIcon="@ShopIcons.Cart"
-                       Disabled="@busy">
-                @if (busy)
-                {
-                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-                }
-                @Strings.AddToCart
-            </MudButton>
-        </BusyFor>
-    </MudCard>
-}
+<EditForm EditContext="@_editContext" OnSubmit="OnSendCodeAsync" novalidate>
+    <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
+        <label class="shop-field-label" for="signin-email">@Strings.Email_Label</label>
+        <ShopTextInput id="signin-email"
+                       type="email"
+                       name="email"
+                       class="shop-field-input"
+                       @bind-Value="_model.Email"
+                       autocomplete="email"
+                       required
+                       disabled="@busy"
+                       aria-describedby="signin-error" />
+        <div id="signin-error" class="shop-field-error" aria-live="polite">
+            <ValidationMessage For="@(() => _model.Email)" />
+        </div>
+        <ShopButton Type="submit" Disabled="@(!CanSubmit)" Loading="@busy">
+            @Strings.Auth_Login_Submit
+        </ShopButton>
+    </BusyFor>
+</EditForm>
 ```
 
-### `.razor.cs`
+The full page also supplies field instructions, a decorative icon, and its loading indicator. Copy the complete relevant contract, not only this shortened excerpt.
 
-```csharp
-// Pages/Products/ProductDetail.razor.cs
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
-using MediatR;
-using MudBlazor;
-using TheShop.Application.Features.Cart.Commands;
-using TheShop.Application.Features.Products.Queries;
-using TheShop.Application.Features.Products.DTOs;
-using TheShop.Web.Common;
-using TheShop.Web.Resources;
-using TheShop.Web.State;
-using TheShop.Web.Theme;
+`ShopTextInput` derives from `InputBase<string?>` and updates on `oninput`. This preserves the existing immediate email-validation behavior while retaining `EditContext`, field notifications, and parsing contracts. Ordinary fields without this requirement can use built-in Blazor inputs directly.
 
-namespace TheShop.Web.Pages.Products;
+## Code-behind contract
 
-[Route(Routes.Products.Detail)]
-public partial class ProductDetail : ComponentBase
-{
-    [Inject] private IMediator Mediator { get; set; } = default!;
-    [Inject] private CartState Cart { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
-    [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
-    [Inject] private BusyState BusyState { get; set; } = default!;
+Read `SignIn.razor.cs` for the complete implementation:
 
-    [Parameter] public string Slug { get; set; } = "";
+- `[Route(Routes.Auth.SignIn)]` declares the route; markup has no literal `@page` path.
+- `OnInitialized` creates the form's `EditContext` and validation-message store, and subscribes to field changes.
+- `ValidateEmail` publishes resource-backed field errors. `OnSendCodeAsync` guards duplicate busy submissions and validates before dispatch.
+- The handler captures the trimmed email, calls `BusyState.RunAsync(BusyKeys.Auth.SignIn, ...)`, and sends `RequestSignInOtpCommand` through `IMediator`.
+- Success navigates using `Routes.Auth.SignInVerifyWith(email, ReturnUrl)`. Runtime error keys use `Localizer`; static text uses typed `Strings` accessors.
+- `Dispose` removes the field-change subscription.
 
-    protected ProductDto? Product { get; private set; }
-    private int _quantity = 1;
+Do not introduce a second `_isBusy` state or call repositories from the page. Keep Application behavior and existing result/error contracts unchanged during markup migration.
 
-    protected override async Task OnInitializedAsync()
-    {
-        var result = await Mediator.Send(new GetProductBySlugQuery(Slug));
-        if (result.IsSuccess) Product = result.Value;
-    }
+## Transitional notification bridge
 
-    private async Task AddToCartAsync()
-    {
-        if (Product is null) return;
+The current SignIn implementation still injects `ISnackbar`, and its active legacy layout supplies the snackbar provider. This is an explicit temporary bridge until the project-owned notification service/host is implemented and verified. It is not the final native architecture and must not become a reason to retain MudBlazor after the last consumer migrates. The native form itself must not depend on vendor CSS or form controls.
 
-        await BusyState.RunAsync(BusyKeys.Cart.AddItem, async () =>
-        {
-            var result = await Mediator.Send(new AddToCartCommand(Product.Id, _quantity));
+## Style and verification references
 
-            if (result.IsSuccess)
-            {
-                Cart.UpdateFromDto(result.Value);
-                Snackbar.Add(Strings.AddedToCart, Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add(Localizer[result.Error], Severity.Error);
-            }
-        });
-    }
-}
-```
+Page geometry belongs in `Styles/layouts/_auth.scss`; shared fields, buttons, typography, and tokens remain in their respective owners. Classes use single-hyphen `shop-*` names, and CSS variables use the mandatory `--shop-*` prefix. Static styles do not belong in Razor.
 
-Highlights:
-- Route lives on the code-behind via `[Route(Routes.Products.Detail)]` — no `@page "/..."` in markup (Rule 20).
-- All text comes from `Strings.{Key}` (Rule 11). The runtime error key from `result.Error` uses `Localizer[...]` — the only legitimate indexer use.
-- Icon comes from `ShopIcons.Cart` (Rule 19).
-- Page dispatches via `Mediator.Send` only — never injects a repository (Rule 4).
-- Markup uses `<MudText Typo="...">` for content (Rule 16). No `<p>`, `<h1>`, `<span>`.
-- Busy state goes through `BusyState.RunAsync(BusyKeys.Cart.AddItem, ...)` and the UI surfaces it via `<BusyFor>` (Rule 22). No `_isBusy` field.
-- `@code` block in the `.razor` is absent — all logic lives in `.razor.cs` (Rule 20).
-- Constructor injection via `[Inject]` properties (Blazor's convention for pages); the primary-constructor pattern from `architecture-core.md` applies to plain classes — pages use `[Inject]` because Blazor's lifecycle needs property injection.
-- Colour via `Color.Primary` enum, not a class or hex (Rule 15).
+`tests/TheShop.Web.Tests/Pages/Auth/SignInTests.cs` exercises native input/submission, validation, trimming, return URLs, busy guards, and recovery. Browser verification also checks typing without blur, keyboard navigation, responsive layout, and visible focus; its input-only journeys do not submit an OTP request. Tests must not set private validity fields to bypass the actual form.

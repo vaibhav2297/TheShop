@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
@@ -21,7 +22,7 @@ public partial class SignUpVerify : ComponentBase, IDisposable
 {
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private PendingSignUpState PendingSignUp { get; set; } = default!;
@@ -65,7 +66,7 @@ public partial class SignUpVerify : ComponentBase, IDisposable
             if (result.IsSuccess)
             {
                 PendingSignUp.Clear();
-                Snackbar.Add(Strings.Auth_SignedIn, Severity.Success);
+                Notifications.Show(Strings.Auth_SignedIn, ShopNotificationKind.Success);
                 Nav.NavigateTo(Routes.Home, forceLoad: false);
             }
             else
@@ -75,13 +76,13 @@ public partial class SignUpVerify : ComponentBase, IDisposable
                 // Too many attempts: redirect back to sign-up start
                 if (key == nameof(Strings.Auth_TooManyAttempts))
                 {
-                    Snackbar.Add(Localizer[key], Severity.Error);
+                    Notifications.Show(Localizer[key], ShopNotificationKind.Error);
                     PendingSignUp.Clear();
                     Nav.NavigateTo(Routes.Auth.SignUp, replace: true);
                     return;
                 }
 
-                Snackbar.Add(Localizer[key], Severity.Error);
+                Notifications.Show(Localizer[key], ShopNotificationKind.Error);
                 _otp = string.Empty;
                 await InvokeAsync(StateHasChanged);
             }
@@ -99,12 +100,12 @@ public partial class SignUpVerify : ComponentBase, IDisposable
 
             if (result.IsSuccess)
             {
-                Snackbar.Add(Strings.Auth_CodeSent, Severity.Success);
+                Notifications.Show(Strings.Auth_CodeSent, ShopNotificationKind.Success);
                 StartCooldown(result.Value.ResendCooldownSeconds);
             }
             else
             {
-                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], Severity.Error);
+                Notifications.Show(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], ShopNotificationKind.Error);
             }
         });
     }

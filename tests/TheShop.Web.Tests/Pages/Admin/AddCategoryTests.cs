@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
 using Bunit.TestDoubles;
@@ -34,7 +35,7 @@ namespace TheShop.Web.Tests.Pages.Admin;
 public class AddCategoryTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public AddCategoryTests()
@@ -44,7 +45,7 @@ public class AddCategoryTests : TestContext
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddMudServices();
         Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
@@ -146,7 +147,7 @@ public class AddCategoryTests : TestContext
 
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Strings.Category_Created, Severity.Success);
+        _notifications.Received(1).Show(Strings.Category_Created, ShopNotificationKind.Success);
         navManager.Uri.Should().EndWith(Routes.Admin.ManageCategories);
     }
 
@@ -240,7 +241,7 @@ public class AddCategoryTests : TestContext
 
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageCategories);
     }
 
@@ -279,7 +280,7 @@ public class AddCategoryTests : TestContext
 
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageCategories);
     }
 

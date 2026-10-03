@@ -1,11 +1,11 @@
-using System.Reflection;
+using TheShop.Web.Common.Notifications;
 using Bunit;
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Auth.Commands.RequestSignInOtp;
@@ -25,7 +25,7 @@ namespace TheShop.Web.Tests.Pages.Auth;
 public class SignInTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public SignInTests()
@@ -35,11 +35,8 @@ public class SignInTests : TestContext
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton<BusyState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
-        Services.AddSingleton(Substitute.For<TheShop.Web.Theme.ShopTheme>());
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
 
         // Localize any error key to itself so assertions stay key-based.
         _localizer[Arg.Any<string>()].Returns(call =>
@@ -61,18 +58,14 @@ public class SignInTests : TestContext
                  .Returns(Result.Ok(new OtpRequestedDto("user@example.com", 60)));
 
         var cut = Render<SignIn>();
-        var navManager = Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>();
+        var navManager = Services.GetRequiredService<NavigationManager>();
 
-        // MudForm has a validation delay that cannot be driven in bUnit without a real timer.
-        // Set the private backing fields directly so the button is enabled when clicked.
-        SetSignInState(cut, email: "user@example.com", isFormValid: true);
+        cut.Find("input[type='email']").Input("user@example.com");
+        await cut.Find("form").SubmitAsync(EventArgs.Empty);
 
-        var button = cut.Find("button[type='button']");
-        await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
-
-        _snackbar.Received().Add(
+        _notifications.Received().Show(
             Arg.Is<string>(s => s == Strings.Auth_CodeSent),
-            Severity.Success);
+            ShopNotificationKind.Success);
         navManager.Uri.Should().Contain(Routes.Auth.SignInVerify);
     }
 
@@ -89,24 +82,128 @@ public class SignInTests : TestContext
 
         var cut = Render<SignIn>();
 
-        SetSignInState(cut, email: "ghost@example.com", isFormValid: true);
+        cut.Find("input[type='email']").Input("ghost@example.com");
+        await cut.Find("form").SubmitAsync(EventArgs.Empty);
 
-        var button = cut.Find("button[type='button']");
-        await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
-
-        _snackbar.Received().Add(
+        _notifications.Received().Show(
             Arg.Any<string>(),
-            Severity.Error);
+            ShopNotificationKind.Error);
     }
 
-    private static void SetSignInState(IRenderedComponent<SignIn> cut, string email, bool isFormValid)
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("not-an-email")]
+    [Trait("Feature", "authentication")]
+    public async Task Submit_WithMissingOrInvalidEmail_ShowsValidationWithoutSendingACommand(string email)
     {
-        var type = typeof(SignIn);
-        type.GetField("_email", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .SetValue(cut.Instance, email);
-        type.GetField("_isFormValid", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .SetValue(cut.Instance, isFormValid);
-        cut.Render();
+        var cut = Render<SignIn>();
+        cut.Find("input[type='email']").Input(email);
+
+        cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeTrue();
+        await cut.Find("form").SubmitAsync(EventArgs.Empty);
+
+        await _mediator.DidNotReceive().Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
+        var error = string.IsNullOrWhiteSpace(email) ? Strings.Email_Required : Strings.Email_Invalid;
+        cut.Find("#signin-error").TextContent.Should().Contain(error);
+        cut.Find("input[type='email']").GetAttribute("aria-invalid").Should().Be("true");
+        cut.Find("input[type='email']").GetAttribute("value").Should().Be(email);
+    }
+
+    [Fact]
+    [Trait("Feature", "authentication")]
+    public async Task Submit_WithSurroundingEmailWhitespace_SendsAndNavigatesWithTrimmedEmail()
+    {
+        _mediator.Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Ok(new OtpRequestedDto("user@example.com", 60)));
+        var cut = Render<SignIn>();
+
+        cut.Find("input[type='email']").Input("  user@example.com  ");
+        await cut.Find("form").SubmitAsync(EventArgs.Empty);
+
+        await _mediator.Received(1).Send(
+            Arg.Is<RequestSignInOtpCommand>(command => command.Email == "user@example.com"),
+            Arg.Any<CancellationToken>());
+        var nav = Services.GetRequiredService<NavigationManager>();
+        nav.Uri.Should().Be(nav.ToAbsoluteUri(Routes.Auth.SignInVerifyWith("user@example.com")).ToString());
+    }
+
+    [Fact]
+    [Trait("Feature", "authentication")]
+    public async Task Submit_WithAReturnUrl_ForwardsItToVerification()
+    {
+        _mediator.Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Ok(new OtpRequestedDto("user@example.com", 60)));
+        var nav = Services.GetRequiredService<NavigationManager>();
+        const string returnUrl = "/products?sort=price&direction=asc";
+        nav.NavigateTo(Routes.Auth.SignInWithReturn(returnUrl));
+        var cut = Render<SignIn>();
+
+        cut.Find("input[type='email']").Input("user@example.com");
+        await cut.Find("form").SubmitAsync(EventArgs.Empty);
+
+        nav.Uri.Should().Be(nav.ToAbsoluteUri(Routes.Auth.SignInVerifyWith("user@example.com", returnUrl)).ToString());
+    }
+
+    [Fact]
+    [Trait("Feature", "authentication")]
+    public async Task Submit_WhileARequestIsPending_DisablesControlsAndIgnoresDuplicateSubmissions()
+    {
+        var pending = new TaskCompletionSource<Result<OtpRequestedDto>>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _mediator.Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>()).Returns(pending.Task);
+        var cut = Render<SignIn>();
+        cut.Find("input[type='email']").Input("user@example.com");
+
+        var submission = cut.Find("form").SubmitAsync(EventArgs.Empty);
+        try
+        {
+            cut.WaitForAssertion(() =>
+            {
+                cut.Find("input[type='email']").HasAttribute("disabled").Should().BeTrue();
+                cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeTrue();
+                cut.Find("button[type='submit']").GetAttribute("aria-busy").Should().Be("true");
+                cut.Find(".shop-auth-actions [role='status']").ClassList.Should().Contain("shop-visually-hidden");
+                cut.Find(".shop-auth-actions [role='status']").TextContent.Should().Be(Strings.Loading);
+                cut.Find("button[type='submit'] .shop-spinner").GetAttribute("aria-hidden").Should().Be("true");
+            });
+
+            await cut.Find("form").SubmitAsync(EventArgs.Empty);
+            _ = _mediator.Received(1).Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            pending.TrySetResult(Result.Fail<OtpRequestedDto>(nameof(Strings.Auth_AccountNotFound)));
+            await submission;
+        }
+
+        cut.WaitForAssertion(() =>
+        {
+            cut.Find("input[type='email']").HasAttribute("disabled").Should().BeFalse();
+            cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeFalse();
+            cut.Find(".shop-auth-actions [role='status']").TextContent.Should().BeEmpty();
+        });
+        Services.GetRequiredService<BusyState>().IsBusy(BusyKeys.Auth.SignIn).Should().BeFalse();
+    }
+
+    [Fact]
+    [Trait("Feature", "authentication")]
+    public async Task Input_AfterValidationFailure_ClearsTheErrorAndAllowsSubmissionImmediately()
+    {
+        _mediator.Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Ok(new OtpRequestedDto("user@example.com", 60)));
+        var cut = Render<SignIn>();
+        cut.Find("input[type='email']").Input("invalid");
+        await cut.Find("form").SubmitAsync(EventArgs.Empty);
+        cut.Find("#signin-error").TextContent.Should().Contain(Strings.Email_Invalid);
+
+        cut.Find("input[type='email']").Input("user@example.com");
+
+        cut.Find("#signin-error").TextContent.Should().BeNullOrWhiteSpace();
+        // InputBase removes aria-invalid after recovery; omission means the field is not invalid.
+        cut.Find("input[type='email']").GetAttribute("aria-invalid").Should().NotBe("true");
+        cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeFalse();
+        await cut.Find("form").SubmitAsync(EventArgs.Empty);
+        await _mediator.Received(1).Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
     }
 
     // =========================================================================
@@ -118,7 +215,16 @@ public class SignInTests : TestContext
     public void Render_Always_ContainsEmailInput()
     {
         var cut = Render<SignIn>();
-        cut.Find("input[type='email']").Should().NotBeNull();
+        var input = cut.Find("input[type='email']");
+        input.Should().NotBeNull();
+        cut.Find($"label[for='{input.Id}']").TextContent.Should().Be(Strings.Email_Label);
+        input.GetAttribute("aria-describedby")!.Split(' ').Should().Contain("signin-error");
+        input.GetAttribute("autocomplete").Should().Be("email");
+        input.HasAttribute("required").Should().BeTrue();
+        // Valid InputBase controls may omit aria-invalid instead of rendering an explicit false.
+        input.GetAttribute("aria-invalid").Should().NotBe("true");
+        cut.Find("#signin-error").GetAttribute("aria-live").Should().Be("polite");
+        cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeTrue();
     }
 
     [Fact]

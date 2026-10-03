@@ -1,3 +1,7 @@
+@use 'sass:list';
+@use 'sass:map';
+@use '../abstracts/text-style';
+
 // Flatten contained MudButton at rest. MudBlazor's own :hover rule
 // re-applies elevation via higher specificity, so no explicit hover
 // declaration is needed here.
@@ -7,4 +11,215 @@
 
 .mud-button-outlined {
     border: 1px solid var(--mud-palette-lines-inputs);
+}
+
+// Figma 157:24. Legacy overrides above remain until their last consumer is removed.
+.shop-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--shop-space-3);
+    box-sizing: border-box;
+    max-inline-size: 100%;
+    margin: 0;
+    padding: var(--shop-button-padding-block) var(--shop-button-padding-inline);
+    border: 0;
+    border-radius: var(--shop-radius-control);
+    background: transparent;
+    color: var(--shop-color-text-primary);
+    @include text-style.apply(button);
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:disabled {
+        color: var(--shop-color-on-disabled);
+        cursor: not-allowed;
+    }
+}
+
+.shop-button-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: inherit;
+    min-inline-size: 0;
+}
+
+.shop-button-loading .shop-button-content {
+    // Opacity preserves both intrinsic geometry and the accessible button name.
+    opacity: 0;
+}
+
+.shop-button .shop-button-spinner {
+    position: absolute;
+    inset: 0;
+    inline-size: var(--shop-button-icon-size);
+    block-size: var(--shop-button-icon-size);
+    margin: auto;
+    pointer-events: none;
+}
+
+$button-sizes: (
+    small: (8px, 10px, 18px),
+    medium: (10px, 16px, 20px),
+    large: (12px, 22px, 22px)
+);
+
+@each $size, $values in $button-sizes {
+    .shop-button-#{$size} {
+        --shop-button-padding-block: #{list.nth($values, 1)};
+        --shop-button-padding-inline: #{list.nth($values, 2)};
+        --shop-button-icon-size: #{list.nth($values, 3)};
+        min-block-size: calc(var(--shop-button-icon-size) + 2 * var(--shop-button-padding-block));
+    }
+}
+
+.shop-button-filled {
+    &:disabled {
+        background-color: var(--shop-color-action-disabled);
+    }
+}
+
+.shop-button-outlined {
+    padding-block: calc(var(--shop-button-padding-block) - 1px);
+    padding-inline: calc(var(--shop-button-padding-inline) - 1px);
+    min-block-size: calc(var(--shop-button-icon-size) + 2 * var(--shop-button-padding-block) - 2px);
+    // Inset shadow matches Figma's inside stroke without increasing the measured bounds.
+    box-shadow: inset 0 0 0 1px var(--shop-color-lines-default);
+}
+
+.shop-button-outlined,
+.shop-button-text {
+    &:hover:not(:disabled) {
+        background-color: var(--shop-color-surface-subtle);
+    }
+
+    &:active:not(:disabled) {
+        background-color: var(--shop-color-tertiary);
+    }
+}
+
+.shop-button-text {
+    padding-inline: calc(var(--shop-button-padding-inline) / 2);
+}
+
+.shop-button-text.shop-button-small {
+    padding-block: 4px;
+    min-block-size: 26px;
+}
+
+// Compile-time recipes reference owned tokens directly, without runtime color aliases.
+// Shared enum roles do not impose these button treatments on other component families.
+$button-colors: (
+    primary: (
+        fill: var(--shop-color-primary),
+        on-fill: var(--shop-color-primary-contrast),
+        text: var(--shop-color-primary),
+        line: var(--shop-color-lines-default),
+        hover: var(--shop-color-action-hover),
+        pressed: var(--shop-color-action-pressed),
+        on-interaction: var(--shop-color-primary-contrast)
+    ),
+    secondary: (
+        fill: var(--shop-color-secondary),
+        on-fill: var(--shop-color-secondary-contrast),
+        text: var(--shop-color-secondary),
+        line: var(--shop-color-secondary),
+        hover: var(--shop-color-secondary-hover),
+        pressed: var(--shop-color-secondary-hover),
+        on-interaction: var(--shop-color-secondary-contrast)
+    ),
+    tertiary: (
+        fill: var(--shop-color-tertiary),
+        on-fill: var(--shop-color-tertiary-contrast),
+        text: var(--shop-color-tertiary),
+        line: var(--shop-color-lines-default),
+        hover: var(--shop-color-tertiary-lighter),
+        pressed: var(--shop-color-lines-default),
+        on-interaction: var(--shop-color-tertiary-contrast)
+    ),
+    info: (
+        fill: var(--shop-color-info),
+        on-fill: var(--shop-color-info-contrast),
+        text: var(--shop-color-info),
+        line: var(--shop-color-info),
+        hover: var(--shop-color-info-hover),
+        pressed: var(--shop-color-info-hover),
+        on-interaction: var(--shop-color-info-contrast)
+    ),
+    success: (
+        fill: var(--shop-color-success),
+        on-fill: var(--shop-color-success-contrast),
+        text: var(--shop-color-success),
+        line: var(--shop-color-success),
+        hover: var(--shop-color-success-hover),
+        pressed: var(--shop-color-success-hover),
+        on-interaction: var(--shop-color-success-contrast)
+    ),
+    warning: (
+        fill: var(--shop-color-warning),
+        on-fill: var(--shop-color-warning-contrast),
+        text: var(--shop-color-warning),
+        line: var(--shop-color-warning),
+        hover: var(--shop-color-warning-hover),
+        pressed: var(--shop-color-warning-hover),
+        on-interaction: var(--shop-color-warning-contrast)
+    ),
+    error: (
+        fill: var(--shop-color-error),
+        on-fill: var(--shop-color-error-contrast),
+        text: var(--shop-color-error),
+        line: var(--shop-color-error),
+        hover: var(--shop-color-error-hover),
+        pressed: var(--shop-color-error-hover),
+        on-interaction: var(--shop-color-error-contrast)
+    ),
+    surface: (
+        fill: var(--shop-color-surface-default),
+        on-fill: var(--shop-color-text-primary),
+        text: var(--shop-color-text-primary),
+        line: var(--shop-color-lines-default),
+        hover: var(--shop-color-surface-subtle),
+        pressed: var(--shop-color-tertiary),
+        on-interaction: var(--shop-color-text-primary)
+    )
+);
+
+@each $color, $treatment in $button-colors {
+    .shop-button-filled.shop-button-#{$color}:not(:disabled) {
+        color: map.get($treatment, on-fill);
+        background-color: map.get($treatment, fill);
+
+        &:hover {
+            color: map.get($treatment, on-interaction);
+            background-color: map.get($treatment, hover);
+        }
+
+        &:active {
+            color: map.get($treatment, on-interaction);
+            background-color: map.get($treatment, pressed);
+        }
+    }
+
+    .shop-button-outlined.shop-button-#{$color}:not(:disabled),
+    .shop-button-text.shop-button-#{$color}:not(:disabled) {
+        color: map.get($treatment, text);
+    }
+
+    .shop-button-outlined.shop-button-#{$color}:not(:disabled) {
+        box-shadow: inset 0 0 0 1px map.get($treatment, line);
+    }
+}
+
+.shop-button-icon {
+    inline-size: var(--shop-button-icon-size);
+    block-size: var(--shop-button-icon-size);
+}
+
+@media (forced-colors: active) {
+    .shop-button {
+        border: 1px solid ButtonText;
+    }
 }

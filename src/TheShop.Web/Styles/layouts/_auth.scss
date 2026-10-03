@@ -1,0 +1,88 @@
+@use '../abstracts/text-style';
+
+.shop-auth {
+    display: grid;
+    min-block-size: 100%;
+}
+
+.shop-auth-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--shop-space-2);
+    padding: var(--shop-space-4) var(--shop-space-6);
+}
+
+.shop-auth-navigation {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.shop-auth-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--shop-space-12);
+}
+
+.shop-auth-title {
+    margin: 0;
+    @include text-style.apply(h2);
+    // Page treatment, not part of the H2 text style's ORIGINAL case.
+    text-transform: uppercase;
+}
+
+.shop-auth-subtitle,
+.shop-auth-instruction {
+    margin-block: var(--shop-space-2) 0;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(subtitle-1);
+}
+
+.shop-auth-instruction {
+    margin-block-end: var(--shop-space-4);
+}
+
+.shop-auth-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--shop-space-3);
+    margin-block-start: var(--shop-space-3);
+}
+
+.shop-auth-brand {
+    display: none;
+}
+
+.shop-auth-logo {
+    inline-size: 280px;
+    block-size: 280px;
+}
+
+.shop-auth-tagline {
+    margin: 0;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(subtitle-2);
+}
+
+@media (min-width: 960px) {
+    .shop-auth {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .shop-auth-panel {
+        padding-inline: 64px;
+    }
+
+    .shop-auth-brand {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--shop-space-4);
+        margin: var(--shop-space-4);
+        margin-inline-start: 0;
+        background-color: var(--shop-color-surface-default);
+    }
+}

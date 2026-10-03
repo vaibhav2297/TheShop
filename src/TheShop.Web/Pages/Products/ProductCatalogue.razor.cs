@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using System.Globalization;
 using MediatR;
 using Microsoft.AspNetCore.Components;
@@ -32,7 +33,7 @@ namespace TheShop.Web.Pages.Products;
 public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
 {
     [Inject] private IMediator Mediator { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
@@ -85,7 +86,7 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
         if (filtersResult.IsSuccess)
             _filters = filtersResult.Value;
         else
-            Snackbar.Add(Localizer[filtersResult.Error!], Severity.Error);
+            Notifications.Show(Localizer[filtersResult.Error!], ShopNotificationKind.Error);
     }
 
     /// <summary>
@@ -117,7 +118,7 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
         if (result.IsSuccess)
             return result.Value;
 
-        Snackbar.Add(Localizer[result.Error!], Severity.Error);
+        Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
         return PagedResult<ProductSummaryDto>.Empty(request);
     }
 

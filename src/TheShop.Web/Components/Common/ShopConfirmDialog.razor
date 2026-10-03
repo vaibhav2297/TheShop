@@ -1,11 +1,16 @@
-@* Components/Common/ShopConfirmDialog.razor *@
+@using TheShop.Web.Common.UI
 
-<ShopDialog Title="@TitleText">
-    <ChildContent>
-        <MudText Typo="Typo.body1">@BodyText</MudText>
-    </ChildContent>
-    <Actions>
-        <MudButton Variant="Variant.Text" OnClick="Cancel">@CancelLabel</MudButton>
-        <MudButton Variant="Variant.Filled" Color="@ConfirmColor" OnClick="Confirm">@ConfirmLabel</MudButton>
-    </Actions>
+<ShopDialog DescriptionId="@_bodyId" OnDismiss="CancelAsync">
+    <TitleContent>
+        <h2 class="shop-dialog-title">@Options.Title</h2>
+    </TitleContent>
+    <DialogContent>
+        <p id="@_bodyId" class="shop-dialog-description">@Options.Body</p>
+    </DialogContent>
+    <DialogActions>
+        <ShopButton Variant="ShopVariant.Text" OnClick="CancelAsync"
+                    data-dialog-initial-focus="true" data-testid="dialog-cancel">@Options.CancelLabel</ShopButton>
+        <ShopButton Color="@ConfirmColor" OnClick="ConfirmAsync"
+                    data-testid="dialog-confirm">@Options.ConfirmLabel</ShopButton>
+    </DialogActions>
 </ShopDialog>

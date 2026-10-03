@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
@@ -19,7 +20,7 @@ public partial class ProfileMenu : ComponentBase
 {
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
 
@@ -43,7 +44,7 @@ public partial class ProfileMenu : ComponentBase
         await BusyState.RunAsync(BusyKeys.Global, async () =>
         {
             await Mediator.Send(new SignOutCommand());
-            Snackbar.Add(Localizer[nameof(Strings.Auth_SignedOut)], Severity.Success);
+            Notifications.Show(Localizer[nameof(Strings.Auth_SignedOut)], ShopNotificationKind.Success);
             Nav.NavigateTo(Routes.Home);
         });
     }

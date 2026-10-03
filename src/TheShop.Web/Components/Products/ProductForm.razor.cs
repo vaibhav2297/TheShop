@@ -1,5 +1,7 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using TheShop.Web.Common.Dialogs;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
@@ -32,10 +34,10 @@ public partial class ProductForm : MudComponentBase
 
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
-    [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private IShopDialogService DialogService { get; set; } = default!;
 
     /// <summary>Whether this form creates a new product or edits an existing one.</summary>
     [Parameter, EditorRequired]
@@ -348,14 +350,14 @@ public partial class ProductForm : MudComponentBase
                         ? string.Format(Strings.Product_CreatedPublished, result.Value.Name)
                         : string.Format(Strings.Product_Created, result.Value.Name)
                     : string.Format(Strings.Product_Updated, result.Value.Name);
-                Snackbar.Add(message, Severity.Success);
+                Notifications.Show(message, ShopNotificationKind.Success);
                 Nav.NavigateTo(Routes.Admin.ManageProducts);
             }
             else
             {
                 FlagVariantsReportedByServer(result);
                 FlagSpecificationsReportedByServer(result);
-                Snackbar.Add(DescribeFailure(result), Severity.Error);
+                Notifications.Show(DescribeFailure(result), ShopNotificationKind.Error);
             }
         });
     }
@@ -435,18 +437,7 @@ public partial class ProductForm : MudComponentBase
             context.PreventNavigation();
     }
 
-    private async Task<bool> ConfirmLeaveAsync()
-    {
-        var parameters = new DialogParameters<ShopConfirmDialog>
-        {
-            { x => x.TitleText, Strings.ProductForm_UnsavedChangesTitle },
-            { x => x.BodyText, Strings.ProductForm_UnsavedChangesBody },
-            { x => x.ConfirmLabel, Strings.ProductForm_LeaveAnyway },
-            { x => x.ConfirmColor, Color.Error },
-        };
-
-        var dialog = await DialogService.ShowAsync<ShopConfirmDialog>(Strings.ProductForm_UnsavedChangesTitle, parameters);
-        var result = await dialog.Result;
-        return result is { Canceled: false };
-    }
+    private Task<bool> ConfirmLeaveAsync() =>
+        DialogService.ConfirmAsync(new(Strings.ProductForm_UnsavedChangesTitle,
+            Strings.ProductForm_UnsavedChangesBody, Strings.ProductForm_LeaveAnyway, true));
 }

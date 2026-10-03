@@ -22,6 +22,6 @@ public abstract class ShopPage(IPage page)
         await Page.Locator(".mud-layout").WaitForAsync(new() { Timeout = 30_000 });
     }
 
-    /// <summary>MudBlazor snackbar text, for toast assertions.</summary>
-    public ILocator Snackbar => Page.Locator(".mud-snackbar");
+    /// <summary>Native notification text; retains the page-object name for existing journeys.</summary>
+    public ILocator Snackbar => Page.GetByTestId("notification");
 }

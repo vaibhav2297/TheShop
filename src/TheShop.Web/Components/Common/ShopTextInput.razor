@@ -1,0 +1,7 @@
+@inherits InputBase<string?>
+
+<input @attributes="AdditionalAttributes"
+       name="@NameAttributeValue"
+       class="@CssClass"
+       @bind="CurrentValueAsString"
+       @bind:event="oninput" />

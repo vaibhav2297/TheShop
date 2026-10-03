@@ -1,40 +1,30 @@
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
+using TheShop.Web.Common.Dialogs;
+using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
-/// <summary>
-/// Reusable confirm/cancel dialog, shown via <see cref="IDialogService.ShowAsync{TComponent}(DialogParameters)"/>.
-/// Backs every deactivate and delete confirmation (RULE-7, RULE-14) so the four sites share one
-/// mechanics implementation instead of four inline <see cref="MudDialog"/> blocks. All text is
-/// supplied by the caller as already-localized strings (Rule 11 Pattern 1 at the call site) —
-/// the dialog itself resolves no resource keys.
-/// </summary>
+/// <summary>Encoded confirmation copy with explicit confirm and safe cancel actions.</summary>
 public partial class ShopConfirmDialog : ComponentBase
 {
-    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    /// <summary>Already-localized labels and the action's destructive intent.</summary>
+    [Parameter, EditorRequired] public ShopConfirmationOptions Options { get; set; } = default!;
 
-    /// <summary>The dialog's title.</summary>
-    [Parameter, EditorRequired]
-    public string TitleText { get; set; } = string.Empty;
+    /// <summary>True only for the confirm button; all dismissal paths return false.</summary>
+    [Parameter] public EventCallback<bool> Completed { get; set; }
 
-    /// <summary>The dialog's body — states the action's consequence (RULE-7: permanence for delete).</summary>
-    [Parameter, EditorRequired]
-    public string BodyText { get; set; } = string.Empty;
+    private readonly string _bodyId = $"shop-dialog-body-{Guid.NewGuid():N}";
+    private ShopColor ConfirmColor => Options.Destructive ? ShopColor.Error : ShopColor.Primary;
+    private bool _completed;
 
-    /// <summary>The confirm button's label.</summary>
-    [Parameter, EditorRequired]
-    public string ConfirmLabel { get; set; } = string.Empty;
+    private Task ConfirmAsync() => CompleteAsync(true);
+    private Task CancelAsync() => CompleteAsync(false);
 
-    /// <summary>The cancel button's label.</summary>
-    [Parameter]
-    public string CancelLabel { get; set; } = Resources.Strings.Cancel;
-
-    /// <summary>The confirm button's color — <see cref="Color.Error"/> for a destructive delete.</summary>
-    [Parameter]
-    public Color ConfirmColor { get; set; } = Color.Primary;
-
-    private void Confirm() => MudDialog.Close(DialogResult.Ok(true));
-
-    private void Cancel() => MudDialog.Cancel();
+    private Task CompleteAsync(bool confirmed)
+    {
+        if (_completed)
+            return Task.CompletedTask;
+        _completed = true;
+        return Completed.InvokeAsync(confirmed);
+    }
 }

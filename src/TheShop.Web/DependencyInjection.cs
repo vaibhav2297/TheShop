@@ -6,6 +6,8 @@ using MudExtensions.Services;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Web.Auth;
 using TheShop.Web.Common;
+using TheShop.Web.Common.Dialogs;
+using TheShop.Web.Common.Notifications;
 using TheShop.Web.State;
 using TheShop.Web.Theme;
 
@@ -31,6 +33,11 @@ public static class DependencyInjection
 
         services.AddSingleton<ShopTheme>();
         services.AddScoped<BusyState>();
+        services.AddSingleton(TimeProvider.System);
+        services.AddScoped<ShopNotificationService>();
+        services.AddScoped<IShopNotificationService>(provider => provider.GetRequiredService<ShopNotificationService>());
+        services.AddScoped<ShopDialogService>();
+        services.AddScoped<IShopDialogService>(provider => provider.GetRequiredService<ShopDialogService>());
         services.AddScoped<CartState>();
         services.AddScoped<AuthState>();
         services.AddScoped<AnnouncementState>();

@@ -1,93 +1,45 @@
-@* Components/Products/ProductCard.razor *@
-@inherits MudComponentBase
-
 @using TheShop.Web.Common
+@using TheShop.Web.Common.UI
 @using TheShop.Web.Components.Common
-@using TheShop.Web.Resources
-@using TheShop.Web.Theme
+@inherits ShopComponentBase
 
-<MudPaper Class="@ClassName"
-          Style="@Style"
-          Elevation="0">
-
-    <!-- media-section -->
-    <MudStack Class="media-section mud-tertiary"
-              AlignItems="AlignItems.Center"
-              Justify="Justify.Center">
-
+<article @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+    <div class="shop-product-card-media">
         <ShopImage Src="@Product.ImageUrl"
                    Preset="ShopImagePreset.ProductCard"
                    Alt="@string.Format(Strings.Product_ImageAlt, Product.Name)"
-                   PlaceholderLabel="@Product.Name"
-                   Class="media-image" />
+                   PlaceholderLabel="@Product.Name" />
 
-        <!-- Out of Stock -->
         @if (!Product.IsInStock)
         {
-            <MudChip T="string"
-                     Class="media-action top right"
-                     Color="Color.Error"
-                     Variant="Variant.Filled">
-                <MudText Typo="Typo.body2">@Strings.OutOfStock</MudText>
-            </MudChip>
+            <span class="shop-product-card-stock">@Strings.OutOfStock</span>
         }
 
-        <!-- Cart -->
         @if (Product.IsInStock)
         {
-            <MudIconButton Icon="@ShopIcons.Outlined.Shopping_Bag_01"
-                           aria-label="@Strings.AddToCart"
-                           Variant="Variant.Filled"
-                           DropShadow="false"
-                           Class="media-action bottom left mud-theme-white"
-                           OnClick="OnAddToCartAsync" />
+            <ShopIconButton Color="ShopColor.Surface" Class="shop-product-card-action shop-product-card-cart"
+                            Label="@Strings.AddToCart" Icon="@ShopIcons.Outlined.Shopping_Bag_01"
+                            OnClick="OnAddToCartAsync" />
         }
 
-        <!-- Whishlist -->
-        <MudIconButton Icon="@ShopIcons.Outlined.Heart_01"
-                       aria-label="@Strings.Wishlist_Add"
-                       Variant="Variant.Filled"
-                       DropShadow="false"
-                       Class="media-action bottom right mud-theme-white"
-                       OnClick="OnToggleWishlistAsync" />
+        <ShopIconButton Color="ShopColor.Surface" Class="shop-product-card-action shop-product-card-wishlist"
+                        Label="@Strings.Wishlist_Add" Icon="@ShopIcons.Outlined.Heart_01"
+                        OnClick="OnToggleWishlistAsync" />
+    </div>
 
-    </MudStack>
-
-    <!-- Content Section -->
-    <MudStack Class="content-section"
-              AlignItems="AlignItems.Stretch"
-              Spacing="2"
-              @onclick="OnSelectAsync">
-
-        <!-- Brand Name -->
-        <MudText Typo="Typo.subtitle1"
-                 Color="Color.Secondary">@Product.BrandName</MudText>
-
-        <!-- Product Name -->
-        <MudText Typo="Typo.body1"
-                 Class="fs-18 mt-n1">@Product.Name</MudText>
-
-        <!-- Price -->
-        <MudStack Row
-                  AlignItems="AlignItems.Center"
-                  Spacing="2">
-
+    <button type="button" class="shop-product-card-content" @onclick="OnSelectAsync">
+        <span class="shop-product-card-brand">@Product.BrandName</span>
+        <span class="shop-product-card-title">@Product.Name</span>
+        <span class="shop-product-card-pricing">
             @if (Product.IsDiscounted)
             {
-                <MudText Typo="Typo.h6">@CurrencyFormatter.Format(Product.SalePrice!.Value, Product.Currency)</MudText>
-
-                <MudText Typo="Typo.subtitle1"
-                         Class="mud-secondary-text text-decoration-line-through">
-                    @CurrencyFormatter.Format(Product.OriginalPrice!.Value, Product.Currency)
-                </MudText>
+                <span class="shop-product-card-price">@CurrencyFormatter.Format(Product.SalePrice!.Value, Product.Currency)</span>
+                <s class="shop-product-card-original-price">@CurrencyFormatter.Format(Product.OriginalPrice!.Value, Product.Currency)</s>
             }
             else
             {
-                <MudText Typo="Typo.h6">@PriceLabel</MudText>
+                <span class="shop-product-card-price">@PriceLabel</span>
             }
-
-        </MudStack>
-
-    </MudStack>
-
-</MudPaper>
+        </span>
+    </button>
+</article>

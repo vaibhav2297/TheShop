@@ -1,9 +1,5 @@
 using Bunit;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
 using TheShop.Web.Components.Common;
 using Xunit;
 
@@ -30,8 +26,6 @@ public class ShopImageTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
         _module = JSInterop.SetupModule("./js/shopImage.js");
         _module.Mode = JSRuntimeMode.Loose;
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
     }
 
     private IRenderedComponent<ShopImage> RenderImage(
@@ -51,16 +45,16 @@ public class ShopImageTests : TestContext
     // =========================================================================
 
     [Theory]
-    [InlineData(ShopImagePreset.ProductCard, "shop-image--product-card")]
-    [InlineData(ShopImagePreset.ProductDetail, "shop-image--product-detail")]
-    [InlineData(ShopImagePreset.Thumbnail, "shop-image--thumbnail")]
-    [InlineData(ShopImagePreset.CategoryTile, "shop-image--category-tile")]
-    [InlineData(ShopImagePreset.CategoryBanner, "shop-image--category-banner")]
-    [InlineData(ShopImagePreset.Hero, "shop-image--hero")]
-    [InlineData(ShopImagePreset.MobileBanner, "shop-image--mobile-banner")]
-    [InlineData(ShopImagePreset.Editorial, "shop-image--editorial")]
-    [InlineData(ShopImagePreset.BrandLogo, "shop-image--brand-logo")]
-    [InlineData(ShopImagePreset.SocialSharing, "shop-image--social-sharing")]
+    [InlineData(ShopImagePreset.ProductCard, "shop-image-product-card")]
+    [InlineData(ShopImagePreset.ProductDetail, "shop-image-product-detail")]
+    [InlineData(ShopImagePreset.Thumbnail, "shop-image-thumbnail")]
+    [InlineData(ShopImagePreset.CategoryTile, "shop-image-category-tile")]
+    [InlineData(ShopImagePreset.CategoryBanner, "shop-image-category-banner")]
+    [InlineData(ShopImagePreset.Hero, "shop-image-hero")]
+    [InlineData(ShopImagePreset.MobileBanner, "shop-image-mobile-banner")]
+    [InlineData(ShopImagePreset.Editorial, "shop-image-editorial")]
+    [InlineData(ShopImagePreset.BrandLogo, "shop-image-brand-logo")]
+    [InlineData(ShopImagePreset.SocialSharing, "shop-image-social-sharing")]
     [Trait("Feature", "shop-image")]
     public void Render_WithEachPreset_TagsTheFrameWithThatPresetsGeometryClass(ShopImagePreset preset, string expectedClass)
     {
@@ -81,9 +75,9 @@ public class ShopImageTests : TestContext
     {
         var cut = RenderImage(preset);
 
-        var image = cut.FindComponent<MudImage>().Instance;
-        image.ObjectFit.Should().Be(ObjectFit.Contain);
-        image.ObjectPosition.Should().Be(ObjectPosition.Center);
+        cut.Find("img").ClassList.Should().Contain("shop-image-media").And.Contain("shop-image-contain")
+            .And.NotContain("shop-image-cover");
+        cut.FindAll("img").Should().ContainSingle();
     }
 
     [Theory]
@@ -97,10 +91,12 @@ public class ShopImageTests : TestContext
     {
         var cut = RenderImage(preset);
 
-        foreach (var image in cut.FindComponents<MudImage>())
+        var images = cut.FindAll("img");
+        images.Should().NotBeEmpty();
+        foreach (var image in images)
         {
-            image.Instance.ObjectFit.Should().Be(ObjectFit.Cover);
-            image.Instance.ObjectPosition.Should().Be(ObjectPosition.Center);
+            image.ClassList.Should().Contain("shop-image-media").And.Contain("shop-image-cover")
+                .And.NotContain("shop-image-contain");
         }
     }
 
@@ -127,7 +123,7 @@ public class ShopImageTests : TestContext
 
         cut.Find("img[data-shop-image-branch='desktop']").GetAttribute("src").Should().Be(DesktopUrl);
         cut.Find("img[data-shop-image-branch='mobile']").GetAttribute("src").Should().Be(MobileUrl);
-        cut.Find("img[data-shop-image-branch='mobile']").ClassList.Should().Contain("shop-image__branch--mobile");
+        cut.Find("img[data-shop-image-branch='mobile']").ClassList.Should().Contain("shop-image-branch-mobile");
     }
 
     [Theory]
@@ -168,7 +164,7 @@ public class ShopImageTests : TestContext
         var cut = RenderImage(src: src);
 
         cut.FindAll("img").Should().BeEmpty();
-        cut.Find(".shop-image__placeholder").TextContent.Trim().Should().Be(Label);
+        cut.Find(".shop-image-placeholder").TextContent.Trim().Should().Be(Label);
     }
 
     [Fact]
@@ -187,7 +183,7 @@ public class ShopImageTests : TestContext
         await cut.InvokeAsync(() => cut.Instance.OnImageFailed("desktop", DesktopUrl));
 
         cut.FindAll("img").Should().BeEmpty();
-        cut.Find(".shop-image__placeholder").TextContent.Trim().Should().Be(Label);
+        cut.Find(".shop-image-placeholder").TextContent.Trim().Should().Be(Label);
         var frameAfter = cut.Find("[data-shop-image]");
         frameAfter.GetAttribute("class").Should().Be(frameClass);
         frameAfter.GetAttribute("style").Should().Be(frameStyle);
@@ -203,7 +199,7 @@ public class ShopImageTests : TestContext
         await cut.InvokeAsync(() => cut.Instance.OnImageFailed("desktop", "https://example.com/old.webp"));
 
         cut.Find("img").GetAttribute("src").Should().Be(DesktopUrl);
-        cut.FindAll(".shop-image__placeholder").Should().BeEmpty();
+        cut.FindAll(".shop-image-placeholder").Should().BeEmpty();
     }
 
     [Fact]
@@ -216,7 +212,7 @@ public class ShopImageTests : TestContext
         cut.Render(p => p.Add(c => c.Src, DesktopUrl));
 
         cut.Find("img").GetAttribute("src").Should().Be(DesktopUrl);
-        cut.FindAll(".shop-image__placeholder").Should().BeEmpty();
+        cut.FindAll(".shop-image-placeholder").Should().BeEmpty();
     }
 
     [Fact]
@@ -229,7 +225,7 @@ public class ShopImageTests : TestContext
 
         cut.Find("img[data-shop-image-branch='desktop']").GetAttribute("src").Should().Be(DesktopUrl);
         cut.FindAll("img[data-shop-image-branch='mobile']").Should().BeEmpty();
-        cut.Find(".shop-image__placeholder.shop-image__branch--mobile").TextContent.Trim().Should().Be(Label);
+        cut.Find(".shop-image-placeholder.shop-image-branch-mobile").TextContent.Trim().Should().Be(Label);
     }
 
     [Fact]
@@ -241,7 +237,7 @@ public class ShopImageTests : TestContext
         await cut.InvokeAsync(() => cut.Instance.OnImageFailed("desktop", DesktopUrl));
 
         cut.Find("img[data-shop-image-branch='mobile']").GetAttribute("src").Should().Be(MobileUrl);
-        cut.Find(".shop-image__placeholder.shop-image__branch--desktop").TextContent.Trim().Should().Be(Label);
+        cut.Find(".shop-image-placeholder.shop-image-branch-desktop").TextContent.Trim().Should().Be(Label);
     }
 
     [Fact]
@@ -267,7 +263,7 @@ public class ShopImageTests : TestContext
 
         var frame = cut.Find("[data-shop-image]");
         frame.GetAttribute("style").Should().Contain("width: 52px").And.Contain("height: 52px");
-        frame.QuerySelector(".shop-image__placeholder")!.TextContent.Trim().Should().Be("Elf Bar");
+        frame.QuerySelector(".shop-image-placeholder")!.TextContent.Trim().Should().Be("Elf Bar");
     }
 
     // =========================================================================
@@ -298,10 +294,10 @@ public class ShopImageTests : TestContext
     {
         var cut = RenderImage(src: null, alt: "Image of Elf Bar BC5000");
 
-        var placeholder = cut.Find(".shop-image__placeholder");
+        var placeholder = cut.Find(".shop-image-placeholder");
         placeholder.GetAttribute("role").Should().Be("img");
         placeholder.GetAttribute("aria-label").Should().Be("Image of Elf Bar BC5000");
-        placeholder.QuerySelector(".shop-image__label")!.GetAttribute("aria-hidden").Should().Be("true");
+        placeholder.QuerySelector(".shop-image-label")!.GetAttribute("aria-hidden").Should().Be("true");
     }
 
     [Fact]
@@ -310,7 +306,7 @@ public class ShopImageTests : TestContext
     {
         var cut = RenderImage(src: null, alt: string.Empty);
 
-        var placeholder = cut.Find(".shop-image__placeholder");
+        var placeholder = cut.Find(".shop-image-placeholder");
         placeholder.GetAttribute("aria-hidden").Should().Be("true");
         placeholder.GetAttribute("role").Should().NotBe("img");
         placeholder.HasAttribute("aria-label").Should().BeFalse();

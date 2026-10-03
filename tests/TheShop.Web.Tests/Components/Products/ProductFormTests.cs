@@ -1,4 +1,7 @@
+using TheShop.Web.Common.Notifications;
 using Bunit;
+using Bunit.TestDoubles;
+using TheShop.Web.Common.Dialogs;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Components;
@@ -35,7 +38,7 @@ namespace TheShop.Web.Tests.Components.Products;
 public class ProductFormTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     private readonly CategoryLookupDto _category = new(Guid.NewGuid(), "Disposables");
@@ -47,9 +50,10 @@ public class ProductFormTests : TestContext
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton<BusyState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddMudServices();
+        Services.AddSingleton(Substitute.For<IShopDialogService>());
 
         // MudSelect reads PopoverOptions while rendering, so the substitute has to answer it.
         var popoverService = Substitute.For<IPopoverService>();
@@ -436,6 +440,25 @@ public class ProductFormTests : TestContext
             "an unsaved description edit must warn before leaving (AC-14)");
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task InternalNavigation_WithUnsavedChanges_UsesNativeConfirmationResult(bool confirmed)
+    {
+        var dialogs = Services.GetRequiredService<IShopDialogService>();
+        dialogs.ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>()).Returns(confirmed);
+        var cut = RenderCreateForm();
+        await SetDescriptionAsync(cut, "<p>Edited.</p>", 7);
+        var navigation = (BunitNavigationManager)Services.GetRequiredService<NavigationManager>();
+
+        await cut.InvokeAsync(() => navigation.NavigateTo(Routes.Admin.ManageProducts));
+
+        cut.WaitForAssertion(() => navigation.History.Should().ContainSingle());
+        (navigation.History.Single().State == NavigationState.Prevented).Should().Be(!confirmed);
+        await dialogs.Received(1).ConfirmAsync(Arg.Is<ShopConfirmationOptions>(options =>
+            options.Title == Strings.ProductForm_UnsavedChangesTitle && options.Destructive), Arg.Any<CancellationToken>());
+    }
+
     [Fact]
     [Trait("Feature", "product-description")]
     public async Task EditingASpecificationRow_ConfirmsExternalNavigation()
@@ -486,7 +509,7 @@ public class ProductFormTests : TestContext
 
         await cut.Find("[data-testid='product-save']").ClickAsync(new());
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageProducts);
     }
 
@@ -523,7 +546,7 @@ public class ProductFormTests : TestContext
 
         await cut.Find("[data-testid='product-save']").ClickAsync(new());
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageProducts);
     }
 

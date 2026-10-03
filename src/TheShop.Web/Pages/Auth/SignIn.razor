@@ -1,101 +1,63 @@
 @layout TheShop.Web.Components.Layout.AuthLayout
 @attribute [AllowAnonymous]
 @using TheShop.Web.Common
+@using TheShop.Web.Common.UI
 @using TheShop.Web.Components.Common
 
 <PageTitle>@Strings.SignIn_PageTitle</PageTitle>
 
-<MudGrid Spacing="0" Class="mud-height-full">
+<div class="shop-native shop-auth">
+    <section class="shop-auth-panel" aria-labelledby="signin-title">
+        <nav class="shop-auth-navigation">
+            <a class="shop-button shop-button-text shop-button-medium" href="@Routes.Auth.SignUp">@Strings.SignUp</a>
+        </nav>
 
-    @* Left panel: sign-in form — space-between aligns heading at top, form at bottom *@
-    <MudItem xs="12" md="6">
-        <MudStack Class="mud-height-full px-16 py-4"
-                  Justify="Justify.SpaceBetween">
+        <div class="shop-auth-content">
+            <header>
+                <h1 id="signin-title" class="shop-auth-title">@Strings.SignIn_Heading</h1>
+                <p class="shop-auth-subtitle">@Strings.SignIn_WelcomeBack</p>
+            </header>
 
-            @* Top bar: cross-navigation link only *@
-            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
-                <MudButton Variant="Variant.Text"
-                           Color="Color.Primary"
-                           Href="@Routes.Auth.SignUp">@Strings.SignUp</MudButton>
-            </MudStack>
+            <div class="shop-auth-form">
+                <p class="shop-auth-instruction" id="signin-instruction">@Strings.Login_Instruction</p>
+                <EditForm EditContext="@_editContext" OnSubmit="OnSendCodeAsync" novalidate>
+                    <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
+                        <div class="shop-field">
+                            <label class="shop-field-label" for="signin-email">@Strings.Email_Label</label>
+                            <div class="shop-field-control">
+                                <ShopIcon Icon="@ShopIcons.Outlined.Mention" Class="shop-field-icon" />
+                                <ShopTextInput id="signin-email" type="email" name="email"
+                                           @bind-Value="_model.Email"
+                                           class="shop-field-input"
+                                           placeholder="@Strings.Email_Placeholder"
+                                           autocomplete="email" required disabled="@busy"
+                                           aria-describedby="signin-instruction signin-error"
+                                           data-testid="signin-email" />
+                            </div>
+                            <div id="signin-error" class="shop-field-error" aria-live="polite">
+                                <ValidationMessage For="@(() => _model.Email)" />
+                            </div>
+                        </div>
 
-            <MudStack Justify="Justify.SpaceBetween"
-                      Class="flex-1">
+                        <div class="shop-auth-actions">
+                            <ShopButton Type="submit" Size="ShopSize.Large"
+                                        Disabled="@(!CanSubmit)" Loading="@busy" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
+                                        data-testid="signin-submit">
+                                @Strings.Auth_Login_Submit
+                            </ShopButton>
+                        </div>
+                    </BusyFor>
+                </EditForm>
+            </div>
+        </div>
+    </section>
 
-                @* Hero heading block *@
-                <MudStack Spacing="2">
-                    <MudText Typo="Typo.h2" Color="Color.Primary">@Strings.SignIn_Heading</MudText>
-                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.SignIn_WelcomeBack</MudText>
-                </MudStack>
-
-                @* Form block: label + input + submit *@
-                <MudStack Spacing="4">
-                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.Login_Instruction</MudText>
-
-                    <MudForm @ref="_form"
-                             @bind-IsValid="_isFormValid"
-                             SuppressImplicitSubmission="true">
-                        @* BusyFor wraps the field and the button so the email input freezes
-                           while its captured value is in flight — see DESIGN.md §Loading & Busy States *@
-                        <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
-                            <MudStack Spacing="3">
-                                <MudTextField T="string"
-                                              @bind-Value="_email"
-                                              Placeholder="@Strings.Email_Placeholder"
-                                              InputType="InputType.Email"
-                                              Variant="Variant.Filled"
-                                              FullWidth="true"
-                                              Typo="Typo.body2"
-                                              Required="true"
-                                              Disabled="@busy"
-                                              Adornment="Adornment.Start"
-                                              AdornmentColor="Color.Primary"
-                                              AdornmentIcon="@ShopIcons.Outlined.Mention"
-                                              RequiredError="@Strings.Email_Required"
-                                              Validation="@_emailValidation"
-                                              Immediate="true"
-                                              UserAttributes="@(new Dictionary<string, object?> { ["autocomplete"] = "email", ["data-testid"] = "signin-email" })" />
-
-                                @* Row wrapper prevents MudStack stretch from expanding the button to full width *@
-                                <MudStack Row="true">
-                                    <MudButton Variant="Variant.Filled"
-                                               Color="Color.Primary"
-                                               Size="Size.Large"
-                                               Disabled="@(!_isFormValid || busy)"
-                                               EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
-                                               OnClick="OnSendCodeAsync"
-                                               UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "signin-submit" })">
-                                        @if (busy)
-                                        {
-                                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-                                        }
-                                        @Strings.Auth_Login_Submit
-                                    </MudButton>
-                                </MudStack>
-                            </MudStack>
-                        </BusyFor>
-                    </MudForm>
-                </MudStack>
-
-            </MudStack>
-
-        </MudStack>
-    </MudItem>
-
-    @* Right panel: brand splash — hidden on small screens *@
-    <MudItem xs="12" md="6" Class="d-none d-md-flex">
-        <MudStack AlignItems="AlignItems.Center"
-                  Justify="Justify.Center"
-                  Class="flex-1 my-4 me-4 mud-surface"
-                  Spacing="4">
-            <ShopImage Src="@ShopIcons.ImageAssets.LogoPrimary"
-                       Preset="ShopImagePreset.BrandLogo"
-                       Alt="@Strings.AppName"
-                       PlaceholderLabel="@Strings.AppName"
-                       Style="width: 280px; height: 280px;" />
-
-            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Strings.App_Tagline</MudText>
-        </MudStack>
-    </MudItem>
-
-</MudGrid>
+    <aside class="shop-auth-brand">
+        <ShopImage Src="@ShopIcons.ImageAssets.LogoPrimary"
+                   Preset="ShopImagePreset.BrandLogo"
+                   Alt="@Strings.AppName"
+                   PlaceholderLabel="@Strings.AppName"
+                   Class="shop-auth-logo" />
+        <p class="shop-auth-tagline">@Strings.App_Tagline</p>
+    </aside>
+</div>

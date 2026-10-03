@@ -1,0 +1,7 @@
+// Scope the transition reset to converted surfaces; leave legacy Mud forms unchanged.
+.shop-native,
+.shop-native *,
+.shop-native *::before,
+.shop-native *::after {
+    box-sizing: border-box;
+}

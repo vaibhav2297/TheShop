@@ -1,0 +1,9 @@
+.shop-icon {
+    display: inline-block;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    flex-shrink: 0;
+    vertical-align: middle;
+    // Decorative SVGs delegate pointer targeting and focus to their owning control.
+    pointer-events: none;
+}

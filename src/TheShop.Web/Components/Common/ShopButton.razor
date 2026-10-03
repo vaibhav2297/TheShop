@@ -1,0 +1,27 @@
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
+
+<button @attributes="AdditionalAttributes"
+        type="@ButtonType"
+        class="@ClassName"
+        style="@Style"
+        disabled="@IsDisabled"
+        aria-busy="@Loading.ToString().ToLowerInvariant()"
+        @onclick="OnClickAsync">
+    <span class="shop-button-content">
+        @if (!string.IsNullOrEmpty(StartIcon))
+        {
+            <ShopIcon Icon="@StartIcon" Class="shop-button-icon" />
+        }
+        @ChildContent
+        @if (!string.IsNullOrEmpty(EndIcon))
+        {
+            <ShopIcon Icon="@EndIcon" Class="shop-button-icon" />
+        }
+    </span>
+    @if (Loading)
+    {
+        <span class="shop-spinner shop-button-spinner" aria-hidden="true"></span>
+    }
+</button>
+<span class="shop-visually-hidden" role="status">@(Loading ? Strings.Loading : null)</span>

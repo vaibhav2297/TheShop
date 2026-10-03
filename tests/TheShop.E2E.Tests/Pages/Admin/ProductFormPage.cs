@@ -184,17 +184,17 @@ public sealed class ProductFormPage(IPage page)
 
     // ---- Variant image pin dialog (VariantImageDialog) ----------------------------------------
 
-    private ILocator DialogSurface => Page.Locator(".mud-dialog");
+    private ILocator DialogSurface => Page.GetByRole(AriaRole.Dialog, new() { Name = Strings.VariantImage_Title });
 
     /// <summary>A selectable gallery tile inside the pin dialog, located by its alt text (the variant label).</summary>
     public ILocator PinDialogImages => DialogSurface.Locator("img");
 
-    public Task SelectPinDialogImageAsync(int index) => PinDialogImages.Nth(index).ClickAsync();
+    public Task SelectPinDialogImageAsync(int index) => DialogSurface.Locator(".shop-variant-image-option").Nth(index).ClickAsync();
 
-    public ILocator ApplyToAllSharingCheckbox(int sharedCount, string sharedScopeLabel) =>
+    public ILocator ApplyToAllSharingRadio(int sharedCount, string sharedScopeLabel) =>
         DialogSurface.GetByLabel(string.Format(Strings.VariantImage_ApplyToAllSharing, sharedCount, sharedScopeLabel));
 
-    public ILocator ThisVariantOnlyCheckbox => DialogSurface.GetByLabel(Strings.VariantImage_ThisVariantOnly);
+    public ILocator ThisVariantOnlyRadio => DialogSurface.GetByLabel(Strings.VariantImage_ThisVariantOnly);
 
     public ILocator PinDialogSaveButton => DialogSurface.GetByRole(AriaRole.Button, new() { Name = Strings.VariantImage_Save });
 

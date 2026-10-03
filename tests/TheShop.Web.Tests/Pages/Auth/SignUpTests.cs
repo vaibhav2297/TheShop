@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
 using FluentAssertions;
@@ -28,7 +29,7 @@ namespace TheShop.Web.Tests.Pages.Auth;
 public class SignUpTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
     private readonly PendingSignUpState _pendingSignUp = new();
 
@@ -38,7 +39,7 @@ public class SignUpTests : TestContext
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton<BusyState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddSingleton(_pendingSignUp);
         Services.AddSingleton(Substitute.For<TheShop.Web.Theme.ShopTheme>());
@@ -187,9 +188,9 @@ public class SignUpTests : TestContext
         await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         // Assert: success snackbar was shown and user was navigated to the verify page.
-        _snackbar.Received().Add(
+        _notifications.Received().Show(
             Arg.Is<string>(s => s == Strings.Auth_CodeSent),
-            Severity.Success);
+            ShopNotificationKind.Success);
         navManager.Uri.Should().Contain(Routes.Auth.SignUpVerify);
     }
 
@@ -243,7 +244,7 @@ public class SignUpTests : TestContext
         var button = cut.Find("button.mud-button-filled");
         await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
-        _snackbar.Received().Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received().Show(Arg.Any<string>(), ShopNotificationKind.Error);
     }
 
     [Fact]

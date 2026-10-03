@@ -1,7 +1,7 @@
 // ES module — loaded lazily by ShopImage via IJSRuntime import().
 //
-// MudImage handles the <img> onerror event itself and exposes no failure callback, so ShopImage
-// listens on its own frame instead. Image error events do not bubble; a capture-phase listener on
+// ShopImage retains a frame observer to catch failures that precede bridge registration.
+// Image error events do not bubble; a capture-phase listener on
 // the frame still sees them, including for <img> elements Blazor adds later when a source changes.
 // Each report carries the branch and the exact src attribute so C# can ignore failures that belong
 // to a source it has since replaced.

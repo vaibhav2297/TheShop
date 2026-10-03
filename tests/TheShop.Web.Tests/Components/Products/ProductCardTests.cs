@@ -1,16 +1,11 @@
 using Bunit;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Components.Products;
 using TheShop.Web.Resources;
-using TheShop.Web.Theme;
 using Xunit;
 
 namespace TheShop.Web.Tests.Components.Products;
@@ -27,8 +22,6 @@ public class ProductCardTests : TestContext
     {
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
     }
 
     private static ProductSummaryDto BuildDto(
@@ -79,7 +72,7 @@ public class ProductCardTests : TestContext
 
         cut.Markup.Should().Contain(CurrencyFormatter.Format(19.99m));
         cut.Markup.Should().Contain(CurrencyFormatter.Format(24.99m));
-        cut.Find(".text-decoration-line-through").TextContent.Should().Contain(CurrencyFormatter.Format(24.99m));
+        cut.Find("s.shop-product-card-original-price").TextContent.Should().Contain(CurrencyFormatter.Format(24.99m));
     }
 
     [Fact]
@@ -90,7 +83,7 @@ public class ProductCardTests : TestContext
         var cut = Render<ProductCard>(p => p.Add(c => c.Product, dto));
 
         cut.Markup.Should().Contain(CurrencyFormatter.Format(24.99m));
-        cut.FindAll(".text-decoration-line-through").Should().BeEmpty(
+        cut.FindAll(".shop-product-card-original-price").Should().BeEmpty(
             "a non-discounted product must show only the single price, no struck-through original");
     }
 
@@ -172,7 +165,7 @@ public class ProductCardTests : TestContext
 
         // shop-image FR-5 supersedes the old storefront-logo fallback with a named placeholder.
         cut.FindAll("img").Should().BeEmpty();
-        cut.Find(".media-section .shop-image__placeholder").TextContent.Trim().Should().Be(dto.Name);
+        cut.Find(".shop-product-card-media .shop-image-placeholder").TextContent.Trim().Should().Be(dto.Name);
     }
 
     // =========================================================================
@@ -189,7 +182,8 @@ public class ProductCardTests : TestContext
         var image = cut.FindComponent<ShopImage>().Instance;
         image.Preset.Should().Be(ShopImagePreset.ProductCard);
         image.Src.Should().Be("https://example.com/tall.webp");
-        cut.FindComponent<MudImage>().Instance.ObjectFit.Should().Be(ObjectFit.Contain);
+        cut.Find(".shop-product-card-media .shop-image").ClassList.Should().Contain("shop-image-product-card");
+        cut.Find(".shop-product-card-media img").ClassList.Should().Contain("shop-image-contain");
     }
 
     [Fact]
@@ -212,7 +206,7 @@ public class ProductCardTests : TestContext
         var image = cut.FindComponent<ShopImage>();
         await cut.InvokeAsync(() => image.Instance.OnImageFailed("desktop", "https://example.com/broken.webp"));
 
-        cut.Find(".media-section .shop-image__placeholder").TextContent.Trim().Should().Be("Elf Bar BC5000");
+        cut.Find(".shop-product-card-media .shop-image-placeholder").TextContent.Trim().Should().Be("Elf Bar BC5000");
         cut.Find($"[aria-label='{Strings.AddToCart}']").Should().NotBeNull();
         cut.Find($"[aria-label='{Strings.Wishlist_Add}']").Should().NotBeNull();
     }
@@ -230,7 +224,7 @@ public class ProductCardTests : TestContext
         cut.Find($"[aria-label='{Strings.Wishlist_Add}']").Click();
 
         invoked.Should().BeTrue();
-        cut.Find(".media-section [data-shop-image]").QuerySelectorAll("a, button, [tabindex]").Should().BeEmpty();
+        cut.Find(".shop-product-card-media [data-shop-image]").QuerySelectorAll("a, button, [tabindex]").Should().BeEmpty();
     }
 
     // =========================================================================
@@ -294,9 +288,58 @@ public class ProductCardTests : TestContext
             .Add(c => c.Product, dto)
             .Add(c => c.OnSelect, EventCallback.Factory.Create(this, () => invoked = true)));
 
-        cut.Find(".content-section").Click();
+        cut.Find("button.shop-product-card-content").Click();
 
         invoked.Should().BeTrue("selecting the card body must raise OnSelect so the product-detail feature can wire navigation");
+    }
+
+    // =========================================================================
+    // Native semantics and consumer attributes
+    // =========================================================================
+
+    [Fact]
+    public void Render_ActionButtons_UseSharedSurfaceAndIconOnlyStyles()
+    {
+        var cut = Render<ProductCard>(p => p.Add(c => c.Product, BuildDto()));
+
+        var actions = cut.FindAll("button.shop-product-card-action");
+        actions.Should().HaveCount(2);
+        foreach (var action in actions)
+        {
+            action.ClassList.Should().Contain("shop-button-surface");
+            action.ClassList.Should().Contain("shop-icon-button");
+            action.ClassList.Should().Contain("shop-button-medium");
+            action.GetAttribute("aria-label").Should().NotBeNullOrWhiteSpace();
+        }
+    }
+
+    [Fact]
+    [Trait("Feature", "product-catalogue")]
+    public void Render_Always_UsesAnArticleWithSeparateNativeActionButtons()
+    {
+        var cut = Render<ProductCard>(p => p.Add(c => c.Product, BuildDto()));
+
+        var card = cut.Find("article.shop-product-card");
+        card.QuerySelector("button.shop-product-card-content")!.GetAttribute("type").Should().Be("button");
+        cut.Find($"button[aria-label='{Strings.AddToCart}']").GetAttribute("type").Should().Be("button");
+        cut.Find($"button[aria-label='{Strings.Wishlist_Add}']").GetAttribute("type").Should().Be("button");
+        card.QuerySelectorAll("button button, button a, a button, a a").Should().BeEmpty();
+    }
+
+    [Fact]
+    [Trait("Feature", "product-catalogue")]
+    public void Render_WithConsumerClassStyleAndAttributes_ForwardsThemToTheArticle()
+    {
+        var cut = Render<ProductCard>(p => p
+            .Add(c => c.Product, BuildDto())
+            .Add(c => c.Class, "featured-product")
+            .Add(c => c.Style, "--shop-card-test-size: 1rem;")
+            .AddUnmatched("data-testid", "featured-product-card"));
+
+        var card = cut.Find("article.shop-product-card");
+        card.ClassList.Should().Contain("featured-product");
+        card.GetAttribute("style").Should().Contain("--shop-card-test-size: 1rem;");
+        card.GetAttribute("data-testid").Should().Be("featured-product-card");
     }
 
     // =========================================================================

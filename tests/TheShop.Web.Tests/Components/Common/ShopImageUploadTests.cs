@@ -80,7 +80,7 @@ public class ShopImageUploadTests : TestContext
             .Add(c => c.PreviewPreset, ShopImagePreset.BrandLogo));
 
         cut.FindComponent<ShopImage>().Instance.Preset.Should().Be(ShopImagePreset.BrandLogo);
-        cut.FindComponent<MudImage>().Instance.ObjectFit.Should().Be(ObjectFit.Contain);
+        cut.Find("img.shop-image-media").ClassList.Should().Contain("shop-image-contain");
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class ShopImageUploadTests : TestContext
         var preview = cut.FindComponent<ShopImage>();
         await cut.InvokeAsync(() => preview.Instance.OnImageFailed("desktop", image.PreviewUrl));
 
-        cut.Find(".shop-image__placeholder").TextContent.Trim().Should().Be("broken-logo.png");
+        cut.Find(".shop-image-placeholder").TextContent.Trim().Should().Be("broken-logo.png");
         cut.Find("button.remove").GetAttribute("aria-label").Should().Be("Remove logo");
     }
 

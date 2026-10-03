@@ -1,163 +1,86 @@
 # Design — Theme (applying color, typography, icons, imagery)
 
-> Implementation guide for Rules 15, 16, 18, 19 from `SKILL.md`. Covers **applying** the theme in pages and components — the color priority hierarchy with the full MudBlazor class families, the typography utility classes, icon usage, and the imagery pattern. For **building** the `Shop`-prefixed theme classes (`ShopColors` / `ShopIcons` / `ShopTypography` token registries + the `ShopTheme` MudBlazor wiring), see `design-theme-setup.md`. The rules themselves live in `SKILL.md`; this file does not restate them.
+Implementation guide for Rules 15, 16, 18, 19. For token ownership and icon registration, see `design-theme-setup.md`. Native components use semantic HTML and project SCSS; vendor classes are not the native design API.
 
----
+## Design source
+
+Use the supplied [Figma component foundations](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=197-2570) for inspected visual values, variants, and geometry. Record the specific node and evidence when verifying a component. Do not copy generated Figma CSS or claim visual parity without rendering and comparison.
+
+Preserve native semantics, keyboard access, visible focus, text resizing, and accessible names. If Figma omits hover, disabled, loading, validation, or focus states, record the chosen treatment as an implementation decision—not a Figma measurement. Flag unresolved design conflicts rather than silently inventing variants.
 
 ## Applying color (Rule 15)
 
-Rule 15 sets the priority; this section spells out the MudBlazor class families so you can pick the right one. The `Color` enum values and Mud classes are wired through `ShopTheme` to the `ShopColors` tokens (see `design-theme-setup.md`).
+Choose a semantic token by its role and consume it through the component's own SCSS class. Current tokens live in `src/TheShop.Web/Styles/tokens/`; inspect their declarations before use.
 
-### Step 1 — `Color` enum parameter
+```scss
+.shop-product-card {
+    color: var(--shop-color-text-primary);
+    background-color: var(--shop-color-surface-default);
+    border: 1px solid var(--shop-color-lines-default);
+}
 
-Most MudBlazor components accept `Color`. Use it first.
+.shop-product-card-description {
+    color: var(--shop-color-text-secondary);
+}
 
-```razor
-<MudButton Color="Color.Primary" Variant="Variant.Filled">Save</MudButton>
-<MudIcon Color="Color.Secondary" Icon="@ShopIcons.Cart" />
-<MudChip Color="Color.Tertiary">New</MudChip>
-<MudProgressCircular Color="Color.Primary" />
-<MudAlert Severity="Severity.Success">Saved</MudAlert>
+.shop-button-filled {
+    color: var(--shop-color-primary-contrast);
+    background-color: var(--shop-color-primary);
+}
 ```
 
-Available values: `Default`, `Primary`, `Secondary`, `Tertiary`, `Info`, `Success`, `Warning`, `Error`, `Dark`, `Inherit`, `Surface`, `Transparent`. These are wired through `ShopTheme` to your `ShopColors` values.
-
-### Step 2 — most-specific auto-generated MudBlazor class
-
-When the `Color` enum doesn't fit (custom `MudPaper` styling, a plain `<div>`, a property that doesn't accept the enum), pick the **most specific** family that matches the facet you need:
-
-| Family | Use for | Examples |
-|---|---|---|
-| `mud-theme-{name}` | matched bg + contrasting text | `mud-theme-primary`, `mud-theme-secondary`, `mud-theme-tertiary`, `mud-theme-info`, `mud-theme-success`, `mud-theme-warning`, `mud-theme-error`, `mud-theme-dark`, `mud-theme-surface` |
-| `mud-{name}-text` | text colour only | `mud-primary-text`, `mud-secondary-text`, `mud-error-text` |
-| `mud-{name}-bg` / `mud-bg-{name}` | background only | `mud-primary-bg`, `mud-error-bg` |
-| `mud-{name}-hover` | hover-state colour | `mud-primary-hover` |
-| `mud-border-{name}` | border colour | `mud-border-primary`, `mud-border-lines-default` |
-| `mud-icon-{name}` | icon-specific palette | `mud-icon-default`, `mud-icon-primary` |
-| `mud-text-{slot}` | palette text shortcuts | `mud-text-primary`, `mud-text-secondary`, `mud-text-disabled` |
-| Lighten/darken variants | where MudBlazor emits them | per the SCSS source |
-
-The canonical source: [`MudBlazor/Styles/abstracts/_colors.scss`](https://github.com/MudBlazor/MudBlazor/blob/dev/src/MudBlazor/Styles/abstracts/_colors.scss).
-
-```razor
-<MudPaper Class="mud-theme-secondary">Themed paper (bg + text)</MudPaper>
-<MudText Class="mud-error-text">Validation failed</MudText>
-<div class="mud-border-primary">Bordered block</div>
-```
-
-**Pick the most specific.** If you only need text, use `mud-{name}-text` — not `mud-theme-{name}`. `mud-theme-*` is for the matched background + foreground pair, nothing else.
-
-### Step 3 — ask user (last resort)
-
-When neither the `Color` enum nor any MudBlazor auto-generated class can produce the result, describe the limitation and propose alternatives. Proceed only with the user's chosen approach. Never silently hardcode a hex.
-
----
-
-## Icons — custom SVG only (Rule 19)
-
-This project uses **custom SVG icons only**. Material Design icons are not used. Every icon comes from the `ShopIcons` registry and is referenced by its **semantic** name. To add a new icon constant to the registry, see `design-theme-setup.md` §ShopIcons.
-
-```razor
-@* ✅ *@
-<MudIcon Icon="@ShopIcons.Cart" />
-<MudButton StartIcon="@ShopIcons.CartAdd">Add to Cart</MudButton>
-<MudIconButton Icon="@ShopIcons.Close" OnClick="@Close" />
-
-@* ❌ Inline SVG path *@
-<MudIcon Icon="<path d='M12 2L2 7v10c0...'/>" />
-
-@* ❌ Material Icons reference *@
-<MudIcon Icon="@Icons.Material.Filled.ShoppingCart" />
-```
-
-**Why no Material Icons:** This project uses a custom icon set designed for the brand. Mixing Material with custom creates visual inconsistency.
-
----
+- Classes use component-prefixed kebab-case: `.shop-button-icon`, `.shop-button-filled`, `.shop-product-card-title`. No BEM `__` or `--` inside class names.
+- CSS custom properties retain mandatory leading `--`: `--shop-color-primary`.
+- Keep selectors shallow. Prefer native `:hover`, `:focus-visible`, and `:disabled` states.
+- No hex values in Razor, new `--mud-*` consumers, or permanent palette copies in C#.
+- Check contrast for actual foreground/background pairs. Decorative status swatches are not automatically suitable for small text; use the purpose-specific text token where available.
+- Convey errors and status with text or other cues as well as color.
 
 ## Typography usage (Rule 16, Rule 18)
 
-The per-`Typo` sizes/weights are defined in `ShopTypography` and wired via `ShopTheme` (see `design-theme-setup.md`); this section covers how to apply them in markup.
+Use semantic headings, paragraphs, and inline elements. Heading level expresses document hierarchy; a component class determines its visual size. Keep a page heading available for navigation focus.
 
-### Step 1 — pick a `Typo`
+`Styles/tokens/_typography.scss` owns values. `Styles/base/_typography.scss` applies shared defaults; component classes apply meaningful variations:
 
-```razor
-<MudText Typo="Typo.h1">Premium Disposables</MudText>
-<MudText Typo="Typo.h4">Product Name</MudText>
-<MudText Typo="Typo.body1">Description text</MudText>
-<MudText Typo="Typo.caption">Footnote text</MudText>
-<MudText Typo="Typo.overline">CATEGORY</MudText>
-<MudText Typo="Typo.subtitle1">Section subtitle</MudText>
+```scss
+@use '../abstracts/text-style';
+
+.shop-product-card-title {
+    @include text-style.apply(h6);
+    // Figma's product title is an unbound 20px Regular text node.
+    font-weight: var(--shop-typography-body-1-font-weight);
+}
 ```
 
-### Combine `Typo` with `Color`
+Use the 13 Figma-named styles through `text-style.apply(style)` or their direct `--shop-typography-{style}-{property}` variables. No application typography aliases. Use `rem` for scalable type and `normal` for Figma AUTO line height; use unitless ratios only when the design specifies an explicit line height. Preserve semantic text decoration and component spacing. Do not fix the height of text containers or inline static font styles. Small shared utility families, if justified, are generated from Sass maps/lists under `utilities/`, not emitted from `abstracts/`. Do not recreate `MudText` as a `ShopText` wrapper.
 
-```razor
-<MudText Typo="Typo.h2" Color="Color.Primary">Featured</MudText>
-<MudText Typo="Typo.body2" Color="Color.Secondary">Subtitle text</MudText>
-<MudText Typo="Typo.caption" Color="Color.Error">Error message</MudText>
-```
+During coexistence, shared native defaults are scoped to migrated surfaces (currently `.shop-native`). Do not broaden resets or typography selectors until remaining vendor screens have been checked.
 
-### Step 2 — off-spec sizes/weights via `fs-*` / `fw-*` (Rule 18)
+## Icons — custom SVG only (Rule 19)
 
-If the design needs a font size or weight that no `Typo` value cleanly produces, **do not** inline-style and **do not** invent a one-off CSS class. Compose with utilities from `Styles/abstracts/_typography.scss`:
+Use the existing `Theme/ShopIcons.cs` registry. New entries use semantic names; do not replace existing consumers merely to rename unrelated entries.
 
-- `fs-{n}` — font-size in px. Already-generated: `$font-sizes: (10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 34, 48, 60, 96)`.
-- `fw-{n}` — font-weight. Already-generated: `$font-weights: (400, 500, 600, 700)`.
+`ShopIcon` renders a trusted registry fragment inside its SVG root. It is decorative and hidden from assistive technology; the containing button/link owns its accessible name. Visible resource-backed text is preferred; icon-only controls need a resource-backed accessible label.
 
-```razor
-<MudText Typo="Typo.h4" Class="fs-22 fw-600">Off-spec heading</MudText>
-<MudText Typo="Typo.body1" Class="fw-500">Emphasized body</MudText>
-```
-
-To add a new size/weight: add it to the `$font-sizes` or `$font-weights` list in `_typography.scss` — the `@each` loop generates the class. **Never hand-write a `.fs-{n}` selector.**
-
-### Need a structural new typography variant (font family, line-height)?
-
-**Stop and ask the user first** (Rule 14 applies to typography too). Do not introduce custom CSS classes or inline styles for structural typography changes.
-
----
+Never pass user-provided or remote SVG/HTML into `ShopIcon`, `StartIcon`, `EndIcon`, or another `MarkupString` sink. Do not add Material Icons or embed duplicate paths in page markup. Preserve the fragment's view box assumptions and `currentColor` behavior.
 
 ## Imagery & static assets
 
 | Asset type | Location | Format |
 |---|---|---|
-| Product images | Supabase Storage (`products/` bucket) | WebP preferred, JPG fallback |
-| Category banners | Supabase Storage (`categories/` bucket) | WebP, 1920×600 |
+| Product images | Supabase Storage (`products/` bucket) | WebP preferred; supported existing formats retained |
+| Category banners | Supabase Storage (`categories/` bucket) | WebP preferred |
 | Brand logos | `wwwroot/images/brands/` | SVG |
 | Site logo | `wwwroot/images/logo/` | SVG |
 | Favicon | `wwwroot/favicon.svg` | SVG |
 | Hero images | `wwwroot/images/heroes/` | WebP |
 | Static UI graphics | `wwwroot/images/ui/` | SVG / WebP |
-| Open Graph image | `wwwroot/images/og/` | PNG, 1200×630 |
+| Open Graph image | `wwwroot/images/og/` | PNG |
 
-Requirements:
-- **Always WebP** for raster images (smaller, same quality). JPG fallback only if needed.
-- **Always set `width` and `height`** to prevent layout shift.
-- **Alt text from resources only** — never hardcoded (Rule 11 applies).
-- **`loading="lazy"`** for images below the fold.
+Reuse `ShopImage` and its presets for product/category imagery. Presets own aspect ratio, object fit, and responsive source behavior; do not replace them with arbitrary dimensions or change existing stored assets during this UI migration. Native images outside that component need intrinsic dimensions or a reserved aspect-ratio container to prevent layout shift.
 
-```razor
-<MudImage Src="@_product.ImageUrl"
-          Alt="@string.Format(Strings.Product_ImageAlt, _product.Name)"
-          Width="400"
-          Height="400"
-          ObjectFit="ObjectFit.Cover" />
-```
+Meaningful alternative text is resource-backed, with product data interpolated where appropriate. Decorative images have empty alt text. Preserve responsive sources, loading priorities, image-error fallbacks, and meaningful placeholder labels; lazy-load below-the-fold images, not the page's important initial image.
 
-**Product image guidelines:** 1:1 aspect ratio for catalog, min 800×800, white or transparent background. File naming: `{product-slug}-{variant}-{angle}.webp` (e.g. `northdrift-disposable-blue-front.webp`).
+## Transitional vendor theme
 
----
-
-## Common mistakes
-
-| Mistake | Fix |
-|---|---|
-| `<MudButton Style="background: #101010">` | `<MudButton Color="Color.Primary">` |
-| `<MudText Class="mud-theme-error">Error</MudText>` (only wanted text colour) | `<MudText Class="mud-error-text">Error</MudText>` — pick the most specific class |
-| `<MudIcon Icon="@Icons.Material.Filled.ShoppingCart" />` | `<MudIcon Icon="@ShopIcons.Cart" />` |
-| `<span>Footnote</span>` | `<MudText Typo="Typo.caption">Footnote</MudText>` |
-| `<MudText Style="font-size: 22px; font-weight: 600;">` | `<MudText Typo="Typo.h4" Class="fs-22 fw-600">` — extend the SCSS `$list` if 22/600 aren't already generated |
-| Hand-writing `.fs-22 { font-size: 22px; }` | Add `22` to `$font-sizes` and let `@each` generate it |
-| Hardcoded `alt="Product image"` | `Alt="@string.Format(Strings.Product_ImageAlt, _product.Name)"` |
-
-> Creating or renaming a `Shop*` theme class? See `design-theme-setup.md` for the `Shop` prefix convention (Rule 13) and registry shapes.
+Unconverted MudBlazor components may continue using their existing `ShopTheme`, providers, and C# values until their replacements are verified. This is a temporary compatibility bridge, not guidance for new native components. Remove bridges with their last consumer; do not prematurely remove providers, assets, or registrations that still serve working screens.

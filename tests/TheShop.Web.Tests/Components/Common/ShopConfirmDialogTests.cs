@@ -1,127 +1,126 @@
 using Bunit;
 using FluentAssertions;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
+using Microsoft.JSInterop;
+using TheShop.Web.Common.Dialogs;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using Xunit;
 
 namespace TheShop.Web.Tests.Components.Common;
 
-/// <summary>
-/// Tests for <see cref="ShopConfirmDialog"/> — the reusable confirm/cancel dialog behind every
-/// deactivate and delete confirmation (RULE-7, RULE-14). Confirming closes the dialog with a
-/// non-cancelled, truthy result; cancelling or dismissing leaves everything untouched (Behavior 7,
-/// AC-14). All text is caller-supplied and already localized (plan §5 Decision 10) — the dialog
-/// itself resolves no resource keys, so this class asserts wiring, not translation.
-/// <see href=".specs/manage-brands/spec.md"/>
-/// </summary>
-/// <remarks>
-/// <see cref="MudDialog"/> resolves its container through an internal cascading parameter that only
-/// a real <see cref="MudDialogProvider"/> + <see cref="IDialogService"/> pipeline supplies (mirroring
-/// how <c>ManageBrands.razor.cs</c> shows this dialog) — a bare <see cref="IMudDialogInstance"/>
-/// substitute cascaded by hand renders empty markup, so these tests go through the provider.
-/// </remarks>
 public class ShopConfirmDialogTests : TestContext
 {
+    private readonly ShopDialogService _dialogs = new();
+
     public ShopConfirmDialogTests()
     {
-        JSInterop.Mode = JSRuntimeMode.Loose;
-        JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
+        Services.AddSingleton(_dialogs);
+        JSInterop.SetupModule("./js/shopDialog.js").Mode = JSRuntimeMode.Loose;
     }
 
-    private async Task<(IRenderedComponent<MudDialogProvider> Provider, IDialogReference Reference)> ShowDialogAsync(
-        string titleText = "Delete Elf Bar?",
-        string bodyText = "This cannot be undone.",
-        string confirmLabel = "Delete",
-        string? cancelLabel = null,
-        Color confirmColor = Color.Error)
+    private async Task<(IRenderedComponent<ShopDialogHost> Host, Task<bool> Result)> ShowAsync(
+        ShopConfirmationOptions? options = null)
     {
-        var provider = Render<MudDialogProvider>();
-        var dialogService = Services.GetRequiredService<IDialogService>();
-
-        var parameters = new DialogParameters<ShopConfirmDialog>
-        {
-            { x => x.TitleText, titleText },
-            { x => x.BodyText, bodyText },
-            { x => x.ConfirmLabel, confirmLabel },
-            { x => x.ConfirmColor, confirmColor },
-        };
-        if (cancelLabel is not null)
-            parameters.Add(x => x.CancelLabel, cancelLabel);
-
-        IDialogReference reference = null!;
-        await provider.InvokeAsync(async () => reference = await dialogService.ShowAsync<ShopConfirmDialog>(string.Empty, parameters));
-        return (provider, reference);
-    }
-
-    // =========================================================================
-    // Renders the caller-supplied, already-localized text (RULE-7, RULE-14)
-    // =========================================================================
-
-    [Fact]
-    [Trait("Feature", "manage-brands")]
-    public async Task Render_Always_ShowsTheSuppliedTitleAndBody()
-    {
-        var (provider, _) = await ShowDialogAsync(titleText: "Delete Elf Bar?", bodyText: "This cannot be undone.");
-
-        provider.Markup.Should().Contain("Delete Elf Bar?");
-        provider.Markup.Should().Contain("This cannot be undone.");
+        var host = Render<ShopDialogHost>();
+        Task<bool> result = null!;
+        await host.InvokeAsync(() => { result = _dialogs.ConfirmAsync(options ?? new("Delete brand?", "Cannot be undone.", "Delete", true)); });
+        host.WaitForElement("dialog");
+        return (host, result);
     }
 
     [Fact]
-    [Trait("Feature", "manage-brands")]
-    public async Task Render_Always_ShowsTheSuppliedConfirmLabel()
+    public async Task Render_LocalizedCopy_UsesAccessibleEncodedNativeMarkup()
     {
-        var (provider, _) = await ShowDialogAsync(confirmLabel: "Delete 3 brands");
-
-        provider.Markup.Should().Contain("Delete 3 brands");
+        var (host, _) = await ShowAsync(new("<img src=x onerror=alert(1)>", "Body <script>bad()</script>", "Remove"));
+        var dialog = host.Find("dialog");
+        host.Find("#" + dialog.GetAttribute("aria-labelledby")).TextContent.Should().Contain("<img");
+        host.Find("#" + dialog.GetAttribute("aria-describedby")).TextContent.Should().Contain("<script>");
+        host.FindAll("img,script,form").Should().BeEmpty();
+        dialog.HasAttribute("open").Should().BeFalse("showModal owns modal state, not a rendered open attribute");
+        host.FindAll("button").Should().OnlyContain(button => button.GetAttribute("type") == "button");
+        host.Find("[data-testid='dialog-close']").GetAttribute("aria-label").Should().Be(Strings.Close);
+        host.Find("[data-testid='dialog-cancel']").TextContent.Should().Be(Strings.Cancel);
+        host.Find("[data-testid='dialog-cancel']").HasAttribute("data-dialog-initial-focus").Should().BeTrue();
+        host.Find("[data-testid='dialog-confirm']").ClassList.Should().Contain("shop-button-primary")
+            .And.NotContain("shop-button-error");
     }
 
     [Fact]
-    [Trait("Feature", "manage-brands")]
-    public async Task Render_WithoutAnExplicitCancelLabel_FallsBackToTheDefaultCancelText()
+    public async Task Confirm_ExplicitActivation_CompletesTrueAndRemovesDialog()
     {
-        var (provider, _) = await ShowDialogAsync();
-
-        provider.Markup.Should().Contain(Strings.Cancel);
+        var (host, result) = await ShowAsync();
+        host.Find("[data-testid='dialog-confirm']").ClassList.Should().Contain("shop-button-error");
+        await host.Find("[data-testid='dialog-confirm']").ClickAsync(new());
+        (await result).Should().BeTrue();
+        host.WaitForAssertion(() => host.FindAll("dialog").Should().BeEmpty());
     }
 
-    // =========================================================================
-    // Confirm — closes with a non-cancelled result the caller reads as "confirmed" (RULE-7)
-    // =========================================================================
-
-    [Fact]
-    [Trait("Feature", "manage-brands")]
-    public async Task ClickConfirm_WhenActivated_ClosesTheDialogWithANonCancelledResult()
+    [Theory]
+    [InlineData("dialog-cancel")]
+    [InlineData("dialog-close")]
+    public async Task Dismiss_ButtonActivation_CompletesFalse(string testId)
     {
-        var (provider, reference) = await ShowDialogAsync(confirmLabel: "Delete");
-
-        await provider.InvokeAsync(() => provider.FindAll("button").First(b => b.TextContent.Trim() == "Delete").Click());
-
-        var result = await reference.Result;
-        result.Should().NotBeNull();
-        result!.Canceled.Should().BeFalse();
+        var (host, result) = await ShowAsync();
+        await host.Find($"[data-testid='{testId}']").ClickAsync(new());
+        (await result).Should().BeFalse();
     }
 
-    // =========================================================================
-    // Cancel — nothing changes, the caller reads a cancelled result (RULE-7, AC-14)
-    // =========================================================================
+    [Fact]
+    public async Task Dismiss_BrowserCallback_CompletesFalse()
+    {
+        var (host, result) = await ShowAsync();
+        await host.InvokeAsync(() => host.FindComponent<ShopDialog>().Instance.DismissAsync());
+        (await result).Should().BeFalse();
+    }
 
     [Fact]
-    [Trait("Feature", "manage-brands")]
-    public async Task ClickCancel_WhenActivated_CancelsTheDialogWithoutClosingItAsConfirmed()
+    public async Task Navigation_CompletedRouteChange_CancelsActiveAndQueuedRequests()
     {
-        var (provider, reference) = await ShowDialogAsync();
+        var (host, first) = await ShowAsync();
+        var second = _dialogs.ConfirmAsync(new("Second", "Body", "Confirm"), Xunit.TestContext.Current.CancellationToken);
+        await host.InvokeAsync(() => Services.GetRequiredService<NavigationManager>().NavigateTo("/next"));
+        (await first).Should().BeFalse();
+        (await second).Should().BeFalse();
+        host.WaitForAssertion(() => host.FindAll("dialog").Should().BeEmpty());
+    }
 
-        await provider.InvokeAsync(() => provider.FindAll("button").First(b => b.TextContent.Trim() == Strings.Cancel).Click());
+    [Fact]
+    public async Task Disposal_HostRemoved_CancelsAllRequestsAndAllowsNewHost()
+    {
+        var (host, first) = await ShowAsync();
+        var second = _dialogs.ConfirmAsync(new("Second", "Body", "Confirm"), Xunit.TestContext.Current.CancellationToken);
+        await DisposeComponentsAsync();
+        (await first.WaitAsync(TimeSpan.FromSeconds(2), Xunit.TestContext.Current.CancellationToken)).Should().BeFalse();
+        (await second.WaitAsync(TimeSpan.FromSeconds(2), Xunit.TestContext.Current.CancellationToken)).Should().BeFalse();
+        _dialogs.Current.Should().BeNull();
+        var replacement = Render<ShopDialogHost>();
+        replacement.Markup.Should().BeEmpty();
+    }
 
-        var result = await reference.Result;
-        result.Should().NotBeNull();
-        result!.Canceled.Should().BeTrue();
+    [Fact]
+    public async Task Render_InitializationFails_CancelsRequestInsteadOfStrandingCaller()
+    {
+        var module = JSInterop.SetupModule("./js/shopDialog.js");
+        module.Mode = JSRuntimeMode.Loose;
+        module.SetupVoid("show", _ => true).SetException(new JSException("showModal failed"));
+        var host = Render<ShopDialogHost>();
+        Task<bool> result = null!;
+        await host.InvokeAsync(() => { result = _dialogs.ConfirmAsync(new("Title", "Body", "Confirm")); });
+        host.WaitForAssertion(() => result.IsCompleted.Should().BeTrue());
+        (await result).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Confirm_RepeatedCallback_CompletesOnlyOnce()
+    {
+        var calls = new List<bool>();
+        var cut = Render<ShopConfirmDialog>(p => p
+            .Add(x => x.Options, new("Title", "Body", "Confirm"))
+            .Add(x => x.Completed, value => calls.Add(value)));
+        await cut.Find("[data-testid='dialog-confirm']").ClickAsync(new());
+        await cut.Find("[data-testid='dialog-cancel']").ClickAsync(new());
+        calls.Should().Equal(true);
     }
 }

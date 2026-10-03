@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using Bunit;
 using Bunit.Rendering;
 using FluentAssertions;
@@ -27,7 +28,7 @@ namespace TheShop.Web.Tests.Components.Common;
 public class ProfileMenuTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public ProfileMenuTests()
@@ -35,7 +36,7 @@ public class ProfileMenuTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddSingleton<BusyState>();
         Services.AddMudServices();

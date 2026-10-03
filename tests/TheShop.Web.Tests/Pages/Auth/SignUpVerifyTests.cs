@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using Bunit;
 using FluentAssertions;
 using MediatR;
@@ -26,7 +27,7 @@ namespace TheShop.Web.Tests.Pages.Auth;
 public class SignUpVerifyTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public SignUpVerifyTests()
@@ -35,7 +36,7 @@ public class SignUpVerifyTests : TestContext
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton<BusyState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddSingleton(Substitute.For<TheShop.Web.Theme.ShopTheme>());
         Services.AddMudServices();

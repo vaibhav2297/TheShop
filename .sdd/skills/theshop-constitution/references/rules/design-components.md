@@ -1,293 +1,125 @@
 # Design — Components
 
-> Implementation guide for Rules 14, 17, 20, 22, 23, 24, 25 from `SKILL.md`. Covers when to extract a reusable component, the `MudComponentBase` + `Class`/`Style` forwarding pattern, per-MudBlazor-component rules, the busy-state surface, and code-behind split. The rules themselves live in `SKILL.md`; this file does not restate them.
+Implementation guidance for native component contracts. Use approved Figma components for appearance, semantic HTML for structure, and Blazor for behavior. This reference adds no workflow stage or gate.
 
----
+## Choose the smallest useful component
 
-## Deciding whether to extract a reusable component (Rule 25)
+Use headings, paragraphs, lists, anchors, sections, Grid, and Flexbox directly. Do not recreate vendor layout/text wrappers such as `ShopStack`, `ShopGrid`, or `ShopText`.
 
-Before writing a new component, decide whether a component is the right unit. The forwarding rules (`MudComponentBase`, `Class`/`Style`, builders) only matter once you've decided extraction is justified. Default to **inline markup** until an *extract* trigger fires — and stop if any *avoid* signal is also true.
+Extract repeated UI and behavior with a stable responsibility. Keep single-use layout inline. Share repeated logic through a helper or state object when a visual component adds nothing. Avoid speculative flags, generic frameworks, and extraction solely to shorten a file. Search existing controls such as `ShopButton` and `ShopImage` before adding another.
 
-### Extract when
+## Base and attribute forwarding
 
-- The same UI **and** behaviour repeats in two or more places today, non-trivially.
-- Design consistency across pages depends on it (product card, OTP input, page header).
-- Logic and markup belong together — extracting just one would split a tight coupling.
-- The component has a **single, clearly named** responsibility (`ShopProductCard`, `ShopOtpInput`).
-- The pattern is stable and unlikely to need restructuring in the next handful of changes.
-- Reuse demonstrably improves maintenance or readability at the call sites.
-- You can name it specifically — never `Generic*`, `Common*`, `Shared*`, or numeric suffixes.
+| Need | Base |
+|---|---|
+| Render-only content or local behavior | `ComponentBase` |
+| Shared visual-root class, style, and attribute contract | `ShopComponentBase` |
+| Custom editable value participating in an `EditContext` | `InputBase<TValue>` |
+| Layout | `LayoutComponentBase` |
 
-### Avoid when
+`ShopComponentBase` supplies only `Class`, `Style`, and `AdditionalAttributes`. Do not turn it into a validation, loading, service-location, or rendering framework. Prefer Blazor built-in inputs before a custom `InputBase<TValue>` control.
 
-- Used **only once** today and you cannot point at a concrete second use.
-- The only motivation is to reduce lines in the parent page.
-- You struggle to name it or explain its responsibility in one sentence.
-- It would need many parameters / boolean flags to satisfy its callers (sign of two components hiding in one).
-- It mixes multiple unrelated responsibilities (presentation + business logic + side effects).
-- Only the **logic** repeats — not the markup. Extract a service, helper, or `*State` store instead.
-- The markup is tiny (one or two MudBlazor components in a `MudStack`) and the abstraction adds no semantics.
-- You're future-proofing for a hypothetical caller. Wait for the second real call site.
-
-**Rule of thumb:** when in doubt, inline first; extract on the second real call site. Per `CLAUDE.md`: *three similar lines is better than a premature abstraction.* This applies double for Razor — the cost of an awkward component (parameter explosion, slot juggling, render-tree churn) is high.
-
----
-
-## Reusable component skeleton (Rules 23, 24)
-
-Every reusable component:
-1. Inherits from `MudComponentBase` (directly or transitively).
-2. Forwards `Class` and `Style` to its root element.
-
-### Direct inheritance examples
+Compose conditional classes in code-behind:
 
 ```csharp
-// ✅ Direct child of MudComponentBase
-public partial class ShopProductCard : MudComponentBase { }
-
-// ✅ Transitive — chain anywhere is fine
-public partial class ShopOrderCard : ShopProductCard { }       // ShopProductCard : MudComponentBase
-
-// ✅ Extending a Mud component (Mud components inherit from MudComponentBase)
-public partial class ShopBrandedButton : MudButton { }
-
-// ❌ Missing MudComponentBase entirely
-public partial class ShopProductCard : ComponentBase { }       // no Class/Style/UserAttributes plumbing
+private string ClassName => ShopCssClass.Join(
+    "shop-product-card",
+    Compact ? "shop-product-card-compact" : null,
+    Class);
 ```
 
-A consumer must always be able to write `<ShopProductCard Class="my-spacing" Style="..." />` and have it work without the component re-declaring pass-through attributes.
+For enum-based modifiers, use `ShopCssClass.Modifier("shop-button", Size)` within `Join` instead of repeating switches. It emits component-prefixed kebab-case, rejects undeclared enum values, and leaves SCSS ownership with the component. It is a class helper, not a style-value or rendering framework.
 
-### Pattern A — root has no internal classes/styles
-
-Forward `Class` and `Style` directly:
+Forward to the documented root:
 
 ```razor
-@* ShopSection.razor — pass-through *@
-<MudGrid Class="@Class" Style="@Style">
-    <MudPaper>
-        @ChildContent
-    </MudPaper>
-</MudGrid>
+<article @attributes="AdditionalAttributes"
+         class="@ClassName"
+         style="@Style">
+    @ChildContent
+</article>
 ```
 
-### Pattern B — root has internal classes/styles
+For native elements, Blazor resolves duplicate attributes from right to left. Place the attribute splat before explicit component-owned attributes so a consumer cannot replace enforced `disabled`, `type`, event handlers, or identity markers. When merging dictionaries, use case-insensitive keys and apply enforced values last. Test precedence; class-name order does not determine CSS precedence.
 
-Compose with `CssBuilder` / `StyleBuilder` and **end the chain with `.AddClass(Class)` / `.AddStyle(Style)`** so the consumer's values land last and win:
+`Class` and `Style` target the documented root. Inputs forward `id`, `name`, `aria-*`, and native input attributes to the actual input, not its wrapper. Expose wrapper styling separately only when a caller needs it.
+
+## Actions and state
+
+Use `ShopButton` for actions and anchors with centralized `Routes` values for navigation. Do not nest interactive elements or make generic `div` elements imitate buttons. `ShopButton` defaults to `type="button"`; opt into submission explicitly.
 
 ```razor
-@* ShopAlert.razor *@
-<MudGrid Class="@Classname" Style="@Stylename">
-    <MudPaper>
-        @ChildContent
-    </MudPaper>
-</MudGrid>
+<ShopButton Type="submit"
+            Variant="ShopVariant.Filled"
+            Disabled="@busy">
+    @Strings.Save
+</ShopButton>
 ```
 
-```csharp
-// ShopAlert.razor.cs
-protected string Classname => new CssBuilder("mud-alert")
-    .AddClass("mud-dense", Dense)
-    .AddClass("mud-square", Square)
-    .AddClass(Class)              // consumer's Class last
-    .Build();
+The `busy` value above comes from `BusyFor`, not a page-owned flag. Icon-only actions need resource-backed accessible names. Use trusted `ShopIcons` fragments; decorative icons remain hidden from assistive technology.
 
-private string Stylename => new StyleBuilder()
-    .AddStyle("margin-top", "4px")
-    .AddStyle(Style)              // consumer's Style last
-    .Build();
-```
+Use `ShopIconButton` for icon-only actions. Supply nonblank `Icon` and resource-backed `Label`; it composes `ShopButton` and `ShopIcon` without adding a DOM wrapper. It supports all shared colors, variants, and Small/Medium/Large sizes, defaulting to Primary/Filled/Medium. `Label` owns the accessible name and overrides conflicting ARIA naming attributes. Icon-button geometry belongs in `_icon-button.scss`, independent of text-button sizes; color/state behavior remains shared. The inspected variant-specific size table and one inferred Figma variant name are recorded in `UI_MIGRATION_GUIDE.md` section 6.2.
 
-### Anti-pattern — silently dropping consumer overrides
+Shared visual choices live in `Common/UI/`: `ShopColor` selects a color role, `ShopVariant` selects Filled/Outlined/Text treatment, and `ShopSize` selects a component-relative size. `ShopButton` defaults to Primary/Filled/Medium. Components opt into only applicable choices; do not add these parameters to `ShopComponentBase` or force a shared enum onto a different concept such as dialog width. Enums contain no color values. Owned SCSS selects contrast-token labels for filled treatments and base-role labels for outlined/text; check actual contrast separately and retain the documented temporary palette limitations. Select colors through `Color`, not shortcut classes that override the variant; destructive intent maps to `ShopColor.Error`, while image-overlay buttons use `ShopColor.Surface`.
+
+Handle applicable default, hover, pressed, focus, disabled, loading, and error states. Native `disabled` prevents browser activation; the handler also guards disabled dispatch. Disabled appearance or `aria-disabled` alone does not prevent activation. Figma guides variants; missing keyboard/loading/error states still require accessible treatment.
+
+## Dialog composition
+
+`ShopDialog` accepts `TitleContent`, `DialogContent`, and `DialogActions`. Title markup supplies the accessible name through the component's unique wrapper ID; callers provide a semantic heading and localized text. Only the middle content region scrolls; header/actions remain visible. Keep safe initial focus on an action carrying `data-dialog-initial-focus` and preserve native modal dismissal/focus restoration.
+
+Use the separate shared `ShopMaxWidth` enum for `MaxWidth`, not control `ShopSize`. Omitted/null preserves the 500px theme default; explicit choices consume the SCSS sizing scale, and `None` retains viewport gutters without a named cap. Do not put pixel widths or per-value switches in Razor/C#.
+
+## Notifications
+
+Inject `IShopNotificationService` for operation feedback and call `Show` with localized plain text plus `ShopNotificationKind`. The scoped service owns bounded messages/timers; `ShopUiHost` owns the single `ShopNotificationHost`. Do not reintroduce `ISnackbar` or snackbar providers. Preserve existing inline validation and operation failure channels.
+
+All current operation results use a polite live region. Notifications never take focus; hover or focus pauses expiry. Text is encoded, with a resource-named dismiss action. Keep notification kinds in the API/model, but render one identical bar for every kind: Figma Snackbar `2948:17575`, primary background, primary-contrast text/icon, subtitle-2 typography, 24px padding/gap, and an 18px close icon. No visible kind labels or severity accents. Place bottom-center at notification layer 1500; native modal top-layer ordering still wins. Numeric layout tokens belong in `_theme.scss`, appearance in `_notification.scss`. See `UI_MIGRATION_GUIDE.md` section 8.3 for timing, overflow, navigation, and accessible dismiss sizing.
+
+## Labels and validation
+
+Associate visible labels with input IDs. Placeholders supplement labels; they never replace them. Associate helper/error text using `aria-describedby`, and expose invalid state when applicable. Group related choices with `fieldset` and `legend`.
 
 ```razor
-@* ❌ consumer's Class/Style is silently dropped *@
-<MudGrid Class="mud-alert">
-    <MudPaper>@ChildContent</MudPaper>
-</MudGrid>
+<label class="shop-field-label" for="email">@Strings.Email_Label</label>
+<InputText id="email"
+           class="shop-field-input"
+           @bind-Value="Model.Email"
+           aria-describedby="email-hint" />
+<span id="email-hint" class="shop-field-hint">@Strings.Email_Hint</span>
+<ValidationMessage For="@(() => Model.Email)" />
 ```
 
-This is a violation of Rule 24 even though the markup "works" — every call-site override goes nowhere.
+This example belongs in an `EditForm`. Add a stable error ID to the described-by relationship when the chosen error renderer supports it. Repeated instances need unique IDs, not copies of the example ID.
 
----
+Custom `InputBase<TValue>` controls preserve `Value`, `ValueChanged`, `ValueExpression`, parsing errors, field notification, and the surrounding `EditContext`. Do not replace validated input behavior with an unrelated component wrapper. Preserve existing required, culture, numeric, date, and selection semantics.
 
-## General component rules
+Await asynchronous validation from the submission path; avoid `async void` validation handlers. Do not dispatch before validation completes. Application failures remain resource keys translated in Web; do not redesign the result contract for a control replacement.
 
-### States — every interactive component must visually handle
+## Busy state
 
-- Default
-- Hover
-- Active / pressed
-- Focus (keyboard accessibility)
-- Disabled
-- Loading (where applicable)
-
-### Naming convention
-
-`Component / Type / Variant / State`. Examples:
-- `Button / Primary / Large / Default`
-- `Input / Text / Default / Focused`
-- `Card / Product / Default`
-
-Avoid `Button1`, `NewButton`, `FinalCard`, `Generic*`, `Common*`.
-
-### Variants
-
-Components support the MudBlazor standard set where applicable:
-- Buttons: `Variant.Filled`, `Variant.Outlined`, `Variant.Text`
-- Sizes: `Size.Small`, `Size.Medium`, `Size.Large`
-- Colors: `Color.Primary`, `Color.Secondary`, `Color.Tertiary`
-
-### Base components — only wrap MudBlazor when customisation is genuinely needed
-
-If standard MudBlazor components meet the need, use them directly. Don't create wrapper components for the sake of "branding" alone — the theme covers that.
-
----
-
-## Per-component rules
-
-### `MudTextField` (Rule 17)
-
-**Always `Placeholder`, never `Label`.** The project's input style relies on placeholder-only fields — `Label` produces an outline/floating-label layout we explicitly don't want.
-
-```razor
-@* ✅ *@
-<MudTextField @bind-Value="_email"
-              Placeholder="@Strings.Email_Placeholder"
-              HelperText="@Strings.Email_Hint" />
-
-@* ❌ uses Label *@
-<MudTextField @bind-Value="_email"
-              Label="@Strings.Email_Label" />
-```
-
-If a design genuinely needs a label-above-input pattern, render the label as a separate `<MudText>` above the field — don't fall back to `MudTextField.Label`:
-
-```razor
-@* ✅ visible field name above the input *@
-<MudText Typo="Typo.caption">@Strings.Email_Label</MudText>
-<MudTextField @bind-Value="_email"
-              Placeholder="@Strings.Email_Placeholder" />
-```
-
----
-
-## Busy state — `BusyState`, `BusyKeys`, `BusyFor`, `ShopLoadingOverlay` (Rule 22)
-
-The project owns spinner placement and styling centrally. Pages must not hand-roll loaders.
-
-### Inline button busy state
-
-Wrap the control in `<BusyFor Key="@BusyKeys.X" Context="busy">` and bind `MudButton.Disabled="@busy"` plus an inline `MudProgressCircular` when `busy`. `BusyFor` subscribes to `BusyState.Changed` and re-renders only its child fragment on per-key transitions.
+Pages start operations through `BusyState.RunAsync` with `BusyKeys` constants. `BusyFor` renders keyed disabled/loading state. Do not introduce parallel page-owned `_isBusy` flags. `ShopButton.Loading` receives this value and owns spinner-only presentation, stable dimensions, `aria-busy`, the disabled activation guard, and a visually hidden status. `ShopIconButton` forwards `Loading` to it; neither control starts or tracks operations.
 
 ```razor
 <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
-    <MudButton Variant="Variant.Filled"
-               Color="Color.Primary"
-               Disabled="@(!_isFormValid || busy)"
-               OnClick="OnSubmitAsync">
-        @if (busy)
-        {
-            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-        }
+    <ShopButton Loading="@busy" OnClick="OnSubmitAsync">
         @Strings.Auth_SendCode
-    </MudButton>
+    </ShopButton>
 </BusyFor>
 ```
 
-The page drives the busy state explicitly:
+Keep label and icons mounted in the button's internal content span, visually transparent while loading, so dimensions and the accessible name remain stable. A decorative spinner is centered over it. Effective disabled state is `Disabled || Loading`; preserve independent disabled conditions after completion. A primed, visually hidden status sibling announces `Strings.Loading` outside the busy button without changing its name. Do not add duplicate page-level spinners/status markup. Other inline indicators still belong inside their `BusyFor` fragment. The app-blocking overlay observes `BusyKeys.Global` and is mounted once in the active layout. Authentication and main layouts must not create duplicate active hosts.
 
-```csharp
-private async Task OnSubmitAsync()
-{
-    await BusyState.RunAsync(BusyKeys.Auth.SignIn, async () =>
-    {
-        var result = await Mediator.Send(new RequestSignInOtpCommand(_email));
-        // ...
-    });
-}
-```
+## Code-behind and lifecycle
 
-### App-blocking busy state
+Keep markup in `.razor` and substantial state, parameters, handlers, lifecycle, and disposal in `.razor.cs`. Pages declare `[Route(Routes.X)]` in code-behind rather than literal `@page` paths. Components do not bypass the Application boundary to call persistence.
 
-`<ShopLoadingOverlay />` is mounted once in `MainLayout.razor` and observes `BusyKeys.Global`. Trigger for app-blocking work (session restore, sign-out, etc.):
+Preserve route cancellation, event unsubscription, JS-module disposal, and existing navigation behavior when changing markup. Local transient interaction state does not transfer business behavior or shared operation ownership into the component.
 
-```csharp
-await BusyState.RunAsync(BusyKeys.Global, () => RestoreSessionAsync());
-```
+## Migration coexistence
 
-### Rules summary (full statement in `SKILL.md` Rule 22)
+Existing Mud consumers, providers, packages, assets, and registrations may remain until their final consumers are migrated and verified. Do not extend the dependency or require vendor CSS for native controls. Scope native and legacy styles so adding a primitive does not silently restyle unmigrated forms.
 
-- Never hand-roll `MudProgressCircular` outside the `BusyFor` `ChildContent` fragment — placement and styling live in that component.
-- No `_isBusy` boolean fields in pages. `BusyState` is the only source of truth.
-- `BusyKeys` constants only — no magic strings at call sites.
+Migrate behavior-focused tests with each control: native semantics, events, binding, accessible names, and resources replace vendor-component assertions. Retain source-specific image failures, upload cleanup, dialog completion, and keyboard contracts. Appearance alone is not preservation proof.
 
----
-
-## Code-behind separation (Rule 20)
-
-Every `.razor` file with logic has a sibling `.razor.cs` partial class. Markup-only files (pure display components) may stay single-file.
-
-### What goes where
-
-**`.razor` file:**
-- Markup (component tree, render fragments)
-- Directives: `@inherits`, `@implements`, `@typeparam`, `@attribute`
-- Local `@using` directives for namespaces the markup references
-- **No** `@page` directive — route declarations live in code-behind
-
-**`.razor.cs` file:**
-- `public partial class X : ComponentBase` (or `LayoutComponentBase`)
-- `[Route(Routes.X)]` attribute for pages
-- All `[Inject]`, `[Parameter]`, fields, methods, lifecycle hooks, `IDisposable`
-
-### Example
-
-```razor
-@* Pages/Auth/SignIn.razor *@
-@attribute [AllowAnonymous]
-@using TheShop.Web.Common
-@using TheShop.Web.Components.Common
-
-<PageTitle>@Strings.SignIn_PageTitle</PageTitle>
-<MudContainer>...</MudContainer>
-```
-
-```csharp
-// Pages/Auth/SignIn.razor.cs
-using Microsoft.AspNetCore.Components;
-using TheShop.Web.Common;
-
-namespace TheShop.Web.Pages.Auth;
-
-[Route(Routes.Auth.SignIn)]
-public partial class SignIn : ComponentBase
-{
-    [Inject] private IMediator Mediator { get; set; } = default!;
-    // ...
-}
-```
-
-### Rules summary
-
-- No inline `@code` blocks larger than ~5 lines.
-- Page namespaces follow folder structure (`Pages/Auth/SignIn.razor.cs` → `TheShop.Web.Pages.Auth`).
-- Add `@using` directives in the `.razor` file that needs them — don't pollute `_Imports.razor` with feature-specific namespaces.
-
-For canonical full-file patterns, see `examples/web-page.md` and `examples/web-component.md`.
-
----
-
-## Common mistakes
-
-| Mistake | Fix |
-|---|---|
-| Reusable component extends `ComponentBase`, not `MudComponentBase` | Inherit from `MudComponentBase` (direct or transitive) — Rule 23 |
-| Hardcoded `Class="mud-alert"` on the root, ignoring `@Class` parameter | Use Pattern A or Pattern B; consumer's `Class` is the last `.AddClass(...)` in the chain |
-| Single-use wrapper that only re-orders default `MudButton` parameters | Inline at the call site; revisit on a second real caller — Rule 25 |
-| Component with five boolean flags (`IsLarge`, `IsPrimary`, `IsDisabledOnSubmit`, `IsCompact`, `HasIcon`) | This is two or three components hiding in one — split, or stop and inline |
-| `<MudTextField Label="...">` | Use `Placeholder`; if a visible label is needed, render a sibling `<MudText Typo="Typo.caption">` |
-| Hand-rolled `MudProgressCircular` next to a button | Wrap with `<BusyFor>`, drive with `BusyState.RunAsync(BusyKeys.X, ...)` |
-| `private bool _isBusy;` field in a page | Banned. Use `BusyState` keyed by `BusyKeys.X` |
-| `BusyState.RunAsync("sign-in", ...)` magic string | Use `BusyKeys.Auth.SignIn` constant |
-| `@page "/products/{Slug}"` in markup with a `partial class` | Move to `[Route(Routes.Products.Detail)]` on the code-behind |
-| 30-line `@code { }` block in `.razor` | Move to `.razor.cs` partial |
+Historical Mud-only inheritance, placeholder-only labels, and vendor-builder examples are legacy references, not instructions for new native components. Follow the current constitution and this reference.

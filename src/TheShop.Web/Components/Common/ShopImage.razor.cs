@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using MudBlazor;
-using MudBlazor.Utilities;
+using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
@@ -13,10 +12,10 @@ namespace TheShop.Web.Components.Common;
 /// frame. <see cref="ShopImagePreset.Hero"/> and <see cref="ShopImagePreset.CategoryBanner"/> switch to a
 /// 4:5 frame below 600 CSS pixels, showing <see cref="MobileSrc"/> when supplied and otherwise the
 /// desktop source cropped from the center. The component adds no keyboard stops; surrounding actions
-/// stay with the caller. Inherits from <see cref="MudComponentBase"/> so <c>Class</c>, <c>Style</c>,
+/// stay with the caller. Inherits from <see cref="ShopComponentBase"/> so <c>Class</c>, <c>Style</c>,
 /// and arbitrary attributes reach the root frame.
 /// </summary>
-public partial class ShopImage : MudComponentBase, IAsyncDisposable
+public partial class ShopImage : ShopComponentBase, IAsyncDisposable
 {
     private const string DesktopBranch = "desktop";
     private const string MobileBranch = "mobile";
@@ -57,8 +56,7 @@ public partial class ShopImage : MudComponentBase, IAsyncDisposable
 
     [Inject] private IJSRuntime JS { get; set; } = default!;
 
-    // Stable per instance so the JS bridge can find this frame without an element reference
-    // (the root is a MudStack, which exposes none).
+    // Stable per instance so the JS bridge can find this frame across source changes.
     private readonly string _frameId = $"shop-image-{Guid.NewGuid():N}";
 
     private IJSObjectReference? _jsModule;
@@ -75,47 +73,40 @@ public partial class ShopImage : MudComponentBase, IAsyncDisposable
 
     private string? MobileBranchSrc => string.IsNullOrWhiteSpace(MobileSrc) ? DesktopSrc : MobileSrc;
 
-    private ObjectFit Fit => Preset switch
+    private string FitClass => Preset switch
     {
         ShopImagePreset.ProductCard or
         ShopImagePreset.ProductDetail or
         ShopImagePreset.Thumbnail or
         ShopImagePreset.BrandLogo or
-        ShopImagePreset.SocialSharing => ObjectFit.Contain,
-        _ => ObjectFit.Cover,
+        ShopImagePreset.SocialSharing => "shop-image-contain",
+        _ => "shop-image-cover",
     };
 
     private IReadOnlyList<ImageBranch> Branches =>
         HasMobileBranch
-            ? [CreateBranch(DesktopBranch, "shop-image__branch--desktop", DesktopSrc, _failedDesktopSrc),
-               CreateBranch(MobileBranch, "shop-image__branch--mobile", MobileBranchSrc, _failedMobileSrc)]
-            : [CreateBranch(DesktopBranch, "shop-image__branch--desktop", DesktopSrc, _failedDesktopSrc)];
+            ? [CreateBranch(DesktopBranch, "shop-image-branch-desktop", DesktopSrc, _failedDesktopSrc),
+               CreateBranch(MobileBranch, "shop-image-branch-mobile", MobileBranchSrc, _failedMobileSrc)]
+            : [CreateBranch(DesktopBranch, "shop-image-branch-desktop", DesktopSrc, _failedDesktopSrc)];
 
     #endregion
 
     #region CSS Forwarding
 
-    protected string Classname => new CssBuilder("shop-image")
-        .AddClass(PresetClass)
-        .AddClass(Class)
-        .Build();
-
-    protected string Stylename => new StyleBuilder()
-        .AddStyle(Style)
-        .Build();
+    private string Classname => ShopCssClass.Join("shop-image", PresetClass, Class);
 
     private string PresetClass => Preset switch
     {
-        ShopImagePreset.ProductCard => "shop-image--product-card",
-        ShopImagePreset.ProductDetail => "shop-image--product-detail",
-        ShopImagePreset.Thumbnail => "shop-image--thumbnail",
-        ShopImagePreset.CategoryTile => "shop-image--category-tile",
-        ShopImagePreset.CategoryBanner => "shop-image--category-banner",
-        ShopImagePreset.Hero => "shop-image--hero",
-        ShopImagePreset.MobileBanner => "shop-image--mobile-banner",
-        ShopImagePreset.Editorial => "shop-image--editorial",
-        ShopImagePreset.BrandLogo => "shop-image--brand-logo",
-        ShopImagePreset.SocialSharing => "shop-image--social-sharing",
+        ShopImagePreset.ProductCard => "shop-image-product-card",
+        ShopImagePreset.ProductDetail => "shop-image-product-detail",
+        ShopImagePreset.Thumbnail => "shop-image-thumbnail",
+        ShopImagePreset.CategoryTile => "shop-image-category-tile",
+        ShopImagePreset.CategoryBanner => "shop-image-category-banner",
+        ShopImagePreset.Hero => "shop-image-hero",
+        ShopImagePreset.MobileBanner => "shop-image-mobile-banner",
+        ShopImagePreset.Editorial => "shop-image-editorial",
+        ShopImagePreset.BrandLogo => "shop-image-brand-logo",
+        ShopImagePreset.SocialSharing => "shop-image-social-sharing",
         _ => throw new ArgumentOutOfRangeException(nameof(Preset), Preset, null),
     };
 
@@ -123,10 +114,10 @@ public partial class ShopImage : MudComponentBase, IAsyncDisposable
     {
         get
         {
-            var attributes = new Dictionary<string, object>(UserAttributes) { ["data-shop-image"] = _frameId };
-
-            // MudStack defaults to role="group", which stops a surrounding link from taking its
-            // accessible name from the image's alt text. The frame is layout only.
+            var attributes = AdditionalAttributes is null
+                ? new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+                : new Dictionary<string, object>(AdditionalAttributes, StringComparer.OrdinalIgnoreCase);
+            attributes["data-shop-image"] = _frameId;
             attributes.TryAdd("role", "none");
             return attributes;
         }
@@ -137,19 +128,13 @@ public partial class ShopImage : MudComponentBase, IAsyncDisposable
             ? new() { ["aria-hidden"] = "true" }
             : new() { ["role"] = "img", ["aria-label"] = Alt };
 
-    private static ImageBranch CreateBranch(string key, string branchClass, string? src, string? failedSrc) =>
+    private ImageBranch CreateBranch(string key, string branchClass, string? src, string? failedSrc) =>
         new(
             key,
             src,
             src is not null && src != failedSrc,
-            new CssBuilder("shop-image__media")
-                .AddClass(branchClass)
-                .Build(),
-            new CssBuilder("shop-image__placeholder")
-                .AddClass("mud-tertiary")
-                .AddClass("pa-2")
-                .AddClass(branchClass)
-                .Build());
+            ShopCssClass.Join("shop-image-media", FitClass, branchClass),
+            ShopCssClass.Join("shop-image-placeholder", branchClass));
 
     #endregion
 

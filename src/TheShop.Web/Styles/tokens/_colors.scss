@@ -1,0 +1,41 @@
+// Figma paint styles: The Vape Shop / 63Ieb8AduwMHoVHwzZ7UO3, verified 2026-10-02.
+// Omit Brand/ and Semantic/ in token names; retain Text/, Surface/, and Lines/.
+// Keep distinct design roles even when their current values match.
+// Legacy values remain in ShopColors only for unconverted Mud consumers.
+:root {
+    // Brand
+    --shop-color-primary: #171717;
+    --shop-color-primary-contrast: #ffffff;
+    --shop-color-secondary: #7a7a7a;
+    --shop-color-secondary-contrast: #ffffff;
+    --shop-color-tertiary: #e8e8e8;
+    --shop-color-tertiary-lighter: #ededed;
+    --shop-color-tertiary-contrast: #171717;
+
+    // Semantic. Contrast values are owner-selected white defaults, not inspected Figma styles.
+    --shop-color-info: #429dff;
+    --shop-color-info-contrast: #ffffff;
+    --shop-color-success: #42ff83;
+    --shop-color-success-contrast: #ffffff;
+    --shop-color-warning: #ffc042;
+    --shop-color-warning-contrast: #ffffff;
+    --shop-color-error: #ff4242;
+    --shop-color-error-contrast: #ffffff;
+
+    // Text
+    --shop-color-text-primary: #171717;
+    --shop-color-text-secondary: #7a7a7a;
+    --shop-color-text-disabled: #b0b0b0;
+    --shop-color-text-on-dark: #ffffff;
+
+    // Surface
+    --shop-color-surface-default: #ffffff;
+    --shop-color-surface-subtle: #f5f5f5;
+    --shop-color-surface-appbar: #ffffff;
+    --shop-color-surface-drawer: #ffffff;
+
+    // Lines
+    --shop-color-lines-default: #e0e0e0;
+    --shop-color-lines-input: #e0e0e0;
+    --shop-color-lines-divider: #e0e0e0;
+}

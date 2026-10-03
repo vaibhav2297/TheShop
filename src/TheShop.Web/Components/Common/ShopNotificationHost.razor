@@ -1,0 +1,15 @@
+@if (Notifications.IsHost(this))
+{
+    <div class="shop-native shop-notification-host" role="status" aria-live="polite"
+         aria-relevant="additions" aria-atomic="false" aria-label="@Strings.Notification_RegionLabel">
+        @if (_ready)
+        {
+            @foreach (var message in Notifications.Messages)
+            {
+                <ShopNotification @key="message.Id" Message="message"
+                                  OnDismiss="@(() => Notifications.Dismiss(message.Id))"
+                                  OnPauseChanged="@(paused => Notifications.SetPaused(this, message.Id, paused))" />
+            }
+        }
+    </div>
+}

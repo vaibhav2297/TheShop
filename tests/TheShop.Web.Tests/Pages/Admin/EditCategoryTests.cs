@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
 using Bunit.TestDoubles;
@@ -35,7 +36,7 @@ namespace TheShop.Web.Tests.Pages.Admin;
 public class EditCategoryTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public EditCategoryTests()
@@ -45,7 +46,7 @@ public class EditCategoryTests : TestContext
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddMudServices();
         Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
@@ -216,7 +217,7 @@ public class EditCategoryTests : TestContext
         SetFormState(cut, name: dto.Name, description: dto.Description, isActive: dto.IsActive, isFormValid: true);
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Strings.EditCategory_Success, Severity.Success);
+        _notifications.Received(1).Show(Strings.EditCategory_Success, ShopNotificationKind.Success);
         navManager.Uri.Should().EndWith(Routes.Admin.ManageCategories);
     }
 
@@ -258,7 +259,7 @@ public class EditCategoryTests : TestContext
         SetFormState(cut, name: "Pod Systems", description: dto.Description, isActive: dto.IsActive, isFormValid: true);
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageCategories);
     }
 
@@ -297,7 +298,7 @@ public class EditCategoryTests : TestContext
         SetFormState(cut, name: dto.Name, description: dto.Description, isActive: dto.IsActive, isFormValid: true);
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Strings.EditCategory_Success, Severity.Success);
+        _notifications.Received(1).Show(Strings.EditCategory_Success, ShopNotificationKind.Success);
     }
 
     // =========================================================================
@@ -419,7 +420,7 @@ public class EditCategoryTests : TestContext
         SetFormState(cut, name: dto.Name, description: dto.Description, isActive: dto.IsActive, isFormValid: true);
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageCategories);
     }
 

@@ -1,6 +1,8 @@
+using TheShop.Web.Common.Notifications;
 using System.Globalization;
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using TheShop.Web.Common.Dialogs;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using TheShop.Application.Common.Filtering;
@@ -38,8 +40,8 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     private const string StatusInactiveValue = "inactive";
 
     [Inject] private IMediator Mediator { get; set; } = default!;
-    [Inject] private IDialogService DialogService { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopDialogService DialogService { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
@@ -190,7 +192,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
         if (filtersResult.IsSuccess)
             _filters = filtersResult.Value;
         else
-            Snackbar.Add(Localizer[filtersResult.Error!], Severity.Error);
+            Notifications.Show(Localizer[filtersResult.Error!], ShopNotificationKind.Error);
     }
 
     /// <summary>
@@ -226,7 +228,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
         if (result.IsSuccess)
             return result.Value;
 
-        Snackbar.Add(Localizer[result.Error!], Severity.Error);
+        Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
         return PagedResult<ProductListItemDto>.Empty(request);
     }
 
@@ -315,7 +317,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
             Strings.ManageProducts_DeactivateConfirmTitle,
             string.Format(Strings.ManageProducts_DeactivateConfirmBody, product.Name),
             Strings.ManageProducts_BulkDeactivate,
-            Color.Primary);
+            false);
 
         if (confirmed)
             await ApplyStatusChangeAsync([product.Id], false);
@@ -334,7 +336,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
             string.Format(Strings.ManageProducts_BulkDeactivateConfirmTitle, ids.Count),
             string.Format(Strings.ManageProducts_BulkDeactivateConfirmBody, ids.Count),
             Strings.ManageProducts_BulkDeactivate,
-            Color.Primary);
+            false);
 
         if (confirmed)
             await ApplyStatusChangeAsync(ids, false);
@@ -354,18 +356,18 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
                 var result = await Mediator.Send(new SetProductStatusCommand(ids, isActive));
                 if (!result.IsSuccess)
                 {
-                    Snackbar.Add(Localizer[result.Error!], Severity.Error);
+                    Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
                     return;
                 }
 
                 var messageKey = isActive ? Strings.ManageProducts_ActivatedSuccess : Strings.ManageProducts_DeactivatedSuccess;
-                Snackbar.Add(string.Format(messageKey, result.Value.ChangedCount), Severity.Success);
+                Notifications.Show(string.Format(messageKey, result.Value.ChangedCount), ShopNotificationKind.Success);
 
                 if (result.Value.NotPublishable.Count > 0)
                 {
-                    Snackbar.Add(
+                    Notifications.Show(
                         string.Format(Strings.ManageProducts_ActivateSkipped, result.Value.NotPublishable.Count),
-                        Severity.Warning);
+                        ShopNotificationKind.Warning);
                 }
 
                 _selectedItems.Clear();
@@ -385,7 +387,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
             Strings.ManageProducts_DeleteConfirmTitle,
             string.Format(Strings.ManageProducts_DeleteConfirmBody, product.Name),
             Strings.ManageProducts_BulkDelete,
-            Color.Error);
+            true);
 
         if (confirmed)
             await ApplyDeleteAsync([product.Id]);
@@ -401,7 +403,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
             string.Format(Strings.ManageProducts_BulkDeleteConfirmTitle, ids.Count),
             string.Format(Strings.ManageProducts_BulkDeleteConfirmBody, ids.Count),
             Strings.ManageProducts_BulkDelete,
-            Color.Error);
+            true);
 
         if (confirmed)
             await ApplyDeleteAsync(ids);
@@ -418,7 +420,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
                 var result = await Mediator.Send(new DeleteProductsCommand(ids));
                 if (!result.IsSuccess)
                 {
-                    Snackbar.Add(Localizer[result.Error!], Severity.Error);
+                    Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
                     return;
                 }
 
@@ -455,14 +457,14 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     {
         if (outcome.DeletedCount == 1)
         {
-            Snackbar.Add(Strings.ManageProducts_DeletedSuccess, Severity.Success);
+            Notifications.Show(Strings.ManageProducts_DeletedSuccess, ShopNotificationKind.Success);
             _selectedItems.Clear();
             return;
         }
 
         var blocked = outcome.Blocked[0];
         _referencedIds[blocked.Id] = blocked.ReferenceCount;
-        Snackbar.Add(string.Format(Strings.Product_InUse, blocked.Name, blocked.ReferenceCount), Severity.Warning);
+        Notifications.Show(string.Format(Strings.Product_InUse, blocked.Name, blocked.ReferenceCount), ShopNotificationKind.Warning);
     }
 
     /// <summary>
@@ -473,20 +475,20 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     {
         if (outcome.Blocked.Count == 0)
         {
-            Snackbar.Add(string.Format(Strings.ManageProducts_BulkDeletedSuccess, outcome.DeletedCount), Severity.Success);
+            Notifications.Show(string.Format(Strings.ManageProducts_BulkDeletedSuccess, outcome.DeletedCount), ShopNotificationKind.Success);
             _selectedItems.Clear();
             return;
         }
 
         if (outcome.DeletedCount == 0 && outcome.Blocked.Count == requestedCount)
         {
-            Snackbar.Add(Strings.Product_BulkDeleteAllBlocked, Severity.Warning);
+            Notifications.Show(Strings.Product_BulkDeleteAllBlocked, ShopNotificationKind.Warning);
         }
         else
         {
-            Snackbar.Add(
+            Notifications.Show(
                 string.Format(Strings.Product_BulkDeletePartial, outcome.DeletedCount, outcome.Blocked.Count),
-                Severity.Warning);
+                ShopNotificationKind.Warning);
         }
 
         // The referenced products are still present in _products.Items (only the reload below
@@ -497,20 +499,8 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
         _selectedItems = _products.Items.Where(p => _referencedIds.ContainsKey(p.Id)).ToHashSet();
     }
 
-    private async Task<bool> ConfirmAsync(string title, string body, string confirmLabel, Color confirmColor)
-    {
-        var parameters = new DialogParameters<ShopConfirmDialog>
-        {
-            { x => x.TitleText, title },
-            { x => x.BodyText, body },
-            { x => x.ConfirmLabel, confirmLabel },
-            { x => x.ConfirmColor, confirmColor },
-        };
-
-        var dialog = await DialogService.ShowAsync<ShopConfirmDialog>(title, parameters);
-        var result = await dialog.Result;
-        return result is { Canceled: false };
-    }
+    private Task<bool> ConfirmAsync(string title, string body, string confirmLabel, bool destructive) =>
+        DialogService.ConfirmAsync(new(title, body, confirmLabel, destructive));
 
     /// <summary>
     /// Renders a row's price range: a single amount when the lowest and highest price coincide

@@ -1,0 +1,91 @@
+@use '../abstracts/text-style';
+
+// Figma 2680:14477: 32px sections, 16px gallery gaps, 120px thumbnails.
+.shop-variant-image {
+    display: grid;
+    gap: var(--shop-space-8);
+}
+
+.shop-variant-image-description {
+    display: grid;
+    gap: var(--shop-space-2);
+}
+
+.shop-variant-image-label,
+.shop-variant-image-empty {
+    margin: 0;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(subtitle-1);
+}
+
+.shop-variant-image-name {
+    margin: 0;
+    @include text-style.apply(h6);
+}
+
+.shop-variant-image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--shop-space-4);
+
+    &:empty { display: none; }
+}
+
+.shop-variant-image-option {
+    position: relative;
+    inline-size: 120px;
+    max-inline-size: 100%;
+    padding: 0;
+    border: 0;
+    background: var(--shop-color-surface-subtle);
+    color: var(--shop-color-primary);
+    cursor: pointer;
+
+    &[aria-pressed='true']::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border: 1px solid var(--shop-color-primary);
+        pointer-events: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--shop-color-focus-ring);
+        outline-offset: 2px;
+    }
+}
+
+.shop-variant-image-selected-icon {
+    position: absolute;
+    inset-block-start: var(--shop-space-1);
+    inset-inline-end: var(--shop-space-1);
+    background-color: var(--shop-color-surface-default);
+}
+
+.shop-variant-image-scope {
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    > legend { margin-block-end: var(--shop-space-2); }
+}
+
+.shop-variant-image-choice {
+    display: flex;
+    align-items: center;
+    gap: var(--shop-space-4);
+    min-block-size: 48px;
+    cursor: pointer;
+
+    > input {
+        flex-shrink: 0;
+        margin: var(--shop-space-2);
+        accent-color: var(--shop-color-primary);
+    }
+}
+
+@media (forced-colors: active) {
+    .shop-variant-image-option[aria-pressed='true']::after { border-color: Highlight; }
+    .shop-variant-image-option:focus-visible { outline-color: CanvasText; }
+}
