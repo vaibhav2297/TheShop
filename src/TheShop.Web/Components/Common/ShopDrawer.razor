@@ -1,0 +1,17 @@
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
+
+<dialog @ref="_element" @attributes="RootAttributes" class="@ClassName" style="@Style"
+        aria-labelledby="@_titleId">
+    <header class="shop-drawer-header">
+        <div id="@_titleId" class="shop-drawer-heading">@HeaderContent</div>
+        <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Small"
+                        Icon="@ShopIcons.Outlined.Close_MD" Label="@Strings.Close"
+                        OnClick="DismissAsync" data-dialog-initial-focus data-testid="drawer-close" />
+    </header>
+    <div class="shop-drawer-content" tabindex="0" role="region" aria-labelledby="@_titleId">@DrawerContent</div>
+    @if (ActionContent is not null)
+    {
+        <footer class="shop-drawer-actions">@ActionContent</footer>
+    }
+</dialog>

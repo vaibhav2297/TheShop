@@ -70,11 +70,15 @@ Handle applicable default, hover, pressed, focus, disabled, loading, and error s
 
 Use the separate shared `ShopMaxWidth` enum for `MaxWidth`, not control `ShopSize`. Omitted/null resolves to `ShopMaxWidth.None`: content-sized within viewport gutters, with no separate 500px fallback. Named choices consume the shared SCSS sizing scale. Do not put pixel widths or per-value switches in Razor/C#.
 
+## Drawer composition
+
+`ShopDrawer` is a controlled native modal with `Open`/`OpenChanged`, `HeaderContent`, `DrawerContent` and optional `ActionContent`. Only the middle region scrolls; keep the instance mounted through closing animation. Header markup supplies its accessible name and the component owns the close button. Shared modal interop preserves focus, Escape/backdrop dismissal, Tab wrapping, cleanup and one-active-modal replacement. MainLayout owns the authenticated `ProfileDrawer`; ShopAppBar raises account requests. AuthLayout has no profile drawer. Component dimensions stay in `_drawer.scss`; document stacking belongs in `_layers.scss`, while native modals use the browser top layer.
+
 ## Notifications
 
 Inject `IShopNotificationService` for operation feedback and call `Show` with localized plain text plus `ShopNotificationKind`. The scoped service owns bounded messages/timers; `ShopUiHost` owns the single `ShopNotificationHost`. Do not reintroduce `ISnackbar` or snackbar providers. Preserve existing inline validation and operation failure channels.
 
-All current operation results use a polite live region. Notifications never take focus; hover or focus pauses expiry. Text is encoded, with a resource-named dismiss action. Keep notification kinds in the API/model, but render one identical bar for every kind: Figma Snackbar `2948:17575`, primary background, primary-contrast text/icon, subtitle-2 typography, 16px padding and 24px gap, and an 18px close icon. No visible kind labels or severity accents. Place bottom-center at notification layer 1500; native modal top-layer ordering still wins. Component-only width/icon values belong in `_notification.scss`; the application notification layer remains in `_theme.scss`. See `UI_MIGRATION_GUIDE.md` section 8.3 for timing, overflow, navigation, and accessible dismiss sizing.
+All current operation results use a polite live region. Notifications never take focus; hover or focus pauses expiry. Text is encoded, with a resource-named dismiss action. Keep notification kinds in the API/model, but render one identical bar for every kind: Figma Snackbar `2948:17575`, primary background, primary-contrast text/icon, subtitle-2 typography, 16px padding and 24px gap, and an 18px close icon. No visible kind labels or severity accents. Place bottom-center at notification layer 1500; native modal top-layer ordering still wins. Component-only width/icon values belong in `_notification.scss`; the application notification layer lives in `_layers.scss`. See `UI_MIGRATION_GUIDE.md` section 8.3 for timing, overflow, navigation, and accessible dismiss sizing.
 
 ## Labels and validation
 

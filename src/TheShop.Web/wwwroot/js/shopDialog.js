@@ -2,13 +2,14 @@ const dialogs = new WeakMap();
 let activeCleanup;
 let activeNotify;
 
-export function show(element, receiver) {
+export function show(element, receiver, animated = false) {
     activeNotify?.();
     activeCleanup?.();
     const trigger = document.activeElement;
     let disposed = false;
     let notified = false;
     let pointerStartedOutside = false;
+    let revision = 0;
 
     const outside = event => {
         const rect = element.getBoundingClientRect();
@@ -23,6 +24,22 @@ export function show(element, receiver) {
         });
     };
     const cancel = event => { event.preventDefault(); notify(); };
+    const keyDown = event => {
+        if (event.key !== 'Tab') return;
+        const controls = [...element.querySelectorAll('a[href], button, input, select, textarea, [tabindex]')]
+            .filter(control => control.tabIndex >= 0 && !control.matches(':disabled') &&
+                !control.closest('[inert]') && control.getClientRects().length &&
+                getComputedStyle(control).visibility !== 'hidden');
+        const first = controls[0];
+        const last = controls.at(-1);
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first?.focus();
+        }
+    };
     const pointerDown = event => { pointerStartedOutside = event.target === element && outside(event); };
     const click = event => {
         if (pointerStartedOutside && event.target === element && outside(event)) notify();
@@ -32,12 +49,15 @@ export function show(element, receiver) {
     const cleanup = () => {
         if (disposed) return;
         disposed = true;
+        revision++;
         observer.disconnect();
         element.removeEventListener('cancel', cancel);
+        element.removeEventListener('keydown', keyDown);
         element.removeEventListener('close', notify);
         element.removeEventListener('pointerdown', pointerDown);
         element.removeEventListener('click', click);
         if (element.open) element.close();
+        element.removeAttribute('data-modal-visible');
         dialogs.delete(element);
         if (activeCleanup === cleanup) {
             activeCleanup = undefined;
@@ -62,16 +82,35 @@ export function show(element, receiver) {
         }
     };
 
-    dialogs.set(element, cleanup);
+    const setOpen = open => {
+        const currentRevision = ++revision;
+        if (open) {
+            notified = false;
+            element.setAttribute('data-modal-visible', '');
+        } else {
+            element.removeAttribute('data-modal-visible');
+            // Keep the modal and its inert backdrop alive until the exit transition finishes.
+            Promise.allSettled(element.getAnimations().map(animation => animation.finished)).then(() => {
+                if (!disposed && revision === currentRevision) cleanup();
+            });
+        }
+    };
+    dialogs.set(element, { cleanup, setOpen });
     activeCleanup = cleanup;
     activeNotify = notify;
     element.addEventListener('cancel', cancel);
+    element.addEventListener('keydown', keyDown);
     element.addEventListener('close', notify);
     element.addEventListener('pointerdown', pointerDown);
     element.addEventListener('click', click);
     observer.observe(document.body, { childList: true, subtree: true });
     try {
         element.showModal();
+        if (animated) {
+            // Establish the off-screen starting style before enabling the transition.
+            element.getBoundingClientRect();
+            setOpen(true);
+        }
         element.querySelector('[data-dialog-initial-focus]')?.focus({ preventScroll: true });
     } catch (error) {
         cleanup();
@@ -79,6 +118,12 @@ export function show(element, receiver) {
     }
 }
 
+export function setOpen(element, receiver, open) {
+    const entry = dialogs.get(element);
+    if (entry) entry.setOpen(open);
+    else if (open) show(element, receiver, true);
+}
+
 export function dispose(element) {
-    dialogs.get(element)?.();
+    dialogs.get(element)?.cleanup();
 }

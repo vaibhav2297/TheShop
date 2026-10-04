@@ -16,7 +16,7 @@
         <ShopAnnouncementBar Message="@Announcement.Message" />
     }
 
-    <ShopAppBar />
+    <ShopAppBar OnAccountClick="OpenProfileDrawer" AccountOpen="@_profileDrawerOpen" />
 
     @if (Breadcrumbs.HasTrail)
     {
@@ -38,3 +38,9 @@
     </MudMainContent>
 
 </MudLayout>
+
+<AuthorizeView>
+    <Authorized>
+        <ProfileDrawer @bind-Open="_profileDrawerOpen" />
+    </Authorized>
+</AuthorizeView>

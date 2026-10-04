@@ -156,6 +156,8 @@ src/TheShop.Web/
       ShopFieldLabel.razor
       ShopMoneyField.razor / ShopMoneyField.razor.cs
       ShopDialog.razor / ShopDialog.razor.cs
+      ShopDrawer.razor / ShopDrawer.razor.cs
+      ProfileDrawer.razor / ProfileDrawer.razor.cs
       ShopDialogHost.razor / ShopDialogHost.razor.cs
       ShopConfirmDialog.razor / ShopConfirmDialog.razor.cs
       ShopNotificationHost.razor / ShopNotificationHost.razor.cs
@@ -175,7 +177,7 @@ src/TheShop.Web/
       ShopLoadingOverlay.razor / ShopLoadingOverlay.razor.cs
       BusyFor.razor / BusyFor.razor.cs
       OtpInput.razor / OtpInput.razor.cs
-      [existing footer, profile menu, access views]
+      [existing footer and access views]
     Products/
       ProductCard.razor / ProductCard.razor.cs
       ProductForm.razor / ProductForm.razor.cs
@@ -242,6 +244,7 @@ src/TheShop.Web/
       _spacing.scss
       _sizing.scss
       _theme.scss
+      _layers.scss
     base/
       _reset.scss
       _document.scss
@@ -453,7 +456,8 @@ Contract:
 - `abstracts/_text-style.scss`: non-emitting mixin consuming a named typography style directly.
 - `tokens/_spacing.scss`: shared spacing scale variables.
 - `tokens/_sizing.scss`: shared maximum-width scale; emits `--shop-max-width-*` tokens.
-- `tokens/_theme.scss`: shared radius, focus, interaction states, field chrome/motion (TextField and Select), and application layer ordering. Component-only measurements do not belong on global `:root`.
+- `tokens/_theme.scss`: shared radius, focus, interaction states and field chrome/motion (TextField and Select). Component-only measurements do not belong on global `:root`.
+- `tokens/_layers.scss`: shared document stacking order; native modal dialogs/drawers use browser top-layer ordering instead of z-index values.
 - `base/_reset.scss`: minimal browser normalization, not an aggressive removal of native behavior.
 - `base/_document.scss`: body background, foreground, document sizing, boot/error presentation as appropriate.
 - `base/_typography.scss`: applies typography defaults to semantic HTML.
@@ -745,7 +749,7 @@ Inspected live Figma sections on 2026-10-03: [Expander 2955:19054](https://www.f
 
 Inspected live Figma sections [Appbar 2970:9248](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=2970-9248), [Breadcrumb 2963:21466](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=2963-21466), and [Badge 2961:19777](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=2961-19777) on 2026-10-04. Node geometry, style bindings and screenshots are the visual source; no Figma edits.
 
-**Appbar:** `ShopAppBar` renders a native header, named primary nav, route-backed anchors, existing `ShopImage` logo, and shared outlined Medium icon treatments. `_appbar.scss` owns the layout. Component `153:5576` is 64px high at default text size, 16px inline inset, 52px logo, 36px navigation gaps, and 24px action gaps with 34px icon controls. Grid columns hug the logo/actions and let the center navigation fill available space. The Figma grid reports 8px vertical padding, but its centered 52px logo actually starts at y=6 in the 64px frame; implementation follows that visible geometry using 6px block padding and a growing minimum height. Background is `--shop-color-surface-appbar`. Small nav links use Button typography and uppercase treatment. Below 960px, links wrap in a second row; this responsive treatment is inferred, not a supplied mobile design. No invented hamburger/menu framework. Search remains the existing unwired action; this batch does not add search behavior or missing route destinations. The signed-in `ProfileMenu` dropdown remains a documented Mud bridge; only its trigger now uses the shared native outlined icon button. Do not remove its provider yet.
+**Appbar:** `ShopAppBar` renders a native header, named primary nav, route-backed anchors, existing `ShopImage` logo, and shared outlined Medium icon treatments. `_appbar.scss` owns the layout. Component `153:5576` is 64px high at default text size, 16px inline inset, 52px logo, 36px navigation gaps, and 24px action gaps with 34px icon controls. Grid columns hug the logo/actions and let the center navigation fill available space. The Figma grid reports 8px vertical padding, but its centered 52px logo actually starts at y=6 in the 64px frame; implementation follows that visible geometry using 6px block padding and a growing minimum height. Background is `--shop-color-surface-appbar`. Small nav links use Button typography and uppercase treatment. Below 960px, links wrap in a second row; this responsive treatment is inferred, not a supplied mobile design. No invented hamburger/menu framework. Search remains the existing unwired action; this batch does not add search behavior or missing route destinations. Batch 30 replaces the signed-in ProfileMenu bridge with the MainLayout-owned ProfileDrawer. The appbar only raises an account request and reflects the layout's open state. Other Mud consumers still require their providers.
 
 **Breadcrumb:** `ShopBreadcrumbs`, `BreadcrumbTrail` and `BreadcrumbState` use `Common/UI/ShopBreadcrumbItem`, not Mud's model. Existing builder/state APIs, route safety checks, layout subscription/clearing and page consumers retain their behavior. A native named nav contains an ordered list; ancestors with destinations are anchors, disabled/removed ancestors are spans, and only the final span has `aria-current="page"`. Text remains encoded with full title labels. `Class`, `Style` and unmatched attributes target nav; the owned accessible name wins. Figma `357:4466` / `2963:21430`: subtle surface, 42px natural strip at default text size, 36px desktop inline padding, 8px gaps, 24px chevrons, Button text with 4px/5px padding, and a shared `ShopIconButton` (Small / Text / Primary) with the 18px `More_Horizontal` icon in its 24px footprint (Figma instance `2974:9343`, rechecked 2026-10-04). Below 960px, preserve the previous root/current-only collapse and access to every intermediate item via the disclosure; mobile inline padding is 16px. CSS controls visibility, without a breakpoint provider or resize JS. Click/Enter/Space reveals ancestors and removes the ellipsis button and its separator. Before expansion the button exposes `aria-expanded="false"`, `aria-controls` and the Show parent pages label. After rendering, focus moves to the first revealed ancestor; a disabled ancestor can receive programmatic focus without entering the tab order. The full trail appears at desktop widths; a changed trail resets expansion, an equivalent rerender does not. Wrapping, a 20rem truncation cap and growing height accommodate long labels/zoom. Those overflow/interaction details are implementation choices, not additional Figma variants.
 
@@ -1145,7 +1149,17 @@ Rollback: revert the batch's native table call sites and their selection adapter
 
 ### Menus and navigation
 
-Use an ordinary disclosure with links/buttons for `ProfileMenu` unless implementing the full ARIA application-menu keyboard pattern. Do not add `role="menu"` to a normal list and omit its keyboard contract. Preserve authorization-controlled links, sign-out, return URLs, and accessible account labels.
+`ProfileDrawer` replaces the old `ProfileMenu` dropdown. MainLayout owns its open state and mounts it outside the scrolling shell, only for authenticated users. ShopAppBar emits `OnAccountClick` and reflects `AccountOpen`; it does not own profile data or a drawer instance. AuthLayout has no profile drawer. Keep ordinary anchors and a logout button, not an ARIA application menu. Preserve authorization-controlled destinations, sign-out, and accessible account labels. The identity block links to My Profile so the existing destination remains available without adding an extra row to the Figma design.
+
+### Drawer and layer ownership
+
+`ShopDrawer` is a controlled reusable modal with `Open` / `OpenChanged` and three fragments: `HeaderContent`, `DrawerContent`, `ActionContent`. HeaderContent supplies a localized semantic heading; the component supplies the close button and unique accessible naming. Only DrawerContent scrolls. ActionContent is optional and an omitted fragment reserves no space. Keep the instance mounted while closing so the transition can finish; removal/disposal cleans up immediately. Page-specific drawers may remain page-owned; do not introduce a global drawer service without another actual need.
+
+Figma references inspected 2026-10-04: section `2976:16449`, component `2976:16454`, account screen `2986:26176`. Desktop width is 400px; height uses `100dvh`. Header/action padding is 16px, with 8px gaps and one shared edge divider. Header uses H5 uppercase and the Small/Text close icon button (24px target, 18px icon). Content has no implicit padding. Account identity uses 24px padding, H5 name and Subtitle 1 email; links use H6 with 16px × 24px padding and an 18px trailing arrow. Profile content omits the footer, matching the inspected visible account design; logout remains in its navigation list.
+
+Implementation decisions, not additional measured Figma states: full viewport width below 600px, 280ms slide/backdrop fade, reduced-motion bypass, focus-visible styling, safe-area footer inset, long-content wrapping and native modal focus behavior. The backdrop uses the primary color at 40%, covering the appbar as well as page content. Escape, the close button, and pointer sequences that start and end on the backdrop request `OpenChanged(false)`. Navigation closes the profile drawer. The shared `shopDialog.js` lifecycle handles focus restoration, disposal, animation reversal and one-active-modal replacement with existing ShopDialog. Exit transitions retain browser inertness until complete. A narrowly scoped overflow override temporarily beats the shell's legacy Mud overflow utility while the drawer is modal.
+
+`Styles/tokens/_layers.scss` owns shared document layers: sticky 1000, appbar 1100, notification 1500. These values moved out of `_theme.scss` without changing the existing sticky/notification values. Components consume the shared tokens; drawer width, padding and motion remain in `_drawer.scss`. Native modal dialogs/drawers use the browser top layer, not numeric z-index; do not add ineffective drawer/dialog tokens or claim a high notification number can overtake a native modal. Existing unmigrated vendor popovers/global loading overlay retain their legacy stacking until migrated; this batch does not remove providers or create a duplicate C# layer scale.
 
 ### Images
 
@@ -2026,6 +2040,14 @@ The final implementing-agent response should state what changed, the exact verif
 - Verification limitations: physical touch-screen/screen-reader combinations and Firefox/WebKit have not been tested. Native range inputs and the numeric-editor alternative reduce custom interaction requirements but are not a claim of full accessibility certification. Existing AngleSharp package advisory and unrelated E2E analyzer warnings remain; no dependency versions changed.
 - Separate existing defect found during rapid product-result reloads: `ShopImage.OnAfterRenderAsync` can resume its module import after disposal and pass a disposed DotNetObjectReference to `observe` (line 159). This caused one headed rendering failure; no ShopImage files were changed in this batch. The focused range journey uses an empty mocked result set to isolate the control; the existing populated-catalogue navigation journey remains part of regression coverage. Fix image lifecycle separately before treating rapid populated-catalogue reloads as fully verified.
 - No SDD artifacts, database changes, broad UI framework, package deletion or unrelated component migration in this batch.
+
+### Batch 30 — Native Drawer and profile migration — 2026-10-04
+
+- Added reusable `ShopDrawer` and migrated `ProfileMenu` to `ProfileDrawer` in MainLayout. AuthLayout remains unchanged. Preserved customer name/email, My Profile (identity link), Orders, Wishlist, permission-gated Admin Console and the existing sign-out command/notification/navigation flow. Profile loading now cancels on disposal; logout retains its own completion across auth-driven component removal.
+- Inspected Figma drawer and account nodes using the desktop bridge and reviewed the account screenshot. Added full-height right-side chrome, 400px desktop/full-width mobile treatment, header/body/optional-action slots, full-screen overlay and smooth reversible motion. Shared modal interop handles native inertness, focus restoration, explicit Tab wrapping, modal replacement and disposal. No global drawer service, additional UI package, database change or SDD artifacts.
+- Added `_layers.scss` for sticky/appbar/notification document layers and updated token ownership guidance. Native modal ordering is explicitly separate from numeric stacking. Remaining vendor providers/global loading overlay are not removed by this batch.
+- Unit verification: 20 focused component tests and 1,082 full Web tests passed. Headed verification is recorded below after the final run. Initial native browser checks exposed a missing Tab wrap and drove a shared modal fix. The local real-auth journey was unavailable because the OTP inbox on 127.0.0.1:54324 refused connections; profile integration uses intercepted test-only authentication responses instead, with no live-backend writes.
+- Rollback: revert only this batch's Drawer/ProfileDrawer additions, MainLayout/AppBar wiring, shared modal changes, layer-token move and paired tests/docs together to restore the prior ProfileMenu. No stored-data rollback or package restore is needed; preserve unrelated working-tree edits.
 
 ## 19. Prompt to give the implementing AI
 

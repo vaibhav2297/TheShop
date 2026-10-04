@@ -32,13 +32,19 @@ public class ShopAppBarTests : TestContext
     }
 
     [Fact]
-    public void Render_Authenticated_UsesExistingProfileMenuInsteadOfSignInLink()
+    public void Render_Authenticated_RaisesAccountRequestInsteadOfOwningDrawer()
     {
         this.AddAuthorization().SetAuthorized("customer");
-        ComponentFactories.AddStub<ProfileMenu>();
-        var cut = Render<ShopAppBar>();
+        var requests = 0;
+        var cut = Render<ShopAppBar>(p => p.Add(x => x.OnAccountClick, () => requests++)
+            .Add(x => x.AccountOpen, true));
 
         cut.FindAll($"a[href='{Routes.Auth.SignIn}']").Should().BeEmpty();
-        cut.FindComponent<Bunit.TestDoubles.Stub<ProfileMenu>>().Should().NotBeNull();
+        var account = cut.Find($"button[aria-label='{Strings.Nav_Account}']");
+        account.GetAttribute("aria-haspopup").Should().Be("dialog");
+        account.GetAttribute("aria-expanded").Should().Be("true");
+        account.Click();
+        requests.Should().Be(1);
+        cut.FindAll("dialog").Should().BeEmpty();
     }
 }

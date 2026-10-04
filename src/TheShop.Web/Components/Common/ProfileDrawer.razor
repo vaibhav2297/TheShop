@@ -1,0 +1,45 @@
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+
+<ShopDrawer Open="@Open" OpenChanged="@OpenChanged" Class="shop-profile-drawer">
+    <HeaderContent>
+        <h2 class="shop-drawer-title">@Strings.Nav_Account</h2>
+    </HeaderContent>
+    <DrawerContent>
+        <a class="shop-profile-drawer-identity" href="@Routes.Profile" aria-label="@Strings.Nav_MyProfile" @onclick="CloseAsync">
+            @if (!string.IsNullOrWhiteSpace(_displayName))
+            {
+                <span class="shop-profile-drawer-name">@string.Format(Strings.Account_NamedGreeting, _displayName)</span>
+            }
+            else
+            {
+                <span class="shop-profile-drawer-name">@Strings.Nav_MyProfile</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(_email))
+            {
+                <span class="shop-profile-drawer-email">@_email</span>
+            }
+        </a>
+        <nav class="shop-profile-drawer-navigation" aria-label="@Strings.Nav_Account">
+            <a class="shop-profile-drawer-link" href="@Routes.Orders" @onclick="CloseAsync">
+                <span>@Strings.Nav_Orders</span><ShopIcon Icon="@ShopIcons.Outlined.Arrow_Right_MD" />
+            </a>
+            <a class="shop-profile-drawer-link" href="@Routes.Wishlist" @onclick="CloseAsync">
+                <span>@Strings.Nav_Wishlist</span><ShopIcon Icon="@ShopIcons.Outlined.Arrow_Right_MD" />
+            </a>
+            <AuthorizeView Policy="@PolicyNames.AdminDashboard">
+                <Authorized>
+                    <a class="shop-profile-drawer-link" href="@Routes.Admin.Console" @onclick="CloseAsync">
+                        <span>@Strings.Nav_AdminConsole</span><ShopIcon Icon="@ShopIcons.Outlined.Arrow_Right_MD" />
+                    </a>
+                </Authorized>
+            </AuthorizeView>
+            <BusyFor Key="@BusyKeys.Global" Context="busy">
+                <ShopButton Class="shop-profile-drawer-link" Variant="ShopVariant.Text"
+                            Loading="@busy" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD" OnClick="OnSignOutAsync">
+                    @Strings.Logout
+                </ShopButton>
+            </BusyFor>
+        </nav>
+    </DrawerContent>
+</ShopDrawer>

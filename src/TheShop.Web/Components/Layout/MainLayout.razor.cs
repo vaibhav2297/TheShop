@@ -28,6 +28,9 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
     private IDisposable? _locationChangingRegistration;
+    private bool _profileDrawerOpen;
+
+    private void OpenProfileDrawer() => _profileDrawerOpen = true;
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -40,8 +43,10 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
 
     private ValueTask OnLocationChanging(LocationChangingContext context)
     {
+        _profileDrawerOpen = false;
         Breadcrumbs.Clear();
         Footer.Show();
+        StateHasChanged();
         return ValueTask.CompletedTask;
     }
 

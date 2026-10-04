@@ -1,0 +1,101 @@
+@use '../abstracts/text-style';
+
+// Figma 2976:16454: 400px desktop width, 16px chrome, 40% primary backdrop.
+.shop-drawer {
+    position: fixed;
+    inset: 0 0 0 auto;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    block-size: 100dvh;
+    max-block-size: 100dvh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background: var(--shop-color-surface-drawer);
+    color: var(--shop-color-text-primary);
+    overflow-wrap: anywhere;
+    overscroll-behavior: contain;
+    transform: translateX(100%);
+    transition: transform 280ms cubic-bezier(0.2, 0, 0, 1);
+
+    &[open] {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &[data-modal-visible] {
+        transform: translateX(0);
+    }
+
+    &::backdrop {
+        background: color-mix(in srgb, var(--shop-color-primary) 40%, transparent);
+        opacity: 0;
+        transition: opacity 280ms ease;
+    }
+
+    &[data-modal-visible]::backdrop {
+        opacity: 1;
+    }
+}
+
+.shop-drawer-header,
+.shop-drawer-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--shop-space-2);
+    padding: var(--shop-space-4);
+}
+
+.shop-drawer-header {
+    border-block-end: 1px solid var(--shop-color-lines-divider);
+}
+
+.shop-drawer-heading {
+    flex: 1;
+    min-inline-size: 0;
+}
+
+.shop-drawer-title {
+    margin: 0;
+    @include text-style.apply(h5);
+    text-transform: uppercase;
+}
+
+.shop-drawer-content {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    min-inline-size: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+}
+
+.shop-drawer-actions {
+    flex-wrap: wrap;
+    border-block-start: 1px solid var(--shop-color-lines-divider);
+    padding-block-end: max(var(--shop-space-4), env(safe-area-inset-bottom));
+}
+
+@media (min-width: 600px) {
+    .shop-drawer {
+        inline-size: 400px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shop-drawer,
+    .shop-drawer::backdrop {
+        transition: none;
+    }
+}
+
+html:has(.shop-drawer:modal),
+body:has(.shop-drawer:modal) {
+    overflow: hidden;
+}
+
+    // Temporary specificity bridge: the existing shell's Mud overflow utilities use !important.
+    body:has(.shop-drawer:modal) [data-shop-scroll-root] {
+        overflow: hidden !important;
+    }

@@ -1,0 +1,6 @@
+:root {
+    // Document stacking only. Native modal dialogs/drawers use browser top-layer ordering.
+    --shop-layer-sticky: 1000;
+    --shop-layer-appbar: 1100;
+    --shop-layer-notification: 1500;
+}

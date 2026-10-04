@@ -23,7 +23,9 @@
         </a>
         <AuthorizeView>
             <Authorized>
-                <ProfileMenu />
+                <ShopIconButton Icon="@ShopIcons.Outlined.User_02" Variant="ShopVariant.Outlined"
+                                Label="@Strings.Nav_Account" OnClick="OnAccountClick"
+                                aria-haspopup="dialog" aria-expanded="@(AccountOpen ? "true" : "false")" />
             </Authorized>
             <NotAuthorized>
                 <a class="shop-button shop-icon-button shop-button-outlined shop-button-primary shop-button-medium"

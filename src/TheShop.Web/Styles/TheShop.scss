@@ -3,6 +3,7 @@
 @use 'tokens/spacing';
 @use 'tokens/sizing' as sizing-tokens;
 @use 'tokens/theme';
+@use 'tokens/layers';
 @use 'base/reset';
 @use 'base/typography' as base-typography;
 @use 'base/accessibility';
@@ -38,6 +39,8 @@
 @use 'components/table';
 @use 'components/bulkactionbar';
 @use 'components/dialog';
+@use 'components/drawer';
+@use 'components/profile-drawer';
 @use 'components/notification';
 @use 'components/variant-image';
 @use 'components/rich-text-editor';

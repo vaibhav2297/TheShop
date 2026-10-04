@@ -412,6 +412,9 @@
   <data name="Account_Greeting" xml:space="preserve">
     <value>Welcome back!</value>
   </data>
+  <data name="Account_NamedGreeting" xml:space="preserve">
+    <value>Hi, {0}</value>
+  </data>
   <data name="SignUp_AgeConfirm" xml:space="preserve">
     <value>I confirm I am 19 years of age or older</value>
   </data>

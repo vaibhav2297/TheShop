@@ -1,4 +1,6 @@
 .shop-appbar {
+    position: relative;
+    z-index: var(--shop-layer-appbar);
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
