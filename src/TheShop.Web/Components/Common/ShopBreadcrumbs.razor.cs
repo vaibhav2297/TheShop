@@ -1,47 +1,49 @@
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using MudBlazor.Utilities;
+using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
-/// <summary>
-/// Layout-mounted breadcrumb strip. Wraps <see cref="MudBreadcrumbs"/> with the
-/// project's chevron separator, per-item truncation, responsive collapse, and the
-/// localized <c>aria-label</c> nav landmark. Pages never render this directly —
-/// they push a trail into <see cref="State.BreadcrumbState"/> and <c>MainLayout</c>
-/// renders this component in its breadcrumb slot.
-/// </summary>
-public partial class ShopBreadcrumbs : MudComponentBase
+/// <summary>Native breadcrumb landmark with CSS-responsive ancestor disclosure and a non-link current page.</summary>
+public partial class ShopBreadcrumbs : ShopComponentBase
 {
-    /// <summary>The breadcrumb items to display.</summary>
-    [Parameter]
-    public IReadOnlyList<BreadcrumbItem>? Items { get; set; }
+    /// <summary>Ordered trail; the final item is current. Class, Style and attributes target the nav landmark.</summary>
+    [Parameter] public IReadOnlyList<ShopBreadcrumbItem>? Items { get; set; }
 
-    // byte? matches MudBreadcrumbs.MaxItems exactly — null means no collapse limit.
-    private byte? _maxItems;
+    private readonly string _listId = $"shop-breadcrumbs-{Guid.NewGuid():N}";
+    private IReadOnlyList<ShopBreadcrumbItem> _items = [];
+    private bool _expanded;
+    private bool _focusExpandedAncestor;
+    private readonly Dictionary<int, ElementReference> _itemElements = [];
 
-    /// <summary>
-    /// Drives responsive collapse. Sets <see cref="_maxItems"/> to 2 on Sm and
-    /// below (middle levels collapse behind the expander), or <c>null</c> at Md
-    /// and above (full trail).
-    /// </summary>
-    private void OnBreakpointChanged(Breakpoint breakpoint)
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-breadcrumbs",
+        _expanded ? "shop-breadcrumbs-expanded" : null, Class);
+
+    private string ItemClass(int index) => ShopCssClass.Join("shop-breadcrumb-entry",
+        index > 0 && index < _items.Count - 1 ? "shop-breadcrumb-middle" : null);
+
+    /// <inheritdoc/>
+    protected override void OnParametersSet()
     {
-        _maxItems = breakpoint is Breakpoint.Xs or Breakpoint.Sm
-            ? 2
-            : null;
-
-        StateHasChanged();
+        var items = Items ?? [];
+        if (!_items.SequenceEqual(items))
+        {
+            _expanded = false;
+            _focusExpandedAncestor = false;
+        }
+        _items = items.ToArray();
     }
 
-    private string Classname =>
-        new CssBuilder("px-8 py-2")
-            .AddClass("mud-background-gray")
-            .AddClass(Class)
-            .Build();
+    private void Expand()
+    {
+        _expanded = true;
+        _focusExpandedAncestor = true;
+    }
 
-    private string Stylename =>
-        new StyleBuilder()
-            .AddStyle(Style)
-            .Build();
+    /// <inheritdoc/>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_focusExpandedAncestor) return;
+        _focusExpandedAncestor = false;
+        await _itemElements[1].FocusAsync(preventScroll: true);
+    }
 }

@@ -166,6 +166,8 @@ src/TheShop.Web/
       ShopUploadedImage.cs
       ShopPagination.razor / ShopPagination.razor.cs
       ShopBreadcrumbs.razor / ShopBreadcrumbs.razor.cs
+      ShopAppBar.razor / ShopAppBar.razor.cs
+      ShopBadge.razor / ShopBadge.razor.cs
       ShopSortSelect.razor / ShopSortSelect.razor.cs
       ShopFilterPanel.razor / ShopFilterPanel.razor.cs
       ShopBulkActionBar.razor / ShopBulkActionBar.razor.cs
@@ -173,7 +175,7 @@ src/TheShop.Web/
       ShopLoadingOverlay.razor / ShopLoadingOverlay.razor.cs
       BusyFor.razor / BusyFor.razor.cs
       OtpInput.razor / OtpInput.razor.cs
-      [existing app bar, footer, profile menu, access views]
+      [existing footer, profile menu, access views]
     Products/
       ProductCard.razor / ProductCard.razor.cs
       ProductForm.razor / ProductForm.razor.cs
@@ -192,9 +194,9 @@ src/TheShop.Web/
     BusyState.cs
     QueryStatePageBase.cs
     BreadcrumbTrail.cs
-    ShopBreadcrumbItem.cs
     CurrencyFormatter.cs
     UI/
+      ShopBreadcrumbItem.cs
       ShopComponentBase.cs
       ShopCssClass.cs
       ShopColor.cs
@@ -257,6 +259,8 @@ src/TheShop.Web/
       _imageupload.scss
       _otpinput.scss
       _breadcrumbs.scss
+      _appbar.scss
+      _badge.scss
       _pagination.scss
       _producttile.scss
       _rich-text-editor.scss
@@ -737,6 +741,23 @@ Inspected live Figma sections on 2026-10-03: [Expander 2955:19054](https://www.f
 - Zero/negative totals hide navigation. Out-of-range Page is clamped for presentation without firing callbacks. One page disables both arrows; current/disabled/out-of-range requests emit nothing. Always include first/last pages; show all through seven pages, first/last five near a boundary, otherwise current ±1 with ellipses. Rendering stays bounded even for int.MaxValue totals, with overflow-safe window arithmetic. Keys preserve page-button identity as windows move.
 - `_pagination.scss` is fully native; no remaining MudPagination consumers. Native pagination owns its distinct Figma geometry rather than overriding shared ShopButton variants. At narrow widths or enlarged text, the list wraps in source order instead of overflowing or shrinking targets. This responsive choice, hover/disabled/focus/forced-colors states, and empty-state rules are implementation decisions; Figma supplies desktop resting states only.
 
+### 6.6 Appbar, Breadcrumb and Badge — batch 27
+
+Inspected live Figma sections [Appbar 2970:9248](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=2970-9248), [Breadcrumb 2963:21466](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=2963-21466), and [Badge 2961:19777](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=2961-19777) on 2026-10-04. Node geometry, style bindings and screenshots are the visual source; no Figma edits.
+
+**Appbar:** `ShopAppBar` renders a native header, named primary nav, route-backed anchors, existing `ShopImage` logo, and shared outlined Medium icon treatments. `_appbar.scss` owns the layout. Component `153:5576` is 64px high at default text size, 16px inline inset, 52px logo, 36px navigation gaps, and 24px action gaps with 34px icon controls. Grid columns hug the logo/actions and let the center navigation fill available space. The Figma grid reports 8px vertical padding, but its centered 52px logo actually starts at y=6 in the 64px frame; implementation follows that visible geometry using 6px block padding and a growing minimum height. Background is `--shop-color-surface-appbar`. Small nav links use Button typography and uppercase treatment. Below 960px, links wrap in a second row; this responsive treatment is inferred, not a supplied mobile design. No invented hamburger/menu framework. Search remains the existing unwired action; this batch does not add search behavior or missing route destinations. The signed-in `ProfileMenu` dropdown remains a documented Mud bridge; only its trigger now uses the shared native outlined icon button. Do not remove its provider yet.
+
+**Breadcrumb:** `ShopBreadcrumbs`, `BreadcrumbTrail` and `BreadcrumbState` use `Common/UI/ShopBreadcrumbItem`, not Mud's model. Existing builder/state APIs, route safety checks, layout subscription/clearing and page consumers retain their behavior. A native named nav contains an ordered list; ancestors with destinations are anchors, disabled/removed ancestors are spans, and only the final span has `aria-current="page"`. Text remains encoded with full title labels. `Class`, `Style` and unmatched attributes target nav; the owned accessible name wins. Figma `357:4466` / `2963:21430`: subtle surface, 42px natural strip at default text size, 36px desktop inline padding, 8px gaps, 24px chevrons, Button text with 4px/5px padding, and a shared `ShopIconButton` (Small / Text / Primary) with the 18px `More_Horizontal` icon in its 24px footprint (Figma instance `2974:9343`, rechecked 2026-10-04). Below 960px, preserve the previous root/current-only collapse and access to every intermediate item via the disclosure; mobile inline padding is 16px. CSS controls visibility, without a breakpoint provider or resize JS. Click/Enter/Space reveals ancestors and removes the ellipsis button and its separator. Before expansion the button exposes `aria-expanded="false"`, `aria-controls` and the Show parent pages label. After rendering, focus moves to the first revealed ancestor; a disabled ancestor can receive programmatic focus without entering the tab order. The full trail appears at desktop widths; a changed trail resets expansion, an equivalent rerender does not. Wrapping, a 20rem truncation cap and growing height accommodate long labels/zoom. Those overflow/interaction details are implementation choices, not additional Figma variants.
+
+**Badge:** `ShopBadge` is a non-interactive span with localized `ChildContent`; styling/attributes target that span. Reuse shared `ShopVariant` (Filled/Outlined only), `ShopColor` (Primary/Secondary/Info/Success/Warning/Error), and all three `ShopSize` values. Defaults are Primary/Filled/Medium; unsupported variants/colors fail explicitly. No click, close, selection, count, dot or placement engine. `ShopChip` remains the selectable control. Set `2961:19776` defines Small/Medium/Large at 24/32/40px minimum height, 8/12/16px inline padding, Caption/Body 2/Body 1 typography, square corners and content-derived width. Height may grow with wrapped text. Filled labels consume role contrast tokens directly; outlined labels consume role colors. Outlined Primary alone uses `--shop-color-lines-default` for its inside 1px stroke; other outlined colors use their role token. Forced colors uses a system border instead of an inset shadow. The approved palette's existing small-text contrast limitations remain; matching Figma does not establish WCAG color compliance. The existing first-image Primary label now uses a Small outlined `ShopBadge`; upload selection/order/validation remain unchanged.
+
+```razor
+<ShopBadge Size="ShopSize.Small" Variant="ShopVariant.Outlined"
+           Color="ShopColor.Primary">@Strings.AddProduct_ImagePrimary</ShopBadge>
+```
+
+This example uses the existing product-gallery Primary resource label.
+
 ## 7. Forms and validation architecture
 
 This is a behavior migration, not a tag substitution. Handle validation deliberately before replacing all nine forms.
@@ -1084,7 +1105,7 @@ Rollback: revert the batch's native table call sites and their selection adapter
 - `MudRangeSlider` has two thumbs; a single native range input is not equivalent. Keep both ends, prevent crossing, and avoid duplicate/debounced query dispatch changes without verification.
 - Keep catalogue and admin query-state records and `QueryStatePageBase`. Verify Back/Forward and cancellation of superseded loads.
 - Preserve `ShopPagination` one-based `Page`, `TotalPages`, and `PageChanged`. Test zero results, one page, boundaries, and changing totals.
-- Replace Mud `BreadcrumbItem` in both `BreadcrumbTrail` and `BreadcrumbState` with a Web-owned record. Preserve responsive collapsing or provide an equally usable overflow/disclosure without losing intermediate navigation. Inspect existing `ShopBreadcrumbs` breakpoint handling.
+- Batch 27 replaces Mud `BreadcrumbItem` in both `BreadcrumbTrail` and `BreadcrumbState` with `Common/UI/ShopBreadcrumbItem`. Native `ShopBreadcrumbs` uses CSS-responsive ancestor disclosure; preserve every intermediate destination and current-page semantics. See section 6.6.
 
 ### Menus and navigation
 
@@ -1931,6 +1952,20 @@ The final implementing-agent response should state what changed, the exact verif
 - Compact-column/divider follow-up (2026-10-04): applied `shop-table-column-compact` to Status/Actions headers and cells across all three admin lists, plus the remaining variant Status column. Replaced collapsed borders with explicit single-edge ownership and padding-box header fill; the body has no top strokes to overlap the header divider. Added rendered-markup coverage for all consumers and browser assertions for compact widths, nowrap, zero border spacing, absent body top/inner right strokes, and consistent row strokes. **160 focused tests, 1,039 full Web tests, and 5 headed browser tests passed**, with no skips. Reviewed desktop/mobile, vendor-free, forced-colors and enlarged-text screenshots. Evidence: `tests/TheShop.E2E.Tests/TestResults/table-compact-divider-headed.trx` and refreshed `native-ui-evidence/table-*.png`. Design/whitespace gates pass; graph refreshed with existing parser warnings. User-staged work preserved; test-owned server disposed.
 - Header-color follow-up (2026-10-04): re-inspected live Figma header `2574:7504` in section `2967:1518`; its fill is now bound to `Brand/Tertiary`, opaque `#e8e8e8`. `_table.scss` consumes `--shop-color-tertiary` directly; removed the former local header-background alias. Updated the browser color expectation and reviewed fresh desktop/mobile screenshots. **5 headed table tests passed, 0 skipped** (including vendor-free styling, forced colors, overflow and live selection). Evidence: `tests/TheShop.E2E.Tests/TestResults/table-tertiary-header-headed.trx`. Build/design/whitespace checks pass; graph refreshed. No full Web-suite rerun for this color-only follow-up.
 - Next table work: ProductVariantsCard, preserving virtualization, price editing/validation, copy-to-all, availability and image-picker state. Keep its MudTable bridge until that editor is verified.
+
+### Batch 27 — Native Appbar, Breadcrumb and Badge — 2026-10-04
+
+- Implemented the three live-inspected Figma contracts in section 6.6. Native header/nav/links reuse existing button/icon/image styles; all appbar actions use the outlined Medium treatment. Logo size is owned by its parent (52px square), not an inline image override. Desktop actions use 24px gaps; mobile uses 12px to preserve space at enlarged text sizes. Page/link destinations and the existing unwired search action are unchanged.
+- Replaced breadcrumb vendor markup, breakpoint provider/builders, and the shared Mud item type. Builder/state/page ownership and event lifetimes stay intact. Preserved removed-parent text, encoded labels, link destinations, nav naming, truncation and access to intermediate items. Only the final item is marked current. Native collapse/expand retains focus and resets on a changed trail.
+- Added `ShopBadge` with six inspected color roles, Filled/Outlined treatments, three sizes and direct base/contrast-token usage. Primary outlined uses the inspected default-line stroke. Replaced only the existing image-upload Primary chip with the badge, preserving file/order behavior. No new package, JS module, general menu framework, global component token, database change or SDD artifact.
+- Baseline breadcrumb/profile/upload tests: **60 passed**. Final full Web suite: **1,049 passed, 0 skipped**. Added appbar anonymous/authenticated branch and root-attribute checks, all 36 badge combinations/defaults/rejection checks, breadcrumb disclosure/reset/ARIA/root-attribute checks, and native badge consumer assertions. Existing profile tests now click the rendered trigger instead of calling the vendor menu method.
+- Final headed Chromium run: **5 passed, 0 skipped**. Four 390px/1440px cases verify real appbar/breadcrumb markup and actual SSR badge components with/without vendor CSS, Figma geometry/colors/font family, logo visibility, focus, forced colors, enlarged text, overflow and Home-link trail clearing. One mocked-auth WASM journey preserves table selection/pagination and exercises the account trigger, Add Brand navigation, Enter/Space ancestor disclosure with retained focus, parent navigation and trail reset. API calls are intercepted; no backend writes or genuine sessions. Visual shell specimens intentionally stub catalogue data rather than testing catalogue results; the generic failure notification visible in some evidence is from that stubbed catalogue response, not a claimed successful catalogue-data test. The runtime error element is checked hidden before isolating vendor-free screenshots.
+- Evidence: `tests/TheShop.E2E.Tests/TestResults/native-shell-badge-headed.trx`; `tests/TheShop.E2E.Tests/bin/Debug/net10.0/native-ui-evidence/shell-*.png`, including `shell-breadcrumb-expanded-live.png`. Desktop/mobile, forced-colors, enlarged-text and live disclosure screenshots reviewed. Early checks caught the logo parent-height issue and fixture selector/session assumptions; corrected before the final passing run. Existing palette contrast limitations remain documented; this is not a WCAG color-compliance claim.
+- Build/design/whitespace gates pass. AST graph refreshed with existing SQL-parser/empty-file warnings. Existing AngleSharp NU1902 and unrelated ProductDescriptionJourneyTests xUnit1051 warnings remain. Test-owned servers disposed; no user process stopped, no commit/staging operation performed.
+- Remaining bridge: signed-in `ProfileMenu` still owns its Mud popup, activation wrapper, keyboard/focus behavior and permission/sign-out logic. MainLayout, other shell surfaces and upload chrome still contain Mud controls. Native appbar anonymous rendering, breadcrumbs and badges do not require vendor CSS; this is not a claim that the entire authenticated shell is vendor-free.
+- Rollback boundary: revert this batch's appbar/breadcrumb/badge files, shared breadcrumb model migration, profile trigger and Primary-label substitutions, stylesheet imports/resources, tests and guide record together. Preserve earlier native table/color/selection work. No stored-data rollback is needed. Next work remains the remaining shell/profile menu/loading overlay and the separately planned money/variant editor migration.
+
+- Breadcrumb disclosure follow-up (2026-10-04): rechecked Figma ellipsis instance `2974:9343`; replaced bespoke button chrome with Small / Text / Primary `ShopIconButton` and `ShopIcons.Outlined.More_Horizontal` (24px button, 18px icon). Expansion now removes the trigger and its separator, then focuses the first revealed ancestor; disabled ancestors support programmatic focus without becoming tab stops. Equivalent trails retain expansion; changed trails reset it. Removed the unused collapse label and updated section 6.6. **52 focused breadcrumb tests, 1,051 full Web tests, and 1 headed live browser test passed, 0 skipped**. Reviewed collapsed/expanded mobile screenshots; the browser checks shared button/icon sizes, keyboard expansion, trigger removal, focus transfer, separator count and parent navigation. Evidence: `tests/TheShop.E2E.Tests/TestResults/breadcrumb-expander-headed.trx` and `native-ui-evidence/shell-breadcrumb-{collapsed,expanded}-live.png`. Design/whitespace gates pass; AST graph refreshed with existing parser warnings. Test-owned server disposed; unrelated migration work preserved.
 
 ## 19. Prompt to give the implementing AI
 

@@ -19,15 +19,13 @@ public sealed class BreadcrumbsJourneyTests(PlaywrightFixture playwright) : E2ET
         await Page.Locator(".mud-layout").WaitForAsync(new() { Timeout = 30_000 });
 
         var trail = Page.GetByRole(AriaRole.Navigation, new() { Name = Strings.Breadcrumb_AriaLabel });
-        // A clickable crumb (Href set) renders as a link; the disabled/current crumb (Href
-        // null) renders as a plain <button> — GetByText would only match the inner text span,
-        // not the element carrying aria-current, so target the two roles directly.
         await trail.GetByRole(AriaRole.Link, new() { Name = Strings.Nav_Home, Exact = true })
             .WaitForAsync(new() { Timeout = 15_000 });
 
         // AC-4: the final crumb is the current page and is not a link.
-        var current = trail.GetByRole(AriaRole.Button, new() { Name = Strings.Nav_Products, Exact = true });
+        var current = trail.Locator("span[aria-current='page']");
         await current.WaitForAsync(new() { Timeout = 15_000 });
+        (await current.TextContentAsync()).Should().Be(Strings.Nav_Products);
         (await current.GetAttributeAsync("aria-current")).Should().Be("page");
     }
 

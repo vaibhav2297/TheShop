@@ -60,8 +60,7 @@ public class ProfileMenuTests : TestContext
             builder.CloseComponent();
         });
 
-        var menu = cut.FindComponent<MudMenu>();
-        await cut.InvokeAsync(() => menu.Instance.OpenMenuAsync(EventArgs.Empty));
+        await cut.InvokeAsync(() => cut.Find($"button[aria-label='{Strings.Nav_Account}']").Click());
 
         return cut;
     }

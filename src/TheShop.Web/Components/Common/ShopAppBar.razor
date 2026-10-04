@@ -1,75 +1,36 @@
 @using TheShop.Web.Common
-@using TheShop.Web.Resources
-@using TheShop.Web.Theme
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
 
-<MudAppBar Elevation="0"
-           Fixed="false">
-            
-    <MudGrid Justify="Justify.SpaceBetween"
-             Class="flex-grow-1 align-center">
-
-        @* Logo *@
-        <MudItem xs="4"
-                 Class="d-flex align-center">
-            <MudLink Href="@Routes.Home" Underline="Underline.None" Color="Color.Inherit" Class="d-inline-flex">
-                <ShopImage Src="@ShopIcons.ImageAssets.LogoIcon"
-                           Preset="ShopImagePreset.BrandLogo"
-                           Alt="@Strings.AppName"
-                           PlaceholderLabel="@Strings.AppName"
-                           Style="width: 52px; height: 52px;" />
-            </MudLink>
-        </MudItem>
-
-        @* Primary navigation *@
-        <MudItem xs="4"
-                 Class="d-flex justify-center align-center">
-            <MudStack Row
-                      AlignItems="AlignItems.Center"
-                      Spacing="6">
-                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Home">@Strings.Nav_Home</MudButton>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Products">@Strings.Nav_Products</MudButton>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Categories">@Strings.Nav_Categories</MudButton>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Brands">@Strings.Nav_Brands</MudButton>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@Routes.Deals">@Strings.Nav_Deals</MudButton>
-            </MudStack>
-        </MudItem>
-
-        @* Action icons *@
-        <MudItem xs="4"
-                 Class="d-flex justify-end align-center">
-            <MudStack Row
-                      AlignItems="AlignItems.Center"
-                      Spacing="2">
-
-                <MudIconButton Icon="@ShopIcons.Outlined.Search_Magnifying_Glass"
-                               Color="Color.Primary"
-                               aria-label="@Strings.Nav_Search" />
-
-                <MudIconButton Icon="@ShopIcons.Outlined.Shopping_Bag_01"
-                               Color="Color.Primary"
-                               Href="@Routes.Cart"
-                               aria-label="@Strings.Nav_Cart" />
-
-                <AuthorizeView>
-
-                    <Authorized>
-                        <ProfileMenu />
-                    </Authorized>
-
-                    <NotAuthorized>
-
-                        <MudIconButton Icon="@ShopIcons.Outlined.User_02"
-                                       Color="Color.Primary"
-                                       Href="@Routes.Auth.SignIn"
-                                       aria-label="@Strings.Nav_Account" />
-
-                    </NotAuthorized>
-
-                </AuthorizeView>
-
-            </MudStack>
-        </MudItem>
-
-    </MudGrid>
-
-</MudAppBar>
+<header @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+    <a class="shop-appbar-logo" href="@Routes.Home">
+        <ShopImage Src="@ShopIcons.ImageAssets.LogoIcon" Preset="ShopImagePreset.BrandLogo"
+                   Alt="@Strings.AppName" PlaceholderLabel="@Strings.AppName" />
+    </a>
+    <nav class="shop-appbar-navigation" aria-label="@Strings.Nav_Primary">
+        <a class="shop-button shop-button-text shop-button-primary shop-button-small" href="@Routes.Home">@Strings.Nav_Home</a>
+        <a class="shop-button shop-button-text shop-button-primary shop-button-small" href="@Routes.Products">@Strings.Nav_Products</a>
+        <a class="shop-button shop-button-text shop-button-primary shop-button-small" href="@Routes.Categories">@Strings.Nav_Categories</a>
+        <a class="shop-button shop-button-text shop-button-primary shop-button-small" href="@Routes.Brands">@Strings.Nav_Brands</a>
+        <a class="shop-button shop-button-text shop-button-primary shop-button-small" href="@Routes.Deals">@Strings.Nav_Deals</a>
+    </nav>
+    <div class="shop-appbar-actions">
+        <ShopIconButton Icon="@ShopIcons.Outlined.Search_Magnifying_Glass"
+                        Variant="ShopVariant.Outlined" Label="@Strings.Nav_Search" />
+        <a class="shop-button shop-icon-button shop-button-outlined shop-button-primary shop-button-medium"
+           href="@Routes.Cart" aria-label="@Strings.Nav_Cart">
+            <ShopIcon Icon="@ShopIcons.Outlined.Shopping_Bag_01" />
+        </a>
+        <AuthorizeView>
+            <Authorized>
+                <ProfileMenu />
+            </Authorized>
+            <NotAuthorized>
+                <a class="shop-button shop-icon-button shop-button-outlined shop-button-primary shop-button-medium"
+                   href="@Routes.Auth.SignIn" aria-label="@Strings.Nav_Account">
+                    <ShopIcon Icon="@ShopIcons.Outlined.User_02" />
+                </a>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</header>

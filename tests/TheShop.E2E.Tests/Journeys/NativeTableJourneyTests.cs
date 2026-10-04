@@ -111,7 +111,7 @@ public sealed class NativeTableJourneyTests(PlaywrightFixture playwright) : E2ET
             exp = expiry,
             aud = "authenticated",
             role = "authenticated",
-            perms = new[] { "brands.view", "brands.edit", "brands.delete" },
+            perms = new[] { "brands.view", "brands.edit", "brands.delete", "brands.create" },
             app_roles = new[] { "Admin" }
         }) + ".dGVzdA";
         var session = JsonSerializer.Serialize(new
@@ -179,6 +179,36 @@ public sealed class NativeTableJourneyTests(PlaywrightFixture playwright) : E2ET
         await Assertions.Expect(Page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
         unexpected.Should().BeEmpty();
         await SaveAsync("table-brands-live");
+
+        // Exercise the appbar's native activator against the retained account dropdown.
+        var account = Page.Locator($".shop-appbar button[aria-label='{Strings.Nav_Account}']");
+        await account.ClickAsync();
+        await Assertions.Expect(Page.GetByText(Strings.Nav_MyProfile, new() { Exact = true })).ToBeVisibleAsync();
+        await account.ClickAsync();
+        await Assertions.Expect(Page.GetByText(Strings.Nav_MyProfile, new() { Exact = true })).ToBeHiddenAsync();
+
+        await Page.GetByRole(AriaRole.Link, new() { Name = Strings.AddBrand_Heading, Exact = true }).ClickAsync();
+        var trail = Page.Locator(".shop-breadcrumbs");
+        await Assertions.Expect(trail.Locator("[aria-current='page']")).ToHaveTextAsync(Strings.AddBrand_Heading);
+        await Page.SetViewportSizeAsync(390, 900);
+        var expand = trail.Locator(".shop-breadcrumb-expand");
+        var parent = trail.GetByRole(AriaRole.Link, new() { Name = Strings.ManageBrands_Heading, Exact = true });
+        await Assertions.Expect(parent).ToBeHiddenAsync();
+        (await expand.BoundingBoxAsync())!.Width.Should().Be(24);
+        (await expand.Locator("svg").BoundingBoxAsync())!.Width.Should().Be(18);
+        await SaveAsync("shell-breadcrumb-collapsed-live");
+        await expand.FocusAsync();
+        await Page.Keyboard.PressAsync("Enter");
+        await Assertions.Expect(parent).ToBeVisibleAsync();
+        await Assertions.Expect(expand).ToHaveCountAsync(0);
+        await Assertions.Expect(parent).ToBeFocusedAsync();
+        await Assertions.Expect(trail.Locator(".shop-breadcrumb-separator")).ToHaveCountAsync(2);
+        await SaveAsync("shell-breadcrumb-expanded-live");
+        await parent.ClickAsync();
+        await Assertions.Expect(trail.Locator("[aria-current='page']")).ToHaveTextAsync(Strings.ManageBrands_Heading);
+        await Assertions.Expect(trail.Locator("button")).ToHaveCountAsync(0);
+        await Assertions.Expect(Page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
+        unexpected.Should().BeEmpty();
     }
 
     private static async Task<string> RenderSpecimenAsync()

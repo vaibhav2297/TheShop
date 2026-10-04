@@ -206,8 +206,9 @@ public class ShopImageUploadTests : TestContext
             .Add(c => c.ShowPrimaryBadge, true)
             .Add(c => c.PrimaryLabel, PrimaryLabel));
 
-        cut.FindAll(".preview .primary").Should().ContainSingle();
-        cut.Find(".preview .primary").TextContent.Should().Contain(PrimaryLabel);
+        cut.FindAll(".preview .shop-image-upload-primary").Should().ContainSingle();
+        cut.Find(".preview .shop-image-upload-primary").TextContent.Should().Contain(PrimaryLabel);
+        cut.FindComponents<ShopBadge>().Should().ContainSingle();
     }
 
     [Fact]
@@ -219,7 +220,7 @@ public class ShopImageUploadTests : TestContext
             .Add(c => c.Multiple, true)
             .Add(c => c.PrimaryLabel, PrimaryLabel));
 
-        cut.FindAll(".preview .primary").Should().BeEmpty();
+        cut.FindAll(".preview .shop-image-upload-primary").Should().BeEmpty();
     }
 
     // =========================================================================

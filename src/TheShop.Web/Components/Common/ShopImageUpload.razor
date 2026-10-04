@@ -72,11 +72,9 @@
                                         @* The sequence itself carries the meaning: whatever sits first is the primary. *@
                                         @if (ShowPrimaryBadge && IsPrimary(image))
                                         {
-                                            <MudChip T="string"
-                                                     Class="primary"
-                                                     Size="Size.Small"
-                                                     Color="Color.Default"
-                                                     Variant="Variant.Outlined">@PrimaryLabel</MudChip>
+                                            <ShopBadge Class="shop-image-upload-primary"
+                                                       Size="TheShop.Web.Common.UI.ShopSize.Small"
+                                                       Variant="TheShop.Web.Common.UI.ShopVariant.Outlined">@PrimaryLabel</ShopBadge>
                                         }
 
                                     </MudStack>

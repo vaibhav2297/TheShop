@@ -1741,4 +1741,10 @@
   <data name="Table_SelectRow" xml:space="preserve">
     <value>Select {0}</value>
   </data>
+  <data name="Nav_Primary" xml:space="preserve">
+    <value>Primary navigation</value>
+  </data>
+  <data name="Breadcrumb_Expand" xml:space="preserve">
+    <value>Show parent pages</value>
+  </data>
 </root>

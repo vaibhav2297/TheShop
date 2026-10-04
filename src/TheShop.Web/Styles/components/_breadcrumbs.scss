@@ -1,4 +1,59 @@
-.mud-breadcrumb-separator {
-    display: inline-flex;
-    padding: 0 8px;
+@use '../abstracts/text-style';
+
+.shop-breadcrumbs {
+    flex: none;
+    min-inline-size: 0;
+    padding: 0.5rem 1rem;
+    background: var(--shop-color-surface-subtle);
+    color: var(--shop-color-text-primary);
+}
+
+.shop-breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.shop-breadcrumb-entry,
+.shop-breadcrumb-expander {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+}
+
+.shop-breadcrumb-item {
+    min-inline-size: 0;
+    max-inline-size: 20rem;
+    overflow: hidden;
+    padding: 0.25rem 0.3125rem;
+    color: inherit;
+    @include text-style.apply(button);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+a.shop-breadcrumb-item:hover {
+    background: var(--shop-color-tertiary);
+}
+
+.shop-breadcrumb-separator {
+    flex: none;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+}
+
+.shop-breadcrumb-middle { display: none; }
+.shop-breadcrumbs-expanded .shop-breadcrumb-middle { display: flex; }
+
+@media (min-width: 960px) {
+    .shop-breadcrumbs { padding-inline: 2.25rem; }
+    .shop-breadcrumb-middle { display: flex; }
+    .shop-breadcrumb-expander { display: none; }
 }

@@ -1,4 +1,4 @@
-using MudBlazor;
+using TheShop.Web.Common.UI;
 using TheShop.Web.Resources;
 
 namespace TheShop.Web.Common;
@@ -11,15 +11,15 @@ namespace TheShop.Web.Common;
 /// </summary>
 public sealed class BreadcrumbTrail
 {
-    private readonly List<BreadcrumbItem> _items;
+    private readonly List<ShopBreadcrumbItem> _items;
 
-    private BreadcrumbTrail(List<BreadcrumbItem> items) => _items = items;
+    private BreadcrumbTrail(List<ShopBreadcrumbItem> items) => _items = items;
 
     /// <summary>
     /// Starts a storefront trail, seeding it with the Home root item.
     /// </summary>
     public static BreadcrumbTrail Storefront() =>
-        new([new BreadcrumbItem(Strings.Nav_Home, Routes.Home)]);
+        new([new ShopBreadcrumbItem(Strings.Nav_Home, Routes.Home)]);
 
     /// <summary>
     /// Starts an admin trail, seeding it with the Console root item.
@@ -29,7 +29,7 @@ public sealed class BreadcrumbTrail
     /// the corresponding Supabase RLS policies. See <see cref="Routes.Admin"/> for details.
     /// </remarks>
     public static BreadcrumbTrail Admin() =>
-        new([new BreadcrumbItem(Strings.Nav_AdminConsole, Routes.Admin.Console)]);
+        new([new ShopBreadcrumbItem(Strings.Nav_AdminConsole, Routes.Admin.Console)]);
 
     /// <summary>
     /// Appends a clickable intermediate crumb. Pass <c>null</c> for
@@ -44,7 +44,7 @@ public sealed class BreadcrumbTrail
     {
         if (href is not null && !IsAllowedHref(href))
             throw new ArgumentException($"Disallowed scheme in breadcrumb href: '{href}'", nameof(href));
-        _items.Add(new BreadcrumbItem(text, href, disabled: href is null));
+        _items.Add(new ShopBreadcrumbItem(text, href, disabled: href is null));
         return this;
     }
 
@@ -58,9 +58,9 @@ public sealed class BreadcrumbTrail
     /// Appends the non-clickable final crumb representing the current page,
     /// then returns the completed trail.
     /// </summary>
-    public IReadOnlyList<BreadcrumbItem> Current(string text)
+    public IReadOnlyList<ShopBreadcrumbItem> Current(string text)
     {
-        _items.Add(new BreadcrumbItem(text, href: null, disabled: true));
+        _items.Add(new ShopBreadcrumbItem(text, href: null, disabled: true));
         return _items.AsReadOnly();
     }
 
@@ -68,5 +68,5 @@ public sealed class BreadcrumbTrail
     /// Returns the trail built so far without appending a current-page crumb.
     /// Prefer <see cref="Current"/> for a complete trail.
     /// </summary>
-    public IReadOnlyList<BreadcrumbItem> Build() => _items.AsReadOnly();
+    public IReadOnlyList<ShopBreadcrumbItem> Build() => _items.AsReadOnly();
 }

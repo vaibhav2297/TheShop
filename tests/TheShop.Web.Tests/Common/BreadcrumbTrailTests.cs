@@ -1,5 +1,5 @@
 using FluentAssertions;
-using MudBlazor;
+using TheShop.Web.Common.UI;
 using TheShop.Web.Common;
 using TheShop.Web.Resources;
 using Xunit;
