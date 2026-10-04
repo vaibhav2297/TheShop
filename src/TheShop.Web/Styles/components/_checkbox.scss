@@ -69,6 +69,14 @@
     color: var(--shop-color-primary);
 }
 
+.shop-checkbox-input[aria-checked='mixed'] ~ :is(.shop-checkbox-unchecked, .shop-checkbox-checked) {
+    display: none;
+}
+
+.shop-checkbox-mixed {
+    color: var(--shop-color-primary);
+}
+
 .shop-checkbox-input:focus-visible ~ .shop-checkbox-icon {
     outline: var(--shop-focus-width) solid var(--shop-color-focus-ring);
     outline-offset: var(--shop-focus-offset);

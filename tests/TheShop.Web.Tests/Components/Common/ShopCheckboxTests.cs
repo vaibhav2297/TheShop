@@ -12,6 +12,27 @@ namespace TheShop.Web.Tests.Components.Common;
 public class ShopCheckboxTests : TestContext
 {
     [Fact]
+    public void Render_MixedState_SynchronizesNativePropertyAndRetainsBooleanBinding()
+    {
+        var module = JSInterop.SetupModule("./js/shopCheckbox.js");
+        module.SetupVoid("setIndeterminate", _ => true).SetVoidResult();
+        var model = new CheckboxModel();
+        var cut = Render<ShopCheckbox>(p => p.Add(c => c.Label, Strings.Table_SelectPage)
+            .Add(c => c.HideLabel, true).Add(c => c.Indeterminate, true)
+            .Add(c => c.ValueExpression, () => model.Accepted)
+            .Add(c => c.ValueChanged, value => model.Accepted = value));
+        cut.Find("input").GetAttribute("aria-checked").Should().Be("mixed");
+        cut.Find(".shop-checkbox-text").ClassList.Should().Contain("shop-visually-hidden");
+        cut.Find(".shop-checkbox-mixed").GetAttribute("aria-hidden").Should().Be("true");
+        module.Invocations["setIndeterminate"].Last().Arguments[1].Should().Be(true);
+        cut.Find("input").Change(true);
+        model.Accepted.Should().BeTrue();
+        cut.Render(p => p.Add(c => c.Indeterminate, false));
+        cut.Find("input").HasAttribute("aria-checked").Should().BeFalse();
+        module.Invocations["setIndeterminate"].Last().Arguments[1].Should().Be(false);
+    }
+
+    [Fact]
     public void Render_Defaults_AssociatesStableUniqueLabelsAndUsesBuiltInCheckboxBinding()
     {
         var model = new CheckboxModel();

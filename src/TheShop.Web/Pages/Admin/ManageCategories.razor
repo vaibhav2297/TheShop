@@ -71,27 +71,26 @@
                     else if (_categories.Items.Count > 0)
                     {
                         <BusyFor Keys="@MutationBusyKeys" Context="mutating">
-                            <MudTable T="CategoryListItemDto"
+                            <ShopTable TItem="CategoryListItemDto"
                                       Items="@_categories.Items"
-                                      MultiSelection="true"
-                                      SelectedItems="@_selectedItems"
-                                      SelectOnRowClick="false"
-                                      SelectedItemsChanged="OnSelectedItemsChanged"
-                                      Hover="true"
-                                      Class="mud-width-full"
-                                      Elevation="0"
-                                      HeaderClass="mud-tertiary-lighten"
-                                      Outlined="true">
+                                      ItemKey="@(item => item.Id)"
+                                      Caption="@Strings.ManageCategories_Heading"
+                                      ColumnCount="4"
+                                      Selectable="true"
+                                      SelectedKeys="@SelectedKeys"
+                                      SelectedKeysChanged="OnSelectedKeysChanged"
+                                      RowSelectionLabel="@(item => string.Format(Strings.Table_SelectRow, item.Name))"
+                                      SelectionDisabled="@mutating">
 
                                 <HeaderContent>
-                                    <MudTh>@Strings.ManageCategories_ColumnName</MudTh>
-                                    <MudTh>@Strings.ManageCategories_ColumnDescription</MudTh>
-                                    <MudTh>@Strings.ManageCategories_ColumnStatus</MudTh>
-                                    <MudTh>@Strings.ManageCategories_ColumnActions</MudTh>
+                                    <th scope="col">@Strings.ManageCategories_ColumnName</th>
+                                    <th scope="col">@Strings.ManageCategories_ColumnDescription</th>
+                                    <th scope="col" class="shop-table-column-compact">@Strings.ManageCategories_ColumnStatus</th>
+                                    <th scope="col" class="shop-table-column-compact">@Strings.ManageCategories_ColumnActions</th>
                                 </HeaderContent>
 
                                 <RowTemplate Context="category">
-                                    <MudTd>
+                                    <td>
                                         <MudStack Row AlignItems="AlignItems.Center" Spacing="3">
                                             <MudAvatar Rounded="true">
                                                 <ShopImage Src="@category.ImageUrl" Preset="ShopImagePreset.Thumbnail" Alt="@category.Name" PlaceholderLabel="@category.Name" />
@@ -108,11 +107,11 @@
 
                                             </MudStack>
                                         </MudStack>
-                                    </MudTd>
-                                    <MudTd>
+                                    </td>
+                                    <td>
                                         <MudText Typo="Typo.body2" Color="Color.Secondary">@category.Description</MudText>
-                                    </MudTd>
-                                    <MudTd>
+                                    </td>
+                                    <td class="shop-table-column-compact">
                                         <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Categories.Edit.Code)" Context="statusAuth">
                                             <Authorized>
 
@@ -145,8 +144,8 @@
                                                 </MudText>
                                             </NotAuthorized>
                                         </AuthorizeView>
-                                    </MudTd>
-                                    <MudTd>
+                                    </td>
+                                    <td class="shop-table-column-compact">
                                         @* A deletion replaces the whole action group, not just the trash button:
                                            leaving Edit live next to a spinner would invite a navigation away from
                                            the row mid-delete. *@
@@ -184,9 +183,9 @@
                                                 </AuthorizeView>
                                             </MudStack>
                                         }
-                                    </MudTd>
+                                    </td>
                                 </RowTemplate>
-                            </MudTable>
+                            </ShopTable>
                         </BusyFor>
 
                         <ShopPagination Page="@_categories.Page"

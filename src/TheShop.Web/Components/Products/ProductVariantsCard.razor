@@ -169,7 +169,7 @@
                                         </MudIconButton>
                                     </MudStack>
                                 </MudTh>
-                                <MudTh>@Strings.ProductVariants_ColumnStatus</MudTh>
+                                <MudTh Class="shop-table-column-compact">@Strings.ProductVariants_ColumnStatus</MudTh>
                                 <MudTh>@Strings.ProductVariants_ColumnImage</MudTh>
                             </HeaderContent>
 
@@ -194,7 +194,7 @@
                                                     Margin="Margin.Dense"
                                                     Disabled="@Disabled" />
                                 </MudTd>
-                                <MudTd>
+                                <MudTd Class="shop-table-column-compact">
                                     <MudChip T="string"
                                              Color="@(variant.IsAvailable ? Color.Primary : Color.Default)"
                                              Variant="Variant.Outlined"

@@ -144,6 +144,24 @@ public class ManageProductsTests : TestContext
             .Returns(confirmed);
     }
 
+    [Fact]
+    public async Task Table_StatusAndActions_UseCompactHeadersAndCells()
+    {
+        var cut = await RenderListAsync();
+
+        cut.FindAll(".shop-table th.shop-table-column-compact")
+            .Select(header => header.TextContent.Trim()).Should()
+            .Equal(Strings.ManageProducts_ColumnStatus, Strings.ManageProducts_ColumnActions);
+        var rows = cut.FindAll(".shop-table tbody tr");
+        rows.Should().NotBeEmpty();
+        foreach (var row in rows)
+        {
+            row.QuerySelectorAll("td.shop-table-column-compact").Should().HaveCount(2);
+            row.Children.TakeLast(2).Should()
+                .OnlyContain(cell => cell.ClassList.Contains("shop-table-column-compact"));
+        }
+    }
+
     private async Task<IRenderedComponent<ManageProducts>> RenderListAsync()
     {
         AuthorizeAsProductManager();
@@ -155,9 +173,8 @@ public class ManageProductsTests : TestContext
 
     private static async Task SelectProductsAsync(IRenderedComponent<ManageProducts> cut, int count)
     {
-        var table = cut.FindComponent<MudTable<ProductListItemDto>>();
-        var selected = table.Instance.Items!.Take(count).ToHashSet();
-        await cut.InvokeAsync(() => table.Instance.SelectedItemsChanged.InvokeAsync(selected));
+        for (var index = 0; index < count; index++)
+            await cut.InvokeAsync(() => cut.FindAll(".shop-table tbody input[type=checkbox]")[index].Change(true));
     }
 
     // =========================================================================
@@ -340,7 +357,7 @@ public class ManageProductsTests : TestContext
         await cut.InvokeAsync(() => bar.Instance.OnClose.InvokeAsync());
 
         cut.FindComponent<ShopBulkActionBar>().Instance.Visible.Should().BeFalse();
-        cut.FindComponent<MudTable<ProductListItemDto>>().Instance.SelectedItems.Should().BeEmpty();
+        cut.FindComponent<ShopTable<ProductListItemDto>>().Instance.SelectedKeys.Should().BeEmpty();
         _receivedQueries.Should().BeEmpty("dismissing a selection is local UI state, not a re-query");
     }
 
@@ -669,7 +686,7 @@ public class ManageProductsTests : TestContext
     public async Task DeleteSingle_WhenConfirmed_SendsDeleteProductsCommandWithThatProductsId()
     {
         var cut = await RenderListAsync();
-        var product = cut.FindComponent<MudTable<ProductListItemDto>>().Instance.Items!.First();
+        var product = cut.FindComponent<ShopTable<ProductListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteProductsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new ProductDeletionOutcomeDto(1, [])));
@@ -687,7 +704,7 @@ public class ManageProductsTests : TestContext
     public async Task DeleteSingle_WhenCancelled_DoesNotSendTheCommand()
     {
         var cut = await RenderListAsync();
-        var product = cut.FindComponent<MudTable<ProductListItemDto>>().Instance.Items!.First();
+        var product = cut.FindComponent<ShopTable<ProductListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: false);
 
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageProducts_DeleteAria, product.Name)}']");
@@ -716,7 +733,7 @@ public class ManageProductsTests : TestContext
         var cut = await RenderListAsync();
         var pagination = cut.FindComponent<ShopPagination>();
         await cut.InvokeAsync(() => pagination.Instance.PageChanged.InvokeAsync(2));
-        var product = cut.FindComponent<MudTable<ProductListItemDto>>().Instance.Items!.Single();
+        var product = cut.FindComponent<ShopTable<ProductListItemDto>>().Instance.Items!.Single();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteProductsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new ProductDeletionOutcomeDto(1, [])));
@@ -739,7 +756,7 @@ public class ManageProductsTests : TestContext
     public async Task DeleteSingle_WhenTheCommandFails_ShowsTheErrorMessageAndNeverClaimsSuccess()
     {
         var cut = await RenderListAsync();
-        var product = cut.FindComponent<MudTable<ProductListItemDto>>().Instance.Items!.First();
+        var product = cut.FindComponent<ShopTable<ProductListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteProductsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Fail<ProductDeletionOutcomeDto>(ProductErrorKeys.DeleteFailed));
@@ -760,7 +777,7 @@ public class ManageProductsTests : TestContext
     public async Task DeleteSingle_WhenTheProductIsReferenced_ShowsTheInUseMessageNamingItAndItsReferenceCount()
     {
         var cut = await RenderListAsync();
-        var product = cut.FindComponent<MudTable<ProductListItemDto>>().Instance.Items!.First();
+        var product = cut.FindComponent<ShopTable<ProductListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteProductsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new ProductDeletionOutcomeDto(0, [new ReferencedProductDto(product.Id, product.Name, 3)])));

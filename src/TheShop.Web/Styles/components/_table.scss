@@ -1,0 +1,61 @@
+@use '../abstracts/text-style';
+
+.shop-table-scroll {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    overflow-x: auto;
+
+    &:focus-visible {
+        outline: var(--shop-focus-width) solid var(--shop-color-focus-ring);
+        outline-offset: var(--shop-focus-offset);
+    }
+}
+
+.shop-table {
+    inline-size: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--shop-color-surface-default);
+    color: var(--shop-color-text-primary);
+    @include text-style.apply(body-2);
+}
+
+.shop-table > :is(thead, tbody) > tr > :is(th, td) {
+    padding: 0.625rem 0.75rem;
+    // Each shared edge has one owner; adjacent cells never stack strokes.
+    border: 0 solid var(--shop-color-lines-default);
+    border-inline-start-width: 1px;
+    border-block-end-width: 1px;
+    vertical-align: middle;
+    text-align: start;
+}
+
+.shop-table > :is(thead, tbody) > tr > :last-child {
+    border-inline-end-width: 1px;
+}
+
+.shop-table > thead > tr:first-child > th {
+    border-block-start-width: 1px;
+}
+
+.shop-table > thead > tr > th {
+    background: var(--shop-color-tertiary);
+    background-clip: padding-box;
+    @include text-style.apply(subtitle-2);
+}
+
+.shop-table-selection,
+.shop-table-column-compact {
+    inline-size: 1%;
+    white-space: nowrap;
+}
+
+.shop-table > tbody > tr > .shop-table-empty {
+    text-align: center;
+}
+
+@media (forced-colors: active) {
+    .shop-table > :is(thead, tbody) > tr > :is(th, td) {
+        border-color: CanvasText;
+    }
+}

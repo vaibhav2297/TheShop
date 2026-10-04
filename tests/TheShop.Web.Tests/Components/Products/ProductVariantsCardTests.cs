@@ -211,6 +211,10 @@ public class ProductVariantsCardTests : TestContext
         cut.Markup.Should().Contain(Strings.AddProduct_StatusInactive);
         cut.Markup.Should().NotContain(Strings.ProductVariants_StatusAvailable);
         cut.Markup.Should().NotContain(Strings.ProductVariants_StatusUnavailable);
+        cut.Find("th.shop-table-column-compact").TextContent.Trim()
+            .Should().Be(Strings.ProductVariants_ColumnStatus);
+        cut.FindAll("td.shop-table-column-compact").Select(cell => cell.TextContent.Trim())
+            .Should().Equal(Strings.AddProduct_StatusActive, Strings.AddProduct_StatusInactive);
     }
 
     // =========================================================================

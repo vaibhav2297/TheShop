@@ -145,6 +145,24 @@ public class ManageBrandsTests : TestContext
     private static BrandListItemDto Item(string name, bool isActive = true, int productCount = 0) =>
         new(Guid.NewGuid(), name, $"{name} description", "https://example.com/logo.webp", isActive, productCount);
 
+    [Fact]
+    public async Task Table_StatusAndActions_UseCompactHeadersAndCells()
+    {
+        var cut = await RenderListAsync();
+
+        cut.FindAll(".shop-table th.shop-table-column-compact")
+            .Select(header => header.TextContent.Trim()).Should()
+            .Equal(Strings.ManageBrands_ColumnStatus, Strings.ManageBrands_ColumnActions);
+        var rows = cut.FindAll(".shop-table tbody tr");
+        rows.Should().NotBeEmpty();
+        foreach (var row in rows)
+        {
+            row.QuerySelectorAll("td.shop-table-column-compact").Should().HaveCount(2);
+            row.Children.TakeLast(2).Should()
+                .OnlyContain(cell => cell.ClassList.Contains("shop-table-column-compact"));
+        }
+    }
+
     private async Task<IRenderedComponent<ManageBrands>> RenderListAsync()
     {
         AuthorizeAsBrandManager();
@@ -337,7 +355,7 @@ public class ManageBrandsTests : TestContext
 
         cut.FindComponent<ShopBulkActionBar>().Instance.Visible.Should().BeFalse(
             "dismissing the bar must drop the selection that put it up");
-        cut.FindComponent<MudTable<BrandListItemDto>>().Instance.SelectedItems.Should().BeEmpty();
+        cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.SelectedKeys.Should().BeEmpty();
         _receivedQueries.Should().BeEmpty("dismissing a selection is local UI state, not a re-query");
     }
 
@@ -433,9 +451,8 @@ public class ManageBrandsTests : TestContext
 
     private static async Task SelectBrandsAsync(IRenderedComponent<ManageBrands> cut, int count)
     {
-        var table = cut.FindComponent<MudTable<BrandListItemDto>>();
-        var selected = table.Instance.Items!.Take(count).ToHashSet();
-        await cut.InvokeAsync(() => table.Instance.SelectedItemsChanged.InvokeAsync(selected));
+        for (var index = 0; index < count; index++)
+            await cut.InvokeAsync(() => cut.FindAll(".shop-table tbody input[type=checkbox]")[index].Change(true));
     }
 
     // =========================================================================
@@ -448,7 +465,7 @@ public class ManageBrandsTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var firstBrand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var firstBrand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         cut.Markup.Should().Contain(firstBrand.Name);
         cut.Markup.Should().Contain(firstBrand.Description!);
     }
@@ -459,7 +476,7 @@ public class ManageBrandsTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var firstBrand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var firstBrand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         cut.FindAll("img").Should().Contain(img => img.GetAttribute("src") == firstBrand.LogoUrl);
     }
 
@@ -564,7 +581,7 @@ public class ManageBrandsTests : TestContext
         var cut = Render<ManageBrands>();
         await cut.InvokeAsync(() => { });
 
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         cut.FindAll($"[aria-label='{string.Format(Strings.ManageBrands_EditAria, brand.Name)}']").Should().BeEmpty();
         cut.FindAll($"[aria-label='{string.Format(Strings.ManageBrands_DeleteAria, brand.Name)}']").Should().BeEmpty();
     }
@@ -612,7 +629,7 @@ public class ManageBrandsTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         cut.Find($"[aria-label='{string.Format(Strings.ManageBrands_EditAria, brand.Name)}']")
            .GetAttribute("href").Should().Be(Routes.Admin.EditBrand(brand.Id));
     }
@@ -626,7 +643,7 @@ public class ManageBrandsTests : TestContext
     public async Task DeleteSingle_WhenConfirmed_SendsDeleteBrandsCommandWithThatBrandsId()
     {
         var cut = await RenderListAsync();
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandDeletionOutcomeDto(1, [])));
@@ -644,7 +661,7 @@ public class ManageBrandsTests : TestContext
     public async Task DeleteSingle_WhenActivated_ShowsAConfirmDialogNamingTheBrand()
     {
         var cut = await RenderListAsync();
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandDeletionOutcomeDto(1, [])));
@@ -661,7 +678,7 @@ public class ManageBrandsTests : TestContext
     public async Task DeleteSingle_WhenCancelled_DoesNotSendTheCommand()
     {
         var cut = await RenderListAsync();
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: false);
 
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageBrands_DeleteAria, brand.Name)}']");
@@ -679,7 +696,7 @@ public class ManageBrandsTests : TestContext
     public async Task DeleteSingle_WhenTheBrandIsInUse_ShowsTheInUseMessageNamingItAndItsProductCount()
     {
         var cut = await RenderListAsync();
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandDeletionOutcomeDto(0, [new BlockedBrandDto(brand.Id, brand.Name, 3)])));

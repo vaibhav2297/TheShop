@@ -207,7 +207,10 @@ public partial class ManageBrands : QueryStatePageBase<BrandQueryState>
         return PushStateAsync(BuildState() with { Page = 1 });
     }
 
-    private void OnSelectedItemsChanged(HashSet<BrandListItemDto> items) => _selectedItems = items;
+    private IReadOnlySet<object> SelectedKeys => _selectedItems.Select(item => (object)item.Id).ToHashSet();
+
+    private void OnSelectedKeysChanged(IReadOnlySet<object> keys) =>
+        _selectedItems = _brands.Items.Where(item => keys.Contains(item.Id)).ToHashSet();
 
     /// <summary>
     /// Dismisses the bulk-action bar. The bar's visibility is derived from the selection, so

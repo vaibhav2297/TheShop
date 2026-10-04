@@ -145,6 +145,24 @@ public class ManageCategoriesTests : TestContext
     private static CategoryListItemDto Item(string name, bool isActive = true, int productCount = 0) =>
         new(Guid.NewGuid(), name, $"{name} description", "https://example.com/image.webp", isActive, productCount);
 
+    [Fact]
+    public async Task Table_StatusAndActions_UseCompactHeadersAndCells()
+    {
+        var cut = await RenderListAsync();
+
+        cut.FindAll(".shop-table th.shop-table-column-compact")
+            .Select(header => header.TextContent.Trim()).Should()
+            .Equal(Strings.ManageCategories_ColumnStatus, Strings.ManageCategories_ColumnActions);
+        var rows = cut.FindAll(".shop-table tbody tr");
+        rows.Should().NotBeEmpty();
+        foreach (var row in rows)
+        {
+            row.QuerySelectorAll("td.shop-table-column-compact").Should().HaveCount(2);
+            row.Children.TakeLast(2).Should()
+                .OnlyContain(cell => cell.ClassList.Contains("shop-table-column-compact"));
+        }
+    }
+
     private async Task<IRenderedComponent<ManageCategories>> RenderListAsync()
     {
         AuthorizeAsCategoryManager();
@@ -345,15 +363,14 @@ public class ManageCategoriesTests : TestContext
 
         cut.FindComponent<ShopBulkActionBar>().Instance.Visible.Should().BeFalse(
             "dismissing the bar must drop the selection that put it up");
-        cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.SelectedItems.Should().BeEmpty();
+        cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.SelectedKeys.Should().BeEmpty();
         _receivedQueries.Should().BeEmpty("dismissing a selection is local UI state, not a re-query");
     }
 
     private static async Task SelectCategoriesAsync(IRenderedComponent<ManageCategories> cut, int count)
     {
-        var table = cut.FindComponent<MudTable<CategoryListItemDto>>();
-        var selected = table.Instance.Items!.Take(count).ToHashSet();
-        await cut.InvokeAsync(() => table.Instance.SelectedItemsChanged.InvokeAsync(selected));
+        for (var index = 0; index < count; index++)
+            await cut.InvokeAsync(() => cut.FindAll(".shop-table tbody input[type=checkbox]")[index].Change(true));
     }
 
     // =========================================================================
@@ -366,7 +383,7 @@ public class ManageCategoriesTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var firstCategory = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var firstCategory = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         cut.Markup.Should().Contain(firstCategory.Name);
         cut.Markup.Should().Contain(firstCategory.Description!);
     }
@@ -377,7 +394,7 @@ public class ManageCategoriesTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var firstCategory = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var firstCategory = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         cut.FindAll("img").Should().Contain(img => img.GetAttribute("src") == firstCategory.ImageUrl);
     }
 
@@ -486,7 +503,7 @@ public class ManageCategoriesTests : TestContext
         var cut = Render<ManageCategories>();
         await cut.InvokeAsync(() => { });
 
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         cut.FindAll($"[aria-label='{string.Format(Strings.ManageCategories_EditAria, category.Name)}']").Should().BeEmpty();
         cut.FindAll($"[aria-label='{string.Format(Strings.ManageCategories_DeleteAria, category.Name)}']").Should().BeEmpty();
     }
@@ -534,7 +551,7 @@ public class ManageCategoriesTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         cut.Find($"[aria-label='{string.Format(Strings.ManageCategories_EditAria, category.Name)}']")
            .GetAttribute("href").Should().Be(Routes.Admin.EditCategory(category.Id));
     }
@@ -548,7 +565,7 @@ public class ManageCategoriesTests : TestContext
     public async Task DeleteSingle_WhenConfirmed_SendsDeleteCategoriesCommandWithThatCategorysId()
     {
         var cut = await RenderListAsync();
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryDeletionOutcomeDto(1, [])));
@@ -566,7 +583,7 @@ public class ManageCategoriesTests : TestContext
     public async Task DeleteSingle_WhenActivated_ShowsAConfirmDialogNamingTheCategory()
     {
         var cut = await RenderListAsync();
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryDeletionOutcomeDto(1, [])));
@@ -583,7 +600,7 @@ public class ManageCategoriesTests : TestContext
     public async Task DeleteSingle_WhenCancelled_DoesNotSendTheCommand()
     {
         var cut = await RenderListAsync();
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: false);
 
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageCategories_DeleteAria, category.Name)}']");
@@ -601,7 +618,7 @@ public class ManageCategoriesTests : TestContext
     public async Task DeleteSingle_WhenTheCategoryIsInUse_ShowsTheInUseMessageNamingItAndItsProductCount()
     {
         var cut = await RenderListAsync();
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryDeletionOutcomeDto(0, [new BlockedCategoryDto(category.Id, category.Name, 3)])));

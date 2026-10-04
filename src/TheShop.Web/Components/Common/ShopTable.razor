@@ -1,0 +1,44 @@
+@typeparam TItem
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
+
+<div class="shop-native shop-table-scroll" role="region" aria-label="@Caption" tabindex="0">
+    <table @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+        <caption class="shop-visually-hidden">@Caption</caption>
+        <thead>
+            <tr>
+                @if (Selectable)
+                {
+                    <th scope="col" class="shop-table-selection">
+                        <ShopCheckbox Label="@Strings.Table_SelectPage" HideLabel="true"
+                                      Value="@AllSelected" ValueExpression="@(() => AllSelected)"
+                                      ValueChanged="SelectPageAsync" Indeterminate="@PartiallySelected"
+                                      Disabled="@(SelectionDisabled || _rows.Count == 0)" />
+                    </th>
+                }
+                @HeaderContent
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in _rows)
+            {
+                <tr @key="row.Key">
+                    @if (Selectable)
+                    {
+                        <td class="shop-table-selection">
+                            <ShopCheckbox Label="@RowSelectionLabel!(row.Item)" HideLabel="true"
+                                          Value="@IsSelected(row.Key)" ValueExpression="@(() => row.Selected)"
+                                          ValueChanged="@(value => SelectRowAsync(row.Key, value))"
+                                          Disabled="@SelectionDisabled" />
+                        </td>
+                    }
+                    @RowTemplate(row.Item)
+                </tr>
+            }
+            @if (_rows.Count == 0 && EmptyContent is not null)
+            {
+                <tr><td colspan="@EffectiveColumnCount" class="shop-table-empty">@EmptyContent</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

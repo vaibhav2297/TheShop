@@ -77,30 +77,29 @@
                         else if (_products.Items.Count > 0)
                         {
                             <BusyFor Keys="@MutationBusyKeys" Context="mutating">
-                                <MudTable T="ProductListItemDto"
-                                          Items="@_products.Items"
-                                          MultiSelection="true"
-                                          SelectedItems="@_selectedItems"
-                                          SelectOnRowClick="false"
-                                          SelectedItemsChanged="OnSelectedItemsChanged"
-                                          Hover="true"
-                                          Class="mud-width-full"
-                                          Elevation="0"
-                                          HeaderClass="mud-tertiary-lighten"
-                                          Outlined="true">
+                                <ShopTable TItem="ProductListItemDto"
+                                      Items="@_products.Items"
+                                      ItemKey="@(item => item.Id)"
+                                      Caption="@Strings.ManageProducts_Heading"
+                                      ColumnCount="7"
+                                      Selectable="true"
+                                      SelectedKeys="@SelectedKeys"
+                                      SelectedKeysChanged="OnSelectedKeysChanged"
+                                      RowSelectionLabel="@(item => string.Format(Strings.Table_SelectRow, item.Name))"
+                                      SelectionDisabled="@mutating">
 
                                     <HeaderContent>
-                                        <MudTh>@Strings.ManageProducts_ColumnName</MudTh>
-                                        <MudTh>@Strings.ManageProducts_ColumnSku</MudTh>
-                                        <MudTh>@Strings.ManageProducts_ColumnBrand</MudTh>
-                                        <MudTh>@Strings.ManageProducts_ColumnCategory</MudTh>
-                                        <MudTh>@Strings.ManageProducts_ColumnPrice</MudTh>
-                                        <MudTh>@Strings.ManageProducts_ColumnStatus</MudTh>
-                                        <MudTh>@Strings.ManageProducts_ColumnActions</MudTh>
+                                        <th scope="col">@Strings.ManageProducts_ColumnName</th>
+                                        <th scope="col">@Strings.ManageProducts_ColumnSku</th>
+                                        <th scope="col">@Strings.ManageProducts_ColumnBrand</th>
+                                        <th scope="col">@Strings.ManageProducts_ColumnCategory</th>
+                                        <th scope="col">@Strings.ManageProducts_ColumnPrice</th>
+                                        <th scope="col" class="shop-table-column-compact">@Strings.ManageProducts_ColumnStatus</th>
+                                        <th scope="col" class="shop-table-column-compact">@Strings.ManageProducts_ColumnActions</th>
                                     </HeaderContent>
 
                                     <RowTemplate Context="product">
-                                        <MudTd>
+                                        <td>
                                             <MudStack Row AlignItems="AlignItems.Center" Spacing="3">
                                                 <MudAvatar Rounded="true">
                                                     <ShopImage Src="@product.PrimaryImageUrl" Preset="ShopImagePreset.Thumbnail" Alt="@product.Name" PlaceholderLabel="@product.Name" />
@@ -123,20 +122,20 @@
                                                     }
                                                 </MudStack>
                                             </MudStack>
-                                        </MudTd>
-                                        <MudTd>
+                                        </td>
+                                        <td>
                                             <MudText Typo="Typo.body2" Color="Color.Secondary">@product.Sku</MudText>
-                                        </MudTd>
-                                        <MudTd>
+                                        </td>
+                                        <td>
                                             <MudText Typo="Typo.body2">@product.BrandName</MudText>
-                                        </MudTd>
-                                        <MudTd>
+                                        </td>
+                                        <td>
                                             <MudText Typo="Typo.body2">@product.CategoryName</MudText>
-                                        </MudTd>
-                                        <MudTd>
+                                        </td>
+                                        <td>
                                             <MudText Typo="Typo.body2">@FormatPrice(product)</MudText>
-                                        </MudTd>
-                                        <MudTd>
+                                        </td>
+                                        <td class="shop-table-column-compact">
                                             <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Edit.Code)" Context="statusAuth">
                                                 <Authorized>
 
@@ -169,8 +168,8 @@
                                                     </MudText>
                                                 </NotAuthorized>
                                             </AuthorizeView>
-                                        </MudTd>
-                                        <MudTd>
+                                        </td>
+                                        <td class="shop-table-column-compact">
                                             @* A deletion replaces the whole action group, not just the trash button:
                                                leaving Edit live next to a spinner would invite a navigation away from
                                                the row mid-delete. *@
@@ -207,9 +206,9 @@
                                                     </AuthorizeView>
                                                 </MudStack>
                                             }
-                                        </MudTd>
+                                        </td>
                                     </RowTemplate>
-                                </MudTable>
+                                </ShopTable>
                             </BusyFor>
 
                             <ShopPagination Page="@_products.Page"

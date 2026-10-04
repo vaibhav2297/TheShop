@@ -1735,4 +1735,10 @@
   <data name="Pagination_Page" xml:space="preserve">
     <value>Page {0}</value>
   </data>
+  <data name="Table_SelectPage" xml:space="preserve">
+    <value>Select all rows on this page</value>
+  </data>
+  <data name="Table_SelectRow" xml:space="preserve">
+    <value>Select {0}</value>
+  </data>
 </root>

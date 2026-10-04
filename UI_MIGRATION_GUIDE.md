@@ -1037,9 +1037,45 @@ Do not add competing per-page busy flags. Pass `BusyFor`'s value into `ShopButto
 
 ### Tables and bulk actions
 
-Keep existing feature-specific tables. Extract shared table machinery only if a stable repeated need emerges. Do not build a generic grid engine.
+Use `ShopTable<TItem>` for shared semantic table rendering and optional controlled selection. Keep feature-specific cell templates and data operations in their owners; do not build a generic grid engine.
 
 Preserve selection by stable entity ID, select-all scope, clearing selection after operations, partial bulk failures, reference-blocked deletions, row-specific errors, and keyboard access. Preserve current sort/filter/query-state behavior rather than replacing it with client-only filtering. Use proper headers and accessible checkbox labels. Give overflow containers usable keyboard/scroll behavior on narrow screens.
+
+#### Native table contract (batch 26)
+
+Design: [Figma Table section 2967:1518](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=2967-1518), inspected 2026-10-04. Cell set `2574:7507`, default/header `2574:7501` / `2574:7504`, specimen `2574:7648`.
+
+- `Components/Common/ShopTable.razor` / `.razor.cs` own native table/head/body/rows and a focusable, named horizontal scroll region. `Styles/components/_table.scss` owns presentation. No Th/Td/Tr wrappers or cell-type enum.
+- `Items` is the current `IReadOnlyList<TItem>`. Required `ItemKey` returns a non-null, unique stable key with value equality (boxed Guid/int/string are supported). Duplicate/null keys fail clearly. Keyed rows retain child identity when reordered or refreshed.
+- Required `Caption` supplies a visually hidden native caption and the scroll-region name. `HeaderContent` contains native `th scope="col"`; `RowTemplate` contains native `td` cells, not another tr. Required positive `ColumnCount` excludes the optional generated selection column. Optional `EmptyContent` spans the effective count.
+- `Class`, `Style`, and unmatched attributes target the table. The surrounding scroll wrapper has owned semantics and geometry. Static presentation stays in SCSS. Width follows the parent; cells/rows grow for text, controls and errors. The specimen's 120px columns and 38px text rows are not fixed sizing constraints.
+- Body 2 / Subtitle 2 typography; 10px block and 12px inline padding; primary text/default surface/default line tokens. Separate borders with zero spacing use one owner per 1px grid edge: every cell owns its inline-start and block-end, the last cell closes inline-end, and the first header row closes block-start. Body cells have no top border; the header owns the header/body divider. Header fill clips to the padding box rather than painting under border edges. Header component `2574:7504` now uses Figma `Brand/Tertiary` (`#e8e8e8`, rechecked 2026-10-04); consume `--shop-color-tertiary` directly. The former black-at-6% fill and `--shop-table-header-background` alias are removed.
+- Add `shop-table-column-compact` to both the header and body cells of content-sized columns. It requests `inline-size: 1%` plus `white-space: nowrap`; intrinsic content still sets the minimum width (this is not a hard 1% cap or literal fit-content). All Status and Actions columns in the three admin tables use it; the legacy variant Status column shares the class as a temporary bridge. Other columns consume the remaining space. Keep this opt-in class rather than adding width parameters or column-wrapper components.
+- Optional `Selectable`, `SelectedKeys`, `SelectedKeysChanged`, `RowSelectionLabel`, and `SelectionDisabled` enable checkbox-only selection. The parent commits the emitted fresh `IReadOnlySet<object>`; the component never mutates its input set. Select-all touches only displayed keys and preserves off-page keys. No row-click selection. Disabled and removed-row callbacks are guarded.
+- `ShopCheckbox.Indeterminate` is presentation over the existing boolean value, not nullable/tri-state form data. The parent derives partial selection; `HideLabel` keeps the real label accessible without visible cell text. Existing `ShopIcons.Outlined.Add_Minus_Square` supplies the inferred mixed-state glyph (not measured from the table design). A lazy, disposed `shopCheckbox.js` module synchronizes the native `indeterminate` DOM property; ARIA mixed state and forced-colors native presentation agree. Ordinary two-state checkboxes do not import the module.
+- Horizontal overflow, keyboard-focusable scroll region, hidden captions, mixed selection and forced-colors treatment are implementation accessibility decisions, not Figma variants. Do not hide columns or convert rows into cards without an approved design.
+- Search/sort/filter/query state, fetching, authorization, BusyState, confirmations, row mutations and `ShopPagination` remain page-owned. The three admin lists project existing selected DTO IDs into table keys; refreshes do not lose checked state through changed DTO equality. Existing clearing/blocked-deletion behavior stays with each page.
+- Batch 26 converts Brands, Categories and Products table shells/selection only. Their remaining Mud cell content, loading skeletons, actions and page layouts remain temporary bridges. `ProductVariantsCard` still uses MudTable with virtualization and legacy money fields; migrate that editor separately with explicit virtualization/editing/validation preservation proof. Do not remove Mud packages/providers/assets yet.
+
+```razor
+<ShopTable TItem="BrandListItemDto"
+           Items="@_brands.Items"
+           ItemKey="@(brand => brand.Id)"
+           Caption="@Strings.ManageBrands_Heading"
+           ColumnCount="2">
+    <HeaderContent>
+        <th scope="col">@Strings.ManageBrands_ColumnName</th>
+        <th scope="col">@Strings.ManageBrands_ColumnDescription</th>
+    </HeaderContent>
+    <RowTemplate Context="brand">
+        <td>@brand.Name</td>
+        <td>@brand.Description</td>
+    </RowTemplate>
+    <EmptyContent>@Strings.ManageBrands_EmptyTitle</EmptyContent>
+</ShopTable>
+```
+
+Rollback: revert the batch's native table call sites and their selection adapters together, restoring the previous MudTable markup/tests. No schema, stored data, query contract or package removal is involved. Never discard unrelated working-tree changes.
 
 ### Filters, sorting, pagination, and breadcrumbs
 
@@ -1882,6 +1918,19 @@ The final implementing-agent response should state what changed, the exact verif
 - Ellipsis follow-up (2026-10-03): replaced the text glyph with Figma's 22px More_Horizontal icon, retaining the existing slot, color, non-interactive semantics and page-window behavior. Focused pagination tests: **13 passed**; headed real-markup visual cases: **4 passed**, desktop/mobile with/without vendor CSS, including forced colors and enlarged text. Reviewed updated desktop/mobile screenshots. Evidence: `tests/TheShop.E2E.Tests/TestResults/pagination-ellipsis-icon-headed.trx`. Build/design/whitespace checks pass; AST graph refreshed. The existing server was left untouched; specimens were rendered from the freshly built component assembly. No full-suite rerun for this markup-only follow-up.
 - Expander follow-up (2026-10-04): added natural-height CSS expand/collapse motion with reduced-motion support and immediate inert/ARIA collapse semantics; removed duplicate dividers between contiguous siblings; centered custom title/overview slot contents independently of the default H4 baseline. Focused expander/filter tests: **27 passed**. Headed desktop/mobile suite: **6 passed**, including intermediate opening/closing heights, collapsed focus exclusion, shared divider strokes, title/overview alignment, retained state, vendor-free styling and reduced motion. Evidence: `tests/TheShop.E2E.Tests/TestResults/expander-motion-alignment-headed.trx` and refreshed `native-ui-evidence/components-*.png`; screenshots reviewed. Initial browser startup failures were resolved by restarting the agent-owned server after the build completed. Build/design/whitespace checks pass; AST graph refreshed with existing parser warnings. No full-suite rerun for this focused follow-up.
 - Rollback this batch's three component implementations, filter integration, styles/imports, pagination resource keys, related tests/page object and guide together. Keep prior migration batches intact. No package removal, commit, deployment, database reset or Figma mutation.
+
+### Batch 26 — Native table foundation and admin selection — 2026-10-04
+
+- Added `ShopTable<TItem>` with the approved native header/row templates, stable keys, caption, empty cell spanning, parent-controlled width and optional key-based selection. No column/grid engine, fetch service, sorting or pagination state inside the component.
+- Replaced MudTable shells/Th/Td/selection in ManageBrands, ManageCategories and ManageProducts. Their current server paging, query state, authorization, row mutations, partial bulk outcomes and external ShopPagination remain. Cell controls and page layout still have legacy dependencies; this is not a claim that those pages are fully native.
+- Added boolean-checkbox mixed presentation and visually hidden labels. Native indeterminate state is synchronized by a lazy disposable JS module; existing two-state consumers remain unchanged. Mixed glyph and accessibility states are documented in the contract above as inferred decisions.
+- Baseline: **155 focused tests passed** before edits. Final focused table/checkbox/admin coverage: **152 passed**. Final full Web suite: **1,036 passed, 0 skipped**, including admin bulk tests now using rendered checkboxes rather than dispatching the table callback directly. Added component coverage for keys, stable child identity on DTO refresh/reorder, empty state, attribute forwarding, page-only select-all, disabled/stale callbacks and checkbox interop.
+- Headed Chromium: **5 passed, 0 skipped**. Four 390px/1440px cases check real SSR component markup with/without vendor CSS, typography/padding/collapsed borders, focus, forced colors, 200% text and contained horizontal overflow. One live WASM Brands journey exercises mocked sign-in, native Space selection, mixed/all/none and selection reset through real pagination. All auth/data responses are intercepted; no backend writes or genuine sessions. Reviewed desktop/mobile, forced-colors, enlarged-text and live Brands screenshots.
+- Evidence: `tests/TheShop.E2E.Tests/TestResults/native-table-headed.trx`; `tests/TheShop.E2E.Tests/bin/Debug/net10.0/native-ui-evidence/table-*.png`. Mobile stress screenshots intentionally show horizontal scroll offsets, not hidden columns. Early browser runs exposed missing mock auth responses, fractional display-pixel border rounding, and breakable fixture text; corrected those tests. Browser review also caught the scroll root missing the project focus ring; fixed it in `_table.scss`. The subsequent full Web and headed runs pass.
+- Build, design-rule and whitespace gates pass. AST graph refreshed; existing missing SQL-parser/zero-node warnings remain. Known unrelated AngleSharp NU1902 and ProductDescriptionJourneyTests xUnit1051 warnings remain. No full backend E2E suite, deployment, package removal or database migration was performed. Test-owned dev servers are disposed by the fixture.
+- Compact-column/divider follow-up (2026-10-04): applied `shop-table-column-compact` to Status/Actions headers and cells across all three admin lists, plus the remaining variant Status column. Replaced collapsed borders with explicit single-edge ownership and padding-box header fill; the body has no top strokes to overlap the header divider. Added rendered-markup coverage for all consumers and browser assertions for compact widths, nowrap, zero border spacing, absent body top/inner right strokes, and consistent row strokes. **160 focused tests, 1,039 full Web tests, and 5 headed browser tests passed**, with no skips. Reviewed desktop/mobile, vendor-free, forced-colors and enlarged-text screenshots. Evidence: `tests/TheShop.E2E.Tests/TestResults/table-compact-divider-headed.trx` and refreshed `native-ui-evidence/table-*.png`. Design/whitespace gates pass; graph refreshed with existing parser warnings. User-staged work preserved; test-owned server disposed.
+- Header-color follow-up (2026-10-04): re-inspected live Figma header `2574:7504` in section `2967:1518`; its fill is now bound to `Brand/Tertiary`, opaque `#e8e8e8`. `_table.scss` consumes `--shop-color-tertiary` directly; removed the former local header-background alias. Updated the browser color expectation and reviewed fresh desktop/mobile screenshots. **5 headed table tests passed, 0 skipped** (including vendor-free styling, forced colors, overflow and live selection). Evidence: `tests/TheShop.E2E.Tests/TestResults/table-tertiary-header-headed.trx`. Build/design/whitespace checks pass; graph refreshed. No full Web-suite rerun for this color-only follow-up.
+- Next table work: ProductVariantsCard, preserving virtualization, price editing/validation, copy-to-all, availability and image-picker state. Keep its MudTable bridge until that editor is verified.
 
 ## 19. Prompt to give the implementing AI
 
