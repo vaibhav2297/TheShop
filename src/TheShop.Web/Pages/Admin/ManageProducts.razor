@@ -36,6 +36,9 @@
                                  SelectedRanges="@SelectedRanges"
                                  RangeChanged="OnRangeChangedAsync"
                                  RangeFormatter="FormatRange"
+                                 RangeStep="@(_ => 0.01m)"
+                                 RangeMinimumLabel="@(_ => Strings.Range_MinimumCad)"
+                                 RangeMaximumLabel="@(_ => Strings.Range_MaximumCad)"
                                  OnClearFilters="OnClearFiltersAsync" />
             </MudItem>
 

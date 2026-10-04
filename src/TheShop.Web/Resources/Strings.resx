@@ -1753,4 +1753,9 @@
   <data name="Breadcrumb_Expand" xml:space="preserve">
     <value>Show parent pages</value>
   </data>
+  <data name="Range_Minimum" xml:space="preserve"><value>Minimum</value></data>
+  <data name="Range_Maximum" xml:space="preserve"><value>Maximum</value></data>
+  <data name="Range_MinimumCad" xml:space="preserve"><value>Minimum (CAD)</value></data>
+  <data name="Range_MaximumCad" xml:space="preserve"><value>Maximum (CAD)</value></data>
+  <data name="Range_InvalidNumber" xml:space="preserve"><value>Enter a number from {0} to {1}.</value></data>
 </root>

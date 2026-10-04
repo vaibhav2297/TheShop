@@ -51,14 +51,11 @@
                         else if (group.Range is { } range)
                         {
                             var thumbs = Thumbs(group.Key);
-                            <MudRangeSlider T="decimal" Immediate ValueLabel Class="shop-filter-range"
-                                            Min="@range.Min" Max="@range.Max" Variant="Variant.Filled" Color="Color.Primary"
-                                            Value="thumbs.Min"
-                                            ValueChanged="@(value => OnRangeMinChangedAsync(group.Key, value))"
-                                            UpperValue="thumbs.Max"
-                                            UpperValueChanged="@(value => OnRangeMaxChangedAsync(group.Key, value))"
-                                            LabelText="@RangeFormatter(group.Key, thumbs.Min)"
-                                            UpperLabelText="@RangeFormatter(group.Key, thumbs.Max)" />
+                            <ShopRangeSlider Label="@Localizer[group.LabelKey]" Min="@range.Min" Max="@range.Max"
+                                             Step="@RangeStep(group.Key)" Value="@(new ShopRangeValue(thumbs.Min, thumbs.Max))"
+                                             MinimumLabel="@RangeMinimumLabel(group.Key)" MaximumLabel="@RangeMaximumLabel(group.Key)"
+                                             ValueFormatter="@(value => RangeFormatter(group.Key, value))"
+                                             ValueChanged="@(value => OnRangeChangedAsync(group.Key, value))" />
                         }
                     </ChildContent>
                 </ShopExpander>

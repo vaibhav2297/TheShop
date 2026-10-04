@@ -16,10 +16,6 @@
     flex-direction: column;
 }
 
-.shop-filter-range {
-    padding-block: var(--shop-space-2);
-}
-
 .shop-filter-actions {
     display: flex;
     justify-content: flex-end;
@@ -30,4 +26,3 @@
     color: var(--shop-color-text-secondary);
     @include text-style.apply(body-1);
 }
-

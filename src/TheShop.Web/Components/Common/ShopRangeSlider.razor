@@ -1,0 +1,43 @@
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
+
+<fieldset @attributes="AdditionalAttributes" class="@ClassName" style="@Style" disabled="@IsDisabled"
+          aria-label="@Label" id="@_id">
+    <legend class="shop-visually-hidden">@Label</legend>
+    <div class="shop-range-stage" style="@TrackStyle">
+        <div class="shop-range-rail" aria-hidden="true"><div class="shop-range-fill"></div></div>
+        <input class="shop-range-thumb shop-range-lower" type="range" min="@Number(Min)" max="@Number(Max)" step="any" data-step="@Number(Step)"
+               disabled="@IsDisabled" aria-label="@MinimumLabel" aria-valuemin="@Number(Min)"
+               aria-valuemax="@Number(_current.Upper)" aria-valuetext="@Format(_current.Lower)"
+               @bind:get="_current.Lower" @bind:set="SetLowerAsync" @bind:event="oninput"
+               @onfocus="@(() => _activeThumb = 0)" @onblur="@(() => _activeThumb = null)" />
+        <input class="shop-range-thumb shop-range-upper" type="range" min="@Number(Min)" max="@Number(Max)" step="any" data-step="@Number(Step)"
+               disabled="@IsDisabled" aria-label="@MaximumLabel" aria-valuemin="@Number(_current.Lower)"
+               aria-valuemax="@Number(Max)" aria-valuetext="@Format(_current.Upper)"
+               @bind:get="_current.Upper" @bind:set="SetUpperAsync" @bind:event="oninput"
+               @onfocus="@(() => _activeThumb = 1)" @onblur="@(() => _activeThumb = null)" />
+        @if (_activeThumb is { } active && !IsDisabled)
+        {
+            <div class="@BubbleClass" popover="manual" aria-hidden="true"><span>@Format(active == 0 ? _current.Lower : _current.Upper)</span></div>
+        }
+    </div>
+    <div class="shop-range-bounds" aria-hidden="true"><span>@Format(Min)</span><span>@Format(Max)</span></div>
+    <div class="shop-range-inputs">
+        <div>
+            <ShopTextField Label="@MinimumLabel" Value="@LowerText" ValueChanged="@(text => SetDraft(text, true))"
+                           ValueExpression="@(() => _lowerDraft)" Disabled="@IsDisabled" inputmode="decimal"
+                           autocomplete="off" aria-invalid="@(_lowerError ? "true" : null)" aria-describedby="@LowerErrorId"
+                           @onfocus="@(() => BeginEdit(true))" @onblur="@(() => CommitEditAsync(true))"
+                           @onkeydown="@(args => EditKeyAsync(args, true))" />
+            <p id="@LowerErrorId" class="shop-field-error" aria-live="polite">@(_lowerError ? ErrorText(true) : null)</p>
+        </div>
+        <div>
+            <ShopTextField Label="@MaximumLabel" Value="@UpperText" ValueChanged="@(text => SetDraft(text, false))"
+                           ValueExpression="@(() => _upperDraft)" Disabled="@IsDisabled" inputmode="decimal"
+                           autocomplete="off" aria-invalid="@(_upperError ? "true" : null)" aria-describedby="@UpperErrorId"
+                           @onfocus="@(() => BeginEdit(false))" @onblur="@(() => CommitEditAsync(false))"
+                           @onkeydown="@(args => EditKeyAsync(args, false))" />
+            <p id="@UpperErrorId" class="shop-field-error" aria-live="polite">@(_upperError ? ErrorText(false) : null)</p>
+        </div>
+    </div>
+</fieldset>
