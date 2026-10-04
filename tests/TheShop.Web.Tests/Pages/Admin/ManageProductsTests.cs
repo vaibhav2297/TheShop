@@ -354,7 +354,10 @@ public class ManageProductsTests : TestContext
         bar.Instance.Visible.Should().BeTrue();
         bar.Instance.SelectedCount.Should().Be(3);
 
-        await cut.InvokeAsync(() => bar.Instance.OnClose.InvokeAsync());
+        var slot = cut.Find(".shop-bulk-action-slot");
+        slot.ParentElement!.QuerySelector(".shop-table").Should().NotBeNull();
+        bar.FindAll("button").Should().OnlyContain(button => button.ClassList.Contains("shop-button"));
+        await cut.InvokeAsync(() => bar.Find($"button[aria-label='{Strings.Close_BulkActionBar}']").Click());
 
         cut.FindComponent<ShopBulkActionBar>().Instance.Visible.Should().BeFalse();
         cut.FindComponent<ShopTable<ProductListItemDto>>().Instance.SelectedKeys.Should().BeEmpty();
@@ -804,7 +807,7 @@ public class ManageProductsTests : TestContext
         _mediator.Send(Arg.Any<DeleteProductsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new ProductDeletionOutcomeDto(3, [])));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.Received(1).Send(
@@ -826,7 +829,7 @@ public class ManageProductsTests : TestContext
         var outcome = new ProductDeletionOutcomeDto(3, [.. referenced.Select(p => new ReferencedProductDto(p.Id, p.Name, 2))]);
         _mediator.Send(Arg.Any<DeleteProductsCommand>(), Arg.Any<CancellationToken>()).Returns(Result.Ok(outcome));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
         _notifications.Received(1).Show(string.Format(Strings.Product_BulkDeletePartial, 3, 2), ShopNotificationKind.Warning);
@@ -846,7 +849,7 @@ public class ManageProductsTests : TestContext
         var outcome = new ProductDeletionOutcomeDto(0, [.. items.Select(i => new ReferencedProductDto(i.Id, i.Name, 1))]);
         _mediator.Send(Arg.Any<DeleteProductsCommand>(), Arg.Any<CancellationToken>()).Returns(Result.Ok(outcome));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
         _notifications.Received(1).Show(Strings.Product_BulkDeleteAllBlocked, ShopNotificationKind.Warning);
@@ -862,7 +865,7 @@ public class ManageProductsTests : TestContext
         await SelectProductsAsync(cut, count: 2);
         SetUpConfirmDialogResult(confirmed: false);
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.DidNotReceive().Send(Arg.Any<DeleteProductsCommand>(), Arg.Any<CancellationToken>());
@@ -940,7 +943,7 @@ public class ManageProductsTests : TestContext
         _mediator.Send(Arg.Any<SetProductStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new ProductStatusChangeDto(2, [])));
 
-        var activateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkSetActive));
+        var activateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkSetActive));
         await cut.InvokeAsync(() => activateButton.Instance.OnClick.InvokeAsync());
 
         await _dialogService.DidNotReceive().ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
@@ -960,7 +963,7 @@ public class ManageProductsTests : TestContext
         _mediator.Send(Arg.Any<SetProductStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new ProductStatusChangeDto(1, [skipped])));
 
-        var activateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkSetActive));
+        var activateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkSetActive));
         await cut.InvokeAsync(() => activateButton.Instance.OnClick.InvokeAsync());
 
         _notifications.Received(1).Show(string.Format(Strings.ManageProducts_ActivatedSuccess, 1), ShopNotificationKind.Success);
@@ -979,7 +982,7 @@ public class ManageProductsTests : TestContext
         _mediator.Send(Arg.Any<SetProductStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new ProductStatusChangeDto(3, [])));
 
-        var deactivateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkSetInactive));
+        var deactivateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkSetInactive));
         await cut.InvokeAsync(() => deactivateButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.Received(1).Send(
@@ -997,7 +1000,7 @@ public class ManageProductsTests : TestContext
         await SelectProductsAsync(cut, count: 2);
         SetUpConfirmDialogResult(confirmed: false);
 
-        var deactivateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkSetInactive));
+        var deactivateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageProducts_BulkSetInactive));
         await cut.InvokeAsync(() => deactivateButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.DidNotReceive().Send(Arg.Any<SetProductStatusCommand>(), Arg.Any<CancellationToken>());

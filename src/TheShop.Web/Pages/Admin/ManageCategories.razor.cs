@@ -114,12 +114,6 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
 
     private bool HasSelection => _selectedItems.Count > 0;
 
-    /// <summary>
-    /// Gets the body spacing, adding bottom padding while the viewport-fixed bulk-action bar is
-    /// visible so that it does not obscure the last table rows or pagination.
-    /// </summary>
-    private string BodyClass => HasSelection ? "px-8 pt-8 pb-14" : "pa-8";
-
     private bool IsRowPending(Guid id, RowMutation mutation) =>
         _pendingMutation == mutation && _pendingIds.Contains(id);
 

@@ -174,11 +174,35 @@ public sealed class NativeTableJourneyTests(PlaywrightFixture playwright) : E2ET
         await Page.Keyboard.PressAsync("Space");
         await Assertions.Expect(first).Not.ToBeCheckedAsync();
         await first.CheckAsync();
+        await Page.SetViewportSizeAsync(1440, 650);
+        var bulk = Page.Locator(".shop-bulk-action-bar");
+        var bulkSlot = Page.Locator(".shop-bulk-action-slot");
+        var scroll = Page.Locator("[data-shop-scroll-root]");
+        await Assertions.Expect(bulkSlot).ToHaveAttributeAsync("data-ready", "");
+        await scroll.EvaluateAsync("e => e.scrollTop = 0");
+        await SaveAsync("bulk-brands-inline-live");
+        await bulkSlot.EvaluateAsync("""
+            slot => {
+                const root = slot.closest('[data-shop-scroll-root]');
+                root.scrollTop += slot.getBoundingClientRect().top - root.getBoundingClientRect().top + 8;
+            }
+            """);
+        await Assertions.Expect(bulkSlot).ToHaveAttributeAsync("data-docked", "");
+        await bulk.EvaluateAsync("async e => { await Promise.all(e.getAnimations().map(a => a.finished.catch(() => {}))); }");
+        (await bulk.BoundingBoxAsync())!.Y.Should().BeApproximately((await scroll.BoundingBoxAsync())!.Y, 1);
+        (await bulk.BoundingBoxAsync())!.Width.Should().BeApproximately(await scroll.EvaluateAsync<int>("e => e.clientWidth"), 1);
+        await SaveAsync("bulk-brands-docked-live");
+        await bulk.GetByRole(AriaRole.Button, new() { Name = Strings.Close_BulkActionBar, Exact = true }).ClickAsync();
+        await Assertions.Expect(bulk).ToHaveCountAsync(0);
+        await Assertions.Expect(first).Not.ToBeCheckedAsync();
+        await Page.SetViewportSizeAsync(1440, 1000);
+        await first.CheckAsync();
         await Page.GetByRole(AriaRole.Button, new() { Name = string.Format(Strings.Pagination_Page, 2), Exact = true }).ClickAsync();
         await Assertions.Expect(first).Not.ToBeCheckedAsync();
         await Assertions.Expect(Page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
         unexpected.Should().BeEmpty();
         await SaveAsync("table-brands-live");
+        await first.CheckAsync();
 
         // Exercise the appbar's native activator against the retained account dropdown.
         var account = Page.Locator($".shop-appbar button[aria-label='{Strings.Nav_Account}']");
@@ -188,6 +212,7 @@ public sealed class NativeTableJourneyTests(PlaywrightFixture playwright) : E2ET
         await Assertions.Expect(Page.GetByText(Strings.Nav_MyProfile, new() { Exact = true })).ToBeHiddenAsync();
 
         await Page.GetByRole(AriaRole.Link, new() { Name = Strings.AddBrand_Heading, Exact = true }).ClickAsync();
+        await Assertions.Expect(bulk).ToHaveCountAsync(0);
         var trail = Page.Locator(".shop-breadcrumbs");
         await Assertions.Expect(trail.Locator("[aria-current='page']")).ToHaveTextAsync(Strings.AddBrand_Heading);
         await Page.SetViewportSizeAsync(390, 900);

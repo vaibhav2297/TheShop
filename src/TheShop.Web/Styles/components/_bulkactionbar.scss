@@ -1,15 +1,97 @@
-// Bulk selection bar — Figma 2611:7585.
-// Pinned to the viewport bottom rather than sticky in the page flow: the admin list pages keep
-// ShopFooter below the body, and a sticky bar would unstick as soon as the footer scrolled into
-// view. Nothing in MainLayout's ancestor chain creates a containing block (.mud-layout is
-// position: relative, .mud-main-content applies no transform), so `fixed` anchors to the viewport
-// from wherever the page renders it.
+@use '../abstracts/text-style';
+
+.shop-bulk-action-slot {
+    position: relative;
+    min-inline-size: 0;
+    inline-size: 100%;
+    overflow-anchor: none;
+}
+
+.shop-bulk-action-slot[data-ready] {
+    block-size: var(--shop-bulk-slot-height);
+}
+
 .shop-bulk-action-bar {
-    position: fixed;
-    inset-inline: 0;
-    bottom: 0;
-    z-index: var(--mud-zindex-appbar);
     display: flex;
     align-items: center;
-    min-height: 56px;
+    gap: 1rem;
+    box-sizing: border-box;
+    inline-size: 100%;
+    min-inline-size: 0;
+    padding: 1rem;
+    border: 1px solid var(--shop-color-lines-default);
+    background: var(--shop-color-surface-subtle);
+    color: var(--shop-color-primary);
+}
+
+.shop-bulk-action-slot[data-ready] > .shop-bulk-action-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: var(--shop-layer-sticky);
+}
+
+.shop-bulk-action-slot[data-docked] > .shop-bulk-action-bar {
+    position: fixed;
+    top: var(--shop-bulk-dock-top);
+    left: var(--shop-bulk-dock-left);
+    width: var(--shop-bulk-dock-width);
+}
+
+.shop-bulk-action-selection {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.shop-bulk-action-count {
+    @include text-style.apply(h5);
+    font-variant-numeric: tabular-nums;
+}
+
+.shop-bulk-action-label {
+    @include text-style.apply(caption);
+    text-transform: uppercase;
+}
+
+.shop-bulk-action-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    min-inline-size: 0;
+}
+
+.shop-bulk-action-close {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    padding-inline-start: 1rem;
+    border-inline-start: 1px solid var(--shop-color-lines-divider);
+}
+
+@media (max-width: 639px) {
+    .shop-bulk-action-bar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .shop-bulk-action-actions {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+
+    .shop-bulk-action-close {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+
+@media (forced-colors: active) {
+    .shop-bulk-action-bar,
+    .shop-bulk-action-close {
+        border-color: CanvasText;
+    }
 }

@@ -4,11 +4,12 @@
 @using TheShop.Domain.Enums
 @using TheShop.Domain.ValueObjects
 @using TheShop.Web.Common
+@using TheShop.Web.Common.UI
 @using TheShop.Web.Components.Common
 
 <PageTitle>@Strings.ManageBrands_PageTitle</PageTitle>
 
-<MudStack Class="@BodyClass" Spacing="6">
+<MudStack Class="pa-8" Spacing="6">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
         <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.ManageBrands_Heading</MudText>
         <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Create.Code)" Context="createAuth">
@@ -57,6 +58,54 @@
                                     Options="@SortOptions"
                                     SortChanged="OnSortChangedAsync" />
                 </MudStack>
+
+                <ShopBulkActionBar Visible="@HasSelection"
+                                   SelectedCount="@_selectedItems.Count"
+                                   OnClose="OnCloseBulkActions">
+                    <Actions>
+                        <BusyFor Keys="@MutationBusyKeys" Context="mutating">
+                            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Edit.Code)"
+                                           Context="bulkEditAuth">
+
+                                <Authorized>
+
+                                    <ShopButton Variant="ShopVariant.Outlined"
+                                               Color="ShopColor.Primary"
+                                               StartIcon="@ShopIcons.Outlined.Show"
+                                               Disabled="@mutating"
+                                               OnClick="BulkActivateAsync">
+                                        @Strings.ManageBrands_BulkSetActive
+                                    </ShopButton>
+
+                                    <ShopButton Variant="ShopVariant.Outlined"
+                                               Color="ShopColor.Primary"
+                                               StartIcon="@ShopIcons.Outlined.Hide"
+                                               Disabled="@mutating"
+                                               OnClick="BulkDeactivateAsync">
+                                        @Strings.ManageBrands_BulkSetInactive
+                                    </ShopButton>
+                                </Authorized>
+
+                            </AuthorizeView>
+
+                            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Delete.Code)" Context="bulkDeleteAuth">
+
+                                <Authorized>
+
+                                    <ShopButton Variant="ShopVariant.Outlined"
+                                               Color="ShopColor.Error"
+                                               StartIcon="@ShopIcons.Outlined.Trash_Empty"
+                                               Disabled="@mutating"
+                                               OnClick="BulkDeleteAsync">
+                                        @Strings.ManageBrands_BulkDelete
+                                    </ShopButton>
+
+                                </Authorized>
+
+                            </AuthorizeView>
+                        </BusyFor>
+                    </Actions>
+                </ShopBulkActionBar>
 
                 <BusyFor Key="@BusyKeys.Brands.ManageList" Context="busy">
                     @if (busy)
@@ -213,56 +262,3 @@
 
     </MudGrid>
 </MudStack>
-
-@* Mounted outside the padded page stack and the grid so it spans the full viewport
-   width, per Figma 2611:7586 — a direct child of the page frame, not of Brand Section. *@
-<ShopBulkActionBar Visible="@HasSelection"
-                   SelectedCount="@_selectedItems.Count"
-                   OnClose="OnCloseBulkActions">
-    <Actions>
-        @* The bar sits over the table, so the table's own progress bar can be out of view
-           while a bulk action runs — this spinner keeps the feedback where the user just
-           clicked. Every action is disabled meanwhile so a second one can't overlap. *@
-        <BusyFor Keys="@MutationBusyKeys" Context="mutating">
-            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Edit.Code)"
-                           Context="bulkEditAuth">
-
-                <Authorized>
-
-                    <MudButton Variant="Variant.Text"
-                               Color="Color.Inherit"
-                               StartIcon="@ShopIcons.Outlined.Show"
-                               Disabled="@mutating"
-                               OnClick="BulkActivateAsync">
-                        @Strings.ManageBrands_BulkSetActive
-                    </MudButton>
-
-                    <MudButton Variant="Variant.Text"
-                               Color="Color.Inherit"
-                               StartIcon="@ShopIcons.Outlined.Hide"
-                               Disabled="@mutating"
-                               OnClick="BulkDeactivateAsync">
-                        @Strings.ManageBrands_BulkSetInactive
-                    </MudButton>
-                </Authorized>
-
-            </AuthorizeView>
-
-            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Delete.Code)" Context="bulkDeleteAuth">
-
-                <Authorized>
-
-                    <MudButton Variant="Variant.Text"
-                               Color="Color.Error"
-                               StartIcon="@ShopIcons.Outlined.Trash_Empty"
-                               Disabled="@mutating"
-                               OnClick="BulkDeleteAsync">
-                        @Strings.ManageBrands_BulkDelete
-                    </MudButton>
-
-                </Authorized>
-
-            </AuthorizeView>
-        </BusyFor>
-    </Actions>
-</ShopBulkActionBar>

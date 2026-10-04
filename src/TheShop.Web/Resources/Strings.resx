@@ -1267,6 +1267,12 @@
   <data name="BulkActions_SelectedCount" xml:space="preserve">
     <value>{0} selected</value>
   </data>
+  <data name="BulkActions_Selected" xml:space="preserve">
+    <value>Selected</value>
+  </data>
+  <data name="BulkActions_Label" xml:space="preserve">
+    <value>Bulk actions</value>
+  </data>
   <data name="Close_BulkActionBar" xml:space="preserve">
     <value>Clear selection</value>
   </data>
