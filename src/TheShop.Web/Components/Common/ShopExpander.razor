@@ -23,9 +23,10 @@
             <ShopIcon Icon="@ToggleIcon" Class="shop-expander-icon" />
         </button>
     </h3>
-    <div id="@_contentId" class="shop-expander-content" hidden="@(!_expanded)"
-         aria-labelledby="@_headerId">
-        @ChildContent
+    <div id="@_contentId" class="shop-expander-content" inert="@(!_expanded)"
+         aria-hidden="@(!_expanded ? "true" : null)" aria-labelledby="@_headerId">
+        <div class="shop-expander-content-inner">
+            <div class="shop-expander-body">@ChildContent</div>
+        </div>
     </div>
 </div>
-

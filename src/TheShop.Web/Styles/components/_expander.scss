@@ -2,8 +2,16 @@
 
 // Figma 2141:6254: inside top/bottom lines, 24px block padding, 32px expanded gap.
 .shop-expander {
+    --shop-expander-duration: 280ms;
+    --shop-expander-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
     min-inline-size: 0;
     box-shadow: inset 0 1px var(--shop-color-lines-default), inset 0 -1px var(--shop-color-lines-default);
+}
+
+// Contiguous siblings share the preceding section's bottom divider.
+.shop-expander + .shop-expander {
+    box-shadow: inset 0 -1px var(--shop-color-lines-default);
 }
 
 .shop-expander-heading {
@@ -37,6 +45,8 @@
 }
 
 .shop-expander-title {
+    display: flex;
+    align-items: center;
     flex: 1;
     min-inline-size: 0;
     overflow-wrap: anywhere;
@@ -44,6 +54,8 @@
 }
 
 .shop-expander-overview {
+    display: flex;
+    align-items: center;
     min-inline-size: 0;
     color: var(--shop-color-text-secondary);
     overflow-wrap: anywhere;
@@ -63,16 +75,42 @@
 }
 
 .shop-expander-content {
-    padding-block: var(--shop-space-2) var(--shop-space-6);
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows var(--shop-expander-duration) var(--shop-expander-easing),
+        visibility 0s var(--shop-expander-duration);
+}
 
-    &[hidden] {
-        display: none;
+.shop-expander-expanded > .shop-expander-content {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+.shop-expander-content-inner {
+    min-block-size: 0;
+    overflow: hidden;
+}
+
+.shop-expander-body {
+    padding-block: var(--shop-space-2) var(--shop-space-6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shop-expander-content {
+        transition: none;
     }
 }
 
 @media (forced-colors: active) {
     .shop-expander {
         border-block: 1px solid CanvasText;
+        box-shadow: none;
+    }
+
+    .shop-expander + .shop-expander {
+        border-block-start: 0;
         box-shadow: none;
     }
 }

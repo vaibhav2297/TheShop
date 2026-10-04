@@ -74,7 +74,30 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         await Assertions.Expect(trigger).ToBeFocusedAsync();
         await Assertions.Expect(trigger).ToHaveCSSAsync("outline-style", "solid");
         await Page.Keyboard.PressAsync("Tab");
-        (await Page.EvaluateAsync<bool>("() => !document.activeElement.closest('[hidden]')")).Should().BeTrue();
+        (await Page.EvaluateAsync<bool>("() => !document.activeElement.closest('[hidden], [inert]')")).Should().BeTrue();
+
+        var motion = await expanders.First.EvaluateAsync<float[]>("""
+            async el => {
+                const body = el.querySelector('.shop-expander-content');
+                const frame = () => new Promise(requestAnimationFrame);
+                const sample = async expanded => {
+                    el.classList.toggle('shop-expander-expanded', expanded);
+                    await frame(); await frame();
+                    const animation = body.getAnimations().find(a => a.transitionProperty === 'grid-template-rows');
+                    if (!animation) throw new Error('Expected a height transition');
+                    animation.pause();
+                    animation.currentTime = 140;
+                    const middle = body.getBoundingClientRect().height;
+                    animation.finish();
+                    await frame();
+                    return [middle, body.getBoundingClientRect().height];
+                };
+                return [...await sample(true), ...await sample(false)];
+            }
+            """);
+        motion[0].Should().BeGreaterThan(0).And.BeLessThan(motion[1]);
+        motion[2].Should().BeGreaterThan(0).And.BeLessThan(motion[1]);
+        motion[3].Should().BeApproximately(0, 1);
 
         var chips = Page.Locator("#component-probe .shop-chip");
         int[] heights = [24, 32, 40];
@@ -137,6 +160,7 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         await SaveAsync($"components-{width}-{withoutVendorCss}");
 
         await Page.EmulateMediaAsync(new() { ForcedColors = ForcedColors.Active, ReducedMotion = ReducedMotion.Reduce });
+        await Assertions.Expect(expanders.First.Locator(".shop-expander-content")).ToHaveCSSAsync("transition-duration", "0s");
         await Assertions.Expect(toggle).ToHaveCSSAsync("box-shadow", "none");
         await Assertions.Expect(navigations.First.Locator("[aria-current]")).ToHaveCSSAsync("outline-style", "solid");
         await SaveAsync($"components-forced-colors-{width}-{withoutVendorCss}");
@@ -194,6 +218,16 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         var trigger = category.Locator(".shop-expander-trigger");
         await trigger.WaitForAsync(new() { Timeout = 30_000 });
         await Assertions.Expect(trigger).ToHaveAttributeAsync("aria-expanded", "false");
+        var body = category.Locator(".shop-expander-content");
+        await Assertions.Expect(body).ToHaveAttributeAsync("inert", "");
+        var groupExpanders = Page.Locator(".shop-filter-groups > .shop-expander");
+        var firstShadow = await groupExpanders.First.EvaluateAsync<string>("el => getComputedStyle(el).boxShadow");
+        var nextShadow = await groupExpanders.Nth(1).EvaluateAsync<string>("el => getComputedStyle(el).boxShadow");
+        Regex.Matches(firstShadow, "inset").Count.Should().Be(2);
+        Regex.Matches(nextShadow, "inset").Count.Should().Be(1);
+        var titleBox = (await category.Locator(".shop-filter-title").BoundingBoxAsync())!;
+        var iconBox = (await category.Locator(".shop-expander-icon").BoundingBoxAsync())!;
+        (titleBox.Y + titleBox.Height / 2).Should().BeApproximately(iconBox.Y + iconBox.Height / 2, 1);
         await trigger.FocusAsync();
         await Page.Keyboard.PressAsync("Enter");
         await Assertions.Expect(trigger).ToHaveAttributeAsync("aria-expanded", "true");
@@ -201,9 +235,15 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         await input.EvaluateAsync("el => window.retainedFilterInput = el");
         await input.CheckAsync();
         await Assertions.Expect(category.Locator(".shop-chip")).ToHaveTextAsync("1");
+        var overviewBox = (await category.Locator(".shop-expander-overview").BoundingBoxAsync())!;
+        iconBox = (await category.Locator(".shop-expander-icon").BoundingBoxAsync())!;
+        (overviewBox.Y + overviewBox.Height / 2).Should().BeApproximately(iconBox.Y + iconBox.Height / 2, 1);
         await Assertions.Expect(trigger).ToHaveAttributeAsync("aria-expanded", "true");
         await trigger.FocusAsync();
         await Page.Keyboard.PressAsync("Space");
+        await Assertions.Expect(body).ToHaveAttributeAsync("inert", "");
+        await category.Locator("input").EvaluateAsync("el => el.focus()");
+        await Assertions.Expect(trigger).ToBeFocusedAsync();
         await Assertions.Expect(input).ToBeHiddenAsync();
         await Page.Keyboard.PressAsync("Space");
         await Assertions.Expect(input).ToBeCheckedAsync();

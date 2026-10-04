@@ -34,7 +34,8 @@ public partial class ShopExpander : ShopComponentBase
     private bool _lastExpanded;
     private bool _expanded;
 
-    private string ClassName => ShopCssClass.Join("shop-native", "shop-expander", Class);
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-expander",
+        _expanded ? "shop-expander-expanded" : null, Class);
     private string ToggleIcon => _expanded ? ShopIcons.Outlined.Remove_Minus : ShopIcons.Outlined.Add_Plus;
 
     /// <inheritdoc/>
@@ -56,4 +57,3 @@ public partial class ShopExpander : ShopComponentBase
         await ExpandedChanged.InvokeAsync(_expanded);
     }
 }
-
