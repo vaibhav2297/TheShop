@@ -1,0 +1,26 @@
+// App-blocking overlay for BusyKeys.Global. No Figma design: backdrop matches the drawer scrim.
+.shop-loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--shop-layer-loading);
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--shop-color-primary) 40%, transparent);
+    color: var(--shop-color-primary);
+    cursor: progress;
+}
+
+.shop-loading-overlay-spinner {
+    inline-size: 3rem;
+    block-size: 3rem;
+    border-width: 0.3rem;
+}
+
+// Forced colors would paint the transparent arc, leaving a static ring; keep the gap with system colors.
+@media (forced-colors: active) {
+    .shop-loading-overlay-spinner {
+        forced-color-adjust: none;
+        border-color: CanvasText;
+        border-inline-end-color: transparent;
+    }
+}

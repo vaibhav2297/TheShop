@@ -1,6 +1,7 @@
 @if (_isBusy)
 {
-    <MudOverlay Visible="true" DarkBackground="true" ZIndex="9999">
-        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
-    </MudOverlay>
+    <div class="shop-loading-overlay" data-testid="loading-overlay" aria-hidden="true">
+        <span class="shop-spinner shop-loading-overlay-spinner"></span>
+    </div>
 }
+<span class="shop-visually-hidden" role="status">@(_isBusy ? Strings.Loading : null)</span>

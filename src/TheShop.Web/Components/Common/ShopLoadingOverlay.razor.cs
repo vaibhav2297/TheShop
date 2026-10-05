@@ -4,8 +4,9 @@ using TheShop.Web.Common;
 namespace TheShop.Web.Components.Common;
 
 /// <summary>
-/// Full-page loading overlay that appears whenever the <c>"global"</c> busy key is active
-/// in <see cref="BusyState"/>. Mounted once in <c>MainLayout</c>.
+/// Full-page loading overlay that blocks pointer input and announces loading whenever
+/// <see cref="BusyKeys.Global"/> is active in <see cref="BusyState"/>. Mounted once per active
+/// layout through <c>ShopUiHost</c>.
 /// </summary>
 public partial class ShopLoadingOverlay : ComponentBase, IDisposable
 {

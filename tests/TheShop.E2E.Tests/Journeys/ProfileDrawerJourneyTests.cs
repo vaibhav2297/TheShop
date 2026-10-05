@@ -48,6 +48,7 @@ public sealed class ProfileDrawerJourneyTests(PlaywrightFixture playwright)
         });
         var unexpected = new List<string>();
         var logoutRequests = 0;
+        var releaseLogout = new TaskCompletionSource();
         await Context.RouteAsync(E2EEnvironment.Get("API_URL").TrimEnd('/') + "/**", async route =>
         {
             var path = new Uri(route.Request.Url).AbsolutePath;
@@ -58,7 +59,7 @@ public sealed class ProfileDrawerJourneyTests(PlaywrightFixture playwright)
             else if (path.EndsWith("/auth/v1/token") && route.Request.Method == "POST") body = session;
             else if (path.EndsWith("/auth/v1/user") && route.Request.Method == "GET")
                 body = JsonSerializer.Serialize(new { id = userId, email, aud = "authenticated", role = "authenticated" });
-            else if (path.EndsWith("/auth/v1/logout") && route.Request.Method == "POST") { logoutRequests++; body = "{}"; }
+            else if (path.EndsWith("/auth/v1/logout") && route.Request.Method == "POST") { logoutRequests++; await releaseLogout.Task; body = "{}"; }
             else if (path.EndsWith("/rest/v1/customers") && route.Request.Method == "GET")
                 body = JsonSerializer.Serialize(new[] { new { id = userId, email, first_name = "John", last_name = "Doe", date_of_birth = "1990-01-01", created_at = "2026-01-01T00:00:00Z" } });
             if (body is null) { unexpected.Add(route.Request.Method + " " + path); await route.AbortAsync(); }
@@ -97,9 +98,15 @@ public sealed class ProfileDrawerJourneyTests(PlaywrightFixture playwright)
         await Assertions.Expect(account).ToHaveAttributeAsync("aria-expanded", "false");
         await account.ClickAsync();
         await drawer.GetByRole(AriaRole.Button, new() { Name = Strings.Logout, Exact = true }).ClickAsync();
+        // Held logout keeps BusyKeys.Global active: the shared overlay blocks the page until it completes.
+        var overlay = Page.GetByTestId("loading-overlay");
+        await Assertions.Expect(overlay).ToBeVisibleAsync();
+        await Assertions.Expect(Page.GetByRole(AriaRole.Status).Filter(new() { HasText = Strings.Loading })).Not.ToHaveCountAsync(0);
+        releaseLogout.SetResult();
         await Page.WaitForFunctionAsync("() => !localStorage.getItem('shop.auth.session')");
         await Assertions.Expect(Page.Locator("dialog:modal")).ToHaveCountAsync(0);
         await Assertions.Expect(Page.GetByRole(AriaRole.Link, new() { Name = Strings.Nav_Account, Exact = true })).ToBeVisibleAsync();
+        await Assertions.Expect(overlay).ToHaveCountAsync(0);
         logoutRequests.Should().Be(1);
         unexpected.Should().BeEmpty();
         errors.Should().BeEmpty();

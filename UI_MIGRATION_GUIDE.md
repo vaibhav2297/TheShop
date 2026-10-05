@@ -941,7 +941,7 @@ The snippet illustrates a future migrated owning form; use its actual resource/m
 
 ### 8.1 Host lifetime
 
-`ShopUiHost` composes `ShopDialogHost`, `ShopNotificationHost`, and the existing loading overlay. It is mounted once in each mutually exclusive Main/Auth layout. Do not also mount duplicate hosts in `App` or every page. If layouts can nest, ensure only the outer owner mounts hosts.
+`ShopUiHost` composes `ShopDialogHost`, `ShopNotificationHost`, and the native `ShopLoadingOverlay`. It is mounted once in each mutually exclusive Main/Auth layout. Do not also mount duplicate hosts in `App` or every page. If layouts can nest, ensure only the outer owner mounts hosts.
 
 Services are Web-only and registered by `AddPresentation`. In WebAssembly a scoped service generally survives client-side route changes, so define cleanup explicitly; layout disposal does not imply service disposal.
 
@@ -1062,6 +1062,8 @@ Sign-in keeps its inline spinner and `aria-busy`/disabled behavior. Its resource
 
 Do not add competing per-page busy flags. Pass `BusyFor`'s value into `ShopButton.Loading` or `ShopIconButton.Loading`; the controls centralize spinner-only appearance, disabling, and hidden status text, not operation tracking. Keep form inputs and related controls bound to the same busy value. Component-local interaction state such as disclosure expansion is unrelated and can remain local. Preserve cleanup on success, failure, and cancellation. Verify global blocking behavior separately from inline button loading.
 
+Native app-blocking overlay (batch 31): `ShopLoadingOverlay` observes only `BusyKeys.Global` and stays mounted once through `ShopUiHost`. While busy it renders a decorative (`aria-hidden`) fixed full-viewport `div.shop-loading-overlay` with a centered 48px `.shop-spinner` (6px stroke); a primed, always-mounted `.shop-visually-hidden` `role="status"` sibling announces `Strings.Loading`. `_loading-overlay.scss` owns appearance: drawer-matching 40% primary scrim, primary-color spinner, `cursor: progress`, `--shop-layer-loading: 2000` (preserving the old overlay-above-notification order). No Figma design exists; these are implementation decisions. It blocks pointer input only, matching the former MudOverlay; keyboard focus behind it is not made inert. Native top-layer modals still paint above it. Forced colors keep the spinner gap with system colors; reduced motion stops rotation through `_spinner.scss`. No JS module.
+
 ### 8.5 JavaScript boundaries
 
 - Use ES modules imported through `IJSRuntime`, initialized after rendering.
@@ -1159,7 +1161,7 @@ Figma references inspected 2026-10-04: section `2976:16449`, component `2976:164
 
 Implementation decisions, not additional measured Figma states: full viewport width below 600px, 280ms slide/backdrop fade, reduced-motion bypass, focus-visible styling, safe-area footer inset, long-content wrapping and native modal focus behavior. The backdrop uses the primary color at 40%, covering the appbar as well as page content. Escape, the close button, and pointer sequences that start and end on the backdrop request `OpenChanged(false)`. Navigation closes the profile drawer. The shared `shopDialog.js` lifecycle handles focus restoration, disposal, animation reversal and one-active-modal replacement with existing ShopDialog. Exit transitions retain browser inertness until complete. A narrowly scoped overflow override temporarily beats the shell's legacy Mud overflow utility while the drawer is modal.
 
-`Styles/tokens/_layers.scss` owns shared document layers: sticky 1000, appbar 1100, notification 1500. These values moved out of `_theme.scss` without changing the existing sticky/notification values. Components consume the shared tokens; drawer width, padding and motion remain in `_drawer.scss`. Native modal dialogs/drawers use the browser top layer, not numeric z-index; do not add ineffective drawer/dialog tokens or claim a high notification number can overtake a native modal. Existing unmigrated vendor popovers/global loading overlay retain their legacy stacking until migrated; this batch does not remove providers or create a duplicate C# layer scale.
+`Styles/tokens/_layers.scss` owns shared document layers: sticky 1000, appbar 1100, notification 1500, loading 2000. These values moved out of `_theme.scss` without changing the existing sticky/notification values. Components consume the shared tokens; drawer width, padding and motion remain in `_drawer.scss`. Native modal dialogs/drawers use the browser top layer, not numeric z-index; do not add ineffective drawer/dialog tokens or claim a high notification number can overtake a native modal. Existing unmigrated vendor popovers retain their legacy stacking until migrated; the native loading overlay uses `--shop-layer-loading` (batch 31); this batch does not remove providers or create a duplicate C# layer scale.
 
 ### Images
 
@@ -1514,7 +1516,7 @@ Current status: **Implementation in progress; first native foundation and slice 
 | P0 Baseline | Complete for build/Web tests | Branch `refactor/ui-refactoring`, starting commit `dd747d9df0137842be5077bd7f2b90f99e6b92a6` | Solution build succeeded; baseline Web tests 845 passed, 0 failed, 0 skipped. Existing package advisories recorded below. |
 | P1 Foundation | In progress | Scoped tokens/base SCSS, ShopComponentBase, ShopCssClass, ShopButton, ShopIconButton, ShopIcon, label-only ShopTextField, two-state ShopCheckbox; canonical native guidance | Implemented subset passes build, component tests, and focused browser checks. Remaining services/controls are not implied complete. |
 | P2 First slice | In progress | ProductCard, ShopImage, SignIn markup/form, native confirmations and variant-image picker | Existing callbacks, image behavior, validation, dialog results, and BusyState preserved and tested. SignIn still uses the snackbar bridge; this is not a fully vendor-free route yet. |
-| P3 Shell/services | In progress | Native dialogs and notification service/host; dialog/snackbar providers removed | Next: native loading overlay and shell presentation. Other Mud providers still have consumers. |
+| P3 Shell/services | In progress | Native dialogs, notification service/host and loading overlay; dialog/snackbar providers removed | Next: MainLayout/AuthLayout shell presentation. Other Mud providers still have consumers. |
 | P4 Auth/controls | Not started | | |
 | P5 Feature screens | Not started | | |
 | P6 Remove dependencies | Not started | | |
@@ -2048,6 +2050,17 @@ The final implementing-agent response should state what changed, the exact verif
 - Added `_layers.scss` for sticky/appbar/notification document layers and updated token ownership guidance. Native modal ordering is explicitly separate from numeric stacking. Remaining vendor providers/global loading overlay are not removed by this batch.
 - Unit verification: 20 focused component tests and 1,082 full Web tests passed. Headed verification is recorded below after the final run. Initial native browser checks exposed a missing Tab wrap and drove a shared modal fix. The local real-auth journey was unavailable because the OTP inbox on 127.0.0.1:54324 refused connections; profile integration uses intercepted test-only authentication responses instead, with no live-backend writes.
 - Rollback: revert only this batch's Drawer/ProfileDrawer additions, MainLayout/AppBar wiring, shared modal changes, layer-token move and paired tests/docs together to restore the prior ProfileMenu. No stored-data rollback or package restore is needed; preserve unrelated working-tree edits.
+
+### Batch 31 — Native loading overlay — 2026-10-05
+
+- Replaced `MudOverlay`/`MudProgressCircular` in `ShopLoadingOverlay` with a native fixed backdrop, reused `.shop-spinner` and a primed visually hidden status. Code-behind subscription, `BusyKeys.Global` scope and `ShopUiHost` mounting are unchanged. Added `_loading-overlay.scss` and `--shop-layer-loading` in `_layers.scss`. Contract recorded in section 8.4. Only live consumer: `ProfileDrawer` sign-out.
+- Baseline: 1,082 Web tests (batch 30). Added `ShopLoadingOverlayTests` (6): idle primed status, busy overlay/announcement and release, failed-operation release, other-key isolation, already-busy initial render, disposal unsubscription. **Full Web suite: 1,088 passed, 0 skipped.**
+- Headed Chromium: **8 passed, 0 skipped**. New `NativeLoadingOverlayJourneyTests` renders real component markup at 390px/1440px with and without vendor CSS: fixed full layout-viewport coverage, z-index 2000, scrim color, centered 48px primary-color spinner with 6px stroke, blocked clicks on an underlying full-page button, status text, reduced motion and forced colors. `ProfileDrawerJourneyTests` (4 cases) now holds the intercepted logout response and asserts the live overlay appears during sign-out and disappears afterwards. Auth/data responses are intercepted; no backend writes or genuine sessions.
+- Browser review caught forced colors painting the spinner's transparent arc (static full ring); fixed with `forced-color-adjust: none` and system colors, with a browser assertion. Headed display scaling produced fractional CSS-pixel viewport/border values; assertions compare with the layout viewport and allow device-pixel stroke snapping.
+- Evidence: `tests/TheShop.E2E.Tests/TestResults/loading-overlay-headed.trx`; `tests/TheShop.E2E.Tests/bin/Debug/net10.0/native-ui-evidence/loading-overlay-*.png` and `profile-drawer-*.png`. Desktop/mobile, vendor-free and forced-colors screenshots reviewed.
+- Follow-up (2026-10-05): spinner switched to `--shop-color-primary` with a thicker 0.375rem (6px) stroke at user request.
+- Limitations: keyboard focus behind the overlay remains reachable (parity with MudOverlay). Screen-reader announcement timing is not certified. Existing AngleSharp NU1902 and unrelated E2E xUnit1051 warnings remain.
+- Rollback: revert this batch's overlay markup/doc comment, `_loading-overlay.scss`, its `TheShop.scss` import, the layer token, both test files, the profile-journey logout gate and this guide record together. No stored-data rollback.
 
 ## 19. Prompt to give the implementing AI
 
