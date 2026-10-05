@@ -797,6 +797,14 @@ Source: [Range Slider section 2976:16148](https://www.figma.com/design/63Ieb8Adu
 
 The consumer's code-behind owns `_range = new ShopRangeValue(0m, 500m)` and `FormatPrice`; no price/currency state lives in the component. For rollback, restore the former filter range branch and its tests together with the page-specific delegates; no stored data or API contract changes are involved. Leave the package/asset removal until the last unrelated Mud consumer is migrated.
 
+### 6.9 Announcement Bar — batch 33
+
+Design: [Figma Announcement Bar 2985:16495](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=2985-16494), inspected 2026-10-05.
+
+- `ShopAnnouncementBar` derives from `ShopComponentBase`; `Class`, `Style` and unmatched attributes target the root `div.shop-native.shop-announcement-bar`. The required server-provided `Message` renders as encoded text in `p.shop-announcement-bar-message`. The public API and `MainLayout`/`AnnouncementState` visibility ownership are unchanged.
+- `_announcement-bar.scss`: 32px minimum height (Figma `minHeight`), 4px block / 16px inline padding (`--shop-space-1` / `--shop-space-4`), `--shop-color-primary` fill, `--shop-color-primary-contrast` Subtitle 1 text, centered. Height hugs content.
+- Implementation decisions, not Figma variants: long or enlarged text wraps centered (`overflow-wrap: anywhere`) and the bar grows instead of overflowing; no landmark role, dismiss action or marquee is added.
+
 ## 7. Forms and validation architecture
 
 This is a behavior migration, not a tag substitution. Handle validation deliberately before replacing all nine forms.
@@ -2064,6 +2072,14 @@ The final implementing-agent response should state what changed, the exact verif
 
 - Deleted `Components/Common/ShopFieldLabel.razor` (Mud `MudStack`/`MudText`, no code-behind). Repository search found no consumers or tests; the `.shop-field-label` class is owned by `ShopTextField`/`_native-field.scss` and is unchanged. Removed its target-tree, form-contract and known-trap entries.
 - Rollback: restore the single Razor file from Git. No behavior, style or data change.
+
+### Batch 33 — Native Announcement Bar — 2026-10-05
+
+- Replaced `MudComponentBase`, `MudPaper`, `MudStack`, `MudText`, `CssBuilder` and the `mud-theme-dark` class in `ShopAnnouncementBar` with native markup on `ShopComponentBase`, `ShopCssClass` and `_announcement-bar.scss`. Contract recorded in section 6.9. Only consumer: `MainLayout`; its usage is unchanged.
+- Added `ShopAnnouncementBarTests` (2): encoded message in native markup without vendor classes, and root class/style/attribute forwarding. **Full Web suite: 1,090 passed, 0 skipped.**
+- Headed Chromium: **4 passed, 0 skipped**. `NativeAnnouncementBarJourneyTests` renders real component markup at 390px/1440px with and without vendor CSS: Figma fill, text color, Subtitle 1 family/size/weight/tracking with loaded web font, padding, 32px minimum height (exact at 1440px), full width, centered text, and long-message wrapping at 200% root text without horizontal overflow. At 390px the Figma sample message wraps to two lines and the bar hugs it; the first run's fixed-32px expectation was corrected to a wrap-aware assertion.
+- No live announcement journey: no current code calls `AnnouncementState.Set`, so the live shell never shows the bar. Evidence: `tests/TheShop.E2E.Tests/TestResults/announcement-bar-headed.trx`; `tests/TheShop.E2E.Tests/bin/Debug/net10.0/native-ui-evidence/announcement-*.png`. Desktop/mobile, vendor-free and enlarged-text screenshots reviewed. Design-rule and whitespace gates pass.
+- Rollback: revert this batch's component markup/code-behind, `_announcement-bar.scss`, its `TheShop.scss` import, both test files and this guide record together. No stored-data rollback.
 
 ## 19. Prompt to give the implementing AI
 

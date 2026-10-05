@@ -95,7 +95,6 @@
         color: var(--shop-color-text-secondary);
         cursor: not-allowed;
     }
-
     // The field chrome owns focus/error indication, never an inner text rectangle.
     &:focus,
     &[aria-invalid='true'] {
@@ -109,10 +108,10 @@
         outline-offset: calc(-1 * var(--shop-field-border-width));
     }
 
-    .shop-field-control:focus-within {
-        outline: var(--shop-focus-width) solid Highlight;
-        outline-offset: var(--shop-focus-offset);
-    }
+        .shop-field-control:focus-within {
+            outline: var(--shop-focus-width) solid Highlight;
+            outline-offset: var(--shop-focus-offset);
+        }
 }
 
 @media (prefers-reduced-motion: reduce) {
