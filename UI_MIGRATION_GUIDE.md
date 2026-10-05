@@ -153,7 +153,6 @@ src/TheShop.Web/
       ShopButton.razor / ShopButton.razor.cs
       ShopIconButton.razor / ShopIconButton.razor.cs
       ShopIcon.razor / ShopIcon.razor.cs
-      ShopFieldLabel.razor
       ShopMoneyField.razor / ShopMoneyField.razor.cs
       ShopDialog.razor / ShopDialog.razor.cs
       ShopDrawer.razor / ShopDrawer.razor.cs
@@ -868,7 +867,7 @@ Inferred interaction/accessibility decisions, not measured Figma states:
 - `_theme.scss` owns field geometry/motion tokens; `_native-field.scss` consumes them and direct Figma color/typography tokens. Sign-in uses `Email_Label` for the floating label. Existing placeholder resources remain for unmigrated consumers, not the native text-field API.
 
 - Give each field a stable unique ID and a real `<label for="...">`, or another explicit accessible-name association when a visible label is intentionally absent.
-- `ShopFieldLabel` currently renders text and has no `for` contract. Replace that behavior; placeholders are not labels.
+- Placeholders are not labels. The unused legacy `ShopFieldLabel` was deleted (batch 32); visible labels belong to the field component, as in `ShopTextField`.
 - Associate hints/errors with `aria-describedby`, and invalid inputs with `aria-invalid`.
 - Preserve required semantics and error messages. A required boolean confirmation must require `true`; merely decorating a non-nullable bool as required is insufficient.
 - Decide native browser validation versus custom validation consistently. If using `novalidate` to avoid duplicate browser bubbles, preserve required semantics and equivalent accessible errors.
@@ -1461,7 +1460,6 @@ If an environment prerequisite is unavailable, finish independent work and recor
 - Mud typography comments can disagree with actual theme construction; inspect actual values.
 - Both `MainLayout` and `AuthLayout` currently mount Mud providers.
 - Removing Mud CSS removes utility classes and document defaults, not only component skinning.
-- `ShopFieldLabel` needs a real label association in the new contract.
 - Boolean age confirmation must be `true`, not merely non-null.
 - Native buttons default to form submission unless an explicit type is set.
 - Standard hyperlinks and action buttons have different semantics; preserve them.
@@ -2061,6 +2059,11 @@ The final implementing-agent response should state what changed, the exact verif
 - Follow-up (2026-10-05): spinner switched to `--shop-color-primary` with a thicker 0.375rem (6px) stroke at user request.
 - Limitations: keyboard focus behind the overlay remains reachable (parity with MudOverlay). Screen-reader announcement timing is not certified. Existing AngleSharp NU1902 and unrelated E2E xUnit1051 warnings remain.
 - Rollback: revert this batch's overlay markup/doc comment, `_loading-overlay.scss`, its `TheShop.scss` import, the layer token, both test files, the profile-journey logout gate and this guide record together. No stored-data rollback.
+
+### Batch 32 — Remove unused ShopFieldLabel — 2026-10-05
+
+- Deleted `Components/Common/ShopFieldLabel.razor` (Mud `MudStack`/`MudText`, no code-behind). Repository search found no consumers or tests; the `.shop-field-label` class is owned by `ShopTextField`/`_native-field.scss` and is unchanged. Removed its target-tree, form-contract and known-trap entries.
+- Rollback: restore the single Razor file from Git. No behavior, style or data change.
 
 ## 19. Prompt to give the implementing AI
 
