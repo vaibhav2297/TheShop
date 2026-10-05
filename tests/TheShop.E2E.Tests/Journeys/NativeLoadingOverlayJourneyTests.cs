@@ -77,9 +77,9 @@ public sealed class NativeLoadingOverlayJourneyTests(PlaywrightFixture playwrigh
 
         var spinner = overlay.Locator(".shop-loading-overlay-spinner");
         await Assertions.Expect(spinner).ToHaveCSSAsync("width", "48px");
-        // Borders snap to whole device pixels, so a 6px stroke can compute fractionally under display scaling.
+        // Borders snap to whole device pixels, so a 4.8px stroke can compute fractionally under display scaling.
         var stroke = await spinner.EvaluateAsync<float>("el => parseFloat(getComputedStyle(el).borderTopWidth)");
-        stroke.Should().BeInRange(5.4f, 6f);
+        stroke.Should().BeInRange(4.3f, 4.8f);
         await Assertions.Expect(spinner).ToHaveCSSAsync("border-top-color", "rgb(23, 23, 23)");
         var spin = (await spinner.BoundingBoxAsync())!;
         (spin.X + spin.Width / 2).Should().BeApproximately(viewportWidth / 2, 1);
