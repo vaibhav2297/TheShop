@@ -21,6 +21,7 @@
             <div class="shop-auth-form">
                 <p class="shop-auth-instruction" id="signin-instruction">@Strings.Login_Instruction</p>
                 <EditForm EditContext="@_editContext" OnSubmit="OnSendCodeAsync" novalidate>
+                    <ShopCommandValidation @ref="_validation" />
                     <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
                         <ShopTextField id="signin-email" type="email" name="email"
                                        @bind-Value="_model.Email"
@@ -32,7 +33,7 @@
 
                         <div class="shop-auth-actions">
                             <ShopButton Type="submit" Size="ShopSize.Large"
-                                        Disabled="@(!CanSubmit)" Loading="@busy" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
+                                        Disabled="@busy" Loading="@busy" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
                                         data-testid="signin-submit">
                                 @Strings.Auth_Login_Submit
                             </ShopButton>

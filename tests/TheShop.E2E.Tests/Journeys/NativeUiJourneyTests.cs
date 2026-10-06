@@ -34,7 +34,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
     [Theory]
     [InlineData(390, 844)]
     [InlineData(1440, 900)]
-    public async Task SignIn_TypingWithoutBlur_UpdatesValidationAndSubmitState(int width, int height)
+    public async Task SignIn_Submit_ValidatesAndTypingWithoutBlurClearsErrors(int width, int height)
     {
         await Page.SetViewportSizeAsync(width, height);
         await OpenSignInAsync();
@@ -42,7 +42,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         var submit = Page.GetByTestId("signin-submit");
         var error = Page.Locator("#signin-email-error");
 
-        await Assertions.Expect(submit).ToBeDisabledAsync();
+        await Assertions.Expect(submit).ToBeEnabledAsync();
         await Assertions.Expect(Page.Locator("label[for='signin-email']")).ToHaveTextAsync(Strings.Email_Label);
         await Assertions.Expect(email).ToHaveAttributeAsync("aria-describedby", "signin-instruction signin-email-error");
         await AssertNoOverflowAsync();
@@ -77,7 +77,9 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
 
         await email.FillAsync("invalid-address");
         await Assertions.Expect(email).ToBeFocusedAsync();
-        await Assertions.Expect(submit).ToBeDisabledAsync();
+        await Assertions.Expect(submit).ToBeEnabledAsync();
+        await Assertions.Expect(error).ToBeEmptyAsync();
+        await Page.Keyboard.PressAsync("Enter");
         await Assertions.Expect(email).ToHaveAttributeAsync("aria-invalid", "true");
         await Assertions.Expect(error).ToContainTextAsync(Strings.Email_Invalid);
         (await error.Locator(".validation-message").EvaluateAsync<string>("el => getComputedStyle(el).color"))
@@ -87,6 +89,9 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
             .Should().Contain("rgb(255, 66, 66)").And.Contain("inset", "invalid styling belongs on the field chrome");
         await AssertNoOverflowAsync();
         await SavePageAsync($"signin-{width}-invalid");
+        await email.FillAsync("still-invalid");
+        await Assertions.Expect(error).ToBeEmptyAsync();
+        await Assertions.Expect(email).Not.ToHaveAttributeAsync("aria-invalid", "true");
         _backendRequests.Should().Be(0, "typing and visual checks must not request an OTP or backend data");
     }
 
@@ -193,6 +198,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         await Assertions.Expect(label).ToHaveCSSAsync("font-size", "12px");
         await Assertions.Expect(label).ToHaveCSSAsync("top", "0px");
         await input.FillAsync("invalid");
+        await Page.Keyboard.PressAsync("Enter");
         await Assertions.Expect(input).ToHaveAttributeAsync("aria-invalid", "true");
         await Assertions.Expect(label).ToHaveCSSAsync("color", "rgb(255, 66, 66)");
         (await field.EvaluateAsync<string>("el => getComputedStyle(el).boxShadow"))

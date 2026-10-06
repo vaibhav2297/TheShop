@@ -14,14 +14,16 @@ public class RequestSignInOtpValidatorTests
 {
     private readonly RequestSignInOtpCommandValidator _validator = new();
 
-    [Fact]
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
     [Trait("Feature", "authentication")]
-    public void Validate_WhenEmailIsEmpty_HasEmailRequiredError()
+    public void Validate_WhenEmailIsEmpty_HasOnlyEmailRequiredError(string email)
     {
-        var cmd = new RequestSignInOtpCommand("");
+        var cmd = new RequestSignInOtpCommand(email);
         var result = _validator.Validate(cmd);
 
-        result.Errors.Should().Contain(e =>
+        result.Errors.Should().ContainSingle().Which.Should().Match<FluentValidation.Results.ValidationFailure>(e =>
             e.PropertyName == nameof(cmd.Email) &&
             e.ErrorMessage == AuthErrorKeys.EmailRequired);
     }

@@ -7,7 +7,7 @@ namespace TheShop.Application.Common.Behaviors;
 /// <summary>
 /// MediatR pipeline behavior that runs all registered <see cref="IValidator{T}"/> instances
 /// before the handler. When <typeparamref name="TResponse"/> is <see cref="Result"/> or
-/// <see cref="Result{T}"/>, the first validation error is returned as a failure result
+/// <see cref="Result{T}"/>, all validation errors are returned with the first error as the primary failure
 /// instead of throwing. For all other response types, a <see cref="ValidationException"/> is thrown.
 /// </summary>
 public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
@@ -38,20 +38,24 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
 
         var first = failures[0];
         var errorArgs = (IReadOnlyList<string>?)(first.CustomState as IReadOnlyList<string>) ?? [];
+        var validationErrors = failures
+            .Select(f => new FieldValidationError(f.PropertyName, f.ErrorMessage))
+            .ToArray();
 
-        if (TryBuildFailureResult(first.ErrorMessage, errorArgs, out var failure))
+        if (TryBuildFailureResult(first.ErrorMessage, errorArgs, validationErrors, out var failure))
             return (TResponse)failure!;
 
         throw new ValidationException(failures);
     }
 
-    private static bool TryBuildFailureResult(string errorKey, IReadOnlyList<string> errorArgs, out object? failure)
+    private static bool TryBuildFailureResult(string errorKey, IReadOnlyList<string> errorArgs,
+        IReadOnlyList<FieldValidationError> validationErrors, out object? failure)
     {
         var responseType = typeof(TResponse);
 
         if (responseType == typeof(Result))
         {
-            failure = Result.Fail(errorKey, errorArgs);
+            failure = Result.Fail(errorKey, errorArgs, validationErrors);
             return true;
         }
 
@@ -63,8 +67,8 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
                 .GetMethods()
                 .First(m => m.Name == nameof(Result.Fail)
                             && m.IsGenericMethod
-                            && m.GetParameters().Length == 2);
-            failure = failMethod.MakeGenericMethod(valueType).Invoke(null, [errorKey, errorArgs]);
+                            && m.GetParameters().Length == 3);
+            failure = failMethod.MakeGenericMethod(valueType).Invoke(null, [errorKey, errorArgs, validationErrors]);
             return true;
         }
 

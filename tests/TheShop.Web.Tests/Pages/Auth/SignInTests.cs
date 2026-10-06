@@ -8,6 +8,9 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using NSubstitute;
 using TheShop.Application.Common.Models;
+using TheShop.Application;
+using TheShop.Application.Common.Behaviors;
+using TheShop.Application.Features.Auth;
 using TheShop.Application.Features.Auth.Commands.RequestSignInOtp;
 using TheShop.Application.Features.Auth.DTOs;
 using TheShop.Web.Common;
@@ -27,6 +30,8 @@ public class SignInTests : TestContext
     private readonly IMediator _mediator = Substitute.For<IMediator>();
     private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
+    private readonly IRequestHandler<RequestSignInOtpCommand, Result<OtpRequestedDto>> _handler =
+        Substitute.For<IRequestHandler<RequestSignInOtpCommand, Result<OtpRequestedDto>>>();
 
     public SignInTests()
     {
@@ -44,6 +49,21 @@ public class SignInTests : TestContext
             var key = call.Arg<string>();
             return new LocalizedString(key, key);
         });
+        _localizer[AuthErrorKeys.EmailRequired].Returns(new LocalizedString(AuthErrorKeys.EmailRequired, Strings.Email_Required));
+        _localizer[AuthErrorKeys.EmailInvalid].Returns(new LocalizedString(AuthErrorKeys.EmailInvalid, Strings.Email_Invalid));
+
+        _handler.Handle(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(call => Result.Ok(new OtpRequestedDto(call.Arg<RequestSignInOtpCommand>().Email, 60)));
+    }
+
+    private void UseCommandValidation()
+    {
+        new ServiceCollection().AddApplication();
+        var validation = new ValidationBehavior<RequestSignInOtpCommand, Result<OtpRequestedDto>>(
+            [new RequestSignInOtpCommandValidator()]);
+        _mediator.Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(call => validation.Handle(call.Arg<RequestSignInOtpCommand>(),
+                token => _handler.Handle(call.Arg<RequestSignInOtpCommand>(), token), call.Arg<CancellationToken>()));
     }
 
     // =========================================================================
@@ -116,16 +136,22 @@ public class SignInTests : TestContext
     [InlineData("")]
     [InlineData("   ")]
     [InlineData("not-an-email")]
+    [InlineData("a@b")]
+    [InlineData("@")]
     [Trait("Feature", "authentication")]
-    public async Task Submit_WithMissingOrInvalidEmail_ShowsValidationWithoutSendingACommand(string email)
+    public async Task Submit_WithMissingOrInvalidEmail_ShowsCommandValidationWithoutCallingHandler(string email)
     {
+        UseCommandValidation();
         var cut = Render<SignIn>();
         cut.Find("input[type='email']").Input(email);
 
-        cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeTrue();
+        cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeFalse();
+        cut.Find("#signin-email-error").TextContent.Should().BeNullOrWhiteSpace();
         await cut.Find("form").SubmitAsync(EventArgs.Empty);
 
-        await _mediator.DidNotReceive().Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
+        await _mediator.Received(1).Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
+        await _handler.DidNotReceive().Handle(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
+        _notifications.DidNotReceive().Show(Arg.Any<string>(), Arg.Any<ShopNotificationKind>());
         var error = string.IsNullOrWhiteSpace(email) ? Strings.Email_Required : Strings.Email_Invalid;
         cut.Find("#signin-email-error").TextContent.Should().Contain(error);
         cut.Find("input[type='email']").GetAttribute("aria-invalid").Should().Be("true");
@@ -211,12 +237,15 @@ public class SignInTests : TestContext
     [Trait("Feature", "authentication")]
     public async Task Input_AfterValidationFailure_ClearsTheErrorAndAllowsSubmissionImmediately()
     {
-        _mediator.Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Ok(new OtpRequestedDto("user@example.com", 60)));
+        UseCommandValidation();
         var cut = Render<SignIn>();
         cut.Find("input[type='email']").Input("invalid");
         await cut.Find("form").SubmitAsync(EventArgs.Empty);
         cut.Find("#signin-email-error").TextContent.Should().Contain(Strings.Email_Invalid);
+
+        cut.Find("input[type='email']").Input("still-invalid");
+        cut.Find("#signin-email-error").TextContent.Should().BeNullOrWhiteSpace();
+        await _mediator.Received(1).Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
 
         cut.Find("input[type='email']").Input("user@example.com");
 
@@ -225,7 +254,45 @@ public class SignInTests : TestContext
         cut.Find("input[type='email']").GetAttribute("aria-invalid").Should().NotBe("true");
         cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeFalse();
         await cut.Find("form").SubmitAsync(EventArgs.Empty);
-        await _mediator.Received(1).Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
+        await _mediator.Received(2).Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
+        await _handler.Received(1).Handle(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Submit_RepeatedValidationFailures_ReplacesMessagesAndDisplaysEveryFieldError()
+    {
+        _mediator.Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Fail<OtpRequestedDto>(AuthErrorKeys.EmailRequired, [],
+            [
+                new(nameof(RequestSignInOtpCommand.Email), AuthErrorKeys.EmailRequired),
+                new(nameof(RequestSignInOtpCommand.Email), AuthErrorKeys.EmailInvalid)
+            ]));
+        var cut = Render<SignIn>();
+
+        await cut.Find("form").SubmitAsync(EventArgs.Empty);
+        await cut.Find("form").SubmitAsync(EventArgs.Empty);
+
+        var messages = cut.FindAll("#signin-email-error .validation-message");
+        messages.Select(message => message.TextContent).Should().Equal(Strings.Email_Required, Strings.Email_Invalid);
+        _notifications.DidNotReceive().Show(Arg.Any<string>(), Arg.Any<ShopNotificationKind>());
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("UnmappedProperty")]
+    public async Task Submit_ValidationErrorWithoutAVisibleField_ShowsFormSummary(string propertyName)
+    {
+        _mediator.Send(Arg.Any<RequestSignInOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Fail<OtpRequestedDto>(AuthErrorKeys.EmailInvalid, [],
+                [new(propertyName, AuthErrorKeys.EmailInvalid)]));
+        var cut = Render<SignIn>();
+
+        await cut.Find("form").SubmitAsync(EventArgs.Empty);
+
+        cut.Find(".shop-command-validation").TextContent.Should().Contain(Strings.Email_Invalid);
+        cut.Find(".shop-command-validation").GetAttribute("aria-live").Should().Be("polite");
+        _notifications.DidNotReceive().Show(Arg.Any<string>(), Arg.Any<ShopNotificationKind>());
+        cut.Find("#signin-email-error").TextContent.Should().BeNullOrWhiteSpace();
     }
 
     // =========================================================================
@@ -246,7 +313,7 @@ public class SignInTests : TestContext
         // Valid InputBase controls may omit aria-invalid instead of rendering an explicit false.
         input.GetAttribute("aria-invalid").Should().NotBe("true");
         cut.Find("#signin-email-error").GetAttribute("aria-live").Should().Be("polite");
-        cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeTrue();
+        cut.Find("button[type='submit']").HasAttribute("disabled").Should().BeFalse();
     }
 
     [Fact]

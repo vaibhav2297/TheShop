@@ -55,19 +55,57 @@
     background: transparent;
     pointer-events: none;
 
-    &::-webkit-slider-runnable-track { background: transparent; }
-    &::-moz-range-track { background: transparent; }
-    &::-moz-range-progress { background: transparent; }
-    &::-webkit-slider-thumb { appearance: none; @include thumb; }
-    &::-moz-range-thumb { @include thumb; }
+    &::-webkit-slider-runnable-track {
+        background: transparent;
+    }
 
-    &:focus { outline: none; z-index: 1; }
-    &:focus-visible::-webkit-slider-thumb { outline: var(--shop-focus-width) solid var(--shop-color-focus-ring); outline-offset: 3px; }
-    &:focus-visible::-moz-range-thumb { outline: var(--shop-focus-width) solid var(--shop-color-focus-ring); outline-offset: 3px; }
-    &:active::-webkit-slider-thumb { cursor: grabbing; }
-    &:active::-moz-range-thumb { cursor: grabbing; }
-    &:disabled::-webkit-slider-thumb { cursor: not-allowed; }
-    &:disabled::-moz-range-thumb { cursor: not-allowed; }
+    &::-moz-range-track {
+        background: transparent;
+    }
+
+    &::-moz-range-progress {
+        background: transparent;
+    }
+
+    &::-webkit-slider-thumb {
+        appearance: none;
+        @include thumb;
+    }
+
+    &::-moz-range-thumb {
+        @include thumb;
+    }
+
+    &:focus {
+        outline: none;
+        z-index: 1;
+    }
+
+    &:focus-visible::-webkit-slider-thumb {
+        outline: var(--shop-focus-width) solid var(--shop-color-focus-ring);
+        outline-offset: 3px;
+    }
+
+    &:focus-visible::-moz-range-thumb {
+        outline: var(--shop-focus-width) solid var(--shop-color-focus-ring);
+        outline-offset: 3px;
+    }
+
+    &:active::-webkit-slider-thumb {
+        cursor: grabbing;
+    }
+
+    &:active::-moz-range-thumb {
+        cursor: grabbing;
+    }
+
+    &:disabled::-webkit-slider-thumb {
+        cursor: not-allowed;
+    }
+
+    &:disabled::-moz-range-thumb {
+        cursor: not-allowed;
+    }
 }
 
 .shop-range-bubble {
@@ -121,14 +159,33 @@
     gap: 1rem;
     margin-block-start: 1.5rem;
 
-    .shop-field-error { margin: 0; }
+    .shop-field-error {
+        margin: 0;
+    }
 }
 
-.shop-range-disabled { opacity: 0.6; }
+.shop-range-disabled {
+    opacity: 0.6;
+}
 
 @media (forced-colors: active) {
-    .shop-range-rail, .shop-range-fill { background: CanvasText; }
-    .shop-range-thumb::-webkit-slider-thumb { background: Canvas; border-color: ButtonText; forced-color-adjust: none; }
-    .shop-range-thumb::-moz-range-thumb { background: Canvas; border-color: ButtonText; forced-color-adjust: none; }
-    .shop-range-bubble span { border: 1px solid CanvasText; }
+    .shop-range-rail, .shop-range-fill {
+        background: CanvasText;
+    }
+
+    .shop-range-thumb::-webkit-slider-thumb {
+        background: Canvas;
+        border-color: ButtonText;
+        forced-color-adjust: none;
+    }
+
+    .shop-range-thumb::-moz-range-thumb {
+        background: Canvas;
+        border-color: ButtonText;
+        forced-color-adjust: none;
+    }
+
+    .shop-range-bubble span {
+        border: 1px solid CanvasText;
+    }
 }
