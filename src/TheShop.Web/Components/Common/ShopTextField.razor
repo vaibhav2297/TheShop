@@ -16,7 +16,10 @@
                @bind:get="CurrentValueAsString"
                @bind:set="SetValue"
                @bind:event="oninput" />
-        <label class="shop-field-label" for="@InputId">@Label</label>
+        @if (HasLabel)
+        {
+            <label class="shop-field-label" for="@InputId">@Label</label>
+        }
     </div>
     @if (!string.IsNullOrWhiteSpace(HelperText))
     {

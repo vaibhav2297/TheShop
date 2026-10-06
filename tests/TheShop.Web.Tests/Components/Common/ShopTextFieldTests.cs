@@ -167,9 +167,25 @@ public class ShopTextFieldTests : TestContext
     {
         var model = new FieldModel();
         Action render = () => Render<ShopTextField>(p => p
-            .Add(c => c.Label, label!)
-            .Add(c => c.ValueExpression, () => model.Value));
+            .Add(c => c.Label, label)
+            .Add(c => c.ValueExpression, () => model.Value)
+            .Add(c => c.AdditionalAttributes, new Dictionary<string, object> { ["aria-label"] = " " }));
         render.Should().Throw<ArgumentException>().Which.ParamName.Should().Be(nameof(ShopTextField.Label));
+    }
+
+    [Theory]
+    [InlineData("aria-label", "Digit 1 of 6")]
+    [InlineData("aria-labelledby", "external-name")]
+    public void Render_NoLabelWithAriaName_RendersLabellessInputKeepingAriaName(string name, string value)
+    {
+        var model = new FieldModel();
+        var cut = Render<ShopTextField>(p => p
+            .Add(c => c.ValueExpression, () => model.Value)
+            .Add(c => c.AdditionalAttributes, new Dictionary<string, object> { [name] = value }));
+
+        cut.FindAll("label").Should().BeEmpty();
+        cut.Find("input").GetAttribute(name).Should().Be(value);
+        cut.Find("input").GetAttribute("placeholder").Should().Be(" ");
     }
 
     private sealed class FieldModel

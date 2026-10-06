@@ -52,7 +52,7 @@
                                 <OtpInput @bind-Value="_otp"
                                           Length="@OtpLength"
                                           Disabled="@busy"
-                                          UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "otp-input" })" />
+                                          data-testid="otp-input" />
 
                                 <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                                     <MudButton Variant="Variant.Filled"

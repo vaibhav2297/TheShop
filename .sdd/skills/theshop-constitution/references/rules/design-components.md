@@ -84,7 +84,7 @@ All current operation results use a polite live region. Notifications never take
 
 Associate visible labels with input IDs. Placeholders supplement labels; they never replace them. Associate helper/error text using `aria-describedby`, and expose invalid state when applicable. Group related choices with `fieldset` and `legend`.
 
-`ShopTextField` follows outlined-only Figma set `170:136` (section `2950:17591`), with no `Variant` or `Placeholder` parameter. Its required real label floats on focus or when populated; no visible placeholder text appears. A forced blank-space placeholder supports CSS state detection only. Shared SCSS handles motion, autofill/nonempty values, reduced motion, full-outline validation, and forced colors without page-owned focus flags. It replaces the former `ShopTextInput` directly, preserving its InputBase immediate-binding contract. See `UI_MIGRATION_GUIDE.md` section 7.3 for measurements and API ownership.
+`ShopTextField` follows outlined-only Figma set `170:136` (section `2950:17591`), with no `Variant` or `Placeholder` parameter. Its real label floats on focus or when populated; no visible placeholder text appears. A forced blank-space placeholder supports CSS state detection only. Shared SCSS handles motion, autofill/nonempty values, reduced motion, full-outline validation, and forced colors without page-owned focus flags. It replaces the former `ShopTextInput` directly, preserving its InputBase immediate-binding contract. See `UI_MIGRATION_GUIDE.md` section 7.3 for measurements and API ownership.
 
 ```razor
 <ShopTextField id="email" type="email"
@@ -93,7 +93,7 @@ Associate visible labels with input IDs. Placeholders supplement labels; they ne
                autocomplete="email" />
 ```
 
-This example belongs in an `EditForm`. `ShopTextField` owns its ValidationMessage/error region, optional HelperText, and their ARIA associations. It generates a stable unique input ID when none is supplied; explicit IDs remain caller-owned and must be unique. AdditionalAttributes and lowercase class/style target the input, not its wrapper. Caller description IDs are merged with owned hint/error IDs. Label owns accessible naming; disabled, value binding, blank placeholder, and validation-invalid state take precedence over conflicting attributes. Pages supply validation rules and busy-derived Disabled; do not duplicate field labels/errors in page markup.
+This example belongs in an `EditForm`. `ShopTextField` owns its ValidationMessage/error region, optional HelperText, and their ARIA associations. It generates a stable unique input ID when none is supplied; explicit IDs remain caller-owned and must be unique. AdditionalAttributes and lowercase class/style target the input, not its wrapper. Caller description IDs are merged with owned hint/error IDs. Label owns accessible naming. Omit `Label` only when the design has no visible label, such as `OtpInput` digit boxes. The caller must then supply `aria-label` or `aria-labelledby`; a field with neither throws. Disabled, value binding, blank placeholder, and validation-invalid state take precedence over conflicting attributes. Pages supply validation rules and busy-derived Disabled; do not duplicate field labels/errors in page markup.
 
 Custom `InputBase<TValue>` controls preserve `Value`, `ValueChanged`, `ValueExpression`, parsing errors, field notification, and the surrounding `EditContext`. Do not replace validated input behavior with an unrelated component wrapper. Preserve existing required, culture, numeric, date, and selection semantics.
 
