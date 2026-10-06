@@ -1,4 +1,5 @@
 @* Components/Common/ShopRichTextEditor.razor *@
-@inherits MudComponentBase
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
 
-<div @ref="_host" class="@Classname" style="@Stylename"></div>
+<div @attributes="AdditionalAttributes" @ref="_host" class="@ClassName" style="@Style"></div>

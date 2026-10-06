@@ -1,6 +1,5 @@
 using Bunit;
 using FluentAssertions;
-using MudBlazor.Services;
 using TheShop.Web.Components.Common;
 using Xunit;
 
@@ -20,7 +19,6 @@ public class ShopRichTextEditorTests : TestContext
     {
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
     }
 
     // =========================================================================
@@ -45,6 +43,35 @@ public class ShopRichTextEditorTests : TestContext
             .Add(c => c.AriaLabelledBy, "description-label"));
 
         cut.Markup.Should().NotBeNullOrWhiteSpace();
+    }
+
+    [Fact]
+    public void Render_EmptyNativeHostForwardsRootStylingAndAttributes()
+    {
+        var cut = Render<ShopRichTextEditor>(parameters => parameters
+            .Add(c => c.Class, "custom-editor")
+            .Add(c => c.Style, "--shop-test: 1;")
+            .AddUnmatched("data-testid", "description-editor"));
+
+        var host = cut.Find("[data-testid='description-editor']");
+        host.ClassList.Should().Contain("shop-native").And.Contain("shop-rich-text-editor").And.Contain("custom-editor")
+            .And.NotContain("shop-rich-text-editor-disabled");
+        host.GetAttribute("style").Should().Be("--shop-test: 1;");
+        host.ChildElementCount.Should().Be(0, "Quill, not Blazor, owns the host's descendants");
+        cut.Markup.Should().NotContain("mud-");
+    }
+
+    [Fact]
+    public void Render_Disabled_TogglesOwnedModifierWithoutRemountingTheHost()
+    {
+        var cut = Render<ShopRichTextEditor>(parameters => parameters.Add(c => c.Disabled, true));
+        cut.Find("div").ClassList.Should().Contain("shop-rich-text-editor-disabled");
+
+        cut.Render(parameters => parameters.Add(c => c.Disabled, false));
+
+        cut.Find("div").ClassList.Should().NotContain("shop-rich-text-editor-disabled");
+        JSInterop.Invocations.Count(i => i.Identifier == "init").Should().Be(1);
+        JSInterop.Invocations.Should().Contain(i => i.Identifier == "setDisabled");
     }
 
     // =========================================================================
