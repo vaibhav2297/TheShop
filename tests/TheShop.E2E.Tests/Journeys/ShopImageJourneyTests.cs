@@ -57,7 +57,7 @@ public sealed class ShopImageJourneyTests(PlaywrightFixture playwright) : E2ETes
         foreach (var (w, h) in new[] { (300, 900), (900, 300) })
         {
             var detail = await composition.MountAsync("product-detail", ShopImageCompositionPage.FullWidthHost,
-                ShopImagePreset.ProductDetail, ShopImageArtwork.Url(w, h));
+                ShopImagePreset.SquareContain, ShopImageArtwork.Url(w, h));
             await detail.WaitForImageAsync();
             var m = await detail.MeasureAsync();
 
@@ -76,7 +76,7 @@ public sealed class ShopImageJourneyTests(PlaywrightFixture playwright) : E2ETes
         {
             var src = ShopImageArtwork.Url(w, h, "category");
             var tile = await composition.MountAsync("category-tile", ShopImageCompositionPage.FullWidthHost,
-                ShopImagePreset.CategoryTile, src, alt: "Disposables");
+                ShopImagePreset.SquareCover, src, alt: "Disposables");
             await tile.WaitForImageAsync();
             var m = await tile.MeasureAsync();
 
@@ -94,7 +94,7 @@ public sealed class ShopImageJourneyTests(PlaywrightFixture playwright) : E2ETes
         var composition = new ShopImageCompositionPage(Page);
         await composition.GotoAsync();
 
-        foreach (var (preset, ratio) in new[] { (ShopImagePreset.CategoryBanner, (16, 5)), (ShopImagePreset.Hero, (16, 9)) })
+        foreach (var (preset, ratio) in new[] { (ShopImagePreset.Banner, (16, 5)), (ShopImagePreset.Hero, (16, 9)) })
         {
             var frame = await composition.MountAsync("desktop-banner", ShopImageCompositionPage.FullWidthHost,
                 preset, ShopImageArtwork.Url(800, 800, "desktop"));
@@ -115,7 +115,7 @@ public sealed class ShopImageJourneyTests(PlaywrightFixture playwright) : E2ETes
         await Page.SetViewportSizeAsync(375, 812);
         await composition.GotoAsync();
 
-        foreach (var (preset, desktopRatio) in new[] { (ShopImagePreset.Hero, (16, 9)), (ShopImagePreset.CategoryBanner, (16, 5)) })
+        foreach (var (preset, desktopRatio) in new[] { (ShopImagePreset.Hero, (16, 9)), (ShopImagePreset.Banner, (16, 5)) })
         {
             var desktopSrc = ShopImageArtwork.Url(1600, 900, "desktop");
             var mobileSrc = ShopImageArtwork.Url(800, 1000, "mobile");
@@ -149,7 +149,7 @@ public sealed class ShopImageJourneyTests(PlaywrightFixture playwright) : E2ETes
         var composition = new ShopImageCompositionPage(Page);
         await composition.GotoAsync();
 
-        foreach (var preset in new[] { ShopImagePreset.Hero, ShopImagePreset.CategoryBanner })
+        foreach (var preset in new[] { ShopImagePreset.Hero, ShopImagePreset.Banner })
         {
             var desktopSrc = ShopImageArtwork.Url(1600, 900, "desktop");
             var frame = await composition.MountAsync("fallback", ShopImageCompositionPage.FullWidthHost, preset, desktopSrc);

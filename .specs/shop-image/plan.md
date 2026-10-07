@@ -6,7 +6,7 @@ Companion to `.specs/shop-image/spec.md`. Technical HOW for confirmed FR-1–FR-
 
 ## 1. Objective
 
-Provide ten reusable image treatments in Web. Apply treatments to existing placements; preserve source assets, access checks, and surrounding actions. Reserve frame geometry before image arrival and show named placeholders for missing or failed sources.
+Provide eight reusable image presets in Web, named by geometry and fit. Apply treatments to existing placements; preserve source assets, access checks, and surrounding actions. Reserve frame geometry before image arrival and show named placeholders for missing or failed sources.
 
 ## 2. Tech Stack
 
@@ -46,20 +46,18 @@ Keep existing `ProductSummaryDto.ImageUrl`, admin product `PrimaryImageUrl`, cat
 Planned files under `src/TheShop.Web/Components/Common/`:
 
 - `ShopImagePreset.cs`: enum values in table below.
-- `ShopImage.razor` and `.razor.cs`: `MudComponentBase`; parameters `Src` (`string?`), `MobileSrc` (`string?`), `Preset` (`ShopImagePreset`, default `ProductCard`), `Alt` (`string`, default empty), `PlaceholderLabel` (`string`, required at call sites).
+- `ShopImage.razor` and `.razor.cs`: `MudComponentBase`; parameters `Src` (`string?`), `MobileSrc` (`string?`), `Preset` (`ShopImagePreset`, default `SquareContain`), `Alt` (`string`, default empty), `PlaceholderLabel` (`string`, required at call sites).
 - Inherited `Class`, `Style`, `UserAttributes` forwarded to root `MudStack`. Root class uses `CssBuilder`; style uses `StyleBuilder`, consumer values last.
 - Source-failure state belongs to component, separately for desktop/mobile source. Reset when corresponding source changes; dispose event subscriptions on removal.
 - `BrandLogo` callers reserve width and height before load; contain whole logo inside allocation without cropping or stretching. Empty space allowed.
 
 | Preset | Frame | Fit | Responsive source |
 |---|---|---|---|
-| `ProductCard` | 1:1 | Contain | `Src` |
-| `ProductDetail` | 1:1 | Contain | `Src` |
-| `Thumbnail` | 1:1 | Contain | `Src` |
-| `CategoryTile` | 1:1 | Cover, center | `Src` |
-| `CategoryBanner` | 16:5 desktop; 4:5 mobile | Cover, center | `MobileSrc` when supplied on mobile |
+| `SquareContain` | 1:1 | Contain | `Src` |
+| `SquareCover` | 1:1 | Cover, center | `Src` |
+| `Banner` | 16:5 desktop; 4:5 mobile | Cover, center | `MobileSrc` when supplied on mobile |
 | `Hero` | 16:9 desktop; 4:5 mobile | Cover, center | `MobileSrc` when supplied on mobile |
-| `MobileBanner` | 4:5 | Cover, center | `Src` |
+| `PortraitCover` | 4:5 | Cover, center | `Src` |
 | `Editorial` | 4:3 | Cover, center | `Src` |
 | `BrandLogo` | Caller-reserved space; no imposed source ratio | Contain | `Src` |
 | `SocialSharing` | 40:21 | Contain | `Src` |
@@ -105,7 +103,7 @@ None added or modified.
 ### Flow 2: Change available screen space
 
 1. Root follows caller allocation; ratio sets height before image decode.
-2. CSS media query selects 4:5 for `Hero` and `CategoryBanner` below 600 CSS pixels; desktop ratios apply at 600 and above.
+2. CSS media query selects 4:5 for `Hero` and `Banner` below 600 CSS pixels; desktop ratios apply at 600 and above.
 3. Mobile branch uses supplied artwork, otherwise desktop URL. Source ratio mismatch crops centrally.
 4. `BrandLogo` remains contained within stable caller width/height; source proportions stay intact.
 
@@ -143,10 +141,10 @@ Skipped: no storage, repository, migration, upload processing, or RLS changes.
 **Depends on:** resolved plan and stable Application contract checkpoint.
 
 - [ ] **TASK-001** — Add `ShopImagePreset`, MudBlazor-based `ShopImage`, generated `_image.scss` preset geometry, responsive branches, and `shopImage.js` failure bridge. Document public contract. Add focused `Components/Common/ShopImageTests.cs` for presets, missing/failed sources, replacement, branch isolation, forwarding, and disposal.
-- [ ] **TASK-002** — Integrate `ProductCard` and `ManageProducts` using `ProductCard`/`Thumbnail`. Update `_producttile.scss` broad image selectors so they cannot override contain behavior; preserve padding, badges, cart/wishlist/selection callbacks. Extend `ProductCardTests` and `ManageProductsTests`.
-- [ ] **TASK-003** — Integrate `ManageCategories` and `EditCategory` as whole-image admin `Thumbnail`; `ManageBrands` and `EditBrand` as `BrandLogo`. Preserve current avatar/edit allocations and remove/delete controls. Extend matching admin page tests.
-- [ ] **TASK-004** — Integrate `ShopImageUpload` previews and `VariantImageDialog` as `Thumbnail`; brand upload callers select `BrandLogo` via new optional `PreviewPreset` parameter. Keep existing `PreviewSize` allocation, file labels, selection, upload validation, and pin/remove actions. Convert app bar/footer/auth logos to `BrandLogo` inside their existing reserved dimensions. Extend upload and affected caller tests.
-- [ ] **TASK-005** — Add browser geometry checks using deterministic tall/wide product, logo, photography, exact-ratio artwork, delayed-load, and failed-source fixtures. Exercise all ten presets in test-only composition; no production demo route. Check 375, 768, 1440 pixel widths, breakpoint boundaries, and orientation resize. Measure frame dimensions and adjacent content positions before/after arrival/failure. Verify keyboard actions and denied admin content with existing fixtures.
+- [ ] **TASK-002** — Integrate `ProductCard` and `ManageProducts` using `SquareContain`. Update `_producttile.scss` broad image selectors so they cannot override contain behavior; preserve padding, badges, cart/wishlist/selection callbacks. Extend `ProductCardTests` and `ManageProductsTests`.
+- [ ] **TASK-003** — Integrate `ManageCategories` and `EditCategory` as whole-image admin `SquareContain`; `ManageBrands` and `EditBrand` as `BrandLogo`. Preserve current avatar/edit allocations and remove/delete controls. Extend matching admin page tests.
+- [ ] **TASK-004** — Integrate `ShopImageUpload` previews and `VariantImageDialog` as `SquareContain`; brand upload callers select `BrandLogo` via new optional `PreviewPreset` parameter. Keep existing `PreviewSize` allocation, file labels, selection, upload validation, and pin/remove actions. Convert app bar/footer/auth logos to `BrandLogo` inside their existing reserved dimensions. Extend upload and affected caller tests.
+- [ ] **TASK-005** — Add browser geometry checks using deterministic tall/wide product, logo, photography, exact-ratio artwork, delayed-load, and failed-source fixtures. Exercise all eight presets in test-only composition; no production demo route. Check 375, 768, 1440 pixel widths, breakpoint boundaries, and orientation resize. Measure frame dimensions and adjacent content positions before/after arrival/failure. Verify keyboard actions and denied admin content with existing fixtures.
 
 **Completion gate:** Web builds; bUnit tests pass; actual browser geometry proves ratios, centered crops, whole-image fit, stable frames, and no overflow. MudBlazor-only; typed English resources; Class/Style forwarding; stable contracts; existing denied experience preserved. No Figma-dependent evidence requirement.
 

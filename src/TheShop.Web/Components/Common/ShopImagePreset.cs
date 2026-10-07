@@ -7,30 +7,20 @@ namespace TheShop.Web.Components.Common;
 public enum ShopImagePreset
 {
     /// <summary>
-    /// Catalogue product tile: 1:1 frame, whole image visible.
+    /// Product cards, galleries, and cart, order, or admin thumbnails: 1:1 frame, whole image visible.
     /// </summary>
-    ProductCard,
+    SquareContain,
 
     /// <summary>
-    /// Product detail gallery: 1:1 frame, whole image visible.
+    /// Category tiles and square photography: 1:1 frame, centered crop.
     /// </summary>
-    ProductDetail,
+    SquareCover,
 
     /// <summary>
-    /// Cart, order, and admin thumbnails: 1:1 frame, whole image visible.
-    /// </summary>
-    Thumbnail,
-
-    /// <summary>
-    /// Category tile photography: 1:1 frame, centered crop.
-    /// </summary>
-    CategoryTile,
-
-    /// <summary>
-    /// Category banner: 16:5 frame on desktop and 4:5 on mobile, centered crop. Uses
+    /// Category and promotional banners: 16:5 frame on desktop and 4:5 on mobile, centered crop. Uses
     /// <see cref="ShopImage.MobileSrc"/> on mobile when supplied.
     /// </summary>
-    CategoryBanner,
+    Banner,
 
     /// <summary>
     /// Hero: 16:9 frame on desktop and 4:5 on mobile, centered crop. Uses
@@ -39,9 +29,9 @@ public enum ShopImagePreset
     Hero,
 
     /// <summary>
-    /// Mobile-only banner composition: 4:5 frame, centered crop.
+    /// Portrait artwork and promotional cards: 4:5 frame, centered crop.
     /// </summary>
-    MobileBanner,
+    PortraitCover,
 
     /// <summary>
     /// Editorial or lifestyle card: 4:3 frame, centered crop.

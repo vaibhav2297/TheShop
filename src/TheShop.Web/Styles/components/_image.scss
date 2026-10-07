@@ -3,9 +3,8 @@
 
 // Presets reserve geometry independently of successful loading.
 $image-ratios: (
-    'product-card': (1, 1), 'product-detail': (1, 1), 'thumbnail': (1, 1),
-    'category-tile': (1, 1), 'category-banner': (16, 5), 'hero': (16, 9),
-    'mobile-banner': (4, 5), 'editorial': (4, 3), 'social-sharing': (40, 21)
+    'square-contain': (1, 1), 'square-cover': (1, 1), 'banner': (16, 5), 'hero': (16, 9),
+    'portrait-cover': (4, 5), 'editorial': (4, 3), 'social-sharing': (40, 21)
 );
 
 .shop-image {
@@ -73,7 +72,7 @@ $image-ratios: (
 }
 
 @media (max-width: 599.98px) {
-    .shop-image-category-banner,
+    .shop-image-banner,
     .shop-image-hero {
         aspect-ratio: 4 / 5;
 

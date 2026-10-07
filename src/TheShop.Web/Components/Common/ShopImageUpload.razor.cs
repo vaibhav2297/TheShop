@@ -108,9 +108,9 @@ public partial class ShopImageUpload : MudComponentBase, IAsyncDisposable
 
     /// <summary>
     /// Image treatment of each row's thumbnail within its <see cref="PreviewSize"/> square. Defaults to
-    /// <see cref="ShopImagePreset.Thumbnail"/>; brand logo uploads use <see cref="ShopImagePreset.BrandLogo"/>.
+    /// <see cref="ShopImagePreset.SquareContain"/>; brand logo uploads use <see cref="ShopImagePreset.BrandLogo"/>.
     /// </summary>
-    [Parameter] public ShopImagePreset PreviewPreset { get; set; } = ShopImagePreset.Thumbnail;
+    [Parameter] public ShopImagePreset PreviewPreset { get; set; } = ShopImagePreset.SquareContain;
 
     /// <summary>
     /// Height, in pixels, of the dashed dropzone. Defaults to 200.

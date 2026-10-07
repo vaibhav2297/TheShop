@@ -13,6 +13,8 @@
 | 6. Review     | — | — | — | — |
 | 7. Document   | — | — | — | — |
 
+**Amendment 2026-10-08:** presets consolidated 10 → 8, named by geometry/fit: `ProductCard`/`ProductDetail`/`Thumbnail` → `SquareContain`; `CategoryTile` → `SquareCover`; `CategoryBanner` → `Banner`; `MobileBanner` → `PortraitCover`. Spec FR-1, plan, code, tests updated. Build 0 errors · 61/61 `Feature=shop-image` unit (4 duplicate theory rows removed) · E2E 6/14 pass; 8 blocked by local Supabase not running (`127.0.0.1:54324` refused) — rerun pending.
+
 **Next step:** optional `$theshop-document shop-image`, otherwise `$theshop-ship shop-image`
 
 **Shipped:** 2026-09-30 → dev (via PR)

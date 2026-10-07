@@ -180,9 +180,9 @@ public class ProductCardTests : TestContext
         var cut = Render<ProductCard>(p => p.Add(c => c.Product, dto));
 
         var image = cut.FindComponent<ShopImage>().Instance;
-        image.Preset.Should().Be(ShopImagePreset.ProductCard);
+        image.Preset.Should().Be(ShopImagePreset.SquareContain);
         image.Src.Should().Be("https://example.com/tall.webp");
-        cut.Find(".shop-product-card-media .shop-image").ClassList.Should().Contain("shop-image-product-card");
+        cut.Find(".shop-product-card-media .shop-image").ClassList.Should().Contain("shop-image-square-contain");
         cut.Find(".shop-product-card-media img").ClassList.Should().Contain("shop-image-contain");
     }
 

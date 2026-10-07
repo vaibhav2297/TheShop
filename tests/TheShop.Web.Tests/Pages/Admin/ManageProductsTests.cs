@@ -394,7 +394,7 @@ public class ManageProductsTests : TestContext
         var cut = await RenderListAsync();
 
         var image = cut.FindComponent<ShopImage>().Instance;
-        image.Preset.Should().Be(ShopImagePreset.Thumbnail);
+        image.Preset.Should().Be(ShopImagePreset.SquareContain);
         image.Src.Should().Be(item.PrimaryImageUrl);
         cut.Find(".mud-avatar > [data-shop-image] img").GetAttribute("alt").Should().Be("Elf Bar BC5000");
     }

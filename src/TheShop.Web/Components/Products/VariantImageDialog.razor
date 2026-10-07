@@ -25,7 +25,7 @@
                             aria-label="@string.Format(Strings.VariantImage_ImageLabel, index + 1, VariantLabel)"
                             aria-pressed="@(selected ? "true" : "false")"
                             data-image-id="@image.Id" @onclick="@(() => SelectImage(image.Id))">
-                        <ShopImage Src="@image.Url" Preset="ShopImagePreset.Thumbnail"
+                        <ShopImage Src="@image.Url" Preset="ShopImagePreset.SquareContain"
                                    Alt="@VariantLabel" PlaceholderLabel="@VariantLabel" />
                         @if (selected)
                         {

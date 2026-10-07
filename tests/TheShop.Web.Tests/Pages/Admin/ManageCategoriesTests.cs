@@ -409,7 +409,7 @@ public class ManageCategoriesTests : TestContext
 
         var images = cut.FindComponents<ShopImage>();
         images.Should().NotBeEmpty();
-        images.Should().OnlyContain(i => i.Instance.Preset == ShopImagePreset.Thumbnail);
+        images.Should().OnlyContain(i => i.Instance.Preset == ShopImagePreset.SquareContain);
         cut.FindAll(".mud-avatar > [data-shop-image]").Should().HaveCount(images.Count);
     }
 

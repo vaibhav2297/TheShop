@@ -1213,7 +1213,7 @@ Implementation decisions, not additional measured Figma states: full viewport wi
 
 ### Images
 
-Keep `ShopImagePreset` names and effective treatment, including the existing `ProductDetail` preset even if its eventual page is absent. Preserve contain/cover, aspect ratios, source changes, mobile artwork selection, meaningful versus decorative alternatives, and stable fallback geometry.
+Keep the eight `ShopImagePreset` treatments (`SquareContain`, `SquareCover`, `Banner`, `Hero`, `PortraitCover`, `Editorial`, `BrandLogo`, `SocialSharing`), including presets whose eventual pages are absent. Presets are named by geometry and fit, not by use case; reuse one for any matching placement. Preserve contain/cover, aspect ratios, source changes, mobile artwork selection, meaningful versus decorative alternatives, and stable fallback geometry.
 
 Native image error events may simplify the current observer workaround. Verify late failures from an obsolete source cannot replace a newer valid image. Avoid downloading duplicate desktop/mobile artwork unnecessarily where a compatible `<picture>` design can preserve behavior. Lazy-load offscreen images; do not automatically lazy-load the primary above-the-fold image. Reserve geometry and verify broken-image behavior in the browser.
 

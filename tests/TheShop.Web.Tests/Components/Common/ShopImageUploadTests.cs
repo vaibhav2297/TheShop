@@ -67,7 +67,7 @@ public class ShopImageUploadTests : TestContext
             .Add(c => c.PreviewSize, 48));
 
         var preview = cut.FindComponent<ShopImage>();
-        preview.Instance.Preset.Should().Be(ShopImagePreset.Thumbnail);
+        preview.Instance.Preset.Should().Be(ShopImagePreset.SquareContain);
         preview.Find("[data-shop-image]").GetAttribute("style").Should().Contain("width:48px").And.Contain("height:48px");
     }
 

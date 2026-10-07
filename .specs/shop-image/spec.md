@@ -2,7 +2,7 @@
 
 ## 1. Problem Statement
 
-Shoppers and staff need consistent image proportions across screen sizes, covering all ten requested image uses.
+Shoppers and staff need consistent image proportions across screen sizes, covering requested image uses with eight presets.
 
 **Solution (one line):** Provide reusable image treatments with flexible display width, proportional height, and predictable cropping.
 
@@ -10,7 +10,7 @@ Shoppers and staff need consistent image proportions across screen sizes, coveri
 
 **In scope:**
 
-- All ten presets in FR-1; apply corresponding treatments to existing image placements.
+- All eight presets in FR-1; apply corresponding treatments to existing image placements.
 - Responsive display, whole-image preservation, photography crops, and mobile banner composition.
 - Accessible image descriptions and English presentation.
 
@@ -26,20 +26,18 @@ Guests and signed-in customers receive identical treatments on pages they may vi
 
 ## 2. Functional Requirements
 
-1. **FR-1:** Support every treatment below. Ratios describe width:height of displayed frames, except logos, which retain original proportions. Presets remain available for destination screens delivered separately.
+1. **FR-1:** Support every preset below. Presets are named by geometry and fit, not use case; use cases sharing ratio and treatment share one preset. Ratios describe width:height of displayed frames, except logos, which retain original proportions. Presets remain available for destination screens delivered separately.
 
-   | Use case | Ratio | Visible treatment |
-   |---|---|---|
-   | Product card | 1:1 | Whole product image visible; empty space allowed |
-   | Product detail gallery | 1:1 | Whole product image visible; empty space allowed |
-   | Cart, order, admin thumbnail | 1:1 | Whole image visible within allocated thumbnail space |
-   | Category tile | 1:1 | Photography fills frame; edges may crop |
-   | Category banner, desktop | 16:5 | Photography fills frame; edges may crop |
-   | Hero, desktop | 16:9 | Photography fills frame; edges may crop |
-   | Hero/banner, mobile | 4:5 | Mobile composition fills frame; dedicated crop supported |
-   | Editorial/lifestyle card | 4:3 | Photography fills frame; edges may crop |
-   | Brand logo | Original ratio | Entire logo visible within allocated space |
-   | Social sharing image | 40:21 | Prepared composition retains its proportions |
+   | Preset | Ratio | Visible treatment | Use cases |
+   |---|---|---|---|
+   | `SquareContain` | 1:1 | Whole image visible; empty space allowed | Product cards, galleries, cart/order/admin thumbnails |
+   | `SquareCover` | 1:1 | Fills frame; centered crop | Category tiles, square photography |
+   | `Banner` | Desktop 16:5; mobile 4:5 | Fills frame; centered crop | Category and promotional banners |
+   | `Hero` | Desktop 16:9; mobile 4:5 | Fills frame; centered crop | Hero sections |
+   | `PortraitCover` | 4:5 | Fills frame; centered crop | Portrait artwork, promotional cards |
+   | `Editorial` | 4:3 | Fills frame; centered crop | Editorial/lifestyle cards |
+   | `BrandLogo` | Original proportions | Whole logo fits allocated space | Brand logos |
+   | `SocialSharing` | 40:21 | Whole composition visible; empty space allowed | Prepared social sharing images |
 
 2. **FR-2:** Display width follows available page space; height follows selected ratio. Images remain inside their allocated space on phone, tablet, and desktop screens. Thumbnail space may be constrained by its row; no preset imposes one universal display width.
 3. **FR-3:** Never stretch images. Whole-image treatments preserve all source content; photographic treatments may crop edges without altering source images. Center photographic crops, trimming excess edges evenly. Dedicated compositions retain their supplied framing when source and frame ratios match; otherwise center the remaining crop.

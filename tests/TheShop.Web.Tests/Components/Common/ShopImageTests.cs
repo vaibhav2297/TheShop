@@ -7,7 +7,7 @@ namespace TheShop.Web.Tests.Components.Common;
 
 /// <summary>
 /// Tests for <see cref="ShopImage"/>: preset frame classes and fit (FR-1, FR-3), the Hero and
-/// CategoryBanner desktop/mobile branches (FR-4), named placeholders for missing or failed sources
+/// Banner desktop/mobile branches (FR-4), named placeholders for missing or failed sources
 /// inside an unchanged frame (FR-5), description semantics (FR-6), no added keyboard stops (FR-7),
 /// Class/Style/attribute forwarding, and the JS failure bridge lifecycle. Actual rendered geometry
 /// (ratios, crops, overflow across widths) is a browser concern.
@@ -29,7 +29,7 @@ public class ShopImageTests : TestContext
     }
 
     private IRenderedComponent<ShopImage> RenderImage(
-        ShopImagePreset preset = ShopImagePreset.ProductCard,
+        ShopImagePreset preset = ShopImagePreset.SquareContain,
         string? src = DesktopUrl,
         string? mobileSrc = null,
         string alt = "Image of Elf Bar BC5000") =>
@@ -45,13 +45,11 @@ public class ShopImageTests : TestContext
     // =========================================================================
 
     [Theory]
-    [InlineData(ShopImagePreset.ProductCard, "shop-image-product-card")]
-    [InlineData(ShopImagePreset.ProductDetail, "shop-image-product-detail")]
-    [InlineData(ShopImagePreset.Thumbnail, "shop-image-thumbnail")]
-    [InlineData(ShopImagePreset.CategoryTile, "shop-image-category-tile")]
-    [InlineData(ShopImagePreset.CategoryBanner, "shop-image-category-banner")]
+    [InlineData(ShopImagePreset.SquareContain, "shop-image-square-contain")]
+    [InlineData(ShopImagePreset.SquareCover, "shop-image-square-cover")]
+    [InlineData(ShopImagePreset.Banner, "shop-image-banner")]
     [InlineData(ShopImagePreset.Hero, "shop-image-hero")]
-    [InlineData(ShopImagePreset.MobileBanner, "shop-image-mobile-banner")]
+    [InlineData(ShopImagePreset.PortraitCover, "shop-image-portrait-cover")]
     [InlineData(ShopImagePreset.Editorial, "shop-image-editorial")]
     [InlineData(ShopImagePreset.BrandLogo, "shop-image-brand-logo")]
     [InlineData(ShopImagePreset.SocialSharing, "shop-image-social-sharing")]
@@ -65,9 +63,7 @@ public class ShopImageTests : TestContext
     }
 
     [Theory]
-    [InlineData(ShopImagePreset.ProductCard)]
-    [InlineData(ShopImagePreset.ProductDetail)]
-    [InlineData(ShopImagePreset.Thumbnail)]
+    [InlineData(ShopImagePreset.SquareContain)]
     [InlineData(ShopImagePreset.BrandLogo)]
     [InlineData(ShopImagePreset.SocialSharing)]
     [Trait("Feature", "shop-image")]
@@ -81,10 +77,10 @@ public class ShopImageTests : TestContext
     }
 
     [Theory]
-    [InlineData(ShopImagePreset.CategoryTile)]
-    [InlineData(ShopImagePreset.CategoryBanner)]
+    [InlineData(ShopImagePreset.SquareCover)]
+    [InlineData(ShopImagePreset.Banner)]
     [InlineData(ShopImagePreset.Hero)]
-    [InlineData(ShopImagePreset.MobileBanner)]
+    [InlineData(ShopImagePreset.PortraitCover)]
     [InlineData(ShopImagePreset.Editorial)]
     [Trait("Feature", "shop-image")]
     public void Render_WithAPhotographyPreset_FillsTheFrameWithACenteredCrop(ShopImagePreset preset)
@@ -104,7 +100,7 @@ public class ShopImageTests : TestContext
     [Trait("Feature", "shop-image")]
     public void Render_Always_LeavesTheSourceUrlUnchanged()
     {
-        var cut = RenderImage(ShopImagePreset.CategoryTile, src: DesktopUrl);
+        var cut = RenderImage(ShopImagePreset.SquareCover, src: DesktopUrl);
 
         cut.Find("img").GetAttribute("src").Should().Be(DesktopUrl);
     }
@@ -115,7 +111,7 @@ public class ShopImageTests : TestContext
 
     [Theory]
     [InlineData(ShopImagePreset.Hero)]
-    [InlineData(ShopImagePreset.CategoryBanner)]
+    [InlineData(ShopImagePreset.Banner)]
     [Trait("Feature", "shop-image")]
     public void Render_WithDedicatedMobileArtwork_ShowsItInTheMobileBranchAndKeepsDesktopArtworkForDesktop(ShopImagePreset preset)
     {
@@ -129,7 +125,7 @@ public class ShopImageTests : TestContext
     [Theory]
     [InlineData(ShopImagePreset.Hero, null)]
     [InlineData(ShopImagePreset.Hero, "   ")]
-    [InlineData(ShopImagePreset.CategoryBanner, null)]
+    [InlineData(ShopImagePreset.Banner, null)]
     [Trait("Feature", "shop-image")]
     public void Render_WithoutMobileArtwork_ReusesTheDesktopArtworkInTheMobileBranch(ShopImagePreset preset, string? mobileSrc)
     {
@@ -139,8 +135,8 @@ public class ShopImageTests : TestContext
     }
 
     [Theory]
-    [InlineData(ShopImagePreset.ProductCard)]
-    [InlineData(ShopImagePreset.MobileBanner)]
+    [InlineData(ShopImagePreset.SquareContain)]
+    [InlineData(ShopImagePreset.PortraitCover)]
     [InlineData(ShopImagePreset.Editorial)]
     [Trait("Feature", "shop-image")]
     public void Render_WithANonResponsivePreset_IgnoresMobileArtworkAndRendersOneImage(ShopImagePreset preset)
@@ -173,7 +169,7 @@ public class ShopImageTests : TestContext
     {
         var cut = Render<ShopImage>(p => p
             .Add(c => c.Src, DesktopUrl)
-            .Add(c => c.Preset, ShopImagePreset.ProductCard)
+            .Add(c => c.Preset, ShopImagePreset.SquareContain)
             .Add(c => c.PlaceholderLabel, Label)
             .Add(c => c.Style, "width: 240px;"));
         var frameBefore = cut.Find("[data-shop-image]");
@@ -232,7 +228,7 @@ public class ShopImageTests : TestContext
     [Trait("Feature", "shop-image")]
     public async Task ImageFails_InTheDesktopBranch_LeavesDedicatedMobileArtworkShowing()
     {
-        var cut = RenderImage(ShopImagePreset.CategoryBanner, src: DesktopUrl, mobileSrc: MobileUrl);
+        var cut = RenderImage(ShopImagePreset.Banner, src: DesktopUrl, mobileSrc: MobileUrl);
 
         await cut.InvokeAsync(() => cut.Instance.OnImageFailed("desktop", DesktopUrl));
 
@@ -244,7 +240,7 @@ public class ShopImageTests : TestContext
     [Trait("Feature", "shop-image")]
     public async Task ImageFails_ForAMobileReportOnANonResponsivePreset_IsIgnored()
     {
-        var cut = RenderImage(ShopImagePreset.ProductCard, src: DesktopUrl);
+        var cut = RenderImage(ShopImagePreset.SquareContain, src: DesktopUrl);
 
         await cut.InvokeAsync(() => cut.Instance.OnImageFailed("mobile", DesktopUrl));
 

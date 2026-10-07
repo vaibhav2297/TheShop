@@ -9,7 +9,7 @@ namespace TheShop.Web.Components.Common;
 /// arrives. The frame width follows the caller's allocation and its height follows the preset ratio;
 /// <see cref="ShopImagePreset.BrandLogo"/> instead fills the width and height the caller reserves.
 /// A missing, blank, or failed source is replaced by <see cref="PlaceholderLabel"/> inside the same
-/// frame. <see cref="ShopImagePreset.Hero"/> and <see cref="ShopImagePreset.CategoryBanner"/> switch to a
+/// frame. <see cref="ShopImagePreset.Hero"/> and <see cref="ShopImagePreset.Banner"/> switch to a
 /// 4:5 frame below 600 CSS pixels, showing <see cref="MobileSrc"/> when supplied and otherwise the
 /// desktop source cropped from the center. The component adds no keyboard stops; surrounding actions
 /// stay with the caller. Inherits from <see cref="ShopComponentBase"/> so <c>Class</c>, <c>Style</c>,
@@ -29,15 +29,15 @@ public partial class ShopImage : ShopComponentBase, IAsyncDisposable
 
     /// <summary>
     /// Dedicated mobile artwork for <see cref="ShopImagePreset.Hero"/> and
-    /// <see cref="ShopImagePreset.CategoryBanner"/>. Ignored by other presets. When absent, mobile
+    /// <see cref="ShopImagePreset.Banner"/>. Ignored by other presets. When absent, mobile
     /// presentation reuses <see cref="Src"/> with a centered 4:5 crop.
     /// </summary>
     [Parameter] public string? MobileSrc { get; set; }
 
     /// <summary>
-    /// The treatment that decides frame ratio and fit. Defaults to <see cref="ShopImagePreset.ProductCard"/>.
+    /// The treatment that decides frame ratio and fit. Defaults to <see cref="ShopImagePreset.SquareContain"/>.
     /// </summary>
-    [Parameter] public ShopImagePreset Preset { get; set; } = ShopImagePreset.ProductCard;
+    [Parameter] public ShopImagePreset Preset { get; set; } = ShopImagePreset.SquareContain;
 
     /// <summary>
     /// Localized description of a meaningful image. Leave empty for a decorative image; assistive
@@ -67,7 +67,7 @@ public partial class ShopImage : ShopComponentBase, IAsyncDisposable
     private string? _failedDesktopSrc;
     private string? _failedMobileSrc;
 
-    private bool HasMobileBranch => Preset is ShopImagePreset.Hero or ShopImagePreset.CategoryBanner;
+    private bool HasMobileBranch => Preset is ShopImagePreset.Hero or ShopImagePreset.Banner;
 
     private string? DesktopSrc => string.IsNullOrWhiteSpace(Src) ? null : Src;
 
@@ -75,9 +75,7 @@ public partial class ShopImage : ShopComponentBase, IAsyncDisposable
 
     private string FitClass => Preset switch
     {
-        ShopImagePreset.ProductCard or
-        ShopImagePreset.ProductDetail or
-        ShopImagePreset.Thumbnail or
+        ShopImagePreset.SquareContain or
         ShopImagePreset.BrandLogo or
         ShopImagePreset.SocialSharing => "shop-image-contain",
         _ => "shop-image-cover",
@@ -97,13 +95,11 @@ public partial class ShopImage : ShopComponentBase, IAsyncDisposable
 
     private string PresetClass => Preset switch
     {
-        ShopImagePreset.ProductCard => "shop-image-product-card",
-        ShopImagePreset.ProductDetail => "shop-image-product-detail",
-        ShopImagePreset.Thumbnail => "shop-image-thumbnail",
-        ShopImagePreset.CategoryTile => "shop-image-category-tile",
-        ShopImagePreset.CategoryBanner => "shop-image-category-banner",
+        ShopImagePreset.SquareContain => "shop-image-square-contain",
+        ShopImagePreset.SquareCover => "shop-image-square-cover",
+        ShopImagePreset.Banner => "shop-image-banner",
         ShopImagePreset.Hero => "shop-image-hero",
-        ShopImagePreset.MobileBanner => "shop-image-mobile-banner",
+        ShopImagePreset.PortraitCover => "shop-image-portrait-cover",
         ShopImagePreset.Editorial => "shop-image-editorial",
         ShopImagePreset.BrandLogo => "shop-image-brand-logo",
         ShopImagePreset.SocialSharing => "shop-image-social-sharing",
