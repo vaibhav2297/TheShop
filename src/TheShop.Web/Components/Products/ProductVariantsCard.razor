@@ -177,10 +177,10 @@
                                 <MudTd>@variant.Label</MudTd>
                                 <MudTd>@variant.Sku</MudTd>
                                 <MudTd>
-                                    <ShopMoneyField Value="@variant.OriginalPrice"
+                                    <ShopMoneyField @key="variant.Id" @ref="variant.PriceField" Value="@variant.OriginalPrice"
+                                                    ValueExpression="@(() => variant.OriginalPrice)" DraftState="@variant.PriceDraft"
                                                     ValueChanged="@((decimal? v) => OnVariantOriginalPriceChangedAsync(variant, v))"
-                                                    Typo="Typo.body2"
-                                                    Margin="Margin.Dense"
+                                                    aria-label="@($"{variant.Label} {Strings.ProductVariants_ColumnPrice}")"
                                                     Required="@RequirePrices"
                                                     RequiredError="@Strings.Product_PriceRequired"
                                                     Error="@IsFlagged(variant)"
@@ -188,10 +188,10 @@
                                                     Disabled="@Disabled" />
                                 </MudTd>
                                 <MudTd>
-                                    <ShopMoneyField Value="@variant.SalePrice"
+                                    <ShopMoneyField @key="variant.Id" @ref="variant.SalePriceField" Value="@variant.SalePrice"
+                                                    ValueExpression="@(() => variant.SalePrice)" DraftState="@variant.SalePriceDraft"
                                                     ValueChanged="@((decimal? v) => OnVariantSalePriceChangedAsync(variant, v))"
-                                                    Typo="Typo.body2"
-                                                    Margin="Margin.Dense"
+                                                    aria-label="@($"{variant.Label} {Strings.ProductVariants_ColumnSalePrice}")"
                                                     Disabled="@Disabled" />
                                 </MudTd>
                                 <MudTd Class="shop-table-column-compact">

@@ -59,7 +59,6 @@ export function sync(id) {
     };
     const up = () => { drag = null; };
     const key = event => {
-        if (event.key === "Enter" && event.target.matches(".shop-field-input")) event.preventDefault();
         const input = event.target;
         if (!inputs.includes(input) || root.disabled || root.closest("[inert]")) return;
         const min = Number(input.getAttribute("aria-valuemin"));

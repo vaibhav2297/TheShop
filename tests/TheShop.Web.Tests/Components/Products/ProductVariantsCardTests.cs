@@ -8,6 +8,7 @@ using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Components.Products;
+using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using Xunit;
 
@@ -99,6 +100,19 @@ public class ProductVariantsCardTests : TestContext
         await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
         changes.Should().ContainSingle();
         changes[0].Variants[0].PinnedImageId.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ValidatePrices_InvalidAndPendingEdits_BlockStaleValuesAndAwaitChanges()
+    {
+        var (cut, changes, _) = RenderPinCard();
+        var fields = cut.FindComponents<ShopMoneyField>();
+        fields[0].Find("input").Input("bad");
+        await cut.InvokeAsync(async () => (await cut.Instance.ValidatePricesAsync()).Should().BeFalse());
+        changes.Should().BeEmpty();
+        fields[0].Find("input").Input("24.5678");
+        await cut.InvokeAsync(async () => (await cut.Instance.ValidatePricesAsync()).Should().BeTrue());
+        changes.Last().Variants[0].OriginalPrice.Should().Be(24.5678m);
     }
 
     private (IRenderedComponent<ProductVariantsCard> Cut, List<ProductVariantsState> Changes, Guid ImageId) RenderPinCard(bool initiallyPinned = false)

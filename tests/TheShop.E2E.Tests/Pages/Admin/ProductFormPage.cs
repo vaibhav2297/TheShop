@@ -32,13 +32,8 @@ public sealed class ProductFormPage(IPage page)
     public Task SaveAsync() => SaveButton.ClickAsync();
 
     /// <summary>
-    /// <c>ShopMoneyField</c> (and the option-type name/value fields below) bind Value/ValueChanged
-    /// without <c>Immediate="true"</c>, so MudBlazor only raises <c>ValueChanged</c> on blur.
-    /// <c>FillAsync</c> alone sets the DOM input's value and dispatches an input event, which is
-    /// enough to make the raw element read back the typed text but not enough to reach the
-    /// component's C# state — an assertion against the input's own value would pass while the
-    /// bound field, and everything downstream of it (form validity, computed totals), stays
-    /// unchanged. An explicit blur after every fill is what commits the value for real.
+    /// Commits draft text before downstream assertions. Native money fields commit on blur or
+    /// Enter; the remaining legacy option fields also require blur to publish their values.
     /// </summary>
     private static async Task FillAndBlurAsync(ILocator field, string value)
     {

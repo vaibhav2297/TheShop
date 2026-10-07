@@ -108,6 +108,21 @@ public class ShopRangeSliderTests : TestContext
         cut.Find(".shop-field-input").GetAttribute("value").Should().Be("25.7412");
     }
 
+    [Theory]
+    [InlineData("25.746", "25.75")]
+    [InlineData("20.004", "20")]
+    public void Editor_Commit_SnapsInSliderAndShowsCanonicalValue(string draft, string expected)
+    {
+        var cut = Slider(p => p.Add(x => x.Step, 0.01m));
+        var input = cut.Find(".shop-field-input");
+        input.Focus();
+        input.Input(draft);
+        input.KeyDown(new KeyboardEventArgs { Key = "Enter" });
+        input.GetAttribute("value").Should().Be(expected);
+        decimal.Parse(cut.Find(".shop-range-lower").GetAttribute("value")!, System.Globalization.CultureInfo.InvariantCulture)
+            .Should().Be(decimal.Parse(expected, System.Globalization.CultureInfo.InvariantCulture));
+    }
+
     [Fact]
     public void Editor_FormatsWhenIdleEditsPlainNumbersAndCommitsOnBlur()
     {

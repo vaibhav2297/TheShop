@@ -80,6 +80,10 @@ public partial class ProductVariantsCard : MudComponentBase
         public string Sku { get; set; } = string.Empty;
         public decimal? OriginalPrice { get; set; }
         public decimal? SalePrice { get; set; }
+        public ShopMoneyField? PriceField { get; set; }
+        public ShopMoneyField? SalePriceField { get; set; }
+        public TheShop.Web.Common.UI.ShopNumericDraft PriceDraft { get; } = new();
+        public TheShop.Web.Common.UI.ShopNumericDraft SalePriceDraft { get; } = new();
         public bool IsAvailable { get; set; } = true;
         public Guid? PinnedImageId { get; set; }
         public string Label { get; set; } = string.Empty;
@@ -243,6 +247,19 @@ public partial class ProductVariantsCard : MudComponentBase
         await NotifyAsync();
     }
 
+    /// <summary>Commits pending price edits before submission, including drafts retained by virtualized rows.</summary>
+    public async Task<bool> ValidatePricesAsync()
+    {
+        var valid = true;
+        foreach (var variant in _variants.ToArray())
+        {
+            if (variant.PriceField is not null) valid &= await variant.PriceField.ValidateAsync();
+            if (variant.SalePriceField is not null) valid &= await variant.SalePriceField.ValidateAsync();
+            if (RequirePrices && variant.OriginalPrice is null) valid = false;
+        }
+        return valid;
+    }
+
     private Task OnVariantOriginalPriceChangedAsync(VariantRow variant, decimal? value)
     {
         variant.OriginalPrice = value;
@@ -267,7 +284,10 @@ public partial class ProductVariantsCard : MudComponentBase
             return Task.CompletedTask;
 
         foreach (var variant in _variants.Skip(1))
+        {
             variant.OriginalPrice = price;
+            variant.PriceDraft.Reset(price);
+        }
 
         return NotifyAsync();
     }
@@ -283,7 +303,10 @@ public partial class ProductVariantsCard : MudComponentBase
             return Task.CompletedTask;
 
         foreach (var variant in _variants.Skip(1))
+        {
             variant.SalePrice = price;
+            variant.SalePriceDraft.Reset(price);
+        }
 
         return NotifyAsync();
     }

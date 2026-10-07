@@ -144,7 +144,7 @@
 
                                             <MudItem xs="12" sm="6">
 
-                                                <ShopMoneyField Value="@_originalPrice"
+                                                <ShopMoneyField @ref="_originalPriceField" Value="@_originalPrice" ValueExpression="@(() => _originalPrice)"
                                                                 ValueChanged="@((decimal? v) => OnOriginalPriceChanged(v))"
                                                                 Label="@Strings.AddProduct_PriceLabel"
                                                                 Required="true"
@@ -154,7 +154,7 @@
                                             </MudItem>
 
                                             <MudItem xs="12" sm="6">
-                                                <ShopMoneyField Value="@_salePrice"
+                                                <ShopMoneyField @ref="_salePriceField" Value="@_salePrice" ValueExpression="@(() => _salePrice)"
                                                                 ValueChanged="@((decimal? v) => OnSalePriceChanged(v))"
                                                                 Label="@Strings.AddProduct_SalePriceLabel"
                                                                 Disabled="@busy" />
@@ -198,7 +198,7 @@
                                 Disabled="@busy" />
 
             @* Variants *@
-            <ProductVariantsCard ProductSku="@_sku"
+            <ProductVariantsCard @ref="_variantsCard" ProductSku="@_sku"
                                  GalleryImages="@_galleryPreview"
                                  InitialOptionTypes="@(InitialData?.OptionTypes ?? [])"
                                  InitialVariants="@(InitialData?.Variants ?? [])"

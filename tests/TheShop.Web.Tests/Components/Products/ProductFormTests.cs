@@ -554,6 +554,45 @@ public class ProductFormTests : TestContext
     // Helpers
     // =========================================================================
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("bad")]
+    [InlineData("-1")]
+    public async Task Save_InvalidNativePrice_DoesNotDispatchOldAmount(string draft)
+    {
+        var cut = RenderCreateForm();
+        await FillRequiredDetailsAsync(cut);
+        await SetPriceAsync(cut, 24.99m);
+        var input = cut.FindComponents<ShopMoneyField>()[0].Find("input");
+        await input.InputAsync(new ChangeEventArgs { Value = draft });
+        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await _mediator.DidNotReceive().Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>());
+        input.GetAttribute("value").Should().Be(draft);
+        input.GetAttribute("aria-invalid").Should().Be("true");
+    }
+
+    [Fact]
+    public async Task Save_PendingNativePriceAndClearedSalePrice_CommitsBeforeDispatch()
+    {
+        CreateProductCommand? saved = null;
+        _mediator.Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>()).Returns(call =>
+        {
+            saved = call.Arg<CreateProductCommand>();
+            return Result.Ok(ExampleSavedProduct());
+        });
+        var cut = RenderCreateForm();
+        await FillRequiredDetailsAsync(cut);
+        var fields = cut.FindComponents<ShopMoneyField>();
+        await fields[1].Find("input").InputAsync(new ChangeEventArgs { Value = "19.99" });
+        await fields[1].Find("input").BlurAsync(new());
+        await fields[1].Find("input").InputAsync(new ChangeEventArgs { Value = "" });
+        await fields[0].Find("input").InputAsync(new ChangeEventArgs { Value = "35.125" });
+        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        saved.Should().NotBeNull();
+        saved!.OriginalPrice.Should().Be(35.125m);
+        saved.SalePrice.Should().BeNull();
+    }
+
     private async Task FillRequiredDetailsAsync(IRenderedComponent<ProductForm> cut)
     {
         // Drive the field through its DOM event so MudForm sees the browser state transition.
@@ -572,9 +611,12 @@ public class ProductFormTests : TestContext
         cut.Render();
     }
 
-    private static Task SetPriceAsync(IRenderedComponent<ProductForm> cut, decimal price) =>
-        cut.FindComponents<ShopMoneyField>()[0].Find("input")
-            .ChangeAsync(new ChangeEventArgs { Value = price.ToString(System.Globalization.CultureInfo.InvariantCulture) });
+    private static async Task SetPriceAsync(IRenderedComponent<ProductForm> cut, decimal price)
+    {
+        var input = cut.FindComponents<ShopMoneyField>()[0].Find("input");
+        await input.InputAsync(new ChangeEventArgs { Value = price.ToString(System.Globalization.CultureInfo.InvariantCulture) });
+        await input.BlurAsync(new());
+    }
 
     private static Task SetStatusAsync(IRenderedComponent<ProductForm> cut, bool published) =>
         cut.InvokeAsync(() => cut.FindComponent<MudChipSet<bool>>().Instance.SelectedValueChanged.InvokeAsync(published));

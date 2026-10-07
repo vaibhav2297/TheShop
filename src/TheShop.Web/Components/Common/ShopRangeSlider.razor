@@ -22,22 +22,14 @@
         }
     </div>
     <div class="shop-range-bounds" aria-hidden="true"><span>@Format(Min)</span><span>@Format(Max)</span></div>
-    <div class="shop-range-inputs">
-        <div>
-            <ShopTextField Label="@MinimumLabel" Value="@LowerText" ValueChanged="@(text => SetDraft(text, true))"
-                           ValueExpression="@(() => _lowerDraft)" Disabled="@IsDisabled" inputmode="decimal"
-                           autocomplete="off" aria-invalid="@(_lowerError ? "true" : null)" aria-describedby="@LowerErrorId"
-                           @onfocus="@(() => BeginEdit(true))" @onblur="@(() => CommitEditAsync(true))"
-                           @onkeydown="@(args => EditKeyAsync(args, true))" />
-            <p id="@LowerErrorId" class="shop-field-error" aria-live="polite">@(_lowerError ? ErrorText(true) : null)</p>
-        </div>
-        <div>
-            <ShopTextField Label="@MaximumLabel" Value="@UpperText" ValueChanged="@(text => SetDraft(text, false))"
-                           ValueExpression="@(() => _upperDraft)" Disabled="@IsDisabled" inputmode="decimal"
-                           autocomplete="off" aria-invalid="@(_upperError ? "true" : null)" aria-describedby="@UpperErrorId"
-                           @onfocus="@(() => BeginEdit(false))" @onblur="@(() => CommitEditAsync(false))"
-                           @onkeydown="@(args => EditKeyAsync(args, false))" />
-            <p id="@UpperErrorId" class="shop-field-error" aria-live="polite">@(_upperError ? ErrorText(false) : null)</p>
-        </div>
+    <div class="shop-range-inputs" @key="_bounds">
+        <ShopNumericField Label="@MinimumLabel" Value="@_current.Lower"
+                          ValueChanged="@(value => SetLowerAsync(value!.Value))" ValueExpression="@(() => _lowerValue)"
+                          Min="@Min" Max="@_current.Upper" ValueFormatter="@ValueFormatter" Required="true"
+                          RequiredError="@ErrorText(true)" ParsingError="@ErrorText(true)" Disabled="@IsDisabled" />
+        <ShopNumericField Label="@MaximumLabel" Value="@_current.Upper"
+                          ValueChanged="@(value => SetUpperAsync(value!.Value))" ValueExpression="@(() => _upperValue)"
+                          Min="@_current.Lower" Max="@Max" ValueFormatter="@ValueFormatter" Required="true"
+                          RequiredError="@ErrorText(false)" ParsingError="@ErrorText(false)" Disabled="@IsDisabled" />
     </div>
 </fieldset>

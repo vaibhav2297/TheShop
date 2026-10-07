@@ -1,6 +1,5 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using TheShop.Web.Common.UI;
 using TheShop.Web.Resources;
@@ -37,16 +36,13 @@ public partial class ShopRangeSlider : ShopComponentBase, IAsyncDisposable
     private ShopRangeValue _current;
     private ShopRangeValue _supplied;
     private (decimal Min, decimal Max, decimal Step)? _bounds;
-    private string? _lowerDraft, _upperDraft;
-    private bool _editingLower, _editingUpper, _lowerError, _upperError, _disposed;
+    private decimal? _lowerValue => _current.Lower;
+    private decimal? _upperValue => _current.Upper;
+    private bool _disposed;
     private int? _activeThumb;
     private bool IsDisabled => Disabled || Min == Max;
     private string ClassName => ShopCssClass.Join("shop-native", "shop-range", IsDisabled ? "shop-range-disabled" : null, Class);
     private string BubbleClass => ShopCssClass.Join("shop-range-bubble", _activeThumb == 0 ? "shop-range-bubble-lower" : "shop-range-bubble-upper");
-    private string LowerErrorId => $"{_id}-lower-error";
-    private string UpperErrorId => $"{_id}-upper-error";
-    private string? LowerText => _editingLower || _lowerError ? _lowerDraft : Format(_current.Lower);
-    private string? UpperText => _editingUpper || _upperError ? _upperDraft : Format(_current.Upper);
     private string TrackStyle => $"--shop-range-lower: {Number(Percent(_current.Lower))}%; --shop-range-upper: {Number(Percent(_current.Upper))}%;";
     private static string Number(decimal value) => value.ToString("0.############################", CultureInfo.InvariantCulture);
     private string Format(decimal value) => ValueFormatter?.Invoke(value) ?? Number(value);
@@ -68,9 +64,6 @@ public partial class ShopRangeSlider : ShopComponentBase, IAsyncDisposable
         {
             var lower = Snap(Value.Lower);
             _current = new(lower, Math.Max(lower, Snap(Value.Upper)));
-            _lowerDraft = Number(_current.Lower);
-            _upperDraft = Number(_current.Upper);
-            _lowerError = _upperError = false;
         }
         _bounds = bounds;
         _supplied = Value;
@@ -95,47 +88,7 @@ public partial class ShopRangeSlider : ShopComponentBase, IAsyncDisposable
     {
         if (IsDisabled || _disposed || value == _current) return;
         _current = value;
-        _lowerError = _upperError = false;
-        if (!_editingLower) _lowerDraft = Number(value.Lower);
-        if (!_editingUpper) _upperDraft = Number(value.Upper);
         await ValueChanged.InvokeAsync(value);
-    }
-
-    private void BeginEdit(bool lower)
-    {
-        if (IsDisabled || _disposed) return;
-        if (lower) { _editingLower = true; if (!_lowerError) _lowerDraft = Number(_current.Lower); }
-        else { _editingUpper = true; if (!_upperError) _upperDraft = Number(_current.Upper); }
-    }
-
-    private void SetDraft(string? value, bool lower)
-    {
-        if (IsDisabled || _disposed) return;
-        if (lower) { _lowerDraft = value; _editingLower = true; _lowerError = false; }
-        else { _upperDraft = value; _editingUpper = true; _upperError = false; }
-    }
-
-    private async Task CommitEditAsync(bool lower, bool keepEditing = false)
-    {
-        if (IsDisabled || _disposed || !(lower ? _editingLower : _editingUpper)) return;
-        var valid = decimal.TryParse(lower ? _lowerDraft : _upperDraft, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite,
-            CultureInfo.InvariantCulture, out var number)
-            && number >= (lower ? Min : _current.Lower) && number <= (lower ? _current.Upper : Max);
-        if (lower) { _editingLower = false; _lowerError = !valid; }
-        else { _editingUpper = false; _upperError = !valid; }
-        if (valid) await (lower ? SetLowerAsync(number) : SetUpperAsync(number));
-        if (keepEditing) BeginEdit(lower);
-    }
-
-    private Task EditKeyAsync(KeyboardEventArgs args, bool lower)
-    {
-        if (args.Key == "Enter") return CommitEditAsync(lower, keepEditing: true);
-        if (args.Key == "Escape")
-        {
-            if (lower) { _lowerError = false; _lowerDraft = Number(_current.Lower); }
-            else { _upperError = false; _upperDraft = Number(_current.Upper); }
-        }
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc />

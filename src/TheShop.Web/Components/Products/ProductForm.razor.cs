@@ -56,6 +56,8 @@ public partial class ProductForm : MudComponentBase
     public IReadOnlyList<BrandLookupDto> Brands { get; set; } = [];
 
     private MudForm _form = default!;
+    private ShopMoneyField? _originalPriceField, _salePriceField;
+    private ProductVariantsCard _variantsCard = default!;
     private bool _isFormValid;
     private bool _dirty;
     private bool _initialized;
@@ -299,8 +301,15 @@ public partial class ProductForm : MudComponentBase
 
     private async Task SaveAsync()
     {
+        var pricesValid = true;
+        if (!HasVariants)
+        {
+            if (_originalPriceField is not null) pricesValid &= await _originalPriceField.ValidateAsync();
+            if (_salePriceField is not null) pricesValid &= await _salePriceField.ValidateAsync();
+        }
+        pricesValid &= await _variantsCard.ValidatePricesAsync();
         await _form.ValidateAsync();
-        if (!_isFormValid || PublishBlockedByVariantPrices)
+        if (!pricesValid || !_isFormValid || PublishBlockedByVariantPrices)
             return;
 
         // A product with variants has no price of its own — customers pay the variant's price

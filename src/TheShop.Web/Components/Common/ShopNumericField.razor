@@ -1,0 +1,26 @@
+@inherits InputBase<decimal?>
+
+<div class="shop-native shop-field">
+    <div class="shop-field-control">
+        <input @attributes="InputAttributes"
+               id="@InputId" name="@NameAttributeValue" class="@InputClass"
+               type="text" inputmode="decimal" autocomplete="off" placeholder=" " data-shop-numeric
+               disabled="@Disabled" aria-required="@Required" aria-invalid="@InvalidAttribute"
+               value="@DisplayText" @oninput="SetDraft" @onfocus="BeginEdit"
+               @onblur="BlurAsync" @onkeydown="EditKeyAsync" />
+        @if (HasLabel)
+        {
+            <label class="shop-field-label" for="@InputId">@Label</label>
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(HelperText))
+    {
+        <div id="@HelperId" class="shop-field-hint">@HelperText</div>
+    }
+    <div id="@ErrorId" class="shop-field-error" aria-live="polite">
+        @foreach (var error in Errors)
+        {
+            <div>@error</div>
+        }
+    </div>
+</div>
