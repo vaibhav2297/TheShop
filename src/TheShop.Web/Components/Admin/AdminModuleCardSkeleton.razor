@@ -1,0 +1,9 @@
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@inherits ShopComponentBase
+
+<div @attributes="AdditionalAttributes" class="@ClassName" style="@Style" aria-hidden="true">
+    <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-admin-module-card-skeleton-label" />
+    <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-admin-module-card-skeleton-count" />
+    <ShopSkeleton Class="shop-admin-module-card-skeleton-action" />
+</div>

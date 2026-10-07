@@ -43,12 +43,19 @@ public partial class ShopTable<TItem> : ShopComponentBase
     /// <summary>Prevents native and synthetic selection changes, typically supplied by BusyFor.</summary>
     [Parameter] public bool SelectionDisabled { get; set; }
 
+    /// <summary>Replaces the rows with skeleton rows under the real header, marks the table busy and blocks selection, typically supplied by BusyFor.</summary>
+    [Parameter] public bool Loading { get; set; }
+
+    /// <summary>Number of skeleton rows shown while Loading; must be positive. Defaults to 10.</summary>
+    [Parameter] public int LoadingRowCount { get; set; } = 10;
+
     private List<RowEntry> _rows = [];
     private string ClassName => ShopCssClass.Join("shop-table", Class);
     private int EffectiveColumnCount => ColumnCount + (Selectable ? 1 : 0);
     private bool AllSelected => _rows.Count > 0 && _rows.All(row => IsSelected(row.Key));
     private bool PartiallySelected => !AllSelected && _rows.Any(row => IsSelected(row.Key));
     private bool IsSelected(object key) => SelectedKeys.Contains(key);
+    private string? LoadingCellClass(int column) => Selectable && column == 0 ? "shop-table-selection" : null;
 
     /// <inheritdoc />
     protected override void OnParametersSet()
@@ -60,6 +67,7 @@ public partial class ShopTable<TItem> : ShopComponentBase
         ArgumentNullException.ThrowIfNull(SelectedKeys);
         ArgumentException.ThrowIfNullOrWhiteSpace(Caption);
         ArgumentOutOfRangeException.ThrowIfLessThan(ColumnCount, 1);
+        ArgumentOutOfRangeException.ThrowIfLessThan(LoadingRowCount, 1);
         if (Selectable)
             ArgumentNullException.ThrowIfNull(RowSelectionLabel);
 
@@ -79,7 +87,7 @@ public partial class ShopTable<TItem> : ShopComponentBase
 
     private Task SelectRowAsync(object key, bool selected)
     {
-        if (!Selectable || SelectionDisabled || !_rows.Any(row => Equals(row.Key, key)))
+        if (!Selectable || SelectionDisabled || Loading || !_rows.Any(row => Equals(row.Key, key)))
             return Task.CompletedTask;
         var keys = SelectedKeys.ToHashSet();
         var changed = selected ? keys.Add(key) : keys.Remove(key);
@@ -88,7 +96,7 @@ public partial class ShopTable<TItem> : ShopComponentBase
 
     private Task SelectPageAsync(bool selected)
     {
-        if (!Selectable || SelectionDisabled || _rows.Count == 0)
+        if (!Selectable || SelectionDisabled || Loading || _rows.Count == 0)
             return Task.CompletedTask;
         var keys = SelectedKeys.ToHashSet();
         foreach (var row in _rows)

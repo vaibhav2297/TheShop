@@ -117,19 +117,11 @@
                     </ShopBulkActionBar>
 
                     <BusyFor Key="@BusyKeys.Products.ManageList" Context="busy">
-                        @if (busy)
-                        {
-                            <MudStack Spacing="2">
-                                @for (var i = 0; i < 10; i++)
-                                {
-                                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="56px" />
-                                }
-                            </MudStack>
-                        }
-                        else if (_products.Items.Count > 0)
+                        @if (busy || _products.Items.Count > 0)
                         {
                             <BusyFor Keys="@MutationBusyKeys" Context="mutating">
                                 <ShopTable TItem="ProductListItemDto"
+                                      Loading="@busy"
                                       Items="@_products.Items"
                                       ItemKey="@(item => item.Id)"
                                       Caption="@Strings.ManageProducts_Heading"
@@ -263,10 +255,13 @@
                                 </ShopTable>
                             </BusyFor>
 
-                            <ShopPagination Page="@_products.Page"
-                                            TotalPages="@_products.TotalPages"
-                                            PageChanged="OnPageChangedAsync"
-                                            Class="align-self-center" />
+                            if (!busy)
+                            {
+                                <ShopPagination Page="@_products.Page"
+                                                TotalPages="@_products.TotalPages"
+                                                PageChanged="OnPageChangedAsync"
+                                                Class="align-self-center" />
+                            }
                         }
                         else
                         {

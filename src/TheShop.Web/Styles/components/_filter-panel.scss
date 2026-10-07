@@ -26,3 +26,21 @@
     color: var(--shop-color-text-secondary);
     @include text-style.apply(body-1);
 }
+
+// Catalogue filter skeleton: one row per group with the expander's 24px block padding,
+// 24px chevron row and shared dividers, so the panel does not jump when it loads.
+.shop-filter-skeleton-group {
+    display: flex;
+    align-items: center;
+    min-block-size: calc(2 * var(--shop-space-6) + 1.5rem);
+    box-shadow: inset 0 -1px var(--shop-color-lines-default);
+
+    &:first-child {
+        box-shadow: inset 0 1px var(--shop-color-lines-default), inset 0 -1px var(--shop-color-lines-default);
+    }
+}
+
+.shop-filter-skeleton-title {
+    inline-size: 60%;
+    @include text-style.apply(subtitle-1);
+}

@@ -306,7 +306,9 @@ public class ProductCatalogueTests : TestContext
 
         var cut = Render<ProductCatalogue>();
 
-        cut.FindComponents<MudSkeleton>().Should().HaveCount(17);
+        cut.FindComponents<ProductCardSkeleton>().Should().HaveCount(12);
+        cut.FindAll(".shop-filter-skeleton-group").Should().HaveCount(5);
+        cut.Find(".shop-filter-skeleton").GetAttribute("aria-hidden").Should().Be("true");
         cut.FindComponents<ProductCard>().Should().BeEmpty();
         cut.FindComponents<ShopFilterPanel>().Should().BeEmpty();
     }

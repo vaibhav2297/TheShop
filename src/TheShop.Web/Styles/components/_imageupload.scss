@@ -1,3 +1,5 @@
+@use '../abstracts/text-style';
+
 // ─── Image upload previews ───────────────────────────────────────────────────
 // Styles for ShopImageUpload. Per-instance thumbnail size and dropzone height are
 // driven from parameters via inline Style; only the static layout lives here.
@@ -16,5 +18,24 @@
     .filename {
         flex-grow: 1;
         min-width: 0;
+    }
+
+    // Pending-file skeleton row: the thumbnail keeps its inline PreviewSize square and the two
+    // caption lines stand in for the filename and size.
+    .pending-thumbnail {
+        flex: none;
+    }
+
+    .pending-name,
+    .pending-size {
+        @include text-style.apply(caption);
+    }
+
+    .pending-name {
+        inline-size: 60%;
+    }
+
+    .pending-size {
+        inline-size: 30%;
     }
 }

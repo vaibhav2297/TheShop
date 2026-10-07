@@ -115,6 +115,12 @@ Pages start operations through `BusyState.RunAsync` with `BusyKeys` constants. `
 
 Keep label and icons mounted in the button's internal content span, visually transparent while loading, so dimensions and the accessible name remain stable. A decorative spinner is centered over it. Effective disabled state is `Disabled || Loading`; preserve independent disabled conditions after completion. A primed, visually hidden status sibling announces `Strings.Loading` outside the busy button without changing its name. Do not add duplicate page-level spinners/status markup. Other inline indicators still belong inside their `BusyFor` fragment. The app-blocking overlay observes `BusyKeys.Global` and is mounted once in the active layout. Authentication and main layouts must not create duplicate active hosts.
 
+## Skeletons
+
+Use `ShopSkeleton` (Figma `3010:17894`) for loading placeholders. Its `Shape` is `Rectangle` or `Text`. It is a static, decorative `Brand/Tertiary` block with an enforced `aria-hidden`: no shimmer, pulse or other motion. It has no size or count parameters. A caller SCSS class owns its width, height or aspect ratio, and repeats use `@for`. Text spans one line of the inherited text style.
+
+When content has a stable shape, put its skeleton next to the real component and reuse that component's classes, as `ProductCardSkeleton` does. This keeps the geometry in sync and the page does not jump on load. For tables, pass the list's busy value to `ShopTable.Loading` rather than replacing the table: the header stays and the table owns the busy/status announcement. Keep single-use skeleton layouts inline in the page. See `UI_MIGRATION_GUIDE.md` section 6.12.
+
 ## Code-behind and lifecycle
 
 Keep markup in `.razor` and substantial state, parameters, handlers, lifecycle, and disposal in `.razor.cs`. Pages declare `[Route(Routes.X)]` in code-behind rather than literal `@page` paths. Components do not bypass the Application boundary to call persistence.

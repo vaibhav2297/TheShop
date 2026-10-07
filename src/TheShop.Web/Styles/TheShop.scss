@@ -18,6 +18,7 @@
 @use 'components/native-field';
 @use 'components/command-validation';
 @use 'components/spinner';
+@use 'components/skeleton';
 @use 'components/icon';
 @use 'components/checkbox';
 @use 'components/select';
@@ -47,5 +48,6 @@
 @use 'components/loading-overlay';
 @use 'components/variant-image';
 @use 'components/rich-text-editor';
+@use 'components/admin-skeletons';
 @use 'layouts/auth';
 @use 'layouts/shell';

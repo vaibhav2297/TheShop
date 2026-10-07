@@ -1,4 +1,5 @@
 @using TheShop.Web.Common
+@using TheShop.Web.Components.Admin
 @using TheShop.Web.Components.Common
 
 <PageTitle>@Strings.EditBrand_PageTitle</PageTitle>
@@ -6,10 +7,7 @@
 <BusyFor Key="@BusyKeys.Brands.EditBrand" Context="busy">
     @if (busy && string.IsNullOrEmpty(_name) && !_notFound)
     {
-        <MudStack Class="pa-8" Spacing="4">
-            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="48px" />
-            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="240px" />
-        </MudStack>
+        <AdminFormSkeleton />
     }
     else if (_notFound)
     {

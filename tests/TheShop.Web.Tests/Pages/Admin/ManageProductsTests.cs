@@ -505,7 +505,10 @@ public class ManageProductsTests : TestContext
 
         var cut = Render<ManageProducts>();
 
-        cut.FindComponents<MudSkeleton>().Should().NotBeEmpty();
+        var table = cut.FindComponent<ShopTable<ProductListItemDto>>();
+        table.Instance.Loading.Should().BeTrue();
+        cut.FindAll("tr.shop-table-loading-row").Should().HaveCount(10);
+        cut.FindComponents<ShopPagination>().Should().BeEmpty();
         cut.Markup.Should().NotContain(Strings.ManageProducts_NoMatchTitle);
         cut.Markup.Should().NotContain(Strings.ManageProducts_EmptyTitle);
 

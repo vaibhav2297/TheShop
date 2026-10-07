@@ -1,0 +1,54 @@
+@use '../abstracts/text-style';
+
+// ─── Admin skeletons ─────────────────────────────────────────────────────────
+// AdminModuleCard and the edit pages still use Mud layout. These placeholders copy
+// that geometry with tokens so the page does not jump when content arrives.
+
+// AdminModuleCard: outlined paper, 24px padding, 16px label/count gap, 48px gap to
+// the action, uppercase H6 label at 18px, H2 count and a medium outlined button.
+.shop-admin-module-card-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: var(--shop-space-4);
+    padding: var(--shop-space-6);
+    box-shadow: inset 0 0 0 1px var(--shop-color-lines-default);
+}
+
+.shop-admin-module-card-skeleton-label {
+    inline-size: 50%;
+    @include text-style.apply(h6);
+    font-size: 1.125rem;
+}
+
+.shop-admin-module-card-skeleton-count {
+    inline-size: 30%;
+    @include text-style.apply(h2);
+}
+
+.shop-admin-module-card-skeleton-action {
+    inline-size: 8rem;
+    block-size: 2.25rem;
+    margin-block-start: calc(var(--shop-space-12) - var(--shop-space-4));
+}
+
+// Edit pages: 32px page padding, 24px section gap, H3 heading, then a field and a panel.
+.shop-admin-form-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: var(--shop-space-6);
+    padding: var(--shop-space-8);
+}
+
+// The real headings ("Edit brand" and similar) are short, so the line caps at 20rem.
+.shop-admin-form-skeleton-heading {
+    inline-size: min(40%, 20rem);
+    @include text-style.apply(h3);
+}
+
+.shop-admin-form-skeleton-field {
+    block-size: var(--shop-field-min-height);
+}
+
+.shop-admin-form-skeleton-panel {
+    block-size: 15rem;
+}

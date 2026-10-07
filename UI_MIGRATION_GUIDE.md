@@ -823,6 +823,20 @@ No Figma editor design exists (a 2026-10-06 file search found only storefront "D
 - `_rich-text-editor.scss`: host 1px `lines-input` inset outline and 2px primary on `:focus-within`, no radius; Quill borders removed and a 1px toolbar separator; 8px/12px toolbar padding; 160px minimum editor with 12px block / field inline padding; Body 1 text in primary text color; secondary non-italic placeholder; forced-colors outline. Disabled: secondary editor text, `not-allowed` cursor, non-interactive toolbar with `text-disabled` icon strokes/fills/picker text (toolbar buttons do not inherit `color`).
 - The host chrome owns editing focus, so `.ql-editor:focus` has no outline; toolbar buttons keep the shared `.shop-native` focus ring. Quill's own blue active/hover toolbar state remains under the existing Decision 2 waiver.
 
+### 6.12 Skeleton — batch 36
+
+Design: [Figma Skeleton 3010:17888](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=3010-17888), component set `3010:17894`, created and approved 2026-10-06. It has one property, `Shape` = `Rectangle` | `Text`. Both shapes are a flat `Brand/Tertiary` fill with square corners. The owner rejected shimmer: there is no shimmer, pulse or other motion.
+
+- Two layers. `ShopSkeleton` is the only primitive. Content-shaped skeletons live next to the component they stand in for and reuse its classes, so their geometry follows that component instead of copying numbers.
+- `ShopSkeleton` derives from `ShopComponentBase` and renders one empty `span.shop-skeleton` with an enforced `aria-hidden="true"`. It deliberately omits the `shop-native` root class, because that class applies Body 1 and would break the text-style inheritance the Text shape relies on. `Shape` (`ShopSkeletonShape`, default `Rectangle`) emits `shop-skeleton-rectangle` or `shop-skeleton-text`. It has no width, height or count parameters (constitution rule 26). Callers size it with their own SCSS class and repeat it with `@for`. Rectangle has no intrinsic block size; the caller class must supply a block size or aspect ratio. Text keeps one line box (`1lh`) of the inherited text style and paints a centered bar `1em` high, so a caller class that applies the real text style gives a matching line. `_skeleton.scss` loads before the other component partials so caller size rules win at equal specificity. Forced colors draw a 1px `CanvasText` outline.
+- `ShopTable.Loading` (typically the list's `BusyFor` value) keeps the real header. It replaces the body with `LoadingRowCount` hidden skeleton rows (default 10; one Text skeleton per cell, including the selection column) and sets `aria-busy` on the table. It also disables and guards selection, suppresses `EmptyContent` and fills an always-mounted visually hidden `role="status"` with `Strings.Loading`. The Manage Brands, Categories and Products pages render the table while busy or populated, and hide pagination while busy.
+- Content-shaped skeletons (all decorative, `aria-hidden` roots):
+  - `ProductCardSkeleton` reuses the `shop-product-card`, media, content, brand, title and price classes. Line widths are 40%, 80% and 30%.
+  - `AdminModuleCardSkeleton` and `AdminFormSkeleton`, in `_admin-skeletons.scss`, copy the still-Mud admin card geometry (24px padding, 1px outline, 16px and 48px gaps, H6 18px label, H2 count, 36px action) and the edit-page geometry (32px padding, 24px gap, H3 heading, field-height block, 240px panel) with tokens. EditBrand, EditCategory and EditProduct share `AdminFormSkeleton`.
+  - The catalogue filter skeleton is single-use page markup: five rows with the expander's 72px header height and dividers.
+  - The `ShopImageUpload` pending row keeps the existing dynamic `PreviewSize` thumbnail style, plus caption-style Text lines at 60% and 30%.
+- Announcements: only `ShopTable` announces loading, because it stays mounted. Page skeletons that replace content are hidden and do not announce, which matches the previous `MudSkeleton` behavior.
+
 ## 7. Forms and validation architecture
 
 This is a behavior migration, not a tag substitution. Handle validation deliberately before replacing all nine forms.
@@ -1143,7 +1157,7 @@ Design: [Figma Table section 2967:1518](https://www.figma.com/design/63Ieb8AduwM
 - `ShopCheckbox.Indeterminate` is presentation over the existing boolean value, not nullable/tri-state form data. The parent derives partial selection; `HideLabel` keeps the real label accessible without visible cell text. Existing `ShopIcons.Outlined.Add_Minus_Square` supplies the inferred mixed-state glyph (not measured from the table design). A lazy, disposed `shopCheckbox.js` module synchronizes the native `indeterminate` DOM property; ARIA mixed state and forced-colors native presentation agree. Ordinary two-state checkboxes do not import the module.
 - Horizontal overflow, keyboard-focusable scroll region, hidden captions, mixed selection and forced-colors treatment are implementation accessibility decisions, not Figma variants. Do not hide columns or convert rows into cards without an approved design.
 - Search/sort/filter/query state, fetching, authorization, BusyState, confirmations, row mutations and `ShopPagination` remain page-owned. The three admin lists project existing selected DTO IDs into table keys; refreshes do not lose checked state through changed DTO equality. Existing clearing/blocked-deletion behavior stays with each page.
-- Batch 26 converts Brands, Categories and Products table shells/selection only. Their remaining Mud cell content, loading skeletons, actions and page layouts remain temporary bridges. `ProductVariantsCard` still uses MudTable with virtualization and legacy money fields; migrate that editor separately with explicit virtualization/editing/validation preservation proof. Do not remove Mud packages/providers/assets yet.
+- Batch 26 converts Brands, Categories and Products table shells/selection only. Their remaining Mud cell content, actions and page layouts remain temporary bridges; batch 36 replaced the loading skeletons with `ShopTable.Loading`. `ProductVariantsCard` still uses MudTable with virtualization and legacy money fields; migrate that editor separately with explicit virtualization/editing/validation preservation proof. Do not remove Mud packages/providers/assets yet.
 
 ```razor
 <ShopTable TItem="BrandListItemDto"
@@ -2118,6 +2132,31 @@ The final implementing-agent response should state what changed, the exact verif
 - Pre-existing, not changed: Quill 2.0.3 `getSemanticHTML()` serializes spaces as `&nbsp;` (for example `<p><strong>Bold&nbsp;copy</strong></p>`), so persisted descriptions carry that entity. The journey asserts the current payload rather than normalizing it.
 - Not verified: the authenticated product create/edit journey. The admin form needs a signed-in staff session, and the local Supabase stack was not running in batch 34. No database reset was performed. Evidence: `tests/TheShop.E2E.Tests/TestResults/rich-text-editor-headed.trx`; `tests/TheShop.E2E.Tests/bin/Debug/net10.0/native-ui-evidence/rich-text-*.png` (idle, focused, disabled, mobile and vendor-free reviewed). Design-rule gate passes.
 - Rollback: revert the component markup/code-behind, `_rich-text-editor.scss`, both test files and this guide record together. No stored-data rollback.
+
+### Batch 36 — Native Skeleton and table loading state — 2026-10-06
+
+- Design: created Figma Skeleton set `3010:17894` in section `3010:17888` with Rectangle and Text shapes, usage examples and rules. The shimmer variants and keyframes were removed after owner review; the approved design is static. Contract recorded in section 6.12.
+- Replaced all 15 `MudSkeleton` uses:
+  - ProductCatalogue: 12 `ProductCardSkeleton`s plus a 5-row filter skeleton.
+  - AdminConsole: 5 `AdminModuleCardSkeleton`s.
+  - EditBrand, EditCategory and EditProduct: `AdminFormSkeleton`.
+  - Manage Brands, Categories and Products: `ShopTable.Loading`.
+  - ShopImageUpload: pending rows.
+- Page Mud layout (`MudGrid`, `MudStack`) around these skeletons is unchanged.
+- Added `ShopSkeleton`, `ShopSkeletonShape`, `ProductCardSkeleton`, `AdminModuleCardSkeleton`, `AdminFormSkeleton`, `_skeleton.scss` and `_admin-skeletons.scss`. Extended `_producttile.scss`, `_filter-panel.scss` and `_imageupload.scss`. Added `ShopTable.Loading`/`LoadingRowCount`.
+- Tests:
+  - `ShopSkeletonTests` (6): primitive forwarding, enforced `aria-hidden`, shape modifiers, undeclared-shape rejection, and composite class reuse and hiding.
+  - `ShopTableTests` (+5): loading rows under the real header, with and without selection; busy and status lifecycle; selection guard while loading; row-count validation.
+  - Updated loading tests in ProductCatalogue, AdminConsole and ManageProducts.
+  - **Full Web suite: 1,137 passed, 0 skipped.**
+- Added `NativeSkeletonJourneyTests`:
+  - The catalogue case runs on the real anonymous page with data reads held pending, at 390px and 1440px. It checks the square media, line widths and bar heights, the 72px filter rows, no animation, no overflow and the forced-colors outline.
+  - The live admin case uses mocked auth with no backend writes. It covers the Manage Brands loading-to-loaded transition (header position, busy and status, disabled select-all, hidden pagination), admin console card geometry and edit-brand form geometry.
+  - **3 passed, 0 skipped.** The first attempts hit a Visual Studio debug session holding port 5218 and were rerun after the owner stopped it.
+- Fixed during browser review: the primitive first carried `shop-native`, whose Body 1 reset made table-cell Text bars 16px instead of following the 14px cells. The class was removed. The edit-page heading line is capped at 20rem to match the short real headings.
+- Regression: `NativeTableJourneyTests` geometry (4) and `NativeBulkActionJourneyTests` (4) passed. `NativeTableJourneyTests.Brands_RealBlazorSelection…` passes its selection and pagination steps, then fails at its stale "My Profile" account-dropdown step. That step fails identically on the stashed baseline, so the failure predates this batch.
+- Known difference: loading rows use the table's own cell padding and one text line (about 39px). The loaded admin rows are about 68px because of their 40px avatar, so the body grows when data arrives; the header and its position stay fixed. Evidence: `tests/TheShop.E2E.Tests/TestResults/skeleton-headed.trx`, `skeleton-table-regression.trx`; `native-ui-evidence/skeleton-*.png` (catalogue 390/1440 and forced colors, table loading/loaded, admin console, edit form; all reviewed). Design-rule gate passes.
+- Rollback: revert the new components, `ShopTable` loading, page markup, SCSS partials, tests and this guide record together. No stored-data rollback.
 
 ## 19. Prompt to give the implementing AI
 

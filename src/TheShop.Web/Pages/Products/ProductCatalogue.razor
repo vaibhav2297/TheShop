@@ -3,6 +3,7 @@
 
 @using TheShop.Domain.Enums
 @using TheShop.Web.Common
+@using TheShop.Web.Common.UI
 @using TheShop.Web.Components.Common
 @using TheShop.Web.Components.Products
 
@@ -21,12 +22,14 @@
             <BusyFor Key="@BusyKeys.Products.Filters" Context="filtersBusy">
                 @if (filtersBusy)
                 {
-                    <MudStack Spacing="3">
+                    <div class="shop-filter-skeleton" aria-hidden="true">
                         @for (var i = 0; i < 5; i++)
                         {
-                            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="48px" />
+                            <div class="shop-filter-skeleton-group">
+                                <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-filter-skeleton-title" />
+                            </div>
                         }
-                    </MudStack>
+                    </div>
                 }
                 else
                 {
@@ -77,8 +80,7 @@
                             @for (var i = 0; i < 12; i++)
                             {
                                 <MudItem xs="12" sm="6" md="4" xl="3">
-                                    <MudSkeleton SkeletonType="SkeletonType.Rectangle"
-                                                 Height="420px" />
+                                    <ProductCardSkeleton />
                                 </MudItem>
                             }
                         </MudGrid>

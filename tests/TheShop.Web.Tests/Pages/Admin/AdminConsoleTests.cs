@@ -160,7 +160,7 @@ public class AdminConsoleTests : TestContext
 
         var cut = Render<AdminConsole>();
 
-        cut.FindComponents<MudSkeleton>().Should().HaveCount(5);
+        cut.FindComponents<AdminModuleCardSkeleton>().Should().HaveCount(5);
         cut.FindComponents<AdminModuleCard>().Should().BeEmpty();
     }
 

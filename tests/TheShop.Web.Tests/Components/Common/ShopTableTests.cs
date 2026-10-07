@@ -61,6 +61,65 @@ public class ShopTableTests : TestContext
         if (selectable) cut.Find("input").HasAttribute("disabled").Should().BeTrue();
     }
 
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 2)]
+    public void Render_Loading_ShowsHiddenSkeletonRowsUnderTheRealHeader(bool selectable, int cells)
+    {
+        var cut = Create(p =>
+        {
+            p.Add(c => c.Selectable, selectable).Add(c => c.RowSelectionLabel, row => $"Select {row.Name}")
+                .Add(c => c.Loading, true).Add(c => c.LoadingRowCount, 3)
+                .Add(c => c.EmptyContent, "Nothing here");
+        });
+        cut.Find("table").GetAttribute("aria-busy").Should().Be("true");
+        cut.Find("thead th:last-child").TextContent.Should().Be("Name");
+        var rows = cut.FindAll("tbody tr");
+        rows.Should().HaveCount(3);
+        rows.Should().OnlyContain(row => row.GetAttribute("aria-hidden") == "true" && row.Children.Length == cells);
+        cut.FindAll("tbody .shop-skeleton-text").Should().HaveCount(3 * cells);
+        cut.Markup.Should().NotContain("First").And.NotContain("Nothing here");
+        cut.Find("[role=status]").TextContent.Should().Be(Strings.Loading);
+        if (selectable)
+        {
+            cut.Find("thead input").HasAttribute("disabled").Should().BeTrue();
+            cut.Find("tbody td").ClassList.Should().Contain("shop-table-selection");
+        }
+    }
+
+    [Fact]
+    public async Task Render_LoadingFinishes_RestoresRowsAndClearsBusyState()
+    {
+        var cut = Create(p => p.Add(c => c.Loading, true));
+        cut.Find("[role=status]").TextContent.Should().Be(Strings.Loading);
+        await cut.InvokeAsync(() => cut.Render(p => p.Add(c => c.Loading, false)));
+        cut.Find("table").HasAttribute("aria-busy").Should().BeFalse();
+        cut.FindAll("tbody tr").Should().HaveCount(2);
+        cut.FindAll(".shop-skeleton").Should().BeEmpty();
+        cut.Find("[role=status]").TextContent.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Selection_WhileLoading_RejectsSyntheticChanges()
+    {
+        var emitted = false;
+        var cut = Create(p =>
+        {
+            Selection(p);
+            p.Add(c => c.Loading, true).Add(c => c.SelectedKeysChanged, _ => emitted = true);
+        });
+        var checkbox = cut.FindComponent<ShopCheckbox>();
+        await cut.InvokeAsync(() => checkbox.Instance.ValueChanged.InvokeAsync(true));
+        emitted.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Render_InvalidLoadingRowCount_FailsClearly()
+    {
+        var render = () => Create(p => p.Add(c => c.LoadingRowCount, 0));
+        render.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
     [Fact]
     public void Selection_OneRow_EmitsFreshKeysWithoutMutatingParent()
     {

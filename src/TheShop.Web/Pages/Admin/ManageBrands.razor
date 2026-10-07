@@ -108,19 +108,11 @@
                 </ShopBulkActionBar>
 
                 <BusyFor Key="@BusyKeys.Brands.ManageList" Context="busy">
-                    @if (busy)
-                    {
-                        <MudStack Spacing="2">
-                            @for (var i = 0; i < 10; i++)
-                            {
-                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="56px" />
-                            }
-                        </MudStack>
-                    }
-                    else if (_brands.Items.Count > 0)
+                    @if (busy || _brands.Items.Count > 0)
                     {
                         <BusyFor Keys="@MutationBusyKeys" Context="mutating">
                             <ShopTable TItem="BrandListItemDto"
+                                      Loading="@busy"
                                       Items="@_brands.Items"
                                       ItemKey="@(item => item.Id)"
                                       Caption="@Strings.ManageBrands_Heading"
@@ -237,10 +229,13 @@
                             </ShopTable>
                         </BusyFor>
 
-                        <ShopPagination Page="@_brands.Page"
-                                        TotalPages="@_brands.TotalPages"
-                                        PageChanged="OnPageChangedAsync"
-                                        Class="align-self-center" />
+                        if (!busy)
+                        {
+                            <ShopPagination Page="@_brands.Page"
+                                            TotalPages="@_brands.TotalPages"
+                                            PageChanged="OnPageChangedAsync"
+                                            Class="align-self-center" />
+                        }
                     }
                     else if (_search is not null || _status is not null)
                     {

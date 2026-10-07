@@ -3,7 +3,7 @@
 @inherits ShopComponentBase
 
 <div class="shop-native shop-table-scroll" role="region" aria-label="@Caption" tabindex="0">
-    <table @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+    <table @attributes="AdditionalAttributes" class="@ClassName" style="@Style" aria-busy="@(Loading ? "true" : null)">
         <caption class="shop-visually-hidden">@Caption</caption>
         <thead>
             <tr>
@@ -13,32 +13,48 @@
                         <ShopCheckbox Label="@Strings.Table_SelectPage" HideLabel="true"
                                       Value="@AllSelected" ValueExpression="@(() => AllSelected)"
                                       ValueChanged="SelectPageAsync" Indeterminate="@PartiallySelected"
-                                      Disabled="@(SelectionDisabled || _rows.Count == 0)" />
+                                      Disabled="@(SelectionDisabled || Loading || _rows.Count == 0)" />
                     </th>
                 }
                 @HeaderContent
             </tr>
         </thead>
         <tbody>
-            @foreach (var row in _rows)
+            @if (Loading)
             {
-                <tr @key="row.Key">
-                    @if (Selectable)
-                    {
-                        <td class="shop-table-selection">
-                            <ShopCheckbox Label="@RowSelectionLabel!(row.Item)" HideLabel="true"
-                                          Value="@IsSelected(row.Key)" ValueExpression="@(() => row.Selected)"
-                                          ValueChanged="@(value => SelectRowAsync(row.Key, value))"
-                                          Disabled="@SelectionDisabled" />
-                        </td>
-                    }
-                    @RowTemplate(row.Item)
-                </tr>
+                for (var i = 0; i < LoadingRowCount; i++)
+                {
+                    <tr @key="i" class="shop-table-loading-row" aria-hidden="true">
+                        @for (var column = 0; column < EffectiveColumnCount; column++)
+                        {
+                            <td class="@LoadingCellClass(column)"><ShopSkeleton Shape="ShopSkeletonShape.Text" /></td>
+                        }
+                    </tr>
+                }
             }
-            @if (_rows.Count == 0 && EmptyContent is not null)
+            else
             {
-                <tr><td colspan="@EffectiveColumnCount" class="shop-table-empty">@EmptyContent</td></tr>
+                foreach (var row in _rows)
+                {
+                    <tr @key="row.Key">
+                        @if (Selectable)
+                        {
+                            <td class="shop-table-selection">
+                                <ShopCheckbox Label="@RowSelectionLabel!(row.Item)" HideLabel="true"
+                                              Value="@IsSelected(row.Key)" ValueExpression="@(() => row.Selected)"
+                                              ValueChanged="@(value => SelectRowAsync(row.Key, value))"
+                                              Disabled="@SelectionDisabled" />
+                            </td>
+                        }
+                        @RowTemplate(row.Item)
+                    </tr>
+                }
+                if (_rows.Count == 0 && EmptyContent is not null)
+                {
+                    <tr><td colspan="@EffectiveColumnCount" class="shop-table-empty">@EmptyContent</td></tr>
+                }
             }
         </tbody>
     </table>
+    <span class="shop-visually-hidden" role="status">@(Loading ? Strings.Loading : null)</span>
 </div>

@@ -1,0 +1,9 @@
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@inherits ShopComponentBase
+
+<div @attributes="AdditionalAttributes" class="@ClassName" style="@Style" aria-hidden="true">
+    <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-admin-form-skeleton-heading" />
+    <ShopSkeleton Class="shop-admin-form-skeleton-field" />
+    <ShopSkeleton Class="shop-admin-form-skeleton-panel" />
+</div>

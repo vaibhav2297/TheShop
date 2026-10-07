@@ -1,14 +1,12 @@
 @using TheShop.Web.Common
+@using TheShop.Web.Components.Admin
 @using TheShop.Web.Components.Products
 
 <PageTitle>@Strings.EditProduct_PageTitle</PageTitle>
 
 @if (!_loaded)
 {
-    <MudStack Class="pa-8" Spacing="2">
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="200px" />
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="200px" />
-    </MudStack>
+    <AdminFormSkeleton />
 }
 else if (_notFound)
 {

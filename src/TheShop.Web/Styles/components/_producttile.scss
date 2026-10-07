@@ -86,3 +86,20 @@
 .shop-product-card-price {
     @include text-style.apply(h6);
 }
+
+// ProductCardSkeleton reuses the card classes above; only line widths and the cursor differ.
+.shop-product-card-skeleton .shop-product-card-content {
+    cursor: auto;
+}
+
+.shop-product-card-skeleton-brand {
+    inline-size: 40%;
+}
+
+.shop-product-card-skeleton-title {
+    inline-size: 80%;
+}
+
+.shop-product-card-skeleton-price {
+    inline-size: 30%;
+}
