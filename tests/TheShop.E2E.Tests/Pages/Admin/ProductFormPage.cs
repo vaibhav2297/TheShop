@@ -82,17 +82,20 @@ public sealed class ProductFormPage(IPage page)
     public Task UploadImagesAsync(params FilePayload[] files) =>
         Page.Locator(".shop-image-upload input[type=file]").SetInputFilesAsync(files);
 
-    /// <summary>An uploaded image's preview row, located by its filename caption.</summary>
+    /// <summary>An uploaded image tile, located by its accessible filename.</summary>
     public ILocator ImageRow(string fileName) =>
-        Page.Locator(".shop-image-upload .preview").Filter(new() { Has = Page.GetByText(fileName, new() { Exact = true }) });
+        Page.Locator(".shop-image-upload-item").Filter(new() { Has = Page.GetByRole(AriaRole.Button, new() { Name = fileName, Exact = true }) });
 
-    public ILocator ImageRows => Page.Locator(".shop-image-upload .preview");
+    public ILocator ImageRows => Page.Locator(".shop-image-upload-item");
 
     public ILocator PrimaryBadge(string fileName) =>
         ImageRow(fileName).GetByText(Strings.AddProduct_ImagePrimary, new() { Exact = true });
 
-    public Task RemoveImageAsync(string fileName) =>
-        ImageRow(fileName).GetByRole(AriaRole.Button, new() { Name = Strings.AddProduct_ImageRemove }).ClickAsync();
+    public async Task RemoveImageAsync(string fileName)
+    {
+        await ImageRow(fileName).HoverAsync();
+        await ImageRow(fileName).GetByRole(AriaRole.Button, new() { Name = Strings.AddProduct_ImageRemove + ": " + fileName, Exact = true }).ClickAsync();
+    }
 
     public ILocator ImageError(string fileName) => ImageRow(fileName).GetByText(new System.Text.RegularExpressions.Regex(".+"));
 

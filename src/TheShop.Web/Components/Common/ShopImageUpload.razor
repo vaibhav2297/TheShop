@@ -1,137 +1,52 @@
-@inherits MudComponentBase
-@using Microsoft.AspNetCore.Components.Forms
-@using TheShop.Web.Theme
+@inherits ShopComponentBase
+@using TheShop.Web.Common.UI
 
-<MudStack Class="@Classname"
-          Style="@Stylename"
-          Spacing="4"
-          UserAttributes="@UserAttributes">
-
-    <BusyFor Key="@_busyKey" Context="picking">
-
-        <MudFileUpload @ref="_fileUpload"
-                       T="IReadOnlyList<IBrowserFile>"
-                       FilesChanged="OnFilesChangedAsync"
-                       Accept="@Accept"
-                       MaximumFileCount="@EffectiveMaxFileCount"
-                       Disabled="@Disabled"
-                       AppendMultipleFiles=@(Multiple)>
-
-            <CustomContent Context="upload">
-
-                @* CustomContent is not auto-wired like ActivatorContent, so the dropzone opens the
-                   picker explicitly through the MudFileUpload context on click. *@
-                <MudStack Style="@DropzoneStyle"
-                          Class="border-dashed rounded-0 border cursor-pointer mud-border-lines-default"
-                          AlignItems="AlignItems.Center"
-                          Justify="Justify.Center"
-                          Spacing="4"
-                          @onclick="@(() => OpenPickerAsync(upload, picking))">
-
-                    <MudIcon Icon="@ShopIcons.Outlined.Add_Plus" Color="Color.Primary" />
-
-                    <MudText Typo="Typo.subtitle1">@UploadText</MudText>
-
-                </MudStack>
-
-            </CustomContent>
-
-            @* SelectedTemplate replaces MudFileUpload's own chip-list rendering of the selected files;
-               its context is the raw browser FileList, which we ignore in favour of our own Files —
-               the persistent, byte-carrying selection — so a remove click never re-opens the picker
-               (this slot isn't part of the activator). Order is fixed at selection time: the first
-               image picked is always the primary one; there is no drag-to-reorder. *@
-            <SelectedTemplate Context="_">
-
-                @if (Files.Count > 0 || _pendingCount > 0)
-                {
-                    @* MudFileUpload renders CustomContent and SelectedTemplate as flat siblings, outside
-                       the root MudStack's Spacing, so the gap from the dropzone has to come from here. *@
-                    <MudStack Spacing="3" Class="mt-4">
-
-                        @foreach (var image in Files)
-                        {
-                            <MudStack @key="image"
-                                      Row="true"
-                                      Class="@PreviewClassname"
-                                      AlignItems="AlignItems.Center"
-                                      Spacing="4">
-
-                                <ShopImage Src="@image.PreviewUrl"
-                                           Preset="@PreviewPreset"
-                                           Alt="@(PreviewAlt ?? string.Empty)"
-                                           PlaceholderLabel="@image.FileName"
-                                           Style="@ThumbnailStyle" />
-
-                                <MudStack Spacing="1" Class="info flex-grow-1">
-
-                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="name-row">
-
-                                        <MudText Typo="Typo.caption" Class="filename text-truncate">@image.FileName</MudText>
-
-                                        @* The sequence itself carries the meaning: whatever sits first is the primary. *@
-                                        @if (ShowPrimaryBadge && IsPrimary(image))
-                                        {
-                                            <ShopBadge Class="shop-image-upload-primary"
-                                                       Size="TheShop.Web.Common.UI.ShopSize.Small"
-                                                       Variant="TheShop.Web.Common.UI.ShopVariant.Outlined">@PrimaryLabel</ShopBadge>
-                                        }
-
-                                    </MudStack>
-
-                                    @* A row's own error replaces its size caption — invalid files are never mixed
-                                       with a size reading, so there is never more than one caption per row. *@
-                                    @{ var size = FormatFileSize(image); }
-                                    @if (image.Error is not null)
-                                    {
-                                        <MudText Typo="Typo.caption" Color="Color.Error">@image.Error</MudText>
-                                    }
-                                    else if (size is not null)
-                                    {
-                                        <MudText Typo="Typo.caption" Color="Color.Secondary">@size</MudText>
-                                    }
-
-                                </MudStack>
-
-                                <MudIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
-                                               Class="remove"
-                                               Size="Size.Small"
-                                               Color="Color.Primary"
-                                               OnClick="@(() => RemoveAsync(image))"
-                                               aria-label="@RemoveLabel"
-                                               Disabled="@(Disabled || picking)" />
-
-                            </MudStack>
-                        }
-
-                        @* One skeleton row per file still being read from the current pick — a
-                           multi-file selection shows its own progress instead of appearing to do
-                           nothing until every file in the batch finishes at once. *@
-                        @for (var i = 0; i < _pendingCount; i++)
-                        {
-                            <MudStack @key="@($"pending-{i}")"
-                                      Row="true"
-                                      Class="@PreviewClassname"
-                                      AlignItems="AlignItems.Center"
-                                      Spacing="4">
-
-                                <ShopSkeleton Class="pending-thumbnail" Style="@ThumbnailStyle" />
-
-                                <MudStack Spacing="1" Class="info flex-grow-1">
-                                    <ShopSkeleton Shape="TheShop.Web.Common.UI.ShopSkeletonShape.Text" Class="pending-name" />
-                                    <ShopSkeleton Shape="TheShop.Web.Common.UI.ShopSkeletonShape.Text" Class="pending-size" />
-                                </MudStack>
-
-                            </MudStack>
-                        }
-
-                    </MudStack>
-                }
-
-            </SelectedTemplate>
-
-        </MudFileUpload>
-
+<div @attributes="AdditionalAttributes" @ref="_root" class="@ClassName" style="@Style"
+     data-upload-disabled="@Blocked.ToString().ToLowerInvariant()">
+    <BusyFor Key="@_busyKey" Context="processing">
+        <ShopFileDropzone Label="@(UploadText ?? Strings.ImageUpload_Add)"
+                          DragLabel="@Strings.ImageUpload_Drop" HelperText="@Hint"
+                          ErrorText="@_selectionError" Accept="@Accept" Multiple="@Multiple"
+                          Disabled="@(Disabled || processing)" FilesSelected="SelectAsync"
+                          ChildContent="@GridContent" />
+        <p id="@_helpId" class="shop-image-upload-hint">@Instructions</p>
+        @if (_selectionError is not null && DisplayedImages.Count > 0)
+        {
+            <p class="shop-image-upload-error" role="alert">@_selectionError</p>
+        }
+        @if (Multiple && _activeId is not null && Files.Count > 1)
+        {
+            <div class="shop-image-upload-move" aria-label="@Strings.ImageUpload_Reorder">
+                <ShopButton Variant="ShopVariant.Text" Size="ShopSize.Small" Disabled="@(Blocked || ActiveIndex <= 0)"
+                            OnClick="@(() => MoveActiveAsync(-1))">@Strings.ImageUpload_Earlier</ShopButton>
+                <ShopButton Variant="ShopVariant.Text" Size="ShopSize.Small" Disabled="@(Blocked || ActiveIndex < 0 || ActiveIndex >= Files.Count - 1)"
+                            OnClick="@(() => MoveActiveAsync(1))">@Strings.ImageUpload_Later</ShopButton>
+            </div>
+        }
     </BusyFor>
+    <span class="shop-visually-hidden" role="status">@_announcement</span>
+</div>
 
-</MudStack>
+@code {
+    private RenderFragment? GridContent => DisplayedImages.Count == 0 ? null : @<div class="shop-image-upload-grid" role="list" aria-label="@(PreviewAlt ?? Strings.ImageUpload_Label)">
+        @foreach (var image in DisplayedImages)
+        {
+            <div @key="image.ClientId" role="listitem" class="@ItemClass(image)" data-upload-id="@image.ClientId">
+                <ShopImageTile Src="@image.PreviewUrl" Alt="@ImageName(image)" Preset="@PreviewPreset"
+                               Primary="@IsPrimary(image)" PrimaryLabel="@(PrimaryLabel ?? Strings.ImageUpload_Primary)"
+                               Loading="@_pending.Any(p => p.ClientId == image.ClientId)"
+                               ErrorText="@image.Error" Disabled="@Blocked"
+                               RemoveLabel="@RemoveName(image)" OnRemove="@(() => RemoveAsync(image.ClientId))"
+                               OnClick="@(() => _activeId = image.ClientId)" OnFocus="@(() => _activeId = image.ClientId)"
+                               Draggable="@(Multiple && !Blocked)" DescribedBy="@_helpId"
+                               OnKeyDown="@(args => ReorderKeyAsync(image.ClientId, args))" />
+            </div>
+        }
+        <div role="listitem">
+            <button type="button" class="shop-image-upload-add" data-file-picker disabled="@(Blocked || AtCapacity)">
+                <ShopIcon Icon="@ShopIcons.Outlined.Add_Plus" />
+                <span>@(Multiple ? Strings.ImageUpload_Add : Strings.ImageUpload_Replace)</span>
+            </button>
+        </div>
+    </div>;
+}

@@ -1,0 +1,80 @@
+@use '../abstracts/text-style';
+
+.shop-image-tile {
+    position: relative;
+    min-inline-size: 0;
+    aspect-ratio: 1;
+    background: var(--shop-color-tertiary);
+    color: var(--shop-color-text-primary);
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset-inline: 0;
+        inset-block-end: 0;
+        border-block-end: 4px solid transparent;
+        pointer-events: none;
+    }
+    &:hover::after { border-color: var(--shop-color-primary); }
+    &:has(:focus-visible) { outline: 2px solid var(--shop-color-primary); outline-offset: -2px; }
+    &:hover .shop-image-tile-remove,
+    &:focus-within .shop-image-tile-remove { opacity: 1; pointer-events: auto; }
+}
+.shop-image-tile-image { inline-size: 100%; block-size: 100%; }
+.shop-image-tile-image img { -webkit-user-drag: none; user-select: none; }
+.shop-image-tile-surface {
+    position: absolute;
+    inset: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    &:focus-visible { outline: none; }
+    &[draggable='true'] { cursor: grab; }
+    &:disabled { cursor: default; }
+}
+.shop-image-tile-selected::after { border-color: var(--shop-color-primary); }
+.shop-image-tile-selected:hover::after { border-color: var(--shop-color-primary); }
+.shop-image-tile-primary { position: absolute; inset-block-start: 12px; inset-inline-start: 12px; pointer-events: none; }
+.shop-image-tile-remove {
+    position: absolute;
+    inset-block-start: 8px;
+    inset-inline-end: 8px;
+    opacity: 0;
+    pointer-events: none;
+}
+.shop-image-tile-error-message {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--shop-space-2);
+    padding: var(--shop-space-2);
+    overflow: auto;
+    > .shop-icon { color: var(--shop-color-error); }
+    > p { margin: 0; overflow-wrap: anywhere; text-align: center; @include text-style.apply(caption); }
+}
+.shop-image-tile-error {
+    .shop-image-tile-remove { opacity: 1; pointer-events: auto; }
+    &:hover::after { border-color: var(--shop-color-error); }
+}
+.shop-image-tile-loading .shop-image-tile-image { opacity: 0.4; }
+.shop-image-tile-loader {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    color: var(--shop-color-primary);
+    .shop-spinner { inline-size: 32px; block-size: 32px; }
+}
+@media (hover: none), (pointer: coarse) {
+    .shop-image-tile-remove { opacity: 1; pointer-events: auto; }
+}
+@media (forced-colors: active) {
+    .shop-image-tile { outline: 1px solid CanvasText; }
+    .shop-image-tile:has(:focus-visible) { outline-color: Highlight; }
+    .shop-image-tile-selected::after { border-color: Highlight; }
+}

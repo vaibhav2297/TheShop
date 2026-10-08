@@ -1,336 +1,266 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using MudBlazor;
-using MudBlazor.Utilities;
 using TheShop.Web.Common;
+using TheShop.Web.Common.UI;
+using TheShop.Web.Resources;
 
 namespace TheShop.Web.Components.Common;
 
-/// <summary>
-/// Reusable image upload rendered as a dashed dropzone activator plus a list of preview rows, one
-/// per selected image. Supports both single (<see cref="Multiple"/> = <c>false</c>) and multi-image
-/// selection; in multi mode the first row is always treated as the primary image
-/// (<see cref="ShowPrimaryBadge"/>) — selection order decides it, and the only way to change it is to
-/// remove and re-add images in the desired order. Every selected file is read into a
-/// <see cref="ShopUploadedImage"/> (bytes + a browser object-URL preview) and kept in the selection
-/// regardless of whether it passes the <see cref="AllowedContentTypes"/> / <see cref="MaxFileSize"/>
-/// guard — a failing entry carries its localized <see cref="ShopUploadedImage.Error"/> and renders
-/// that message on its own row instead of a size caption, so a consumer must filter
-/// <c>Error is null</c> before using the selection for anything but display. The current selection
-/// surfaces through <c>@bind-Files</c>. A consumer may seed <see cref="Files"/> with
-/// <see cref="ShopUploadedImage.Existing"/> entries so already-stored images take part in the same
-/// selection. Inherits from <see cref="MudComponentBase"/> so consumers can forward <c>Class</c>,
-/// <c>Style</c>, and arbitrary attributes to the root element. All user-facing text is supplied by
-/// the consumer as already-localized strings.
-/// </summary>
-public partial class ShopImageUpload : MudComponentBase, IAsyncDisposable
+/// <summary>Controlled image selection with previews, validation, removal, and ordering.
+/// Emits ordered snapshots; persistence stays with the form. Owns only URLs it creates.</summary>
+public partial class ShopImageUpload : ShopComponentBase, IAsyncDisposable
 {
-    #region Parameters
-
-    /// <summary>
-    /// The currently selected images. Use with <c>@bind-Files</c>.
-    /// </summary>
+    /// <summary>Ordered selection, including existing images and rejected files.</summary>
     [Parameter] public IReadOnlyList<ShopUploadedImage> Files { get; set; } = [];
-
-    /// <summary>
-    /// Fires with the new selection whenever an image is added or removed.
-    /// </summary>
+    /// <summary>Emits selection changes; the consumer echoes them through Files.</summary>
     [Parameter] public EventCallback<IReadOnlyList<ShopUploadedImage>> FilesChanged { get; set; }
-
-    /// <summary>
-    /// When <c>true</c>, multiple images may be selected; otherwise a single image replaces the current one.
-    /// </summary>
+    /// <summary>Appends and enables reordering; false replaces the single selection.</summary>
     [Parameter] public bool Multiple { get; set; }
-
-    /// <summary>
-    /// Upper bound on retained images in multi mode. Ignored when <see cref="Multiple"/> is <c>false</c> (capped at 1).
-    /// </summary>
+    /// <summary>Retained entry limit in multiple mode, including rejected entries.</summary>
     [Parameter] public int MaxFileCount { get; set; } = 10;
-
-    /// <summary>
-    /// The <c>accept</c> filter passed to the underlying file input.
-    /// </summary>
+    /// <summary>Browser picker filter; independent of validation.</summary>
     [Parameter] public string Accept { get; set; } = ".png,.jpg,.jpeg,.webp";
-
-    /// <summary>
-    /// MIME types accepted after selection; anything else flags the row with <see cref="InvalidTypeError"/>.
-    /// </summary>
-    [Parameter]
-    public IReadOnlyCollection<string> AllowedContentTypes { get; set; } =
-        ["image/png", "image/jpeg", "image/webp"];
-
-    /// <summary>
-    /// Maximum size, in bytes, of a single image. Defaults to 2 MB.
-    /// </summary>
+    /// <summary>Permitted browser MIME types; server validation remains authoritative.</summary>
+    [Parameter] public IReadOnlyCollection<string> AllowedContentTypes { get; set; } = ["image/png", "image/jpeg", "image/webp"];
+    /// <summary>Hard read limit in bytes. Oversized files are never buffered.</summary>
     [Parameter] public long MaxFileSize { get; set; } = 2 * 1024 * 1024;
-
-    /// <summary>
-    /// Localized label shown inside the dropzone.
-    /// </summary>
+    /// <summary>Optional localized empty picker text.</summary>
     [Parameter] public string? UploadText { get; set; }
-
-    /// <summary>
-    /// Localized ARIA label for each preview's remove button.
-    /// </summary>
+    /// <summary>Optional removal label, supplemented by the image name.</summary>
     [Parameter] public string? RemoveLabel { get; set; }
-
-    /// <summary>
-    /// Localized alt text applied to every preview image.
-    /// </summary>
+    /// <summary>Group label and description for persisted images without filenames.</summary>
     [Parameter] public string? PreviewAlt { get; set; }
-
-    /// <summary>
-    /// When <c>true</c>, the first image in the selection is badged with <see cref="PrimaryLabel"/>
-    /// to show that position — not a separate flag — is what makes an image primary.
-    /// </summary>
+    /// <summary>Highlights the first valid image and gives it a two-by-two grid allocation.</summary>
     [Parameter] public bool ShowPrimaryBadge { get; set; }
-
-    /// <summary>
-    /// Localized text of the badge shown on the first image when <see cref="ShowPrimaryBadge"/> is set.
-    /// </summary>
+    /// <summary>Optional localized primary badge text.</summary>
     [Parameter] public string? PrimaryLabel { get; set; }
-
-    /// <summary>
-    /// Localized message shown on a row whose file's content type is not allowed.
-    /// </summary>
+    /// <summary>Optional localized type rejection message.</summary>
     [Parameter] public string? InvalidTypeError { get; set; }
-
-    /// <summary>
-    /// Localized message shown on a row whose file exceeds <see cref="MaxFileSize"/>.
-    /// </summary>
+    /// <summary>Optional localized size rejection message.</summary>
     [Parameter] public string? MaxFileSizeError { get; set; }
-
-    /// <summary>
-    /// Side length, in pixels, of each row's square thumbnail. Defaults to 32.
-    /// </summary>
-    [Parameter] public int PreviewSize { get; set; } = 32;
-
-    /// <summary>
-    /// Image treatment of each row's thumbnail within its <see cref="PreviewSize"/> square. Defaults to
-    /// <see cref="ShopImagePreset.SquareContain"/>; brand logo uploads use <see cref="ShopImagePreset.BrandLogo"/>.
-    /// </summary>
+    /// <summary>Preview fitting; logo inputs can retain BrandLogo.</summary>
     [Parameter] public ShopImagePreset PreviewPreset { get; set; } = ShopImagePreset.SquareContain;
-
-    /// <summary>
-    /// Height, in pixels, of the dashed dropzone. Defaults to 200.
-    /// </summary>
-    [Parameter] public int DropzoneHeight { get; set; } = 200;
-
-    /// <summary>
-    /// When <c>true</c>, the dropzone and remove buttons are disabled.
-    /// </summary>
+    /// <summary>Prevents selection, removal, and ordering.</summary>
     [Parameter] public bool Disabled { get; set; }
-
-    /// <summary>
-    /// Localized composite format (e.g. <c>"{0} KB"</c>) used to render a newly picked file's size
-    /// below its name. A <c>null</c> value, or an entry with no <see cref="ShopUploadedImage.Bytes"/>
-    /// (an already-stored image), omits the size line.
-    /// </summary>
-    [Parameter] public string? FileSizeFormat { get; set; }
-
-    #endregion
-
-    #region State
 
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
+    private readonly string _busyKey = $"{BusyKeys.ImageSelection}.{Guid.NewGuid():N}";
+    private readonly string _helpId = $"shop-upload-help-{Guid.NewGuid():N}";
+    private readonly CancellationTokenSource _lifetime = new();
+    private readonly HashSet<string> _ownedUrls = [];
+    private List<ShopUploadedImage> _pending = [];
+    private IReadOnlyList<ShopUploadedImage> _batchBase = [];
+    private Task _processing = Task.CompletedTask;
+    private Task<IJSObjectReference>? _moduleTask;
+    private DotNetObjectReference<ShopImageUpload>? _reference;
+    private ElementReference _root;
+    private bool _disposed;
+    private Guid? _activeId;
+    private string? _selectionError;
+    private string? _announcement;
+    private bool Blocked => Disabled || _disposed || BusyState.IsBusy(_busyKey);
+    private bool AtCapacity => Multiple && Files.Count >= MaxFileCount;
+    private int ActiveIndex => Files.ToList().FindIndex(image => image.ClientId == _activeId);
+    private IReadOnlyList<ShopUploadedImage> DisplayedImages => _pending.Count == 0 ? Files : [.. _batchBase, .. _pending];
+    private string ClassName => ShopCssClass.Join("shop-image-upload shop-native", Class);
+    private string Hint => string.Format(Strings.ImageUpload_TypesHint,
+        Accept == ".png,.jpg,.jpeg,.webp" ? Strings.ImageUpload_DefaultFormats : Accept,
+        (MaxFileSize / 1048576d).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture));
+    private string Instructions => Multiple && Files.Count > 0 ? Strings.ImageUpload_ReorderHint : ShowPrimaryBadge ? Strings.ImageUpload_PrimaryHint : Strings.ImageUpload_PickHint;
+    private bool IsPrimary(ShopUploadedImage image) => ShowPrimaryBadge && DisplayedImages.FirstOrDefault(i => i.Error is null)?.ClientId == image.ClientId;
+    private string ItemClass(ShopUploadedImage image) => ShopCssClass.Join("shop-image-upload-item", IsPrimary(image) ? "shop-image-upload-primary" : null);
+    private string ImageName(ShopUploadedImage image) => string.IsNullOrWhiteSpace(image.FileName)
+        ? string.Format(Strings.ImageUpload_ImageName, PreviewAlt ?? Strings.ImageUpload_Label, DisplayedImages.ToList().FindIndex(i => i.ClientId == image.ClientId) + 1)
+        : image.FileName;
+    private string RemoveName(ShopUploadedImage image) => $"{RemoveLabel ?? Strings.ImageUpload_Remove}: {ImageName(image)}";
 
-    private MudFileUpload<IReadOnlyList<IBrowserFile>> _fileUpload = default!;
-    private IJSObjectReference? _jsModule;
-
-    // Guards against the FilesChanged callback that MudFileUpload raises when we reset it
-    // after processing a batch (the reset exists so re-selecting the same file fires again).
-    private bool _resetting;
-
-    // Unique per instance so two ShopImageUpload components on the same page (e.g. a gallery and a
-    // variant dialog) never share a busy signal — each only reports its own picking as in flight.
-    private readonly string _busyKey = $"shop-image-upload.{Guid.NewGuid():N}";
-
-    // Number of files from the current pick still being read into the selection — drives the
-    // skeleton placeholders rendered after the real rows, one per file still in flight.
-    private int _pendingCount;
-
-    private int EffectiveMaxFileCount => Multiple ? MaxFileCount : 1;
-
-    #endregion
-
-    #region CSS Forwarding
-
-    protected string Classname => new CssBuilder("shop-image-upload")
-        .AddClass(Class)
-        .Build();
-
-    protected string Stylename => new StyleBuilder()
-        .AddStyle(Style)
-        .Build();
-
-    private string DropzoneStyle => new StyleBuilder()
-        .AddStyle("height", $"{DropzoneHeight}px")
-        .Build();
-
-    private string PreviewClassname => new CssBuilder("preview")
-        .AddClass("border")
-        .AddClass("rounded-0")
-        .AddClass("pa-4")
-        .AddClass("mud-border-lines-default")
-        .Build();
-
-    private string ThumbnailStyle => new StyleBuilder()
-        .AddStyle("width", $"{PreviewSize}px")
-        .AddStyle("height", $"{PreviewSize}px")
-        .Build();
-
-    #endregion
-
-    #region Event Handlers
-
-    private async Task OpenPickerAsync(MudFileUpload<IReadOnlyList<IBrowserFile>> upload, bool picking)
+    protected override async Task OnParametersSetAsync()
     {
-        if (Disabled || picking)
-            return;
-
-        await upload.OpenFilePickerAsync();
+        ArgumentOutOfRangeException.ThrowIfLessThan(MaxFileCount, 1);
+        ArgumentOutOfRangeException.ThrowIfLessThan(MaxFileSize, 1);
+        if (BusyState.IsBusy(_busyKey)) return;
+        await RevokeUnusedAsync();
     }
 
-    private async Task OnFilesChangedAsync(IReadOnlyList<IBrowserFile>? files)
+    private async Task RevokeUnusedAsync()
     {
-        if (_resetting || files is null || files.Count == 0) return;
+        var retained = Files.Select(f => f.PreviewUrl).ToHashSet();
+        foreach (var url in _ownedUrls.Where(url => !retained.Contains(url)).ToArray()) await RevokeAsync(url);
+    }
 
-        var priorCount = Multiple ? Files.Count : 0;
-        _pendingCount = Math.Min(files.Count, EffectiveMaxFileCount - priorCount);
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        var module = await ModuleAsync();
+        if (_disposed || module is null) return;
+        _reference = DotNetObjectReference.Create(this);
+        await module.InvokeVoidAsync("bindOrder", _root, _reference);
+    }
 
+    /// <summary>Waits for file preparation and its callback before the owning form submits.</summary>
+    public Task WaitForPendingFilesAsync() => _processing;
+
+    private Task SelectAsync(IReadOnlyList<IBrowserFile> files)
+    {
+        if (Blocked || files.Count == 0) return Task.CompletedTask;
+        _processing = ProcessAsync(files);
+        return _processing;
+    }
+
+    private async Task ProcessAsync(IReadOnlyList<IBrowserFile> files)
+    {
+        var limit = Multiple ? Math.Max(0, MaxFileCount - Files.Count) : 1;
+        _selectionError = files.Count > limit ? string.Format(Strings.ImageUpload_CountError, Multiple ? MaxFileCount : 1) : null;
+        if (limit == 0) return;
+        var batch = files.Take(limit).ToArray();
+        var prior = Files.ToArray();
+        _batchBase = Multiple ? prior : [];
+        _pending = [.. batch.Select(file => new ShopUploadedImage([], file.Name, file.ContentType, string.Empty))];
+        var committed = false;
         try
         {
-            // Reading each file is async (the whole file is buffered into bytes), so the dropzone
-            // routes through the shared busy state to guard against re-entrant picks while a batch
-            // is still being read.
             await BusyState.RunAsync(_busyKey, async () =>
             {
-                // In single mode a new selection replaces the current image — its object URL(s), if
-                // any, are no longer referenced by anything and must be released explicitly.
-                if (!Multiple)
-                    await RevokeAllAsync(Files);
-
-                var accepted = Multiple ? new List<ShopUploadedImage>(Files) : [];
-                var remaining = EffectiveMaxFileCount - accepted.Count;
-
-                foreach (var file in files)
+                StateHasChanged();
+                for (var index = 0; index < batch.Length; index++)
                 {
-                    if (remaining <= 0) break;
-
-                    // A failing file still becomes a row — carrying its own error — rather than being
-                    // silently dropped, so the selection stays visible until the user removes it.
-                    var error = !AllowedContentTypes.Contains(file.ContentType)
-                        ? InvalidTypeError
-                        : file.Size > MaxFileSize
-                            ? MaxFileSizeError
-                            : null;
-
-                    accepted.Add(await ReadImageAsync(file, error));
-                    remaining--;
+                    var file = batch[index];
+                    var error = !AllowedContentTypes.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase)
+                        ? InvalidTypeError ?? Strings.ImageUpload_InvalidType
+                        : file.Size > MaxFileSize ? MaxFileSizeError ?? string.Format(Strings.ImageUpload_SizeError, MaxFileSize / 1048576d) : null;
+                    var item = _pending[index];
+                    if (error is null)
+                    {
+                        try
+                        {
+                            using var stream = file.OpenReadStream(MaxFileSize, _lifetime.Token);
+                            using var buffer = new MemoryStream();
+                            await stream.CopyToAsync(buffer, _lifetime.Token);
+                            var bytes = buffer.ToArray();
+                            var module = await ModuleAsync();
+                            _lifetime.Token.ThrowIfCancellationRequested();
+                            using var reference = new DotNetStreamReference(new MemoryStream(bytes));
+                            var url = module is null ? string.Empty : await module.InvokeAsync<string>("createObjectUrl", reference, file.ContentType);
+                            if (!string.IsNullOrEmpty(url)) _ownedUrls.Add(url);
+                            item = item with { Bytes = bytes, PreviewUrl = url };
+                        }
+                        catch (Exception exception) when (exception is IOException or JSException)
+                        {
+                            error = Strings.ImageUpload_ReadError;
+                        }
+                    }
+                    _pending[index] = item with { Error = error };
+                    _lifetime.Token.ThrowIfCancellationRequested();
+                    if (!_disposed) StateHasChanged();
                 }
-
-                await FilesChanged.InvokeAsync(accepted);
+                // An external reset during preparation takes precedence over this batch.
+                if (!Files.SequenceEqual(prior)) return;
+                IReadOnlyList<ShopUploadedImage> updated = Multiple ? [.. prior, .. _pending] : [.. _pending];
+                await FilesChanged.InvokeAsync(updated);
+                committed = true;
+                if (!Multiple) foreach (var old in prior) await RevokeAsync(old.PreviewUrl);
             });
         }
+        catch (OperationCanceledException) when (_disposed) { }
         finally
         {
-            _pendingCount = 0;
+            if (!committed) foreach (var pending in _pending) await RevokeAsync(pending.PreviewUrl);
+            _pending = [];
+            _batchBase = [];
+            if (!_disposed)
+            {
+                await RevokeUnusedAsync();
+                StateHasChanged();
+            }
         }
-
-        // Reset the input so selecting the same file again still raises FilesChanged.
-        _resetting = true;
-        await _fileUpload.ClearAsync();
-        _resetting = false;
     }
 
-    private async Task RemoveAsync(ShopUploadedImage image)
+    private async Task RemoveAsync(Guid id)
     {
-        await RevokeAsync(image);
-        var updated = Files.Where(f => f.ClientId != image.ClientId).ToList();
+        if (Blocked) return;
+        var removed = Files.FirstOrDefault(f => f.ClientId == id);
+        if (removed is null) return;
+        var name = ImageName(removed);
+        var index = Files.ToList().FindIndex(f => f.ClientId == id);
+        var updated = Files.Where(f => f.ClientId != id).ToArray();
         await FilesChanged.InvokeAsync(updated);
+        await RevokeAsync(removed.PreviewUrl);
+        _activeId = updated.Length == 0 ? null : updated[Math.Min(index, updated.Length - 1)].ClientId;
+        _selectionError = null;
+        _announcement = string.Format(Strings.ImageUpload_Removed, name);
+        await FocusAsync(_activeId);
     }
 
-    private bool IsPrimary(ShopUploadedImage image) => IndexOf(image) == 0;
-
-    // Only a valid, newly picked file carries bytes to size; an invalid entry shows its error
-    // instead, and an already-stored entry has no bytes to report.
-    private string? FormatFileSize(ShopUploadedImage image) =>
-        image.Error is null && image.Bytes.Length > 0 && FileSizeFormat is not null
-            ? string.Format(FileSizeFormat, (image.Bytes.Length / 1024.0).ToString("F2"))
-            : null;
-
-    // Two picks of the same file are equal by record value, so position is resolved by the entry's
-    // own ClientId rather than by equality.
-    private int IndexOf(ShopUploadedImage image)
+    private Task MoveActiveAsync(int offset) => ActiveIndex < 0 ? Task.CompletedTask : MoveAsync(_activeId!.Value, ActiveIndex + offset);
+    private Task ReorderKeyAsync(Guid id, KeyboardEventArgs args)
     {
-        for (var i = 0; i < Files.Count; i++)
-        {
-            if (Files[i].ClientId == image.ClientId)
-                return i;
-        }
-
-        return -1;
+        if (!args.AltKey || args.Key is not ("ArrowLeft" or "ArrowRight")) return Task.CompletedTask;
+        var index = Files.ToList().FindIndex(f => f.ClientId == id);
+        return MoveAsync(id, index + (args.Key == "ArrowLeft" ? -1 : 1));
     }
 
-    // Reads the full file regardless of MaxFileSize so an oversized entry still gets a real
-    // thumbnail on its row — the browser already holds the whole file in memory either way, since
-    // it was read from disk in full the moment the user picked it.
-    private async Task<ShopUploadedImage> ReadImageAsync(IBrowserFile file, string? error)
+    /// <summary>Requests movement between current client identities from the scoped drag bridge.</summary>
+    [JSInvokable]
+    public Task ReorderAsync(string source, string target)
     {
-        using var stream = file.OpenReadStream(file.Size);
-        using var buffer = new MemoryStream();
-        await stream.CopyToAsync(buffer);
-
-        var bytes = buffer.ToArray();
-        var previewUrl = await CreatePreviewUrlAsync(bytes, file.ContentType);
-        return new ShopUploadedImage(bytes, file.Name, file.ContentType, previewUrl) { Error = error };
+        if (!Guid.TryParse(source, out var id) || !Guid.TryParse(target, out var targetId)) return Task.CompletedTask;
+        return MoveAsync(id, Files.ToList().FindIndex(f => f.ClientId == targetId));
     }
 
-    // An object URL keeps a picked file's bytes out of the render tree entirely — unlike a
-    // data: URI, which would otherwise hold the whole file a second time as a giant string that
-    // Blazor re-diffs on every unrelated re-render, this is a short handle the browser resolves
-    // internally. The bytes are transferred via a stream reference so they never cross the JS
-    // interop boundary as base64-encoded JSON either.
-    private async Task<string> CreatePreviewUrlAsync(byte[] bytes, string contentType)
+    private async Task MoveAsync(Guid id, int destination)
     {
-        var module = await GetModuleAsync();
-        using var streamRef = new DotNetStreamReference(new MemoryStream(bytes));
-        return await module.InvokeAsync<string>("createObjectUrl", streamRef, contentType);
+        if (Blocked || !Multiple || destination < 0 || destination >= Files.Count) return;
+        var updated = Files.ToList();
+        var index = updated.FindIndex(f => f.ClientId == id);
+        if (index < 0 || index == destination) return;
+        var image = updated[index];
+        updated.RemoveAt(index);
+        updated.Insert(destination, image);
+        _activeId = id;
+        await FilesChanged.InvokeAsync(updated);
+        _announcement = string.Format(Strings.ImageUpload_Moved, ImageName(image), destination + 1);
+        await FocusAsync(id);
     }
 
-    private Task RevokeAllAsync(IEnumerable<ShopUploadedImage> images) =>
-        Task.WhenAll(images.Select(RevokeAsync));
-
-    // Only a newly picked file's preview is an object URL we created (and must release); an
-    // already-stored image's preview is the server's own URL.
-    private async Task RevokeAsync(ShopUploadedImage image)
+    private async Task FocusAsync(Guid? id)
     {
-        if (image.IsExisting) return;
-
-        var module = await GetModuleAsync();
-        await module.InvokeVoidAsync("revokeObjectUrl", image.PreviewUrl);
+        if (_disposed) return;
+        await InvokeAsync(StateHasChanged);
+        var module = await ModuleAsync();
+        if (module is not null) await module.InvokeVoidAsync("focusImage", _root, id?.ToString());
     }
 
-    private async Task<IJSObjectReference> GetModuleAsync() =>
-        _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/shopImageUpload.js");
+    private Task<IJSObjectReference> ModuleAsync() => _moduleTask ??= JS.InvokeAsync<IJSObjectReference>("import", "./js/shopImageUpload.js").AsTask();
+    private async Task RevokeAsync(string url)
+    {
+        if (!_ownedUrls.Remove(url)) return;
+        var module = await ModuleAsync();
+        if (module is not null) await module.InvokeVoidAsync("revokeObjectUrl", url);
+    }
 
-    #endregion
-
-    #region Disposal
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        if (_jsModule is null) return;
-
-        // The component going away means nothing else can still be showing these previews, so
-        // their object URLs are released here rather than left to leak for the rest of the SPA
-        // session (unlike a full page load, navigating within a Blazor WASM app never reclaims them).
-        await RevokeAllAsync(Files.Where(image => !image.IsExisting));
-        await _jsModule.DisposeAsync();
+        if (_disposed) return;
+        _disposed = true;
+        await _lifetime.CancelAsync();
+        try
+        {
+            try { await _processing; }
+            finally
+            {
+                foreach (var url in _ownedUrls.ToArray()) await RevokeAsync(url);
+                if (_moduleTask is not null && await _moduleTask is { } module)
+                {
+                    await module.InvokeVoidAsync("unbindOrder", _root);
+                    await module.DisposeAsync();
+                }
+            }
+        }
+        catch (JSDisconnectedException) { }
+        finally { _reference?.Dispose(); _lifetime.Dispose(); }
     }
-
-    #endregion
 }

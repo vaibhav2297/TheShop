@@ -15,14 +15,13 @@
                          sm="4"
                          md="3">
 
-                    <ShopImageUpload Files="_categoryImages"
+                    <ShopImageUpload @ref="_imageUpload" Files="_categoryImages"
                                      FilesChanged="OnCategoryImagesChanged"
                                      UploadText="@Strings.AddCategory_ImageUploadButton"
                                      RemoveLabel="@Strings.AddCategory_ImageRemove"
                                      PreviewAlt="@Strings.AddCategory_ImageLabel"
                                      InvalidTypeError="@Strings.Category_ImageInvalidType"
                                      MaxFileSizeError="@Strings.Category_ImageTooLarge"
-                                     FileSizeFormat="@Strings.AddCategory_ImageFileSize"
                                      Multiple
                                      Disabled="@busy" />
 

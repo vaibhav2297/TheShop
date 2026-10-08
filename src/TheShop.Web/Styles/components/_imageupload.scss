@@ -1,41 +1,34 @@
 @use '../abstracts/text-style';
 
-// ─── Image upload previews ───────────────────────────────────────────────────
-// Styles for ShopImageUpload. Per-instance thumbnail size and dropzone height are
-// driven from parameters via inline Style; only the static layout lives here.
-// Child selectors are scoped under the root so their names can stay short.
-.shop-image-upload {
-
-    // Flex items default to a min-width of their content size, which defeats text-truncate on the
-    // filename below; overriding it at every level the filename sits under lets it actually shrink.
-    .info,
-    .name-row {
-        min-width: 0;
-    }
-
-    // Keeps a long filename on one line with an ellipsis instead of pushing the primary chip
-    // and remove button out of the row.
-    .filename {
-        flex-grow: 1;
-        min-width: 0;
-    }
-
-    // Pending-file skeleton row: the thumbnail keeps its inline PreviewSize square and the two
-    // caption lines stand in for the filename and size.
-    .pending-thumbnail {
-        flex: none;
-    }
-
-    .pending-name,
-    .pending-size {
-        @include text-style.apply(caption);
-    }
-
-    .pending-name {
-        inline-size: 60%;
-    }
-
-    .pending-size {
-        inline-size: 30%;
-    }
+.shop-image-upload { display: grid; gap: var(--shop-space-2); min-inline-size: 0; }
+.shop-image-upload-hint,
+.shop-image-upload-error { margin: 0; }
+.shop-image-upload-hint { @include text-style.apply(caption); color: var(--shop-color-text-secondary); }
+.shop-image-upload-error { @include text-style.apply(caption); color: var(--shop-color-error); }
+.shop-image-upload-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--shop-space-2); }
+.shop-image-upload-item { min-inline-size: 0; }
+.shop-image-upload-primary { grid-column: span 2; grid-row: span 2; }
+.shop-image-upload-add {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--shop-space-2);
+    min-inline-size: 0;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    padding: var(--shop-space-2);
+    border: 1px dashed var(--shop-color-lines-default);
+    border-radius: 0;
+    background: var(--shop-color-surface-default);
+    color: var(--shop-color-primary);
+    cursor: pointer;
+    @include text-style.apply(caption);
+    &:focus-visible { outline: 2px solid var(--shop-color-primary); outline-offset: -2px; }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+.shop-image-upload-item[data-drop-target='true'] { outline: 2px dashed var(--shop-color-primary); }
+.shop-image-upload-move { display: flex; flex-wrap: wrap; gap: var(--shop-space-2); }
+@media (forced-colors: active) {
+    .shop-image-upload-add { border-color: ButtonText; }
 }

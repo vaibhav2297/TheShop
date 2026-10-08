@@ -38,6 +38,7 @@ public partial class EditCategory : ComponentBase
 
     [Parameter] public Guid Id { get; set; }
 
+    private ShopImageUpload? _imageUpload;
     private MudForm _form = default!;
     private string _name = string.Empty;
     private string? _description;
@@ -97,6 +98,7 @@ public partial class EditCategory : ComponentBase
 
     private async Task SaveAsync()
     {
+        if (_imageUpload is not null) await _imageUpload.WaitForPendingFilesAsync();
         await _form.ValidateAsync();
         if (!_isFormValid)
             return;

@@ -165,6 +165,8 @@ src/TheShop.Web/
       ShopImage.razor / ShopImage.razor.cs
       ShopImagePreset.cs
       ShopImageUpload.razor / ShopImageUpload.razor.cs
+      ShopFileDropzone.razor / ShopFileDropzone.razor.cs
+      ShopImageTile.razor / ShopImageTile.razor.cs
       ShopUploadedImage.cs
       ShopPagination.razor / ShopPagination.razor.cs
       ShopBreadcrumbs.razor / ShopBreadcrumbs.razor.cs
@@ -260,6 +262,8 @@ src/TheShop.Web/
       _notification.scss
       _image.scss
       _imageupload.scss
+      _file-dropzone.scss
+      _image-tile.scss
       _otpinput.scss
       _breadcrumbs.scss
       _appbar.scss
@@ -283,6 +287,7 @@ src/TheShop.Web/
     css/TheShop.css                                    [generated]
     js/shopDialog.js
     js/shopImageUpload.js
+    js/shopFileDropzone.js
     js/shopOtpInput.js                                 [retain only needed behavior]
     js/shop-rich-text-editor.js
     images/logo/
@@ -835,7 +840,7 @@ Design: [Figma Skeleton 3010:17888](https://www.figma.com/design/63Ieb8AduwMHoVH
   - `ProductCardSkeleton` reuses the `shop-product-card`, media, content, brand, title and price classes. Line widths are 40%, 80% and 30%.
   - `AdminModuleCardSkeleton` and `AdminFormSkeleton`, in `_admin-skeletons.scss`, copy the still-Mud admin card geometry (24px padding, 1px outline, 16px and 48px gaps, H6 18px label, H2 count, 36px action) and the edit-page geometry (32px padding, 24px gap, H3 heading, field-height block, 240px panel) with tokens. EditBrand, EditCategory and EditProduct share `AdminFormSkeleton`.
   - The catalogue filter skeleton is single-use page markup: five rows with the expander's 72px header height and dividers.
-  - The `ShopImageUpload` pending row keeps the existing dynamic `PreviewSize` thumbnail style, plus caption-style Text lines at 60% and 30%.
+  - Historical: batch 36 used skeleton rows in `ShopImageUpload`. Batch 38 replaces those rows with image tiles and a loader only.
 - Announcements: only `ShopTable` announces loading, because it stays mounted. Page skeletons that replace content are hidden and do not announce, which matches the previous `MudSkeleton` behavior.
 
 ## 7. Forms and validation architecture
@@ -1219,11 +1224,32 @@ Native image error events may simplify the current observer workaround. Verify l
 
 ### Uploads
 
-Preserve `ShopUploadedImage`, existing callbacks, ordering/primary-image behavior, persisted images, single-selection replacement, multiple selection, and per-file error rows. Current defaults include 10 files and 2 MiB per file, but read live values and call-site overrides before implementing.
+Native composition — batch 38:
+
+| Component | Owns |
+|---|---|
+| `ShopFileDropzone` | Native `InputFile`, browse/keyboard activation, file drops, drag-over treatment, awaited batch callback, reset for same-file reselection. No retained files or image validation. |
+| `ShopImageTile` | `ShopImage` presentation, primary badge, optional selected state, loader, error, remove affordance and controlled callbacks. No URL ownership or collection state. |
+| `ShopImageUpload` | Ordered `ShopUploadedImage` selection, file validation/read limits, preview URLs, count limit, removal, primary allocation, reordering and `FilesChanged`. |
+| Owning form | Echoes `FilesChanged`, waits for `WaitForPendingFilesAsync()` before Save, maps valid selections into existing commands, persists uploads/deletions. |
+
+Defaults remain 10 entries and 2 MiB per file. ProductForm keeps its explicit unlimited-count override; brand/category forms keep single-selection replacement and their preview presets. Stored entries retain `ExistingId`; moves retain `ClientId` and byte-array identity. No backend contract changes.
+
+Figma source: [Image Upload section](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=3013-17940), inspected 2026-10-08. Dropzone set `3013:17971` uses a 448×200 default frame, 32px/24px padding, 24px icon, Subtitle 1 title and Caption hint. Tile set `3013:18188` uses 144px squares, tertiary background, whole-image fitting, 12px primary-badge inset and 8px remove inset. The grid has three equal columns and 8px gaps; its first valid product image spans two columns and rows. Width adapts to the container; responsive behaviour is inferred from this geometry.
+
+- Idle desktop removal is hidden. Hover/focus reveals it; touch and validation-error tiles keep it visible. `Removable=false` hides it in every state. Loading/disabled blocks all actions. Removal promotes the next valid image; removing the last restores the empty dropzone.
+- Updated Figma hover treatment: the normal tile's 4px bottom bar uses Primary (`3016:20008`); Error Hover retains Error (`3013:18394`).
+- The uploader has no visible heading, per the approved follow-up. `PreviewAlt` still names the image list and persisted-image controls accessibly.
+- Dragging reorders existing entries. Focus/tap selects the image for visible **Move earlier / Move later** actions; Alt+Left/Right also moves it. Live status announces movement/removal and focus follows the item. The shared action row and shortcut are accessibility adaptations, not Figma-measured elements.
+- `ShopImageTile.Selected` is nullable: null means ordinary activation, true/false means a toggle with `aria-pressed`. `Primary` is independent. The standalone tile can be used without removal or uploader state.
+- Processing shows a loader with an accessible loading name; no percentage, processing copy, skeleton row or filename caption. Filenames identify image/remove controls accessibly. Validation failures remain visible as error tiles.
+- Class/Style/unmatched attributes target each component's outer frame; native input IDs and enforced disabled attributes remain internal. Dropzone `ChildContent` can provide its own `data-file-picker` button. Its consumer must finish reading files inside `FilesSelected` before returning.
+- Removed legacy `PreviewSize`, `DropzoneHeight` and `FileSizeFormat` parameters; SCSS now owns tile geometry. All repository callers migrated. `Files`, `FilesChanged`, validation overrides and save-time ownership remain.
 
 - Read selected `IBrowserFile` streams before resetting/replacing their underlying input; references to files from a replaced selection may become invalid.
 - Keep explicit `OpenReadStream` limits and do not trust `accept` or browser-reported MIME type as the sole security check.
-- Preserve object URLs and revoke them on removal, replacement, and disposal. Do not replace previews with large base64 strings in component state.
+- Reject type/size failures before buffering. Read/preview failures become removable errors. Count overflow is reported; excess files are not read. Server validation remains authoritative.
+- Revoke owned object URLs on removal, replacement, external reset and disposal; never revoke borrowed stored URLs. Disposal cancels preparation. An external selection reset wins over an in-flight batch. No large base64 strings in component state.
 - Preserve same-file reselection and guard against overlapping picks.
 - Keep file validation failures visible, not silently dropped.
 - Preserve existing browser picker/drop behavior where implemented, including keyboard access.
@@ -2177,6 +2203,18 @@ The final implementing-agent response should state what changed, the exact verif
 - Money browser specimens use production-rendered markup and the real keyboard module; C# editing and product submission are covered by bUnit. Range browser tests exercise live Blazor callbacks and query updates. Reviewed `native-ui-evidence/money-390-False.png`, `money-1440-True.png`, and `range-390-True.png` under the E2E output directory. No new Figma measurements or backend writes.
 - Logs: `.sdd/.test-work/numeric-build.log`, `numeric-final-focused.log`, `numeric-web-all.log`, `numeric-browser.log`. Code graph refreshed; Graphify reports missing SQL parser coverage and zero-node configuration files, so graph output remains incomplete for those file types.
 - Rollback: revert this batch's numeric/draft files, money/range changes, product caller validation, keyboard module/index registration, resources, tests and guide record together. No package or stored-data changes.
+
+### Batch 38 — Native image upload, dropzone and tile — 2026-10-08
+
+- Rebuilt `ShopImageUpload` from the inspected Figma section `3013:17940`; added standalone `ShopFileDropzone` and `ShopImageTile`. Native controls, scoped SCSS and small JS bridges replace the uploader's Mud dependencies. Existing `ShopImage` presets and product/brand/category persistence contracts remain.
+- Adopted drag ordering, keyboard/touch Move earlier/later, first-valid-image primary allocation, hover/focus/touch removal rules and loader-only preparation. See section 9, Uploads, for ownership and removed parameters.
+- ProductForm and four brand/category forms now await pending file preparation before validating and saving. Rejected files are not buffered; errors remain removable. Input reset waits for consumption, overlapping picks are blocked, external resets win, and owned preview URLs are released on removal/replacement/reset/disposal.
+- Verification: **124 focused tests passed; final full Web suite 1,175 passed, 0 skipped.** Tests include identity/bytes through ordering, invalid files without reads, single replacement, stored URLs, count overflow, disabled controls, pending Save, external reset, cancellation and independent tile/dropzone use. Final review added coverage for releasing an earlier owned preview when the selection resets during another file's failed read.
+- **Three live-browser tests passed, 0 skipped.** Actual Blazor ProductForm with intercepted local auth/data reads; no backend writes. Covered 390px/1440px, vendor CSS removed, touch removal without hover, visible Move actions, keyboard/native dragging, picker/drop, same-file reselection, input reset, URL release, large text, reduced motion and forced colors. These checks do not establish backend storage integration.
+- Reviewed screenshots in `tests/TheShop.E2E.Tests/bin/Debug/net10.0/native-ui-evidence/upload-*.png`: empty, grid, focus, error, touch and accessibility states. Test PNGs are deterministic tall/wide fixtures, not Figma product artwork. Grid geometry and containment match; the action row/responsive sizing are documented adaptations. Initial touch setup was blocked by a sign-in notification; the test now dismisses it normally before continuing.
+- Solution build: **0 errors**, existing dependency/analyzer warnings remain. Design-rule gate and whitespace check pass. No new packages. Logs: `.sdd/.test-work/upload-focused-final.log`, `upload-web-all.log`, `upload-browser-final.log`, `upload-build.log`, `upload-design.log`; browser results: `tests/TheShop.E2E.Tests/TestResults/native-image-upload.trx`. The additional real-column mobile overflow assertion passed in `native-image-upload-touch.trx`.
+- Code graph refreshed. Existing limitations remain: missing SQL parser and zero-node configuration files; no semantic relabeling requested.
+- Rollback: revert this batch's uploader/primitives, callers, SCSS/JS, resources, tests and guide record together. No database or stored-data rollback.
 
 ## 19. Prompt to give the implementing AI
 

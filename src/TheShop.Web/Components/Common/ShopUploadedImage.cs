@@ -2,14 +2,14 @@ namespace TheShop.Web.Components.Common;
 
 /// <summary>
 /// A single image held by <see cref="ShopImageUpload"/>. Covers both a file the user just picked
-/// (raw <see cref="Bytes"/> plus a <c>data:</c> <see cref="PreviewUrl"/>) and an image that is
+/// (raw <see cref="Bytes"/> plus a browser object-URL <see cref="PreviewUrl"/>) and an image that is
 /// already stored server-side (<see cref="ExistingId"/> plus its stored URL), so a consumer can
 /// present, reorder, and submit one ordered selection that mixes the two.
 /// </summary>
 /// <param name="Bytes">The full contents of the file, read once at selection time. Empty for an already-stored image.</param>
 /// <param name="FileName">The original client file name. Empty for an already-stored image.</param>
 /// <param name="ContentType">The MIME type reported by the browser (e.g. <c>image/png</c>). Empty for an already-stored image.</param>
-/// <param name="PreviewUrl">The preview source — a <c>data:</c> URL of <paramref name="Bytes"/> for a newly picked file, the stored URL otherwise.</param>
+/// <param name="PreviewUrl">The preview source — a browser object URL of <paramref name="Bytes"/> for a newly picked file, the stored URL otherwise.</param>
 public sealed record ShopUploadedImage(
     byte[] Bytes,
     string FileName,
@@ -40,7 +40,7 @@ public sealed record ShopUploadedImage(
     /// <summary>
     /// A localized validation message (wrong type or too large) when this entry failed
     /// <see cref="ShopImageUpload"/>'s guard at selection time, or <c>null</c> when it is valid.
-    /// An invalid entry still occupies a row — with its thumbnail, name, and this message — so the
+    /// An invalid entry still occupies an error tile with this message and an accessible filename, so the
     /// selection stays visible until the user removes it; a consumer must exclude it before saving.
     /// </summary>
     public string? Error { get; init; }

@@ -49,14 +49,13 @@
                         }
                         else
                         {
-                            <ShopImageUpload Files="_newCategoryImages"
+                            <ShopImageUpload @ref="_imageUpload" Files="_newCategoryImages"
                                              FilesChanged="OnNewCategoryImagesChanged"
                                              UploadText="@Strings.AddCategory_ImageUploadButton"
                                              RemoveLabel="@Strings.AddCategory_ImageRemove"
                                              PreviewAlt="@Strings.AddCategory_ImageLabel"
                                              InvalidTypeError="@Strings.Category_ImageInvalidType"
                                              MaxFileSizeError="@Strings.Category_ImageTooLarge"
-                                             FileSizeFormat="@Strings.AddCategory_ImageFileSize"
                                              Disabled="@busy" />
                         }
                     </MudItem>

@@ -202,7 +202,7 @@ public class AddCategoryTests : TestContext
 
         SetCategoryImages(cut, [new ShopUploadedImage([1, 2, 3], "image.png", "image/png", "data:image/png;base64,AQID")]);
 
-        cut.Find($"[aria-label='{Strings.AddCategory_ImageRemove}']").Should().NotBeNull();
+        cut.Find($"[aria-label='{Strings.AddCategory_ImageRemove}: image.png']").Should().NotBeNull();
     }
 
     // =========================================================================

@@ -34,6 +34,7 @@ public partial class AddCategory : ComponentBase
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
 
+    private ShopImageUpload? _imageUpload;
     private MudForm _form = default!;
     private string _name = string.Empty;
     private string? _description;
@@ -64,6 +65,7 @@ public partial class AddCategory : ComponentBase
 
     private async Task SaveAsync()
     {
+        if (_imageUpload is not null) await _imageUpload.WaitForPendingFilesAsync();
         await _form.ValidateAsync();
         if (!_isFormValid) return;
 

@@ -55,6 +55,7 @@ public partial class ProductForm : MudComponentBase
     [Parameter, EditorRequired]
     public IReadOnlyList<BrandLookupDto> Brands { get; set; } = [];
 
+    private ShopImageUpload? _imageUpload;
     private MudForm _form = default!;
     private ShopMoneyField? _originalPriceField, _salePriceField;
     private ProductVariantsCard _variantsCard = default!;
@@ -301,6 +302,7 @@ public partial class ProductForm : MudComponentBase
 
     private async Task SaveAsync()
     {
+        if (_imageUpload is not null) await _imageUpload.WaitForPendingFilesAsync();
         var pricesValid = true;
         if (!HasVariants)
         {

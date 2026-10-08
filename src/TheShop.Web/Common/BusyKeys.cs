@@ -6,6 +6,9 @@ namespace TheShop.Web.Common;
 /// </summary>
 public static class BusyKeys
 {
+    /// <summary>Prefix for per-instance local image preparation.</summary>
+    public const string ImageSelection = "images.selection";
+
     public const string Global = "global";
 
     /// <summary>Key for loading the admin console's module cards.</summary>

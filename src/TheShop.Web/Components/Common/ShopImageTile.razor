@@ -1,0 +1,39 @@
+@inherits ShopComponentBase
+@using TheShop.Web.Common.UI
+
+<div @attributes="AdditionalAttributes" class="@ClassName" style="@Style" aria-busy="@Loading.ToString().ToLowerInvariant()">
+    @if (ErrorText is not null)
+    {
+        <div class="shop-image-tile-error-message">
+            <ShopIcon Icon="@ShopIcons.Outlined.Circle_Warning" />
+            <p>@ErrorText</p>
+        </div>
+    }
+    else if (!Loading || !string.IsNullOrWhiteSpace(Src))
+    {
+        <ShopImage Src="@Src" Preset="@Preset" Alt="@Alt" PlaceholderLabel="@Alt" Class="shop-image-tile-image" />
+    }
+    @if (OnClick.HasDelegate || OnFocus.HasDelegate)
+    {
+        <button type="button" class="shop-image-tile-surface" disabled="@EffectiveDisabled"
+                aria-label="@Alt" aria-pressed="@Pressed" aria-describedby="@DescribedBy"
+                draggable="@Draggable.ToString().ToLowerInvariant()"
+                @onclick="ActivateAsync" @onfocus="FocusAsync" @onkeydown="KeyDownAsync"></button>
+    }
+    @if (Primary && ErrorText is null)
+    {
+        <ShopBadge Class="shop-image-tile-primary" Size="ShopSize.Small">@PrimaryLabel</ShopBadge>
+    }
+    @if (Loading)
+    {
+        <span class="shop-image-tile-loader" role="status" aria-label="@Strings.Loading">
+            <span class="shop-spinner" aria-hidden="true"></span>
+        </span>
+    }
+    @if (Removable)
+    {
+        <ShopIconButton Class="shop-image-tile-remove" Icon="@ShopIcons.Outlined.Trash_Empty"
+                        Label="@RemoveLabel" Color="ShopColor.Surface" Size="ShopSize.Small"
+                        Disabled="@EffectiveDisabled" OnClick="RemoveAsync" />
+    }
+</div>

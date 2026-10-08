@@ -203,7 +203,7 @@ public class AddBrandTests : TestContext
 
         SetLogoImages(cut, [new ShopUploadedImage([1, 2, 3], "logo.png", "image/png", "data:image/png;base64,AQID")]);
 
-        cut.Find($"[aria-label='{Strings.AddBrand_LogoRemove}']").Should().NotBeNull();
+        cut.Find($"[aria-label='{Strings.AddBrand_LogoRemove}: logo.png']").Should().NotBeNull();
     }
 
     // =========================================================================

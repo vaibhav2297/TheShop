@@ -30,20 +30,19 @@
                             <MudItem xs="12" sm="4" xl="3">
 
                                 @* Gallery order is the source of truth: whichever image the staff member
-                                   picks first becomes the product's primary image — there is no reorder. *@
-                                <ShopImageUpload Files="@_galleryImages"
+                                   places first becomes the product's primary image. *@
+                                <ShopImageUpload @ref="_imageUpload" Files="@_galleryImages"
                                                  FilesChanged="OnGalleryImagesChanged"
                                                  Multiple="true"
                                                  MaxFileCount="int.MaxValue"
                                                  ShowPrimaryBadge="true"
                                                  Disabled="@busy"
-                                                 UploadText="@Strings.AddProduct_ImageUploadButton"
+                                                 UploadText="@Strings.ImageUpload_Add"
                                                  RemoveLabel="@Strings.AddProduct_ImageRemove"
-                                                 PreviewAlt="@Strings.AddProduct_ImageLabel"
+                                                 PreviewAlt="@Strings.ImageUpload_ProductImages"
                                                  InvalidTypeError="@Strings.Product_ImageInvalidType"
                                                  MaxFileSizeError="@Strings.Product_ImageTooLarge"
-                                                 PrimaryLabel="@Strings.AddProduct_ImagePrimary"
-                                                 FileSizeFormat="@Strings.AddProduct_ImageFileSize" />
+                                                 PrimaryLabel="@Strings.AddProduct_ImagePrimary" />
                             </MudItem>
 
                             <MudItem xs="12" sm="8" xl="9">

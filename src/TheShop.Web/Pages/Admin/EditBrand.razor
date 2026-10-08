@@ -49,7 +49,7 @@
                         }
                         else
                         {
-                            <ShopImageUpload Files="_newLogoImages"
+                            <ShopImageUpload @ref="_imageUpload" Files="_newLogoImages"
                                              FilesChanged="OnNewLogoImagesChanged"
                                              UploadText="@Strings.AddBrand_LogoUploadButton"
                                              RemoveLabel="@Strings.AddBrand_LogoRemove"
@@ -57,7 +57,6 @@
                                              PreviewPreset="ShopImagePreset.BrandLogo"
                                              InvalidTypeError="@Strings.Brand_LogoInvalidType"
                                              MaxFileSizeError="@Strings.Brand_LogoTooLarge"
-                                             FileSizeFormat="@Strings.AddBrand_LogoFileSize"
                                              Disabled="@busy" />
                         }
                     </MudItem>
