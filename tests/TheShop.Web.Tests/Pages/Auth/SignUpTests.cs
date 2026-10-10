@@ -275,6 +275,58 @@ public class SignUpTests : TestContext
     // Helpers
     // =========================================================================
 
+    [Theory]
+    [InlineData(0, true)]
+    [InlineData(1, false)]
+    public async Task NativeDate_AgeBoundary_PreservesCommandDateAndRejectsUnderage(int daysAfterCutoff, bool allowed)
+    {
+        _mediator.Send(Arg.Any<RequestSignUpOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Ok(new OtpRequestedDto("jane@example.com", 60)));
+        var cut = Render<SignUp>();
+        SetSignUpState(cut, "Jane", "Doe", "jane@example.com", DateTime.Today.AddYears(-25), true);
+        var date = DateOnly.FromDateTime(DateTime.Today).AddYears(-19).AddDays(daysAfterCutoff);
+        cut.Find("input[type=date]").Change(date.ToString("yyyy-MM-dd"));
+        await SubmitDirectlyAsync(cut);
+        if (allowed)
+        {
+            await _mediator.Received(1).Send(Arg.Is<RequestSignUpOtpCommand>(c => c.DateOfBirth == date), Arg.Any<CancellationToken>());
+            _pendingSignUp.DateOfBirth.Should().Be(date);
+        }
+        else
+        {
+            await _mediator.DidNotReceive().Send(Arg.Any<RequestSignUpOtpCommand>(), Arg.Any<CancellationToken>());
+            cut.Find(".shop-date-field .shop-field-error").TextContent.Should().Contain(Strings.Auth_Underage);
+        }
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("bad")]
+    [InlineData("2999-01-01")]
+    public async Task NativeDate_InvalidInput_BlocksDispatchEvenOutsideMudFormValidation(string date)
+    {
+        var cut = Render<SignUp>();
+        SetSignUpState(cut, "Jane", "Doe", "jane@example.com", DateTime.Today.AddYears(-25), true);
+        cut.Find("input[type=date]").Change(date);
+        await SubmitDirectlyAsync(cut);
+        await _mediator.DidNotReceive().Send(Arg.Any<RequestSignUpOtpCommand>(), Arg.Any<CancellationToken>());
+        cut.Find(".shop-date-field .shop-field-error").TextContent.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task NativeDate_ValidButAgeConfirmationMissing_BlocksDispatch()
+    {
+        var cut = Render<SignUp>();
+        SetSignUpState(cut, "Jane", "Doe", "jane@example.com", DateTime.Today.AddYears(-25), true);
+        typeof(SignUp).GetField("_ageConfirmed", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(cut.Instance, false);
+        cut.Render();
+        await SubmitDirectlyAsync(cut);
+        await _mediator.DidNotReceive().Send(Arg.Any<RequestSignUpOtpCommand>(), Arg.Any<CancellationToken>());
+    }
+
+    private static Task SubmitDirectlyAsync(IRenderedComponent<SignUp> cut) => cut.InvokeAsync(() =>
+        (Task)typeof(SignUp).GetMethod("OnSendCodeAsync", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(cut.Instance, null)!);
+
     /// <summary>
     /// Sets the private backing fields on <see cref="SignUp"/> via reflection so the
     /// form is in a state that allows the send-code button to be clicked without relying
@@ -293,7 +345,7 @@ public class SignUpTests : TestContext
         type.GetField("_firstName", flags)!.SetValue(cut.Instance, firstName);
         type.GetField("_lastName", flags)!.SetValue(cut.Instance, lastName);
         type.GetField("_email", flags)!.SetValue(cut.Instance, email);
-        type.GetField("_dateOfBirth", flags)!.SetValue(cut.Instance, (DateTime?)dateOfBirth);
+        type.GetField("_dateOfBirth", flags)!.SetValue(cut.Instance, (DateOnly?)DateOnly.FromDateTime(dateOfBirth));
         type.GetField("_isFormValid", flags)!.SetValue(cut.Instance, isFormValid);
         // OnSendCodeAsync re-validates via MudForm.ValidateAsync() before dispatching, which
         // re-checks the required age-confirmation checkbox — it must be pre-set here too or

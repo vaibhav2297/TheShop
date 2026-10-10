@@ -85,20 +85,11 @@
                                               Immediate="true"
                                               autocomplete="email" />
 
-                                <MudDatePicker Placeholder="@Strings.DateOfBirth_Label"
-                                               Variant="Variant.Filled"
-                                               @bind-Date="_dateOfBirth"
-                                               MaxDate="@_maxDate"
-                                               Required="true"
-                                               Disabled="@busy"
-                                               AdornmentIcon="@ShopIcons.Outlined.Calendar_"
-                                               Adornment="Adornment.End"
-                                               AdornmentColor="Color.Primary"
-                                               OpenTo="OpenTo.Year"
+                                <ShopDateField @ref="_dateField" Label="@Strings.DateOfBirth_Label"
+                                               @bind-Value="_dateOfBirth" Max="@_maxDate"
+                                               Required="true" Disabled="@busy" autocomplete="bday"
                                                RequiredError="@Strings.Auth_Dob_InPast"
-                                               Validation="@_dobValidation"
-                                               Editable="true"
-                                               DateFormat="yyyy-MM-dd" />
+                                               Validation="@_dobValidation" />
 
                                 <MudCheckBox T="bool"
                                              @bind-Value="_ageConfirmed"
@@ -115,7 +106,7 @@
                                                Color="Color.Primary"
                                                Size="Size.Large"
                                                EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
-                                               Disabled="@(!_isFormValid || busy)"
+                                               Disabled="@(!CanSendCode || busy)"
                                                OnClick="OnSendCodeAsync">
                                         @if (busy)
                                         {

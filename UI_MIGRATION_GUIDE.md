@@ -155,6 +155,7 @@ src/TheShop.Web/
       ShopIcon.razor / ShopIcon.razor.cs
       ShopMoneyField.razor / ShopMoneyField.razor.cs
       ShopNumericField.razor / ShopNumericField.razor.cs
+      ShopDateField.razor / ShopDateField.razor.cs
       ShopDialog.razor / ShopDialog.razor.cs
       ShopDrawer.razor / ShopDrawer.razor.cs
       ProfileDrawer.razor / ProfileDrawer.razor.cs
@@ -933,7 +934,12 @@ Inferred interaction/accessibility decisions, not measured Figma states:
 - Virtualized variant rows own one `ShopNumericDraft` per price. Draft text and errors survive unmount/remount; submission validates retained editors and awaits callbacks. Copy-to-all resets overwritten row drafts. Keep the virtualized Mud table and unrelated legacy controls until their separate migration.
 - `shopNumericField.js` installs one document-level Enter-default guard for numeric inputs. Enter commits the field without implicitly submitting its surrounding form; Tab and other keys keep native behavior. Blazor owns text, parsing and callbacks. The listener holds no component references.
 
-**Date of birth:** preserve current maximum date, required behavior, editable input, age confirmation, and command mapping. Use date-only semantics at the UI boundary; do not introduce timezone conversion. A native `InputDate` can replace the picker when acceptable, but its popup appearance varies by browser and cannot preserve Mud's `OpenTo.Year` interaction exactly. Record this bounded native-control difference and verify practical birth-year entry; do not silently omit the control or build a calendar framework.
+**Date field — batch 39:** `ShopDateField` specializes Blazor `InputDate<DateOnly?>` with native `type="date"`, shared outlined field chrome and an always-floated label. `_date-field.scss` keeps the label clear of the browser's empty date segments. Browser-owned calendar icon, popup, keyboard segments and displayed date format are intentional; no custom calendar, new package or JS module. Native appearance varies across browsers and cannot preserve Mud's `OpenTo.Year` or fixed visible `yyyy-MM-dd` format. The HTML value and bounds use invariant ISO dates.
+
+- `Value`/`ValueChanged`/`ValueExpression` preserve built-in binding, parsing and field notifications. `Label` is required; `HelperText`, inclusive `Min`/`Max`, `Required`/`RequiredError`, `Disabled`, and optional synchronous form-owned `Validation` are the added contract. Lowercase class/style, id/name/autocomplete and merged description IDs reach the actual input. Enforced type/bounds/disabled/event/naming attributes win over unmatched attributes.
+- Required and bounds checks participate in `EditContext.Validate()`; parsing errors retain the previous bound value and block submission. Empty input binds null. An external changed value clears an invalid draft. Removal unregisters validation and clears owned messages. `Validate()` supplies the same checks to legacy forms outside `EditForm`.
+- Signup now binds `DateOnly?` directly, explicitly checks `ShopDateField.Validate()` before remaining `MudForm` validation, and retains the 19-year cutoff, editable entry, required age confirmation, busy-state freeze, OTP command/state mapping and navigation. Age/business validation remains with the form/Application/Domain, not inside the shared field. No timezone conversion. Other signup fields and MudForm remain a temporary bridge.
+- No time-picker consumer exists yet. Add a focused `ShopTimeField` when required; introduce a focused library behind the Shop API only if a custom popup becomes an approved requirement.
 
 **OTP:** keep string representation so leading zeroes survive. Preserve paste, digit replacement, repeated digits, backspace, arrow movement, autofocus policy, disabled state, completion callback, resend behavior, and cleanup. Prefer text inputs with numeric input hints over treating the entire OTP as a number. Re-evaluate existing JavaScript interception because it contains Mud-specific workarounds; do not preserve competing DOM writes and Blazor binding accidentally.
 
@@ -2215,6 +2221,17 @@ The final implementing-agent response should state what changed, the exact verif
 - Solution build: **0 errors**, existing dependency/analyzer warnings remain. Design-rule gate and whitespace check pass. No new packages. Logs: `.sdd/.test-work/upload-focused-final.log`, `upload-web-all.log`, `upload-browser-final.log`, `upload-build.log`, `upload-design.log`; browser results: `tests/TheShop.E2E.Tests/TestResults/native-image-upload.trx`. The additional real-column mobile overflow assertion passed in `native-image-upload-touch.trx`.
 - Code graph refreshed. Existing limitations remain: missing SQL parser and zero-node configuration files; no semantic relabeling requested.
 - Rollback: revert this batch's uploader/primitives, callers, SCSS/JS, resources, tests and guide record together. No database or stored-data rollback.
+
+### Batch 39 — Native date field and signup migration — 2026-10-09
+
+- Added `ShopDateField` on Blazor `InputDate<DateOnly?>`, `_date-field.scss` and four resource messages. The Shop component owns field chrome/validation; the browser owns the picker. Contract and native-display differences are recorded in section 7.4. No package or JavaScript additions.
+- Replaced signup's MudDatePicker, retained required/age/confirmation checks and busy disabling, and removed the DateTime-to-DateOnly submission conversion. Explicit `Validate()` bridges the native field into the remaining MudForm submission path. No backend contract change.
+- **32 focused tests passed; full Web suite 1,194 passed, 0 skipped.** Covered nullable/required input, leap dates, invariant HTML values across cultures, invalid-date recovery, inclusive bounds, external reset, disabled event guards, attribute precedence, EditContext notifications/unmount cleanup, and signup command/pending-state dates at the age boundary.
+- **Two live Chromium browser tests passed, 0 skipped**, at 390px/1440px, with vendor CSS removed in the desktop check. Verified accessible naming, date entry/clear, underage errors, required-date blocking, exact cutoff acceptance, disabled state during a held request and navigation to OTP verification. Local API interception prevents real email/backend writes. Native calendar popups and other browser/OS combinations were not separately automated.
+- Reviewed `native-ui-evidence/date-390.png`, `date-1440.png` and `date-accessibility-390.png` under the E2E output directory. At 200% text, capped date-field inline padding preserves the entire year beside the native calendar control. Forced-colors focus and reduced-motion checks pass. Screenshots of the field alone crop the portion of its floating label outside the element bounds.
+- Solution build: **0 errors**, existing dependency/analyzer warnings remain. Design-rule and whitespace checks pass. Evidence: `.sdd/.test-work/date-focused.log`, `date-web-all.log`, `date-build.log`, `date-browser.log`, `date-design.log`; `tests/TheShop.E2E.Tests/TestResults/native-date-field.trx`.
+- The existing dev server referenced stale build assets. Added optional `E2E_APP_URL` to the test fixture and verified on a separate temporary port, preserving the default localhost:5218 and the existing server. No production configuration changes.
+- Code graph refreshed; existing SQL-parser/configuration coverage limitations remain. Rollback: revert this batch's component/style/resources, signup changes, tests/fixture override and guide record. No stored-data migration.
 
 ## 19. Prompt to give the implementing AI
 

@@ -1789,4 +1789,8 @@
   <data name="ImageUpload_PickHint" xml:space="preserve"><value>Choose an image or drop a file here.</value></data>
   <data name="ImageUpload_Removed" xml:space="preserve"><value>{0} removed.</value></data>
   <data name="ImageUpload_Moved" xml:space="preserve"><value>{0} moved to position {1}.</value></data>
+  <data name="Date_Invalid" xml:space="preserve"><value>Enter a valid date.</value></data>
+  <data name="Date_Required" xml:space="preserve"><value>Choose a date.</value></data>
+  <data name="Date_Minimum" xml:space="preserve"><value>Choose a date on or after {0}.</value></data>
+  <data name="Date_Maximum" xml:space="preserve"><value>Choose a date on or before {0}.</value></data>
 </root>

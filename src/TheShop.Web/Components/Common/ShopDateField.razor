@@ -1,0 +1,22 @@
+@inherits InputDate<DateOnly?>
+
+<div class="shop-native shop-field shop-date-field">
+    <div class="shop-field-control">
+        <input @attributes="InputAttributes" @ref="Element"
+               id="@InputId" name="@NameAttributeValue" class="@InputClass"
+               type="date" data-shop-date min="@Iso(Min)" max="@Iso(Max)" required="@Required"
+               disabled="@Disabled" aria-required="@Required" aria-invalid="@InvalidAttribute"
+               value="@CurrentValueAsString" @onchange="Change" @onblur="OnBlur" />
+        <label class="shop-field-label" for="@InputId">@Label</label>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(HelperText))
+    {
+        <div id="@HelperId" class="shop-field-hint">@HelperText</div>
+    }
+    <div id="@ErrorId" class="shop-field-error" aria-live="polite">
+        @foreach (var error in Errors)
+        {
+            <div>@error</div>
+        }
+    </div>
+</div>
