@@ -1,7 +1,7 @@
 @if (_isBusy)
 {
     <div class="shop-loading-overlay" data-testid="loading-overlay" aria-hidden="true">
-        <span class="shop-spinner shop-loading-overlay-spinner"></span>
+        <ShopLoader Class="shop-loading-overlay-spinner" />
     </div>
 }
 <span class="shop-visually-hidden" role="status">@(_isBusy ? Strings.Loading : null)</span>

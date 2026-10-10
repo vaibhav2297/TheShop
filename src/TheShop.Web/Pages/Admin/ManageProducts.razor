@@ -188,9 +188,7 @@
                                                        view — unlike the table's progress bar up under the header. *@
                                                     @if (IsRowPending(product.Id, RowMutation.Status))
                                                     {
-                                                        <MudProgressCircular Color="Color.Primary"
-                                                                             Size="Size.Small"
-                                                                             Indeterminate="true" />
+                                                        <span role="status" aria-label="@Strings.Loading"><ShopLoader Class="shop-loader-inline" /></span>
                                                     }
                                                     else
                                                     {
@@ -219,9 +217,7 @@
                                                the row mid-delete. *@
                                             @if (IsRowPending(product.Id, RowMutation.Delete))
                                             {
-                                                <MudProgressCircular Color="Color.Error"
-                                                                     Size="Size.Small"
-                                                                     Indeterminate="true" />
+                                                <span role="status" aria-label="@Strings.Loading"><ShopLoader Class="shop-loader-inline shop-loader-error" /></span>
                                             }
                                             else
                                             {

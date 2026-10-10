@@ -21,7 +21,7 @@
     </span>
     @if (Loading)
     {
-        <span class="shop-spinner shop-button-spinner" aria-hidden="true"></span>
+        <ShopLoader Class="shop-button-spinner" />
     }
 </button>
 <span class="shop-visually-hidden" role="status">@(Loading ? Strings.Loading : null)</span>

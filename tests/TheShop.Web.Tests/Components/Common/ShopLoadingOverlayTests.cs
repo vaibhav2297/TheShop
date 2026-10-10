@@ -39,7 +39,7 @@ public class ShopLoadingOverlayTests : TestContext
             var overlay = cut.Find("[data-testid=loading-overlay]");
             overlay.ClassName.Should().Be("shop-loading-overlay");
             overlay.GetAttribute("aria-hidden").Should().Be("true");
-            overlay.QuerySelector(".shop-spinner.shop-loading-overlay-spinner").Should().NotBeNull();
+            overlay.QuerySelector(".shop-loader.shop-loading-overlay-spinner").Should().NotBeNull();
             cut.Find("[role=status]").TextContent.Should().Be(Strings.Loading);
         });
 

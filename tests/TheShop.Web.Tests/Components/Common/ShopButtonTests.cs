@@ -250,7 +250,7 @@ public class ShopButtonTests : TestContext
         var contentMarkup = content.InnerHtml;
         var status = cut.Find("[role=status]");
         status.TextContent.Should().BeEmpty();
-        cut.FindAll(".shop-spinner").Should().BeEmpty();
+        cut.FindAll(".shop-loader").Should().BeEmpty();
 
         cut.Render(p => p.Add(c => c.Loading, true));
 
@@ -273,7 +273,7 @@ public class ShopButtonTests : TestContext
         cut.Find("button").HasAttribute("disabled").Should().BeFalse();
         cut.Find("button").GetAttribute("aria-busy").Should().Be("false");
         cut.Find("button").ClassList.Should().NotContain("shop-button-loading");
-        cut.FindAll(".shop-spinner").Should().BeEmpty();
+        cut.FindAll(".shop-loader").Should().BeEmpty();
         status.TextContent.Should().BeEmpty();
         cut.Find("button").Click();
         calls.Should().Be(1);
@@ -285,6 +285,6 @@ public class ShopButtonTests : TestContext
         var cut = Render<ShopButton>(p => p.Add(c => c.Loading, true).Add(c => c.Disabled, true));
         cut.Render(p => p.Add(c => c.Loading, false));
         cut.Find("button").HasAttribute("disabled").Should().BeTrue();
-        cut.FindAll(".shop-spinner").Should().BeEmpty();
+        cut.FindAll(".shop-loader").Should().BeEmpty();
     }
 }

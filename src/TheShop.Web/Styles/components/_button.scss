@@ -53,6 +53,7 @@
 }
 
 .shop-button .shop-button-spinner {
+    --shop-loader-color: currentColor;
     position: absolute;
     inset: 0;
     inline-size: var(--shop-button-icon-size);

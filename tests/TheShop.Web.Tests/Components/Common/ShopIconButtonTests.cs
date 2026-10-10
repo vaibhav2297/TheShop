@@ -211,14 +211,14 @@ public class ShopIconButtonTests : TestContext
         button.GetAttribute("aria-busy").Should().Be("true");
         button.HasAttribute("disabled").Should().BeTrue();
         button.ClassList.Should().Contain(ShopCssClass.Modifier("shop-button", size));
-        cut.FindAll(".shop-spinner").Should().HaveCount(1);
+        cut.FindAll(".shop-loader").Should().HaveCount(1);
         cut.Find("[role=status]").TextContent.Should().Be(Strings.Loading);
         await button.TriggerEventAsync("onclick", new MouseEventArgs());
         calls.Should().Be(0);
 
         cut.Render(p => p.Add(c => c.Loading, false));
         cut.Find("button").GetAttribute("aria-label").Should().Be(Strings.Close);
-        cut.FindAll(".shop-spinner").Should().BeEmpty();
+        cut.FindAll(".shop-loader").Should().BeEmpty();
         cut.Find("button").Click();
         calls.Should().Be(1);
     }

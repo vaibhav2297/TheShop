@@ -212,7 +212,7 @@ public class SignInTests : TestContext
                 cut.Find("button[type='submit']").GetAttribute("aria-busy").Should().Be("true");
                 cut.Find(".shop-auth-actions [role='status']").ClassList.Should().Contain("shop-visually-hidden");
                 cut.Find(".shop-auth-actions [role='status']").TextContent.Should().Be(Strings.Loading);
-                cut.Find("button[type='submit'] .shop-spinner").GetAttribute("aria-hidden").Should().Be("true");
+                cut.Find("button[type='submit'] .shop-loader").GetAttribute("aria-hidden").Should().Be("true");
             });
 
             await cut.Find("form").SubmitAsync(EventArgs.Empty);

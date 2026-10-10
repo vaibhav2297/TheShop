@@ -225,7 +225,7 @@
                            UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "product-save" })">
                     @if (busy)
                     {
-                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        <ShopLoader Class="shop-loader-inline shop-loader-inherit" />
                     }
                     @(Mode == ProductFormMode.Create ? Strings.AddProduct_SaveButton : Strings.EditProduct_SaveButton)
                 </MudButton>

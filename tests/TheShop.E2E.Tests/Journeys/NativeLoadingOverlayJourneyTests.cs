@@ -77,10 +77,12 @@ public sealed class NativeLoadingOverlayJourneyTests(PlaywrightFixture playwrigh
 
         var spinner = overlay.Locator(".shop-loading-overlay-spinner");
         await Assertions.Expect(spinner).ToHaveCSSAsync("width", "48px");
-        // Borders snap to whole device pixels, so a 4.8px stroke can compute fractionally under display scaling.
-        var stroke = await spinner.EvaluateAsync<float>("el => parseFloat(getComputedStyle(el).borderTopWidth)");
-        stroke.Should().BeInRange(4.3f, 4.8f);
-        await Assertions.Expect(spinner).ToHaveCSSAsync("border-top-color", "rgb(23, 23, 23)");
+        var arc = spinner.Locator("circle");
+        await Assertions.Expect(arc).ToHaveCSSAsync("stroke-width", "4.8px");
+        await Assertions.Expect(arc).ToHaveCSSAsync("stroke-linecap", "round");
+        await Assertions.Expect(arc).ToHaveCSSAsync("stroke", "rgb(23, 23, 23)");
+        await Assertions.Expect(arc).ToHaveAttributeAsync("stroke-dasharray", "80 20");
+        await Assertions.Expect(spinner.Locator("svg")).ToHaveCSSAsync("animation-duration", "0.8s");
         var spin = (await spinner.BoundingBoxAsync())!;
         (spin.X + spin.Width / 2).Should().BeApproximately(viewportWidth / 2, 1);
         (spin.Y + spin.Height / 2).Should().BeApproximately(viewportHeight / 2, 1);
@@ -91,10 +93,10 @@ public sealed class NativeLoadingOverlayJourneyTests(PlaywrightFixture playwrigh
         await SaveAsync($"loading-overlay-{width}-{withoutVendorCss}");
 
         await Page.EmulateMediaAsync(new() { ReducedMotion = ReducedMotion.Reduce });
-        await Assertions.Expect(spinner).ToHaveCSSAsync("animation-name", "none");
+        await Assertions.Expect(spinner.Locator("svg")).ToHaveCSSAsync("animation-name", "none");
         await Page.EmulateMediaAsync(new() { ReducedMotion = ReducedMotion.NoPreference, ForcedColors = ForcedColors.Active });
         await Assertions.Expect(overlay).ToBeVisibleAsync();
-        await Assertions.Expect(spinner).ToHaveCSSAsync("border-right-color", "rgba(0, 0, 0, 0)");
+        await Assertions.Expect(arc).ToHaveCSSAsync("stroke", "rgb(0, 0, 0)");
         await SaveAsync($"loading-overlay-forced-colors-{width}-{withoutVendorCss}");
 
         errors.Should().BeEmpty();

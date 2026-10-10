@@ -42,6 +42,6 @@ public class AuthorizingViewTests : TestContext
     {
         var cut = Render<AuthorizingView>();
 
-        cut.FindAll(".mud-progress-circular").Should().NotBeEmpty();
+        cut.FindAll(".shop-loader").Should().HaveCount(1);
     }
 }

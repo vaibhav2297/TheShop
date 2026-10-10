@@ -329,7 +329,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
             await Assertions.Expect(submit).ToHaveAttributeAsync("aria-busy", "true");
             await Assertions.Expect(submit).ToBeDisabledAsync();
             await Assertions.Expect(email).ToBeDisabledAsync();
-            await Assertions.Expect(submit.Locator(".shop-spinner")).ToBeVisibleAsync();
+            await Assertions.Expect(submit.Locator(".shop-loader")).ToBeVisibleAsync();
             await Assertions.Expect(submit.Locator(".shop-button-content")).ToHaveCSSAsync("opacity", "0");
             await Assertions.Expect(submit).ToHaveAccessibleNameAsync(Strings.Auth_Login_Submit);
             var loadingBounds = (await submit.BoundingBoxAsync())!;
@@ -337,7 +337,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
             loadingBounds.Height.Should().BeApproximately(restingBounds.Height, 0.1f);
             (await submit.EvaluateAsync<bool>("el => el.firstElementChild === window.loadingContent && el.nextElementSibling === window.loadingStatus"))
                 .Should().BeTrue("content and primed live region must survive the loading transition");
-            await Assertions.Expect(submit.Locator("svg")).ToHaveCSSAsync("outline-style", "none");
+            await Assertions.Expect(submit.Locator("svg.shop-icon")).ToHaveCSSAsync("outline-style", "none");
             var status = Page.Locator(".shop-auth-actions [role=status]");
             await Assertions.Expect(status).ToHaveTextAsync(Strings.Loading);
             await Assertions.Expect(status).ToHaveCSSAsync("clip-path", "inset(50%)");
@@ -352,7 +352,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         await Assertions.Expect(submit).ToBeEnabledAsync();
         await Assertions.Expect(Page.Locator(".shop-auth-actions [role=status]")).ToBeEmptyAsync();
         await Assertions.Expect(submit.Locator(".shop-button-content")).ToHaveCSSAsync("opacity", "1");
-        await Assertions.Expect(submit.Locator(".shop-spinner")).ToHaveCountAsync(0);
+        await Assertions.Expect(submit.Locator(".shop-loader")).ToHaveCountAsync(0);
         requestCount.Should().Be(1);
         _backendRequests.Should().Be(0, "the held response is local; no OTP or backend write is allowed");
     }
@@ -599,18 +599,18 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
                     var loadingBounds = (await busy.BoundingBoxAsync())!;
                     loadingBounds.Width.Should().BeApproximately(resting.Width, 0.1f, id);
                     loadingBounds.Height.Should().BeApproximately(resting.Height, 0.1f, id);
-                    var spinner = (await busy.Locator(".shop-spinner").BoundingBoxAsync())!;
+                    var spinner = (await busy.Locator(".shop-loader").BoundingBoxAsync())!;
                     (spinner.X + spinner.Width / 2).Should().BeApproximately(loadingBounds.X + loadingBounds.Width / 2, 0.5f, id);
                     (spinner.Y + spinner.Height / 2).Should().BeApproximately(loadingBounds.Y + loadingBounds.Height / 2, 0.5f, id);
-                    (await busy.Locator(".shop-spinner").EvaluateAsync<double>("el => parseFloat(getComputedStyle(el).width)"))
+                    (await busy.Locator(".shop-loader").EvaluateAsync<double>("el => parseFloat(getComputedStyle(el).width)"))
                         .Should().BeApproximately((await idle.Locator("svg").First.BoundingBoxAsync())!.Width, 0.1, id);
                 }
         await AssertNoOverflowAsync();
         await host.ScreenshotAsync(new() { Path = EvidencePath($"buttons-loading-{width}") });
         await Page.EmulateMediaAsync(new() { ReducedMotion = ReducedMotion.Reduce });
-        await Assertions.Expect(host.Locator(".shop-spinner").First).ToHaveCSSAsync("animation-name", "none");
+        await Assertions.Expect(host.Locator(".shop-loader svg").First).ToHaveCSSAsync("animation-name", "none");
         await Page.EmulateMediaAsync(new() { ForcedColors = ForcedColors.Active });
-        await Assertions.Expect(host.Locator(".shop-spinner").First).ToHaveCSSAsync("border-top-style", "solid");
+        await Assertions.Expect(host.Locator(".shop-loader circle").First).ToHaveCSSAsync("stroke-linecap", "round");
         _backendRequests.Should().Be(0);
     }
 

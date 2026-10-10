@@ -93,7 +93,7 @@
                                        UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "add-brand-save" })">
                                 @if (busy)
                                 {
-                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                    <ShopLoader Class="shop-loader-inline shop-loader-inherit" />
                                 }
                                 @Strings.AddBrand_SaveButton
                             </MudButton>

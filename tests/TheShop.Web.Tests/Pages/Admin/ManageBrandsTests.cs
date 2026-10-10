@@ -383,7 +383,7 @@ public class ManageBrandsTests : TestContext
 
         // The table's own progress bar is deliberately unused for row-scoped mutations (see
         // MutationBusyKeys in ManageBrands.razor.cs) — progress is reported per row instead.
-        cut.FindComponent<MudProgressCircular>().Should().NotBeNull(
+        cut.FindComponent<ShopLoader>().Should().NotBeNull(
             "the acted-on rows report the mutation with their own in-row spinners");
         cut.FindComponents<ShopButton>()
             .Where(b => b.Markup.Contains(Strings.ManageBrands_BulkSetActive)
@@ -440,7 +440,7 @@ public class ManageBrandsTests : TestContext
 
         cut.FindComponents<MudChip<string>>().Should().HaveCount(chipsBefore - 1,
             "the acted-on row gives up its status chip to the spinner that reports the change");
-        cut.FindComponents<MudProgressCircular>().Should().HaveCount(1,
+        cut.FindComponents<ShopLoader>().Should().HaveCount(1,
             "the acted-on row carries the only spinner — unlike the table's progress bar under "
             + "the header, it stays in view wherever the click happened");
 
@@ -449,7 +449,7 @@ public class ManageBrandsTests : TestContext
 
         cut.FindComponents<MudChip<string>>().Should().HaveCount(chipsBefore,
             "the chip comes back once the mutation settles");
-        cut.FindComponents<MudProgressCircular>().Should().BeEmpty();
+        cut.FindComponents<ShopLoader>().Should().BeEmpty();
     }
 
     private static async Task SelectBrandsAsync(IRenderedComponent<ManageBrands> cut, int count)
