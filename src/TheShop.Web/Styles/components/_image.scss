@@ -1,4 +1,5 @@
 @use 'sass:list';
+@use '../abstracts/breakpoints' as bp;
 @use '../abstracts/text-style';
 
 // Presets reserve geometry independently of successful loading.
@@ -65,16 +66,22 @@ $image-ratios: (
     block-size: 100%;
 }
 
-@media (min-width: 600px) {
-    .shop-image-branch-mobile {
-        display: none;
-    }
+.shop-image-branch-mobile {
+    display: none;
 }
 
-@media (max-width: 599.98px) {
+@media (width < bp.$tablet) {
     .shop-image-banner,
     .shop-image-hero {
         aspect-ratio: 4 / 5;
+
+        .shop-image-branch-mobile.shop-image-media {
+            display: block;
+        }
+
+        .shop-image-branch-mobile.shop-image-placeholder {
+            display: flex;
+        }
 
         .shop-image-branch-desktop {
             display: none;

@@ -1,10 +1,11 @@
+@use '../abstracts/breakpoints' as bp;
 @use '../abstracts/text-style';
 
 // Figma 2976:16454: 400px desktop width, 16px chrome, 40% primary backdrop.
 .shop-drawer {
     position: fixed;
     inset: 0 0 0 auto;
-    inline-size: 100%;
+    inline-size: 400px;
     max-inline-size: 100%;
     block-size: 100dvh;
     max-block-size: 100dvh;
@@ -77,9 +78,9 @@
     padding-block-end: max(var(--shop-space-4), env(safe-area-inset-bottom));
 }
 
-@media (min-width: 600px) {
+@media (width < bp.$tablet) {
     .shop-drawer {
-        inline-size: 400px;
+        inline-size: 100%;
     }
 }
 

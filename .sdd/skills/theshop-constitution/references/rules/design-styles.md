@@ -67,7 +67,7 @@ Use `@use` with explicit namespaces. Use `@forward` only to expose an intentiona
 
 ```scss
 @use 'sass:list';
-@use '../abstracts/breakpoints' as breakpoints;
+@use '../abstracts/breakpoints' as bp;
 
 $image-ratio: (4, 5);
 
@@ -75,14 +75,28 @@ $image-ratio: (4, 5);
     aspect-ratio: #{list.nth($image-ratio, 1)} / #{list.nth($image-ratio, 2)};
 }
 
-@media (min-width: breakpoints.$medium) {
+.shop-product-catalogue {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (width < bp.$desktop) {
     .shop-product-catalogue {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (width < bp.$tablet) {
+    .shop-product-catalogue {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 ```
 
-The breakpoint module/member above demonstrate the pattern; use the project's actual names. Likewise, prefer `map.get()` over deprecated global `map-get()`.
+`abstracts/_breakpoints.scss` owns the two viewport thresholds: `$tablet: 768px` and `$desktop: 1024px`. Desktop styles are the default. Put overrides for widths below `$desktop` next, then mobile overrides below `$tablet`. Mobile inherits both sets of overrides. Use strict `<` comparisons to avoid gaps at fractional viewport widths; do not duplicate numeric thresholds in consumers. Not every component needs both queries.
+
+Figma reference frames are desktop 1440 × 900, tablet 834 × 1194, and mobile 390 × 844; page height can grow with content. These are review canvases, not additional breakpoints. Check 320px and both sides of 768px/1024px as well as the reference widths. Shared maximum content widths remain sizing tokens, independent of breakpoints.
+
+Prefer `map.get()` over deprecated global `map-get()`.
 
 Generate repeated utility families from a map/list and `@each`, not copied rules per value. Do not build a general utility framework for hypothetical callers. Ordinary component/layout selectors need no generation loop.
 
@@ -94,7 +108,7 @@ Generate repeated utility families from a map/list and `@each`, not copied rules
 - Consistent declaration grouping: layout/position, dimensions/spacing, borders/background, typography, interaction, then transitions.
 - Prefer logical properties such as `padding-inline` and `margin-block` when they express intent.
 - Scalable text/spacing units, `normal` line-height for Figma AUTO (unitless ratios for explicit heights), and no fixed-height text containers. `px` remains appropriate for thin borders and Figma's measured tracking.
-- Mobile-first responsive layout where practical. Choose Grid/Flexbox from layout needs, not a vendor wrapper API.
+- Desktop-default responsive layout with shared tablet/mobile overrides. Choose Grid/Flexbox from layout needs, not a vendor wrapper API.
 - Preserve visible keyboard focus, usable targets, reduced-motion preferences, and text/state contrast. Validation cannot rely on color alone.
 - Animate named properties, not `transition: all`; do not add motion without a design or interaction purpose.
 

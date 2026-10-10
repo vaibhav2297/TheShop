@@ -10,7 +10,7 @@ namespace TheShop.Web.Components.Common;
 /// <see cref="ShopImagePreset.BrandLogo"/> instead fills the width and height the caller reserves.
 /// A missing, blank, or failed source is replaced by <see cref="PlaceholderLabel"/> inside the same
 /// frame. <see cref="ShopImagePreset.Hero"/> and <see cref="ShopImagePreset.Banner"/> switch to a
-/// 4:5 frame below 600 CSS pixels, showing <see cref="MobileSrc"/> when supplied and otherwise the
+/// 4:5 frame below the shared tablet breakpoint, showing <see cref="MobileSrc"/> when supplied and otherwise the
 /// desktop source cropped from the center. The component adds no keyboard stops; surrounding actions
 /// stay with the caller. Inherits from <see cref="ShopComponentBase"/> so <c>Class</c>, <c>Style</c>,
 /// and arbitrary attributes reach the root frame.

@@ -71,6 +71,18 @@ public class SignInTests : TestContext
     // =========================================================================
 
     [Fact]
+    public void Render_ShowsNativeSignInPanelWithSignupNavigationAndHiddenInstruction()
+    {
+        var cut = Render<SignIn>();
+        cut.Find(".shop-auth-header .shop-auth-mark").GetAttribute("aria-hidden").Should().Be("true");
+        cut.Find(".shop-auth-navigation a").GetAttribute("href").Should().Be(Routes.Auth.SignUp);
+        cut.Find(".shop-auth-navigation a").TextContent.Should().Be(Strings.SignUp);
+        cut.Find("#signin-instruction").ClassList.Should().Contain("shop-visually-hidden");
+        cut.Find("h1").TextContent.Should().Be(Strings.SignIn_Heading);
+        cut.FindAll(".shop-auth-brand, .shop-auth-logo, .mud-grid, .mud-stack").Should().BeEmpty();
+    }
+
+    [Fact]
     public void Render_TextField_KeepsAssociatedFloatingLabelAndNativeInputContract()
     {
         var cut = Render<SignIn>();

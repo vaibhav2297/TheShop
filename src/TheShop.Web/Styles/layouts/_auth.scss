@@ -1,20 +1,56 @@
+@use '../abstracts/breakpoints' as bp;
 @use '../abstracts/text-style';
 
+// Scope document geometry to authentication so legacy storefront screens are unaffected.
+body:has(.shop-auth-layout) {
+    margin: 0;
+}
+
+.shop-auth-layout {
+    display: grid;
+    min-block-size: 100dvh;
+    background: var(--shop-color-surface-default);
+}
+
+// Figma Login 2341:2278: 2:3:2 desktop grid with 32px viewport and panel insets.
 .shop-auth {
     display: grid;
-    min-block-size: 100%;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 2fr);
+    justify-content: center;
+    box-sizing: border-box;
+    min-block-size: 100dvh;
+    padding: var(--shop-space-8);
 }
 
 .shop-auth-panel {
+    grid-column: 2;
     display: flex;
     flex-direction: column;
-    gap: var(--shop-space-2);
-    padding: var(--shop-space-4) var(--shop-space-6);
+    gap: var(--shop-space-8);
+    min-inline-size: 0;
+    // Figma's inside stroke does not subtract from its 32px content inset.
+    padding: calc(var(--shop-space-8) - 1px);
+    border: 1px solid var(--shop-color-lines-default);
+}
+
+.shop-auth-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--shop-space-4);
+    flex-wrap: wrap;
+}
+
+.shop-auth-mark {
+    inline-size: 3.25rem;
+    block-size: 3.25rem;
+    color: var(--shop-color-secondary);
 }
 
 .shop-auth-navigation {
     display: flex;
-    justify-content: flex-end;
+    min-inline-size: 0;
+    max-inline-size: 100%;
 }
 
 .shop-auth-content {
@@ -23,24 +59,30 @@
     flex-direction: column;
     justify-content: space-between;
     gap: var(--shop-space-12);
+    min-inline-size: 0;
 }
 
 .shop-auth-title {
     margin: 0;
     @include text-style.apply(h2);
-    // Page treatment, not part of the H2 text style's ORIGINAL case.
     text-transform: uppercase;
+    overflow-wrap: anywhere;
 }
 
-.shop-auth-subtitle,
-.shop-auth-instruction {
-    margin-block: var(--shop-space-2) 0;
+.shop-auth-subtitle {
+    margin-block: var(--shop-space-4) 0;
     color: var(--shop-color-text-secondary);
     @include text-style.apply(subtitle-1);
+    overflow-wrap: anywhere;
 }
 
-.shop-auth-instruction {
-    margin-block-end: var(--shop-space-4);
+.shop-auth-form {
+    min-inline-size: 0;
+}
+
+// Keep the live validation region mounted without reserving a gap before an error exists.
+.shop-auth-form .shop-field:has(> .shop-field-error:empty) {
+    gap: 0;
 }
 
 .shop-auth-actions {
@@ -48,41 +90,25 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--shop-space-3);
-    margin-block-start: var(--shop-space-3);
+    margin-block-start: var(--shop-space-4);
 }
 
-.shop-auth-brand {
-    display: none;
-}
-
-.shop-auth-logo {
-    inline-size: 280px;
-    block-size: 280px;
-}
-
-.shop-auth-tagline {
-    margin: 0;
-    color: var(--shop-color-text-secondary);
-    @include text-style.apply(subtitle-2);
-}
-
-@media (min-width: 960px) {
+@media (width < bp.$desktop) {
     .shop-auth {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 36.857143rem);
     }
 
     .shop-auth-panel {
-        padding-inline: 64px;
+        grid-column: 1;
+    }
+}
+
+@media (width < bp.$tablet) {
+    .shop-auth {
+        padding: var(--shop-space-4);
     }
 
-    .shop-auth-brand {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: var(--shop-space-4);
-        margin: var(--shop-space-4);
-        margin-inline-start: 0;
-        background-color: var(--shop-color-surface-default);
+    .shop-auth-panel {
+        padding: calc(var(--shop-space-6) - 1px);
     }
 }

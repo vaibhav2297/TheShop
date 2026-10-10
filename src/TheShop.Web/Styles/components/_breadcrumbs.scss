@@ -1,9 +1,10 @@
+@use '../abstracts/breakpoints' as bp;
 @use '../abstracts/text-style';
 
 .shop-breadcrumbs {
     flex: none;
     min-inline-size: 0;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 2.25rem;
     background: var(--shop-color-surface-subtle);
     color: var(--shop-color-text-primary);
 }
@@ -49,11 +50,24 @@ a.shop-breadcrumb-item:hover {
     block-size: 1.5rem;
 }
 
-.shop-breadcrumb-middle { display: none; }
-.shop-breadcrumbs-expanded .shop-breadcrumb-middle { display: flex; }
+.shop-breadcrumb-expander {
+    display: none;
+}
 
-@media (min-width: 960px) {
-    .shop-breadcrumbs { padding-inline: 2.25rem; }
-    .shop-breadcrumb-middle { display: flex; }
-    .shop-breadcrumb-expander { display: none; }
+@media (width < bp.$desktop) {
+    .shop-breadcrumbs {
+        padding-inline: 1rem;
+    }
+
+    .shop-breadcrumb-middle {
+        display: none;
+    }
+
+    .shop-breadcrumbs-expanded .shop-breadcrumb-middle {
+        display: flex;
+    }
+
+    .shop-breadcrumb-expander {
+        display: flex;
+    }
 }

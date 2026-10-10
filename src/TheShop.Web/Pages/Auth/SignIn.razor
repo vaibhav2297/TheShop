@@ -8,9 +8,13 @@
 
 <div class="shop-native shop-auth">
     <section class="shop-auth-panel" aria-labelledby="signin-title">
-        <nav class="shop-auth-navigation">
-            <a class="shop-button shop-button-text shop-button-medium" href="@Routes.Auth.SignUp">@Strings.SignUp</a>
-        </nav>
+        <div class="shop-auth-header">
+            <ShopIcon Icon="@ShopIcons.Brand" Class="shop-auth-mark" />
+            <nav class="shop-auth-navigation">
+                <a class="shop-button shop-button-outlined shop-button-medium shop-button-primary"
+                   href="@Routes.Auth.SignUp">@Strings.SignUp</a>
+            </nav>
+        </div>
 
         <div class="shop-auth-content">
             <header>
@@ -19,7 +23,7 @@
             </header>
 
             <div class="shop-auth-form">
-                <p class="shop-auth-instruction" id="signin-instruction">@Strings.Login_Instruction</p>
+                <p class="shop-visually-hidden" id="signin-instruction">@Strings.Login_Instruction</p>
                 <EditForm EditContext="@_editContext" OnSubmit="OnSendCodeAsync" novalidate>
                     <ShopCommandValidation @ref="_validation" />
                     <BusyFor Key="@BusyKeys.Auth.SignIn" Context="busy">
@@ -44,12 +48,4 @@
         </div>
     </section>
 
-    <aside class="shop-auth-brand">
-        <ShopImage Src="@ShopIcons.ImageAssets.LogoPrimary"
-                   Preset="ShopImagePreset.BrandLogo"
-                   Alt="@Strings.AppName"
-                   PlaceholderLabel="@Strings.AppName"
-                   Class="shop-auth-logo" />
-        <p class="shop-auth-tagline">@Strings.App_Tagline</p>
-    </aside>
 </div>

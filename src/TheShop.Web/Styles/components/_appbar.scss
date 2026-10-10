@@ -1,8 +1,10 @@
+@use '../abstracts/breakpoints' as bp;
+
 .shop-appbar {
     position: relative;
     z-index: var(--shop-layer-appbar);
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 0.5rem 1.5rem;
     flex: none;
@@ -20,13 +22,13 @@
 }
 
 .shop-appbar-navigation {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    grid-column: 2;
+    grid-row: 1;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem 1rem;
+    gap: 2.25rem;
     min-inline-size: 0;
     text-transform: uppercase;
 }
@@ -35,23 +37,25 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 0.75rem;
+    gap: 1.5rem;
 }
 
 .shop-appbar-navigation .shop-button {
     text-transform: uppercase;
 }
 
-@media (min-width: 960px) {
+@media (width < bp.$desktop) {
     .shop-appbar {
-        grid-template-columns: auto minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr) auto;
     }
 
     .shop-appbar-navigation {
-        grid-column: 2;
-        grid-row: 1;
-        gap: 2.25rem;
+        grid-column: 1 / -1;
+        grid-row: 2;
+        gap: 0.5rem 1rem;
     }
 
-    .shop-appbar-actions { gap: 1.5rem; }
+    .shop-appbar-actions {
+        gap: 0.75rem;
+    }
 }

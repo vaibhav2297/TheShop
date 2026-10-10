@@ -1,3 +1,4 @@
+@use '../abstracts/breakpoints' as bp;
 @use '../abstracts/text-style';
 
 .shop-bulk-action-slot {
@@ -72,7 +73,7 @@
     border-inline-start: 1px solid var(--shop-color-lines-divider);
 }
 
-@media (max-width: 639px) {
+@media (width < bp.$tablet) {
     .shop-bulk-action-bar {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
