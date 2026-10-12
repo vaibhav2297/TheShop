@@ -14,7 +14,7 @@
             </li>
             @foreach (var item in PageItems)
             {
-                <li @key="item">
+                <li @key="item" class="shop-pagination-page">
                     @if (item is { } page)
                     {
                         <button type="button" class="shop-pagination-control"
@@ -29,6 +29,10 @@
                     }
                 </li>
             }
+            <li class="shop-pagination-status" role="status" aria-atomic="true">
+                <span class="shop-visually-hidden">@string.Format(Strings.Pagination_StatusLabel, CurrentPage, TotalPages)</span>
+                <span aria-hidden="true">@string.Format(Strings.Pagination_Status, CurrentPage, TotalPages)</span>
+            </li>
             <li>
                 <button type="button" class="shop-pagination-control shop-pagination-arrow"
                         aria-label="@Strings.Pagination_Next" disabled="@(Disabled || CurrentPage >= TotalPages)"

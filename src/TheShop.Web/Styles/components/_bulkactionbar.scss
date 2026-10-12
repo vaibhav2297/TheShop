@@ -75,18 +75,34 @@
 
 @media (width < bp.$tablet) {
     .shop-bulk-action-bar {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        flex-wrap: wrap;
+        gap: min(1rem, 16px);
+        padding: min(1rem, 16px);
     }
 
     .shop-bulk-action-actions {
-        grid-column: 1 / -1;
-        grid-row: 2;
+        gap: 8px;
+    }
+
+    .shop-bulk-action-actions .shop-button:has(.shop-bulk-action-text) {
+        --shop-button-icon-size: 24px;
+        inline-size: 34px;
+        min-block-size: 34px;
+        padding: 5px;
+    }
+
+    // Keep the same button and accessible name across breakpoint changes.
+    .shop-bulk-action-text {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
     }
 
     .shop-bulk-action-close {
-        grid-column: 2;
-        grid-row: 1;
+        padding-inline-start: min(1rem, 16px);
     }
 }
 

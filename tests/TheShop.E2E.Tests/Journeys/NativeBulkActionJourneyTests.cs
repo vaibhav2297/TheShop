@@ -62,6 +62,16 @@ public sealed class NativeBulkActionJourneyTests(PlaywrightFixture playwright) :
         await Assertions.Expect(bar).ToHaveCSSAsync("padding-top", "16px");
         await Assertions.Expect(bar.Locator(".shop-bulk-action-count")).ToHaveTextAsync("02");
         if (width == 1440) (await bar.BoundingBoxAsync())!.Height.Should().BeApproximately(72, 1);
+        if (width == 390)
+        {
+            (await bar.BoundingBoxAsync())!.Height.Should().BeApproximately(68, 1);
+            foreach (var button in await bar.Locator(".shop-bulk-action-actions button").AllAsync())
+            {
+                (await button.BoundingBoxAsync())!.Width.Should().BeApproximately(34, 1);
+                (await button.BoundingBoxAsync())!.Height.Should().BeApproximately(34, 1);
+            }
+            await Assertions.Expect(bar.GetByRole(AriaRole.Button, new() { Name = Strings.ManageBrands_BulkSetActive, Exact = true })).ToBeVisibleAsync();
+        }
         var inlineWidth = (await bar.BoundingBoxAsync())!.Width;
         var slotHeight = (await slot.BoundingBoxAsync())!.Height;
         await close.FocusAsync();
@@ -179,7 +189,13 @@ public sealed class NativeBulkActionJourneyTests(PlaywrightFixture playwright) :
                         b.AddAttribute(1, nameof(ShopButton.Variant), ShopVariant.Outlined);
                         b.AddAttribute(2, nameof(ShopButton.Color), color);
                         b.AddAttribute(3, nameof(ShopButton.StartIcon), icon);
-                        b.AddAttribute(4, nameof(ShopButton.ChildContent), (RenderFragment)(c => c.AddContent(0, label)));
+                        b.AddAttribute(4, nameof(ShopButton.ChildContent), (RenderFragment)(c =>
+                        {
+                            c.OpenElement(0, "span");
+                            c.AddAttribute(1, "class", "shop-bulk-action-text");
+                            c.AddContent(2, label);
+                            c.CloseElement();
+                        }));
                         b.CloseComponent();
                     }
                 })

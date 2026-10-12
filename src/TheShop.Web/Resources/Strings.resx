@@ -1807,4 +1807,10 @@
   <data name="Date_Maximum" xml:space="preserve"><value>Choose a date on or before {0}.</value></data>
   <data name="Nav_Menu" xml:space="preserve"><value>Menu</value></data>
   <data name="Footer_Copyright" xml:space="preserve"><value>© The Vape Shop Sarnia {0} All Rights Reserved</value></data>
+  <data name="Pagination_Status" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="Pagination_StatusLabel" xml:space="preserve">
+    <value>Page {0} of {1}</value>
+  </data>
 </root>

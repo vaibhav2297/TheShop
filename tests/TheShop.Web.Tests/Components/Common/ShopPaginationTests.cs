@@ -79,6 +79,8 @@ public class ShopPaginationTests : TestContext
         var cut = Render<ShopPagination>(p => p.Add(x => x.Page, page).Add(x => x.TotalPages, 5)
             .Add(x => x.PageChanged, _ => calls++));
         cut.Find("[aria-current]").TextContent.Should().Be(expected.ToString());
+        cut.Find(".shop-pagination-status [aria-hidden]").TextContent.Should().Be($"{expected} / 5");
+        cut.Find(".shop-pagination-status .shop-visually-hidden").TextContent.Should().Be($"Page {expected} of 5");
         calls.Should().Be(0);
     }
 

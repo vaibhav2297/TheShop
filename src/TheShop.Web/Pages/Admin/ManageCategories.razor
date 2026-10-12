@@ -74,7 +74,7 @@
                                                StartIcon="@ShopIcons.Outlined.Show"
                                                Disabled="@mutating"
                                                OnClick="BulkActivateAsync">
-                                        @Strings.ManageCategories_BulkSetActive
+                                        <span class="shop-bulk-action-text">@Strings.ManageCategories_BulkSetActive</span>
                                     </ShopButton>
 
                                     <ShopButton Variant="ShopVariant.Outlined"
@@ -82,7 +82,7 @@
                                                StartIcon="@ShopIcons.Outlined.Hide"
                                                Disabled="@mutating"
                                                OnClick="BulkDeactivateAsync">
-                                        @Strings.ManageCategories_BulkSetInactive
+                                        <span class="shop-bulk-action-text">@Strings.ManageCategories_BulkSetInactive</span>
                                     </ShopButton>
                                 </Authorized>
 
@@ -97,7 +97,7 @@
                                                StartIcon="@ShopIcons.Outlined.Trash_Empty"
                                                Disabled="@mutating"
                                                OnClick="BulkDeleteAsync">
-                                        @Strings.ManageCategories_BulkDelete
+                                        <span class="shop-bulk-action-text">@Strings.ManageCategories_BulkDelete</span>
                                     </ShopButton>
 
                                 </Authorized>

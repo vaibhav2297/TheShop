@@ -134,6 +134,16 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
             await Assertions.Expect(nav.Locator("[aria-current='page']")).ToHaveCountAsync(1);
             await Assertions.Expect(nav.Locator(".shop-pagination-control").First).ToHaveCSSAsync("min-width", "64px");
             await Assertions.Expect(nav.Locator(".shop-pagination-arrow").First).ToHaveCSSAsync("height", "44px");
+            if (width < 768)
+            {
+                await Assertions.Expect(nav.Locator(".shop-pagination-page").First).ToBeHiddenAsync();
+                await Assertions.Expect(nav.Locator(".shop-pagination-status")).ToBeVisibleAsync();
+                await Assertions.Expect(nav.Locator(".shop-pagination-items")).ToHaveCSSAsync("gap", "16px");
+                (await nav.Locator("ul").BoundingBoxAsync())!.Height.Should().BeApproximately(44, 1);
+                (await nav.GetByRole(AriaRole.Button).CountAsync()).Should().Be(2);
+                continue;
+            }
+            await Assertions.Expect(nav.Locator(".shop-pagination-status")).ToBeHiddenAsync();
             await Assertions.Expect(nav.Locator("button:not(.shop-pagination-arrow)").First).ToHaveCSSAsync("height", "40px");
             await Assertions.Expect(nav.Locator(".shop-pagination-items")).ToHaveCSSAsync("gap", "6px");
             foreach (var ellipsis in await nav.Locator(".shop-pagination-ellipsis").AllAsync())
@@ -158,6 +168,17 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
             """);
         (await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= innerWidth")).Should().BeTrue(overflow);
         await SaveAsync($"components-{width}-{withoutVendorCss}");
+
+        var next = navigations.First.GetByRole(AriaRole.Button, new() { Name = Strings.Pagination_Next, Exact = true });
+        await next.FocusAsync();
+        foreach (var resizedWidth in new[] { 320, 767, 768, 834 })
+        {
+            await Page.SetViewportSizeAsync(resizedWidth, 900);
+            await Assertions.Expect(next).ToBeFocusedAsync();
+            (await navigations.First.GetByRole(AriaRole.Button).CountAsync()).Should().Be(resizedWidth < 768 ? 2 : 7);
+            (await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= innerWidth + 1")).Should().BeTrue();
+        }
+        await Page.SetViewportSizeAsync(width, 900);
 
         await Page.EmulateMediaAsync(new() { ForcedColors = ForcedColors.Active, ReducedMotion = ReducedMotion.Reduce });
         await Assertions.Expect(expanders.First.Locator(".shop-expander-content")).ToHaveCSSAsync("transition-duration", "0s");
@@ -250,7 +271,14 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         (await input.EvaluateAsync<bool>("el => el === window.retainedFilterInput")).Should().BeTrue();
 
         var pagination = Page.GetByRole(AriaRole.Navigation, new() { Name = Strings.Pagination_Label });
-        await pagination.GetByRole(AriaRole.Button, new() { Name = string.Format(Strings.Pagination_Page, 3), Exact = true }).ClickAsync();
+        if (width < 768)
+        {
+            await pagination.GetByRole(AriaRole.Button, new() { Name = Strings.Pagination_Next, Exact = true }).ClickAsync();
+            await Assertions.Expect(pagination.Locator(".shop-pagination-status [aria-hidden]")).ToHaveTextAsync("2 / 20");
+            await pagination.GetByRole(AriaRole.Button, new() { Name = Strings.Pagination_Next, Exact = true }).ClickAsync();
+        }
+        else
+            await pagination.GetByRole(AriaRole.Button, new() { Name = string.Format(Strings.Pagination_Page, 3), Exact = true }).ClickAsync();
         await Assertions.Expect(Page).ToHaveURLAsync(new Regex("page=3"));
         await Assertions.Expect(pagination.Locator("[aria-current]")).ToHaveTextAsync("3");
         await pagination.GetByRole(AriaRole.Button, new() { Name = Strings.Pagination_Next, Exact = true }).FocusAsync();
