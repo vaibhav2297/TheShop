@@ -1,0 +1,17 @@
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<div class="shop-native shop-auth">
+    <section class="shop-auth-panel" aria-labelledby="@TitleId">
+        <div class="shop-auth-header">
+            <ShopIcon Icon="@ShopIcons.Brand" Class="shop-auth-mark" />
+            <nav class="shop-auth-navigation">
+                <a class="shop-button shop-button-outlined shop-button-medium shop-button-primary"
+                   href="@Routes.Auth.SignUp">@Strings.SignUp</a>
+            </nav>
+        </div>
+        <div class="shop-auth-content">
+            @ChildContent
+        </div>
+    </section>
+</div>

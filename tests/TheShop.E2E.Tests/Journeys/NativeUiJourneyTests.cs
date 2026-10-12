@@ -43,7 +43,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         var error = Page.Locator("#signin-email-error");
 
         await Assertions.Expect(submit).ToBeEnabledAsync();
-        await Assertions.Expect(Page.Locator("label[for='signin-email']")).ToHaveTextAsync(Strings.Email_Label);
+        await Assertions.Expect(Page.Locator("label[for='signin-email']")).ToHaveTextAsync(Strings.SignIn_EmailLabel);
         await Assertions.Expect(email).ToHaveAttributeAsync("aria-describedby", "signin-instruction signin-email-error");
         await AssertNoOverflowAsync();
         await SavePageAsync($"signin-{width}-empty");
@@ -116,7 +116,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         var field = Page.Locator(".shop-field-control");
         var label = field.Locator("label");
         var input = Page.GetByTestId("signin-email");
-        await Assertions.Expect(input).ToHaveAccessibleNameAsync(Strings.Email_Label);
+        await Assertions.Expect(input).ToHaveAccessibleNameAsync(Strings.SignIn_EmailLabel);
         await Assertions.Expect(input).ToHaveAttributeAsync("placeholder", " ");
         await Assertions.Expect(label).ToHaveCSSAsync("font-size", "16px");
         await Assertions.Expect(label).ToHaveCSSAsync("font-weight", "400");

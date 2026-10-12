@@ -14,6 +14,7 @@ public sealed class NativeSignInLayoutJourneyTests(PlaywrightFixture playwright)
     [Theory]
     [InlineData(1440, false)]
     [InlineData(1440, true)]
+    [InlineData(834, true)]
     [InlineData(390, false)]
     [InlineData(390, true)]
     public async Task SignIn_MatchesDesktopFigmaAndAdaptsToMobileWithoutVendorCss(int width, bool withoutVendorCss)
@@ -21,7 +22,7 @@ public sealed class NativeSignInLayoutJourneyTests(PlaywrightFixture playwright)
         var errors = new List<string>();
         Page.PageError += (_, error) => errors.Add(error);
         await Context.RouteAsync(E2EEnvironment.Get("API_URL").TrimEnd('/') + "/**", r => r.AbortAsync());
-        await Page.SetViewportSizeAsync(width, width == 1440 ? 900 : 844);
+        await Page.SetViewportSizeAsync(width, width == 1440 ? 900 : width == 834 ? 1194 : 844);
         await Page.GotoAsync(WebRoutes.Auth.SignIn);
         await Page.GetByTestId("signin-email").WaitForAsync(new() { Timeout = 30_000 });
         await Page.EvaluateAsync("""

@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application;
@@ -91,7 +90,7 @@ public class SignInTests : TestContext
         var label = control.QuerySelector("label")!;
 
         label.GetAttribute("for").Should().Be(input.Id);
-        label.TextContent.Should().Be(Strings.Email_Label);
+        label.TextContent.Should().Be(Strings.SignIn_EmailLabel);
         label.ClassList.Should().Contain("shop-field-label");
         input.GetAttribute("placeholder").Should().Be(" ");
         input.GetAttribute("autocomplete").Should().Be("email");
@@ -318,7 +317,7 @@ public class SignInTests : TestContext
         var cut = Render<SignIn>();
         var input = cut.Find("input[type='email']");
         input.Should().NotBeNull();
-        cut.Find($"label[for='{input.Id}']").TextContent.Should().Be(Strings.Email_Label);
+        cut.Find($"label[for='{input.Id}']").TextContent.Should().Be(Strings.SignIn_EmailLabel);
         input.GetAttribute("aria-describedby")!.Split(' ').Should().Contain("signin-email-error");
         input.GetAttribute("autocomplete").Should().Be("email");
         input.HasAttribute("required").Should().BeTrue();
