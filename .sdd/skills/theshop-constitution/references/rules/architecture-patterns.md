@@ -107,42 +107,70 @@ Placement: cross-cutting interfaces (used by multiple features — repositories,
 
 ## FluentValidation — request validation
 
-One validator per Command/Query. Plug them into MediatR via a pipeline behavior so validation runs before the handler.
+Implementation guide for Rules 31–34. Add a validator beside each Command/Query requiring input constraints. Reuse existing pipeline and Web bridge.
 
 ```csharp
-public sealed class AddToCartCommandValidator : AbstractValidator<AddToCartCommand>
+public sealed class RequestSignInOtpCommandValidator : AbstractValidator<RequestSignInOtpCommand>
 {
-    public AddToCartCommandValidator()
+    public RequestSignInOtpCommandValidator()
     {
-        RuleFor(x => x.ProductId).NotEmpty();
-        RuleFor(x => x.Quantity).GreaterThan(0);
-    }
-}
-
-public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
-    : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
-{
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
-    {
-        var failures = validators
-            .Select(v => v.Validate(new ValidationContext<TRequest>(request)))
-            .SelectMany(r => r.Errors)
-            .Where(f => f is not null)
-            .ToList();
-
-        if (failures.Count > 0) throw new ValidationException(failures);
-        return await next();
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage(AuthErrorKeys.EmailRequired)
+            .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+            .WithMessage(AuthErrorKeys.EmailInvalid);
     }
 }
 ```
 
-Register both behaviour and validators in `Application.DependencyInjection`:
+`AuthErrorKeys` illustrates existing typed resource-key constants. For new keys, follow Rule 12 and existing feature conventions.
+
+### Pipeline registration and result contract
+
+`src/TheShop.Application/DependencyInjection.cs` registers validators by assembly and behaviors in this order:
+
+1. `ExceptionHandlingBehavior<,>`.
+2. `AuthorizationBehavior<,>`.
+3. `ValidationBehavior<,>`.
+
+Existing `ValidationBehavior` calls `ValidateAsync` with cancellation, aggregates failures, and skips handler on failure. Each `FieldValidationError` carries `PropertyName` and `MessageKey`. `Result` / `Result<T>` preserve all field failures and first failure as primary error. Non-Result responses retain `ValidationException` behavior. Do not replace this with synchronous or exception-only sample code.
+
+Global cascade settings stop after first failure within each rule chain and continue across rules. Thus empty email reports required error without also reporting format error.
+
+### Web form wiring
+
+Use SignIn as concrete reference:
+
+- `src/TheShop.Web/Pages/Auth/SignIn.razor`: `EditForm`, `ShopCommandValidation`, bound input, busy submit button.
+- `src/TheShop.Web/Pages/Auth/SignIn.razor.cs`: submission orchestration.
+- `src/TheShop.Web/Pages/Auth/SignInFormModel.cs`: editing state without duplicated validation attributes.
+
+Submission shape, inside existing busy guard and `BusyState.RunAsync` flow:
 
 ```csharp
-services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
-services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+_validation.Clear();
+var email = _model.Email.Trim();
+var result = await Mediator.Send(new RequestSignInOtpCommand(email));
+if (result.IsSuccess)
+{
+    // Apply successful UI state or navigate.
+}
+else if (result.ValidationErrors.Count > 0)
+{
+    _validation.ShowErrors(result.ValidationErrors);
+}
+else
+{
+    // Display localized result.Error through existing notification UI.
+}
 ```
+
+`ShopCommandValidation` resolves command property paths against form model and writes localized messages into `ValidationMessageStore`. Matching names need no mapping; supply `FieldMap` when command and form paths differ. Unresolved paths appear in form summary. Reuse bridge instead of page-owned message stores or field-name switches.
+
+`required` and input `type` retain semantic meaning under `novalidate`; browser constraint validation does not intercept submission. Built-in input parsing remains Web responsibility. Do not add custom parsing as a substitute for command input rules.
+
+### Focused verification
+
+For changed rules, cover invalid and valid requests in validator tests. For changed pipeline behavior, prove invalid requests skip handler and preserve field failures; valid requests reach handler. For changed form wiring, verify field errors display, editing clears stale errors, resubmission revalidates, and non-field failures use notifications. Reuse existing coverage when shared behavior remains unchanged.
 
 ---
 

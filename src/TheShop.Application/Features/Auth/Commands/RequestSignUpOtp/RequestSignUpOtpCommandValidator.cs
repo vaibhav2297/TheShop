@@ -18,6 +18,7 @@ public sealed class RequestSignUpOtpCommandValidator
             .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").WithMessage(AuthErrorKeys.EmailInvalid);
 
         RuleFor(x => x.DateOfBirth)
+            .NotEmpty().WithMessage(AuthErrorKeys.DobInPast)
             .Must(BeInThePast).WithMessage(AuthErrorKeys.DobInPast)
             .Must(BeAtLeast19YearsOld).WithMessage(AuthErrorKeys.Underage);
     }

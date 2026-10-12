@@ -416,7 +416,10 @@
     <value>Login with your email</value>
   </data>
   <data name="SignUp_Instruction" xml:space="preserve">
-    <value>Join The Vape Shop — Canada's premium vaping destination</value>
+    <value>Join Vape Store — Canada's premium vaping destination</value>
+  </data>
+  <data name="SignUp_Surname" xml:space="preserve">
+    <value>Surname</value>
   </data>
   <data name="Account_Greeting" xml:space="preserve">
     <value>Welcome back!</value>

@@ -80,6 +80,20 @@ body:has(.shop-auth-layout) {
     min-inline-size: 0;
 }
 
+// Figma Sign Up 3038:28470: 16px form gaps and stacked names on phones.
+.shop-auth-signup-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--shop-space-4);
+}
+
+.shop-auth-name-fields {
+    --shop-field-min-height: 3.5625rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--shop-space-4);
+}
+
 // Keep the live validation region mounted without reserving a gap before an error exists.
 .shop-auth-form .shop-field:has(> .shop-field-error:empty) {
     gap: 0;
@@ -158,6 +172,19 @@ body:has(.shop-auth-layout) {
 }
 
 @media (width < bp.$tablet) {
+    // Keep room for native date segments when text is enlarged on narrow screens.
+    .shop-auth:has(.shop-auth-signup-fields) {
+        padding: min(var(--shop-space-4), 16px);
+    }
+
+    .shop-auth-panel:has(.shop-auth-signup-fields) {
+        padding: min(calc(var(--shop-space-6) - 1px), 23px);
+    }
+
+    .shop-auth-name-fields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
     .shop-auth {
         padding: var(--shop-space-4);
     }

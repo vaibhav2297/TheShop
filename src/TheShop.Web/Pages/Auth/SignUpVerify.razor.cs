@@ -2,11 +2,11 @@ using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
 using TheShop.Application.Features.Auth.Commands.ResendOtp;
 using TheShop.Application.Features.Auth.Commands.VerifySignUpOtp;
 using TheShop.Domain.Enums;
 using TheShop.Web.Common;
+using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
 
@@ -29,15 +29,13 @@ public partial class SignUpVerify : ComponentBase, IDisposable
 
     private const int OtpLength = 6;
 
-    private MudForm _form = default!;
-    private string _otp = string.Empty;
-    private bool _isFormValid;
+    private readonly SignUpVerifyFormModel _model = new();
+    private ShopCommandValidation _validation = default!;
+    private string CooldownText => TimeSpan.FromSeconds(_resendCooldown).ToString(@"mm\:ss", System.Globalization.CultureInfo.InvariantCulture);
     private int _resendCooldown;
     private System.Threading.Timer? _cooldownTimer;
 
     private string _pendingEmail => PendingSignUp.Email ?? string.Empty;
-    private bool _isCodeComplete => _otp.Length == OtpLength;
-    private string _otpCode => _otp;
 
     protected override void OnInitialized()
     {
@@ -52,13 +50,15 @@ public partial class SignUpVerify : ComponentBase, IDisposable
 
     private async Task OnVerifyAsync()
     {
-        if (!_isCodeComplete || !PendingSignUp.HasData) return;
+        if (!PendingSignUp.HasData || BusyState.IsBusy(BusyKeys.Auth.SignUpVerify)
+            || BusyState.IsBusy(BusyKeys.Auth.ResendOtp)) return;
 
+        _validation.Clear();
         await BusyState.RunAsync(BusyKeys.Auth.SignUpVerify, async () =>
         {
             var result = await Mediator.Send(new VerifySignUpOtpCommand(
                 PendingSignUp.Email!,
-                _otpCode,
+                _model.Code,
                 PendingSignUp.FirstName!,
                 PendingSignUp.LastName!,
                 PendingSignUp.DateOfBirth!.Value));
@@ -68,6 +68,10 @@ public partial class SignUpVerify : ComponentBase, IDisposable
                 PendingSignUp.Clear();
                 Notifications.Show(Strings.Auth_SignedIn, ShopNotificationKind.Success);
                 Nav.NavigateTo(Routes.Home, forceLoad: false);
+            }
+            else if (result.ValidationErrors.Count > 0)
+            {
+                _validation.ShowErrors(result.ValidationErrors);
             }
             else
             {
@@ -83,7 +87,7 @@ public partial class SignUpVerify : ComponentBase, IDisposable
                 }
 
                 Notifications.Show(Localizer[key], ShopNotificationKind.Error);
-                _otp = string.Empty;
+                _model.Code = string.Empty;
                 await InvokeAsync(StateHasChanged);
             }
         });
@@ -91,7 +95,8 @@ public partial class SignUpVerify : ComponentBase, IDisposable
 
     private async Task OnResendAsync()
     {
-        if (_resendCooldown > 0 || !PendingSignUp.HasData) return;
+        if (_resendCooldown > 0 || !PendingSignUp.HasData || BusyState.IsBusy(BusyKeys.Auth.ResendOtp)
+            || BusyState.IsBusy(BusyKeys.Auth.SignUpVerify)) return;
 
         await BusyState.RunAsync(BusyKeys.Auth.ResendOtp, async () =>
         {

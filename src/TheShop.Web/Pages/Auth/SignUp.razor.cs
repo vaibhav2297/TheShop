@@ -2,7 +2,7 @@ using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
+using Microsoft.AspNetCore.Components.Forms;
 using TheShop.Application.Features.Auth.Commands.RequestSignUpOtp;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Common;
@@ -26,62 +26,48 @@ public partial class SignUp : ComponentBase
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private PendingSignUpState PendingSignUp { get; set; } = default!;
 
-    private MudForm _form = default!;
+    private readonly SignUpFormModel _model = new();
+    private EditContext _editContext = default!;
+    private ShopCommandValidation _validation = default!;
     private ShopDateField _dateField = default!;
-    private string _firstName = string.Empty;
-    private string _lastName = string.Empty;
-    private string _email = string.Empty;
-    private DateOnly? _dateOfBirth;
-    private bool _ageConfirmed;
-    private bool _isFormValid;
 
-    // Maximum selectable date: today minus 19 years — enforces age on picker level (UX hint only;
-    // authoritative check is in the domain / Application layer).
-    private readonly DateOnly _maxDate = DateOnly.FromDateTime(DateTime.Today).AddYears(-19);
-    private bool CanSendCode => _isFormValid && _dobValidation(_dateOfBirth) is null;
-
-    private readonly Func<string, string?> _emailValidation = email =>
-        string.IsNullOrWhiteSpace(email)
-            ? Strings.Email_Required
-            : !email.Contains('@')
-                ? Strings.Email_Invalid
-                : null;
-
-    private readonly Func<DateOnly?, string?> _dobValidation = dob =>
-    {
-        if (dob is null) return Strings.Auth_Dob_InPast;
-        var today = DateOnly.FromDateTime(DateTime.Today);
-        if (dob.Value >= today) return Strings.Auth_Dob_InPast;
-
-        var age = today.Year - dob.Value.Year;
-        if (dob.Value > today.AddYears(-age)) age--;
-        if (age < 19) return Strings.Auth_Underage;
-
-        return null;
-    };
+    /// <inheritdoc />
+    protected override void OnInitialized() => _editContext = new EditContext(_model);
 
     private async Task OnSendCodeAsync()
     {
         if (BusyState.IsBusy(BusyKeys.Auth.SignUp)) return;
-        var dateValid = _dateField.Validate();
-        await _form.ValidateAsync();
-        if (!dateValid || !_isFormValid) return;
+        _validation.Clear();
+        if (!_dateField.Validate()) return;
+        // Consent is a Web-only confirmation, not an input on the existing command.
+        if (!_model.AgeConfirmed)
+        {
+            _validation.ShowErrors([new(nameof(_model.AgeConfirmed), nameof(Strings.Auth_Underage))]);
+            return;
+        }
 
-        var dob = _dateOfBirth!.Value;
+        var dob = _model.DateOfBirth ?? default;
+        var firstName = _model.FirstName.Trim();
+        var lastName = _model.LastName.Trim();
+        var email = _model.Email.Trim();
 
         await BusyState.RunAsync(BusyKeys.Auth.SignUp, async () =>
         {
             var result = await Mediator.Send(new RequestSignUpOtpCommand(
-                _firstName.Trim(),
-                _lastName.Trim(),
-                _email.Trim(),
+                firstName,
+                lastName,
+                email,
                 dob));
 
             if (result.IsSuccess)
             {
-                PendingSignUp.Set(_firstName.Trim(), _lastName.Trim(), _email.Trim(), dob);
+                PendingSignUp.Set(firstName, lastName, email, dob);
                 Notifications.Show(Strings.Auth_CodeSent, ShopNotificationKind.Success);
                 Nav.NavigateTo(Routes.Auth.SignUpVerify);
+            }
+            else if (result.ValidationErrors.Count > 0)
+            {
+                _validation.ShowErrors(result.ValidationErrors);
             }
             else
             {

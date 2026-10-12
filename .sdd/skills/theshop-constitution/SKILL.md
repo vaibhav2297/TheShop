@@ -68,6 +68,13 @@ Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*)
 29. [tests] Every new handler, repository, value object, or domain method gets at least one test in the matching `tests/TheShop.{Layer}.Tests/` project.
 30. [docs] Public types and members get XML `<summary>` per `references/rules/documentation.md`. Document the contract, not the implementation. Private / internal / test code: no doc comments.
 
+### Validation ownership
+
+31. [validation] Application `AbstractValidator<TCommand>` / `AbstractValidator<TQuery>` owns request input rules: required values, format, ranges, and cross-field constraints. Do not duplicate these rules in `.razor`, `.razor.cs`, Web form models, DataAnnotations, or handlers. Domain entities retain business invariants (Rule 6); handlers coordinate state-dependent business checks, such as account existence, and return expected failures through `Result` (Rule 5).
+32. [validation] Dispatch through `IMediator.Send(...)`. Reuse registered `ValidationBehavior<,>`; never invoke validators directly from pages or handlers. Validate asynchronously before handler execution. Invalid requests returning `Result` / `Result<T>` carry all field failures in `ValidationErrors`; preserve primary error compatibility. Keep authorization before validation. Validators return resource keys, never display text (Rule 12).
+33. [validation] Command-backed forms use `EditForm` with `OnSubmit`, `novalidate`, and `ShopCommandValidation`. Web owns editing state, input parsing, command mapping, busy guards, error presentation, and navigation. Clear previous command errors before dispatch; pass returned `ValidationErrors` to `ShowErrors`; display other failures through existing notification UI. Do not gate command dispatch with duplicate input rules or `EditContext.Validate()`. Native input semantics and parsing remain supported; they do not replace Application validation.
+34. [validation] Normalize deliberately; normalization is not validation. Existing Web trimming may remain. When every caller needs identical normalization, put it at an Application boundary before validation and use the same normalized value for handling. Do not mutate requests inside validators. Field edits clear displayed command errors; they do not prove validity or rerun commands. Revalidate on submission.
+
 ### Migration coexistence
 
 Existing MudBlazor consumers, providers, packages, assets, utilities, and C# theme values may remain temporarily while their replacements are verified. New native controls must use project-owned tokens and work without vendor CSS. Record temporary bridges and remove them with their last consumer; do not extend Mud dependencies. Scope shared CSS changes carefully so unconverted screens keep working. This exception does not waive architecture, resources, routes, loading, accessibility, or behavioral checks.
@@ -154,6 +161,7 @@ already inline a minimal example; pull an `examples/` file only when you want a 
 | Working on an admin feature (routing, RLS, role wiring) | **admin** + the row for whatever artifact you're writing |
 | Writing XML doc comments | **docs** |
 | Writing tests | **check:code** §Tests (authoring authority: `shop-test-writer`) |
+| Creating / changing command-backed forms, request validators, or validation pipeline | **patterns** §FluentValidation — request validation |
 | Final review / self-verification | **check:code** (architecture/tests/docs) and/or **check:design** (UI) |
 
 **Worked example — "implement add-to-cart end to end" (union across layers, deduped):**
