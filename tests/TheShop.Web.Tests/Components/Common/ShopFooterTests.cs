@@ -1,9 +1,5 @@
 using Bunit;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.Theme;
@@ -25,8 +21,6 @@ public class ShopFooterTests : TestContext
     {
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
     }
 
     // =========================================================================
@@ -68,7 +62,8 @@ public class ShopFooterTests : TestContext
 
         var logo = cut.FindComponent<ShopImage>();
         logo.Instance.Preset.Should().Be(ShopImagePreset.BrandLogo);
-        logo.Find("[data-shop-image]").GetAttribute("style").Should().Contain("width: 120px").And.Contain("height: 120px");
+        cut.Find(".shop-footer-logo").Should().NotBeNull("responsive logo dimensions belong to SCSS");
+        cut.Markup.Should().NotContain("mud-");
 
         var link = cut.Find($"a:has(img[src='{ShopIcons.ImageAssets.LogoPrimary}'])");
         link.HasAttribute("href").Should().BeTrue("the logo stays a keyboard-reachable link");

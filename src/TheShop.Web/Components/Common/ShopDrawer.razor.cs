@@ -4,7 +4,7 @@ using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
-/// <summary>Controlled right-side modal drawer with fixed header/actions and a scrollable body.</summary>
+/// <summary>Controlled side modal drawer with fixed header/actions and a scrollable body.</summary>
 public partial class ShopDrawer : ShopComponentBase, IAsyncDisposable
 {
     [Inject] private IJSRuntime JS { get; set; } = default!;
@@ -12,6 +12,9 @@ public partial class ShopDrawer : ShopComponentBase, IAsyncDisposable
 
     /// <summary>Whether the drawer should be open. Keep the component mounted to animate closing.</summary>
     [Parameter] public bool Open { get; set; }
+
+    /// <summary>The opening edge; defaults to right for account and action drawers.</summary>
+    [Parameter] public ShopDrawerSide Side { get; set; } = ShopDrawerSide.Right;
 
     /// <summary>Requests an updated open state on Escape, close-button, backdrop, or modal replacement.</summary>
     [Parameter] public EventCallback<bool> OpenChanged { get; set; }
@@ -31,7 +34,8 @@ public partial class ShopDrawer : ShopComponentBase, IAsyncDisposable
     private DotNetObjectReference<ShopDrawer>? _reference;
     private bool _disposed;
     private bool? _synchronizedOpen;
-    private string ClassName => ShopCssClass.Join("shop-native", "shop-drawer", Class);
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-drawer",
+        Side == ShopDrawerSide.Left ? "shop-drawer-left" : null, Class);
     private IReadOnlyDictionary<string, object>? RootAttributes => AdditionalAttributes?
         .Where(pair => !string.Equals(pair.Key, "open", StringComparison.OrdinalIgnoreCase))
         .ToDictionary(pair => pair.Key, pair => pair.Value);

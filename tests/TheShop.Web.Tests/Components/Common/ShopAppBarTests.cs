@@ -9,7 +9,36 @@ namespace TheShop.Web.Tests.Components.Common;
 
 public class ShopAppBarTests : TestContext
 {
-    public ShopAppBarTests() => JSInterop.Mode = JSRuntimeMode.Loose;
+    public ShopAppBarTests()
+    {
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        JSInterop.SetupModule("./js/shopAppBar.js").Mode = JSRuntimeMode.Loose;
+    }
+
+    [Fact]
+    public async Task Menu_ReportsOpenStateAndRequestsLayoutActions_AndDisposesObserver()
+    {
+        this.AddAuthorization().SetNotAuthorized();
+        var opens = 0;
+        var closes = 0;
+        var cut = Render<ShopAppBar>(p => p.Add(x => x.MenuOpen, true)
+            .Add(x => x.MenuDrawerId, "navigation")
+            .Add(x => x.OnMenuClick, () => opens++)
+            .Add(x => x.OnMenuUnavailable, () => closes++));
+        var menu = cut.Find($"button[aria-label='{Strings.Nav_Menu}']");
+        menu.GetAttribute("aria-controls").Should().Be("navigation");
+        menu.GetAttribute("aria-expanded").Should().Be("true");
+        menu.Click();
+        opens.Should().Be(1);
+        await cut.InvokeAsync(cut.Instance.MenuUnavailableAsync);
+        closes.Should().Be(1);
+        cut.Instance.MenuOpen.Should().BeTrue("open state belongs to the layout");
+        await cut.Instance.DisposeAsync();
+        await cut.Instance.DisposeAsync();
+        await cut.InvokeAsync(cut.Instance.MenuUnavailableAsync);
+        closes.Should().Be(1);
+        JSInterop.Invocations["dispose"].Should().ContainSingle();
+    }
 
     [Fact]
     public void Render_Anonymous_ShowsNativeNavigationAndNamedActionsWithoutMudServices()

@@ -3,17 +3,19 @@
 @inherits ShopComponentBase
 
 <header @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
-    <a class="shop-appbar-logo" href="@Routes.Home">
-        <ShopImage Src="@ShopIcons.ImageAssets.LogoIcon" Preset="ShopImagePreset.BrandLogo"
-                   Alt="@Strings.AppName" PlaceholderLabel="@Strings.AppName" />
-    </a>
-    <nav class="shop-appbar-navigation" aria-label="@Strings.Nav_Primary">
-        <a class="shop-button shop-button-text shop-button-primary shop-button-small" href="@Routes.Home">@Strings.Nav_Home</a>
-        <a class="shop-button shop-button-text shop-button-primary shop-button-small" href="@Routes.Products">@Strings.Nav_Products</a>
-        <a class="shop-button shop-button-text shop-button-primary shop-button-small" href="@Routes.Categories">@Strings.Nav_Categories</a>
-        <a class="shop-button shop-button-text shop-button-primary shop-button-small" href="@Routes.Brands">@Strings.Nav_Brands</a>
-        <a class="shop-button shop-button-text shop-button-primary shop-button-small" href="@Routes.Deals">@Strings.Nav_Deals</a>
-    </nav>
+    <div class="shop-appbar-leading">
+        <span @ref="_menuTrigger" class="shop-appbar-menu">
+            <ShopIconButton Icon="@ShopIcons.Outlined.Hamburger_MD" Variant="ShopVariant.Outlined"
+                            Label="@Strings.Nav_Menu" OnClick="OnMenuClick"
+                            aria-haspopup="dialog" aria-controls="@MenuDrawerId"
+                            aria-expanded="@(MenuOpen ? "true" : "false")" />
+        </span>
+        <a class="shop-appbar-logo" href="@Routes.Home">
+            <ShopImage Src="@ShopIcons.ImageAssets.LogoIcon" Preset="ShopImagePreset.BrandLogo"
+                       Alt="@Strings.AppName" PlaceholderLabel="@Strings.AppName" />
+        </a>
+    </div>
+    <ShopPrimaryNavigation Class="shop-appbar-navigation" />
     <div class="shop-appbar-actions">
         <ShopIconButton Icon="@ShopIcons.Outlined.Search_Magnifying_Glass"
                         Variant="ShopVariant.Outlined" Label="@Strings.Nav_Search" />

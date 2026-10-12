@@ -2,12 +2,24 @@ using Bunit;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components;
 using TheShop.Web.Components.Common;
+using TheShop.Web.Common.UI;
 using Xunit;
 
 namespace TheShop.Web.Tests.Components.Common;
 
 public class ShopDrawerTests : TestContext
 {
+    [Fact]
+    public void Side_DefaultsRight_AndLeftKeepsTheModalContract()
+    {
+        var cut = Render<ShopDrawer>(p => p.Add(x => x.HeaderContent, Header));
+        cut.Find("dialog").ClassList.Should().NotContain("shop-drawer-left");
+        cut.Render(p => p.Add(x => x.Side, ShopDrawerSide.Left));
+        cut.Find("dialog").ClassList.Should().Contain("shop-drawer-left");
+        cut.Find("dialog").GetAttribute("aria-labelledby").Should().NotBeNullOrEmpty();
+        cut.FindAll("[data-testid=drawer-close]").Should().ContainSingle();
+    }
+
     public ShopDrawerTests() => JSInterop.SetupModule("./js/shopDialog.js").Mode = JSRuntimeMode.Loose;
 
     private static RenderFragment Header => b => b.AddMarkupContent(0, "<h2>Account</h2>");

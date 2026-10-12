@@ -78,8 +78,9 @@ public sealed class NativeShellJourneyTests(PlaywrightFixture playwright) : E2ET
         await Assertions.Expect(trail).ToHaveCSSAsync("padding-left", width == 1440 ? "36px" : "16px");
         await Assertions.Expect(trail.Locator("[aria-current='page']")).ToHaveTextAsync(Strings.Nav_Products);
         await Assertions.Expect(trail.Locator(".shop-icon")).ToHaveCSSAsync("width", "24px");
-        await appbar.Locator("nav a").First.FocusAsync();
-        await Assertions.Expect(appbar.Locator("nav a").First).ToHaveCSSAsync("outline-style", "solid");
+        var keyboardTarget = width < 1024 ? appbar.GetByRole(AriaRole.Button, new() { Name = Strings.Nav_Menu }) : appbar.Locator("nav a").First;
+        await keyboardTarget.FocusAsync();
+        await Assertions.Expect(keyboardTarget).ToHaveCSSAsync("outline-style", "solid");
 
         foreach (var (size, height, font, padding) in new[] { ("small", 24, "12px", "8px"), ("medium", 32, "14px", "12px"), ("large", 40, "16px", "16px") })
         {

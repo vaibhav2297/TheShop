@@ -33,6 +33,16 @@
     text-transform: uppercase;
 }
 
+.shop-appbar-leading {
+    display: flex;
+    align-items: center;
+    gap: var(--shop-space-3);
+}
+
+.shop-appbar-menu {
+    display: none;
+}
+
 .shop-appbar-actions {
     display: flex;
     align-items: center;
@@ -46,13 +56,18 @@
 
 @media (width < bp.$desktop) {
     .shop-appbar {
-        grid-template-columns: minmax(0, 1fr) auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5rem 0.75rem;
     }
 
     .shop-appbar-navigation {
-        grid-column: 1 / -1;
-        grid-row: 2;
-        gap: 0.5rem 1rem;
+        display: none;
+    }
+
+    .shop-appbar-menu {
+        display: inline-flex;
     }
 
     .shop-appbar-actions {

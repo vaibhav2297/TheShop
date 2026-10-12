@@ -28,9 +28,23 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
     private IDisposable? _locationChangingRegistration;
-    private bool _profileDrawerOpen;
+    private enum ActiveDrawer { None, Navigation, Profile }
+    private ActiveDrawer _activeDrawer;
+    private readonly string _navigationDrawerId = $"shop-navigation-{Guid.NewGuid():N}";
+    private bool NavigationOpen => _activeDrawer == ActiveDrawer.Navigation;
+    private bool ProfileOpen => _activeDrawer == ActiveDrawer.Profile;
 
-    private void OpenProfileDrawer() => _profileDrawerOpen = true;
+    private void OpenProfileDrawer() => _activeDrawer = ActiveDrawer.Profile;
+    private void OpenNavigationDrawer() => _activeDrawer = ActiveDrawer.Navigation;
+    private void CloseNavigationDrawer() => NavigationOpenChanged(false);
+    private void NavigationOpenChanged(bool open) => SetDrawerOpen(ActiveDrawer.Navigation, open);
+    private void ProfileOpenChanged(bool open) => SetDrawerOpen(ActiveDrawer.Profile, open);
+
+    private void SetDrawerOpen(ActiveDrawer drawer, bool open)
+    {
+        if (open) _activeDrawer = drawer;
+        else if (_activeDrawer == drawer) _activeDrawer = ActiveDrawer.None;
+    }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -43,7 +57,7 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
 
     private ValueTask OnLocationChanging(LocationChangingContext context)
     {
-        _profileDrawerOpen = false;
+        _activeDrawer = ActiveDrawer.None;
         Breadcrumbs.Clear();
         Footer.Show();
         StateHasChanged();

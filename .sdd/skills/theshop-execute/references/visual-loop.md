@@ -60,6 +60,7 @@ pwsh -NoProfile -File .sdd/scripts/capture-ui.ps1 -Feature {feature} -Surface ca
 
 Helper runs headless Chromium, viewport from plan, stable screenshots, fonts/images readiness, animation suppression,
 element geometry, 50% overlay and pixel difference. It emits **UNREVIEWED**, never PASS.
+Set `$env:E2E_HEADLESS='0'` before capture to use a visible Chromium window when requested.
 Existing E2E environment settings are reused through `ShopBrowser`; no database reset occurs.
 `-LocalE2E` requires prepared `.e2e-env`. Prepare missing local dependencies explicitly; do not invoke reset scripts implicitly.
 Omit `-LocalE2E` only for a local app with safe, deterministic configuration. Missing setup is a blocker, not reason to capture blank UI.

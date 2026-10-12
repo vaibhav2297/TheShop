@@ -59,15 +59,15 @@ a.shop-breadcrumb-item:hover {
         padding-inline: 1rem;
     }
 
-    .shop-breadcrumb-middle {
+    .shop-breadcrumbs-long .shop-breadcrumb-middle {
         display: none;
     }
 
-    .shop-breadcrumbs-expanded .shop-breadcrumb-middle {
+    .shop-breadcrumbs-long.shop-breadcrumbs-expanded .shop-breadcrumb-middle {
         display: flex;
     }
 
-    .shop-breadcrumb-expander {
+    .shop-breadcrumbs-long .shop-breadcrumb-expander {
         display: flex;
     }
 }

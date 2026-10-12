@@ -64,7 +64,8 @@ export function show(element, receiver, animated = false) {
             activeNotify = undefined;
         }
         if (!document.querySelector('dialog:modal')) {
-            if (trigger instanceof HTMLElement && trigger.isConnected && !trigger.matches(':disabled')) {
+            if (trigger instanceof HTMLElement && trigger.isConnected && !trigger.matches(':disabled') &&
+                trigger.getClientRects().length && getComputedStyle(trigger).visibility !== 'hidden') {
                 trigger.focus({ preventScroll: true });
             }
             if (!document.activeElement || document.activeElement === document.body) {

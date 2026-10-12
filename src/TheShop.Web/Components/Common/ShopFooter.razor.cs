@@ -1,25 +1,11 @@
-using MudBlazor;
-using MudBlazor.Utilities;
+﻿using TheShop.Web.Common.UI;
+using TheShop.Web.Resources;
 
 namespace TheShop.Web.Components.Common;
 
-/// <summary>
-/// Layout-mounted site footer. Renders the brand column (logo, tagline, social links) and
-/// the data-driven link sections from <see cref="Common.FooterContent"/> on a tertiary
-/// band. Pages never render this directly — <c>MainLayout</c> shows it in its footer slot
-/// while <see cref="State.FooterState.Visible"/> is <c>true</c>.
-/// </summary>
-public partial class ShopFooter : MudComponentBase
+/// <summary>Responsive site footer with shared link content, brand information and copyright.</summary>
+public partial class ShopFooter : ShopComponentBase
 {
-    private string Classname =>
-        new CssBuilder("shop-footer")
-            .AddClass("mud-theme-tertiary")
-            .AddClass("pa-8")
-            .AddClass(Class)
-            .Build();
-
-    private string Stylename =>
-        new StyleBuilder()
-            .AddStyle(Style)
-            .Build();
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-footer", Class);
+    private static string Copyright => string.Format(Strings.Footer_Copyright, DateTime.UtcNow.Year);
 }

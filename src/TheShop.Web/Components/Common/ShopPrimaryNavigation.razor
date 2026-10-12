@@ -1,0 +1,10 @@
+@using TheShop.Web.Common
+@inherits TheShop.Web.Common.UI.ShopComponentBase
+
+<nav @attributes="AdditionalAttributes" class="@ClassName" style="@Style" aria-label="@Strings.Nav_Primary">
+    <a href="@Routes.Home" @onclick="OnNavigate">@Strings.Nav_Home<ShopIcon Icon="@ShopIcons.Outlined.Arrow_Right_MD" /></a>
+    <a href="@Routes.Products" @onclick="OnNavigate">@Strings.Nav_Products<ShopIcon Icon="@ShopIcons.Outlined.Arrow_Right_MD" /></a>
+    <a href="@Routes.Categories" @onclick="OnNavigate">@Strings.Nav_Categories<ShopIcon Icon="@ShopIcons.Outlined.Arrow_Right_MD" /></a>
+    <a href="@Routes.Brands" @onclick="OnNavigate">@Strings.Nav_Brands<ShopIcon Icon="@ShopIcons.Outlined.Arrow_Right_MD" /></a>
+    <a href="@Routes.Deals" @onclick="OnNavigate">@Strings.Nav_Deals<ShopIcon Icon="@ShopIcons.Outlined.Arrow_Right_MD" /></a>
+</nav>

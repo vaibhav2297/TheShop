@@ -16,6 +16,7 @@ public partial class ShopBreadcrumbs : ShopComponentBase
     private readonly Dictionary<int, ElementReference> _itemElements = [];
 
     private string ClassName => ShopCssClass.Join("shop-native", "shop-breadcrumbs",
+        _items.Count > 3 ? "shop-breadcrumbs-long" : null,
         _expanded ? "shop-breadcrumbs-expanded" : null, Class);
 
     private string ItemClass(int index) => ShopCssClass.Join("shop-breadcrumb-entry",
