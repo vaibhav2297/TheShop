@@ -9,55 +9,59 @@
 
 <PageTitle>@Strings.ManageBrands_PageTitle</PageTitle>
 
-<MudStack Class="pa-8" Spacing="6">
-    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-        <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.ManageBrands_Heading</MudText>
+<section class="shop-native shop-brands-page">
+    <header class="shop-brands-heading">
+        <h1>@Strings.ManageBrands_Heading</h1>
         <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Create.Code)" Context="createAuth">
             <Authorized>
-                <MudButton Href="@Routes.Admin.AddBrand"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           EndIcon="@ShopIcons.Outlined.Add_Plus">
+                <ShopButton Href="@Routes.Admin.AddBrand" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus">
                     @Strings.AddBrand_Heading
-                </MudButton>
+                </ShopButton>
             </Authorized>
         </AuthorizeView>
-    </MudStack>
+    </header>
 
-    <MudGrid Spacing="8">
+    <div class="@ListClass">
 
-        <MudItem xs="12" md="3" xl="2">
-            <ShopFilterPanel Groups="@FilterGroups"
+        <aside class="shop-brands-sidebar">
+            <BusyFor Key="@BusyKeys.Brands.ManageList" Context="loadingFilters">
+                @if (loadingFilters && !_brands.HasLoaded)
+                {
+                    <div class="shop-brands-filter-skeleton" aria-hidden="true">
+                        @for (var i = 0; i < 5; i++)
+                        {
+                            <div class="shop-brands-filter-placeholder">
+                                <ShopSkeleton Class="shop-brands-filter-placeholder-title" />
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <ShopFilterPanel Groups="@FilterGroups"
                              SelectedFilters="@SelectedFilters"
                              SingleSelectChanged="OnSingleSelectChangedAsync"
                              OnClearFilters="OnClearFiltersAsync" />
-        </MudItem>
+                }
+            </BusyFor>
+        </aside>
 
-        <MudItem xs="12" md="9" xl="10">
-            <MudStack Spacing="6" AlignItems="AlignItems.Stretch">
+        <div class="shop-brands-results">
 
-                <MudStack Row
-                          AlignItems="AlignItems.End"
-                          Spacing="8">
 
-                    <MudTextField T="string"
-                                  Value="@_search"
-                                  ValueChanged="OnSearchChangedAsync"
-                                  DebounceInterval="300"
-                                  Immediate="true"
-                                  Variant="Variant.Filled"
-                                  Typo="Typo.body2"
-                                  Placeholder="@Strings.ManageBrands_SearchPlaceholder"
-                                  Adornment="Adornment.Start"
-                                  FullWidth
-                                  Clearable
-                                  AdornmentIcon="@ShopIcons.Outlined.Search_Magnifying_Glass" />
-
-                    <ShopSortSelect TSort="BrandSortOption"
-                                    Sort="@_sort"
-                                    Options="@SortOptions"
-                                    SortChanged="OnSortChangedAsync" />
-                </MudStack>
+                <div class="shop-brands-tools">
+                    <div class="shop-brands-search">
+                        <ShopTextField type="search" Value="@_search" ValueChanged="OnSearchInputAsync"
+                                       ValueExpression="@(() => _search)"
+                                       StartIcon="@ShopIcons.Outlined.Search_Magnifying_Glass"
+                                       Label="@Strings.ManageBrands_SearchPlaceholder" />
+                    </div>
+                    <ShopButton Class="shop-brands-filter-button" Variant="ShopVariant.Outlined"
+                                StartIcon="@ShopIcons.Outlined.Filter" OnClick="@(() => _filtersOpen = true)">
+                        @Strings.Brands_Filters
+                    </ShopButton>
+                    <ShopSortSelect TSort="BrandSortOption" Class="shop-brands-sort" Sort="@_sort" Options="@SortOptions" SortChanged="OnSortChangedAsync" />
+                </div>
 
                 <ShopBulkActionBar Visible="@HasSelection"
                                    SelectedCount="@_selectedItems.Count"
@@ -112,7 +116,7 @@
                     {
                         <BusyFor Keys="@MutationBusyKeys" Context="mutating">
                             <ShopTable TItem="BrandListItemDto"
-                                      Loading="@busy"
+                                      Loading="@busy" Class="shop-brands-table"
                                       Items="@_brands.Items"
                                       ItemKey="@(item => item.Id)"
                                       Caption="@Strings.ManageBrands_Heading"
@@ -132,25 +136,25 @@
 
                                 <RowTemplate Context="brand">
                                     <td>
-                                        <MudStack Row AlignItems="AlignItems.Center" Spacing="3">
-                                            <MudAvatar Rounded="true">
+                                        <div class="shop-brands-name">
+                                            <div class="shop-brands-logo">
                                                 <ShopImage Src="@brand.LogoUrl" Preset="ShopImagePreset.BrandLogo" Alt="@brand.Name" PlaceholderLabel="@brand.Name" />
-                                            </MudAvatar>
-                                            <MudStack Spacing="0">
-                                                <MudText Typo="Typo.body2">@brand.Name</MudText>
+                                            </div>
+                                            <div>
+                                                <span>@brand.Name</span>
 
                                                 @if (_blockedIds.Contains(brand.Id))
                                                 {
-                                                    <MudText Typo="Typo.caption" Color="Color.Warning">
+                                                    <span class="shop-brands-in-use">
                                                         @string.Format(Strings.ManageBrands_InUseIndicator, brand.ProductCount)
-                                                    </MudText>
+                                                    </span>
                                                 }
 
-                                            </MudStack>
-                                        </MudStack>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
-                                        <MudText Typo="Typo.body2" Color="Color.Secondary">@brand.Description</MudText>
+                                        <span>@brand.Description</span>
                                     </td>
                                     <td class="shop-table-column-compact">
                                         <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Edit.Code)" Context="statusAuth">
@@ -165,22 +169,17 @@
                                                 }
                                                 else
                                                 {
-                                                    <MudChip T="string"
-                                                             Color="@(brand.IsActive ? Color.Primary : Color.Default)"
-                                                             Variant="Variant.Outlined"
-                                                             Disabled="@mutating"
-                                                             OnClick="@(() => OnStatusToggledAsync(brand, !brand.IsActive))">
-                                                        <MudText Typo="Typo.body2">
-                                                            @(brand.IsActive ? Strings.AddBrand_StatusActive : Strings.AddBrand_StatusInactive)
-                                                        </MudText>
-                                                    </MudChip>
+                                                    <ShopChip Size="ShopSize.Small" Selected="@brand.IsActive" Disabled="@mutating"
+                                                              SelectedChanged="@((bool active) => OnStatusToggledAsync(brand, active))">
+                                                        @(brand.IsActive ? Strings.AddBrand_StatusActive : Strings.AddBrand_StatusInactive)
+                                                    </ShopChip>
                                                 }
 
                                             </Authorized>
                                             <NotAuthorized>
-                                                <MudText Typo="Typo.body2">
+                                                <span>
                                                     @(brand.IsActive ? Strings.AddBrand_StatusActive : Strings.AddBrand_StatusInactive)
-                                                </MudText>
+                                                </span>
                                             </NotAuthorized>
                                         </AuthorizeView>
                                     </td>
@@ -194,15 +193,14 @@
                                         }
                                         else
                                         {
-                                            <MudStack Row Spacing="1">
+                                            <div class="shop-brands-row-actions">
                                                 <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Edit.Code)" Context="editRowAuth">
                                                     <Authorized>
 
-                                                        <MudIconButton Icon="@ShopIcons.Outlined.Edit_Pencil_02"
-                                                                       Href="@Routes.Admin.EditBrand(brand.Id)"
-                                                                       Color="Color.Primary"
-                                                                       Disabled="@mutating"
-                                                                       aria-label="@string.Format(Strings.ManageBrands_EditAria, brand.Name)" />
+                                                        <ShopIconButton Href="@Routes.Admin.EditBrand(brand.Id)"
+                                                                        Disabled="@mutating" Variant="ShopVariant.Text"
+                                                                        Icon="@ShopIcons.Outlined.Edit_Pencil_02"
+                                                                        Label="@string.Format(Strings.ManageBrands_EditAria, brand.Name)" />
 
 
                                                     </Authorized>
@@ -210,15 +208,15 @@
                                                 <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Delete.Code)" Context="deleteRowAuth">
                                                     <Authorized>
 
-                                                        <MudIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
-                                                                       Color="Color.Error"
+                                                        <ShopIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
+                                                                       Color="ShopColor.Error"
                                                                        Disabled="@mutating"
                                                                        OnClick="@(() => DeleteSingleAsync(brand))"
-                                                                       aria-label="@string.Format(Strings.ManageBrands_DeleteAria, brand.Name)" />
+                                                                       Variant="ShopVariant.Text" Label="@string.Format(Strings.ManageBrands_DeleteAria, brand.Name)" />
 
                                                     </Authorized>
                                                 </AuthorizeView>
-                                            </MudStack>
+                                            </div>
                                         }
                                     </td>
                                 </RowTemplate>
@@ -230,26 +228,32 @@
                             <ShopPagination Page="@_brands.Page"
                                             TotalPages="@_brands.TotalPages"
                                             PageChanged="OnPageChangedAsync"
-                                            Class="align-self-center" />
+                                            Class="shop-brands-pagination" />
                         }
                     }
                     else if (_search is not null || _status is not null)
                     {
-                        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4" Class="py-20">
-                            <MudText Typo="Typo.h4">@Strings.ManageBrands_NoMatchTitle</MudText>
-                            <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.ManageBrands_NoMatchDescription</MudText>
-                        </MudStack>
+                        <div class="shop-brands-empty">
+                            <h2>@Strings.ManageBrands_NoMatchTitle</h2>
+                            <p>@Strings.ManageBrands_NoMatchDescription</p>
+                        </div>
                     }
                     else
                     {
-                        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4" Class="py-20">
-                            <MudText Typo="Typo.h4">@Strings.ManageBrands_EmptyTitle</MudText>
-                            <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.ManageBrands_EmptyDescription</MudText>
-                        </MudStack>
+                        <div class="shop-brands-empty">
+                            <h2>@Strings.ManageBrands_EmptyTitle</h2>
+                            <p>@Strings.ManageBrands_EmptyDescription</p>
+                        </div>
                     }
                 </BusyFor>
-            </MudStack>
-        </MudItem>
+        </div>
+    </div>
+</section>
 
-    </MudGrid>
-</MudStack>
+<ShopDrawer @bind-Open="_filtersOpen" Side="ShopDrawerSide.Left">
+    <HeaderContent><h2>@Strings.Brands_Filters</h2></HeaderContent>
+    <DrawerContent>
+        <ShopFilterPanel Groups="@FilterGroups" SelectedFilters="@SelectedFilters"
+                         SingleSelectChanged="OnSingleSelectChangedAsync" OnClearFilters="OnClearFiltersAsync" />
+    </DrawerContent>
+</ShopDrawer>

@@ -1,138 +1,35 @@
+@using TheShop.Web.Components.Brands
 @using TheShop.Web.Common
-@using TheShop.Web.Components.Admin
+@using TheShop.Web.Common.UI
 @using TheShop.Web.Components.Common
 
 <PageTitle>@Strings.EditBrand_PageTitle</PageTitle>
-
-<BusyFor Key="@BusyKeys.Brands.EditBrand" Context="busy">
-    @if (busy && string.IsNullOrEmpty(_name) && !_notFound)
-    {
-        <AdminFormSkeleton />
-    }
-    else if (_notFound)
-    {
-        <MudStack Class="pa-8"
-                  Spacing="4"
-                  AlignItems="AlignItems.Center">
-
-            <MudText Typo="Typo.h4">@Strings.Brand_NotFound</MudText>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@Routes.Admin.ManageBrands">
-                @Strings.EditBrand_BackToList
-            </MudButton>
-
-        </MudStack>
-    }
-    else
-    {
-        <MudStack Class="pa-8" Spacing="6">
-            <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.EditBrand_Heading</MudText>
-
-            <MudForm @ref="_form" @bind-IsValid="_isFormValid" SuppressImplicitSubmission="true">
-                <MudGrid Spacing="6">
-
-                    <MudItem xs="12" sm="4" md="3">
-                        @if (_hasExistingLogo)
-                        {
-                            <MudStack Spacing="2" AlignItems="AlignItems.Start">
-                                <ShopImage Src="@_existingLogoUrl"
-                                           Preset="ShopImagePreset.BrandLogo"
-                                           Alt="@Strings.AddBrand_LogoLabel"
-                                           PlaceholderLabel="@Strings.AddBrand_LogoLabel"
-                                           Style="width: 120px; height: 120px;" />
-                                <MudButton Variant="Variant.Text"
-                                           Color="Color.Error"
-                                           Disabled="@busy"
-                                           OnClick="RemoveExistingLogo">
-                                    @Strings.AddBrand_LogoRemove
-                                </MudButton>
-                            </MudStack>
-                        }
-                        else
-                        {
-                            <ShopImageUpload @ref="_imageUpload" Files="_newLogoImages"
-                                             FilesChanged="OnNewLogoImagesChanged"
-                                             UploadText="@Strings.AddBrand_LogoUploadButton"
-                                             RemoveLabel="@Strings.AddBrand_LogoRemove"
-                                             PreviewAlt="@Strings.AddBrand_LogoLabel"
-                                             PreviewPreset="ShopImagePreset.BrandLogo"
-                                             InvalidTypeError="@Strings.Brand_LogoInvalidType"
-                                             MaxFileSizeError="@Strings.Brand_LogoTooLarge"
-                                             Disabled="@busy" />
-                        }
-                    </MudItem>
-
-                    <MudItem xs="12" sm="8" md="9">
-                        <MudStack Spacing="4">
-                            <MudTextField T="string"
-                                          @bind-Value="_name"
-                                          Placeholder="@Strings.AddBrand_NamePlaceholder"
-                                          Variant="Variant.Filled"
-                                          FullWidth="true"
-                                          Required="true"
-                                          Disabled="@busy"
-                                          OnlyValidateIfDirty
-                                          Validation="@_nameValidation"
-                                          RequiredError="@Strings.Brand_NameRequired"
-                                          Immediate="true"
-                                          UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "edit-brand-name" })" />
-
-                            <MudTextField T="string"
-                                          @bind-Value="_description"
-                                          Placeholder="@Strings.AddBrand_DescriptionPlaceholder"
-                                          Variant="Variant.Filled"
-                                          FullWidth="true"
-                                          Lines="3"
-                                          Disabled="@busy"
-                                          Validation="@_descriptionValidation"
-                                          Immediate="true" />
-
-                            <MudDivider />
-
-                            <MudStack Spacing="2">
-                                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Strings.AddBrand_StatusLabel</MudText>
-                                <MudChipSet T="bool"
-                                            SelectionMode="SelectionMode.SingleSelection"
-                                            @bind-SelectedValue="_isActive"
-                                            CheckMark="false">
-                                    <MudChip Value="true"
-                                             Disabled="@busy"
-                                             SelectedColor="Color.Primary"
-                                             Color="Color.Default"
-                                             Variant="Variant.Outlined">@Strings.AddBrand_StatusActive</MudChip>
-
-                                    <MudChip Value="false"
-                                             Disabled="@busy"
-                                             SelectedColor="Color.Primary"
-                                             Color="Color.Default"
-                                             Variant="Variant.Outlined">@Strings.AddBrand_StatusInactive</MudChip>
-                                </MudChipSet>
-                            </MudStack>
-
-                            <MudDivider />
-
-                            <MudStack Row="true" Spacing="3">
-                                <MudButton Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           Disabled="@(!_isFormValid || busy)"
-                                           OnClick="SaveAsync"
-                                           UserAttributes="@(new Dictionary<string, object?> { ["data-testid"] = "edit-brand-save" })">
-                                    @if (busy)
-                                    {
-                                        <ShopLoader Class="shop-loader-inline shop-loader-inherit" />
-                                    }
-                                    @Strings.Save
-                                </MudButton>
-                                <MudButton Variant="Variant.Outlined"
-                                           Disabled="@busy"
-                                           Href="@Routes.Admin.ManageBrands">
-                                    @Strings.Cancel
-                                </MudButton>
-                            </MudStack>
-                        </MudStack>
-                    </MudItem>
-
-                </MudGrid>
-            </MudForm>
-        </MudStack>
-    }
-</BusyFor>
+<section class="shop-native shop-brands-page">
+    <h1>@(_notFound ? Strings.Brand_NotFound : Strings.EditBrand_Heading)</h1>
+    <BusyFor Key="@BusyKeys.Brands.EditBrand" Context="busy">
+        @if (busy && !_loaded && !_notFound)
+        {
+            <div class="shop-brands-form" role="status" aria-label="@Strings.Loading">
+                <ShopSkeleton Class="shop-brands-upload-skeleton" />
+                <div class="shop-brands-fields">
+                    @for (var i = 0; i < 4; i++)
+                    {
+                        <ShopSkeleton Class="shop-brands-field-skeleton" />
+                    }
+                </div>
+            </div>
+        }
+        else if (_notFound)
+        {
+            <div class="shop-brands-empty">
+                <a class="shop-button shop-button-filled shop-button-primary shop-button-medium" href="@Routes.Admin.ManageBrands">@Strings.EditBrand_BackToList</a>
+            </div>
+        }
+        else
+        {
+            <BrandForm @ref="_form" Model="_model" Busy="@busy"
+                       LogoImages="DisplayedLogoImages" LogoImagesChanged="OnNewLogoImagesChanged"
+                       OnSave="SaveAsync" TestIdPrefix="edit-brand" />
+        }
+    </BusyFor>
+</section>

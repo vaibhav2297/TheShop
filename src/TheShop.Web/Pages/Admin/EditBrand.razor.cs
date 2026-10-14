@@ -2,7 +2,7 @@ using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
+using TheShop.Web.Components.Brands;
 using TheShop.Application.Features.Brands.Commands.UpdateBrand;
 using TheShop.Application.Features.Brands.DTOs;
 using TheShop.Application.Features.Brands.Queries.GetBrandById;
@@ -26,9 +26,6 @@ namespace TheShop.Web.Pages.Admin;
 [AuthorizePermission("brands.edit")]
 public partial class EditBrand : ComponentBase
 {
-    private const int MaxNameLength = 100;
-    private const int MaxDescriptionLength = 250;
-
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IShopNotificationService Notifications { get; set; } = default!;
@@ -38,28 +35,15 @@ public partial class EditBrand : ComponentBase
 
     [Parameter] public Guid Id { get; set; }
 
-    private ShopImageUpload? _imageUpload;
-    private MudForm _form = default!;
-    private string _name = string.Empty;
-    private string? _description;
-    private bool _isActive = true;
-    private bool _isFormValid;
+    private BrandForm _form = default!;
+    private readonly BrandFormModel _model = new();
     private bool _notFound;
+    private bool _loaded;
 
     private bool _originalHadLogo;
     private bool _hasExistingLogo;
     private string? _existingLogoUrl;
     private IReadOnlyList<ShopUploadedImage> _newLogoImages = [];
-
-    private readonly Func<string, string?> _nameValidation = name =>
-        !string.IsNullOrWhiteSpace(name) && name.Trim().Length > MaxNameLength
-            ? Strings.Brand_NameTooLong
-            : null;
-
-    private readonly Func<string, string?> _descriptionValidation = description =>
-        !string.IsNullOrWhiteSpace(description) && description.Trim().Length > MaxDescriptionLength
-            ? Strings.Brand_DescriptionTooLong
-            : null;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -79,16 +63,28 @@ public partial class EditBrand : ComponentBase
             }
 
             var brand = result.Value;
-            _name = brand.Name;
-            _description = brand.Description;
-            _isActive = brand.IsActive;
+            _loaded = true;
+            _model.Name = brand.Name;
+            _model.Description = brand.Description;
+            _model.IsActive = brand.IsActive;
             _existingLogoUrl = brand.LogoUrl;
             _originalHadLogo = brand.LogoUrl is not null;
             _hasExistingLogo = _originalHadLogo;
         });
     }
 
-    private void OnNewLogoImagesChanged(IReadOnlyList<ShopUploadedImage> images) => _newLogoImages = images;
+    private IReadOnlyList<ShopUploadedImage> DisplayedLogoImages =>
+        _hasExistingLogo && _newLogoImages.Count == 0 && _existingLogoUrl is not null
+            ? [ShopUploadedImage.Existing(Id, _existingLogoUrl)] : _newLogoImages;
+
+    private void OnNewLogoImagesChanged(IReadOnlyList<ShopUploadedImage> images)
+    {
+        var removingRejectedReplacement = _hasExistingLogo && _newLogoImages.Count > 0 && images.Count == 0;
+        _newLogoImages = images.Where(image => !image.IsExisting).ToList();
+        if (!removingRejectedReplacement && !images.Any(image => image.IsExisting)
+            && (images.Count == 0 || images.Any(image => image.Error is null)))
+            RemoveExistingLogo();
+    }
 
     private void RemoveExistingLogo()
     {
@@ -98,13 +94,12 @@ public partial class EditBrand : ComponentBase
 
     private async Task SaveAsync()
     {
-        if (_imageUpload is not null) await _imageUpload.WaitForPendingFilesAsync();
-        await _form.ValidateAsync();
-        if (!_isFormValid)
-            return;
+        if (BusyState.IsBusy(BusyKeys.Brands.EditBrand)) return;
+        _form.ClearErrors();
 
         await BusyState.RunAsync(BusyKeys.Brands.EditBrand, async () =>
         {
+            await _form.WaitForPendingFilesAsync();
             // A row still showing a validation error (wrong type / too large) never leaves the client.
             var validNewLogoImages = _newLogoImages.Where(image => image.Error is null).ToList();
             var newLogo = validNewLogoImages.Count > 0
@@ -116,9 +111,9 @@ public partial class EditBrand : ComponentBase
 
             var result = await Mediator.Send(new UpdateBrandCommand(
                 Id,
-                _name.Trim(),
-                string.IsNullOrWhiteSpace(_description) ? null : _description.Trim(),
-                _isActive,
+                _model.Name?.Trim() ?? string.Empty,
+                string.IsNullOrWhiteSpace(_model.Description) ? null : _model.Description.Trim(),
+                _model.IsActive,
                 newLogo,
                 removeLogo));
 
@@ -126,6 +121,10 @@ public partial class EditBrand : ComponentBase
             {
                 Notifications.Show(Strings.EditBrand_Success, ShopNotificationKind.Success);
                 Nav.NavigateTo(Routes.Admin.ManageBrands);
+            }
+            else if (result.ValidationErrors.Count > 0)
+            {
+                _form.ShowErrors(result.ValidationErrors);
             }
             else
             {

@@ -1,14 +1,37 @@
 @using TheShop.Web.Common.UI
 @inherits ShopComponentBase
 
-<button @attributes="AdditionalAttributes"
+@if (Href is not null)
+{
+    <a @attributes="AdditionalAttributes"
+       href="@(IsDisabled ? null : Href)"
+       role="link"
+       tabindex="@LinkTabIndex"
+       aria-disabled="@IsDisabled.ToString().ToLowerInvariant()"
+       aria-busy="@Loading.ToString().ToLowerInvariant()"
+       class="@ClassName"
+       style="@Style"
+       @onclick="OnClickAsync"
+       @onclick:preventDefault="IsDisabled">
+        @ButtonContent
+    </a>
+}
+else
+{
+    <button @attributes="AdditionalAttributes"
         type="@ButtonType"
         class="@ClassName"
         style="@Style"
         disabled="@IsDisabled"
         aria-busy="@Loading.ToString().ToLowerInvariant()"
         @onclick="OnClickAsync">
-    <span class="shop-button-content">
+        @ButtonContent
+    </button>
+}
+<span class="shop-visually-hidden" role="status">@(Loading ? Strings.Loading : null)</span>
+
+@code {
+    private RenderFragment ButtonContent => @<text><span class="shop-button-content">
         @if (!string.IsNullOrEmpty(StartIcon))
         {
             <ShopIcon Icon="@StartIcon" Class="shop-button-icon" />
@@ -22,6 +45,5 @@
     @if (Loading)
     {
         <ShopLoader Class="shop-button-spinner" />
-    }
-</button>
-<span class="shop-visually-hidden" role="status">@(Loading ? Strings.Loading : null)</span>
+    }</text>;
+}

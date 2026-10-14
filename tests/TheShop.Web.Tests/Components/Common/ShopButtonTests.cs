@@ -13,6 +13,100 @@ namespace TheShop.Web.Tests.Components.Common;
 public class ShopButtonTests : TestContext
 {
     [Fact]
+    public void Href_WhenProvided_RendersNativeLinkWithSharedAppearanceAndAttributes()
+    {
+        var calls = 0;
+        var cut = Render<ShopButton>(p => p
+            .Add(c => c.Href, "/brands")
+            .Add(c => c.Type, "submit")
+            .Add(c => c.Variant, ShopVariant.Outlined)
+            .Add(c => c.StartIcon, ShopIcons.Outlined.Circle)
+            .Add(c => c.OnClick, () => calls++)
+            .AddUnmatched("target", "_blank")
+            .AddUnmatched("rel", "noopener")
+            .AddUnmatched("aria-label", "Cancel changes")
+            .AddChildContent("Cancel"));
+
+        var link = cut.Find("a");
+        cut.FindAll("button").Should().BeEmpty();
+        link.GetAttribute("href").Should().Be("/brands");
+        link.HasAttribute("type").Should().BeFalse();
+        link.HasAttribute("disabled").Should().BeFalse();
+        link.GetAttribute("target").Should().Be("_blank");
+        link.GetAttribute("rel").Should().Be("noopener");
+        link.GetAttribute("aria-label").Should().Be("Cancel changes");
+        link.ClassList.Should().Contain("shop-button").And.Contain("shop-button-outlined");
+        link.QuerySelector(".shop-button-content svg").Should().NotBeNull();
+        link.TextContent.Trim().Should().Be("Cancel");
+        link.Click(new MouseEventArgs { CtrlKey = true });
+        calls.Should().Be(1);
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task Href_WhenUnavailable_BlocksDestinationAndCallbacksDespiteConflictingAttributes(bool disabled, bool loading)
+    {
+        var calls = 0;
+        var cut = Render<ShopButton>(p => p
+            .Add(c => c.Href, "/brands")
+            .Add(c => c.Disabled, disabled)
+            .Add(c => c.Loading, loading)
+            .Add(c => c.OnClick, () => calls++)
+            .Add(c => c.AdditionalAttributes, new Dictionary<string, object>
+            {
+                ["HREF"] = "/other",
+                ["tabindex"] = "0",
+                ["aria-disabled"] = "false",
+                ["aria-busy"] = "false",
+                ["onclick"] = EventCallback.Factory.Create<MouseEventArgs>(this, () => calls++)
+            })
+            .AddChildContent("Cancel"));
+
+        var link = cut.Find("a");
+        link.HasAttribute("href").Should().BeFalse();
+        link.GetAttribute("role").Should().Be("link");
+        link.GetAttribute("tabindex").Should().Be("-1");
+        link.GetAttribute("aria-disabled").Should().Be("true");
+        link.GetAttribute("aria-busy").Should().Be(loading.ToString().ToLowerInvariant());
+        await link.TriggerEventAsync("onclick", new MouseEventArgs());
+        calls.Should().Be(0);
+
+        cut.Render(p => p.Add(c => c.Disabled, false).Add(c => c.Loading, false));
+        link = cut.Find("a");
+        link.GetAttribute("href").Should().Be("/brands");
+        link.GetAttribute("tabindex").Should().Be("0");
+        link.GetAttribute("aria-disabled").Should().Be("false");
+        link.Click();
+        calls.Should().Be(1);
+    }
+
+    [Fact]
+    public void Href_WhenLoadingFinishes_PreservesDisabledStateAndContent()
+    {
+        var cut = Render<ShopButton>(p => p.Add(c => c.Href, "/brands")
+            .Add(c => c.Loading, true).Add(c => c.Disabled, true).AddChildContent("Cancel"));
+        cut.Find("a .shop-button-content").TextContent.Should().Be("Cancel");
+        cut.Find("a .shop-button-spinner").Should().NotBeNull();
+        cut.Find("[role=status]").TextContent.Should().Be(Strings.Loading);
+
+        cut.Render(p => p.Add(c => c.Loading, false));
+        cut.Find("a").HasAttribute("href").Should().BeFalse();
+        cut.Find("a").GetAttribute("aria-disabled").Should().Be("true");
+        cut.FindAll(".shop-button-spinner").Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Href_WhenRemoved_ReturnsToNativeButtonBehavior()
+    {
+        var cut = Render<ShopButton>(p => p.Add(c => c.Href, "/brands").Add(c => c.Type, "submit"));
+        cut.Render(p => p.Add(c => c.Href, (string?)null));
+        cut.FindAll("a").Should().BeEmpty();
+        cut.Find("button").GetAttribute("type").Should().Be("submit");
+    }
+
+    [Fact]
     public void Render_WithDefaults_RendersAnEnabledNativeActionButton()
     {
         var cut = Render<ShopButton>(p => p.AddChildContent("Add to cart"));

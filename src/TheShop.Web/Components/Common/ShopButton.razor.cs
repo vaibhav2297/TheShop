@@ -4,7 +4,7 @@ using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
-/// <summary>A native action button. Navigation remains an anchor; icon-only buttons require an accessible name.</summary>
+/// <summary>A styled action button or native navigation link; icon-only controls require an accessible name.</summary>
 public partial class ShopButton : ShopComponentBase
 {
     /// <summary>Visible button content; may contain a decorative icon for an icon-only action.</summary>
@@ -25,7 +25,10 @@ public partial class ShopButton : ShopComponentBase
     /// <summary>Shows only a spinner, preserves the name and dimensions, and prevents activation. Supply the value from BusyFor.</summary>
     [Parameter] public bool Loading { get; set; }
 
-    /// <summary>Native button, submit, or reset behavior. Unknown values safely default to button.</summary>
+    /// <summary>Navigation destination. Non-null values render an anchor; disabled or loading links omit the destination and leave the tab order.</summary>
+    [Parameter] public string? Href { get; set; }
+
+    /// <summary>Native button, submit, or reset behavior when Href is null. Unknown values safely default to button.</summary>
     [Parameter] public string Type { get; set; } = "button";
 
     /// <summary>Trusted SVG fragment from ShopIcons displayed before the content.</summary>
@@ -34,7 +37,7 @@ public partial class ShopButton : ShopComponentBase
     /// <summary>Trusted SVG fragment from ShopIcons displayed after the content.</summary>
     [Parameter] public string? EndIcon { get; set; }
 
-    /// <summary>Raised for an enabled button activation.</summary>
+    /// <summary>Raised for enabled activation; link navigation retains the browser's default behavior.</summary>
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     private string ButtonType => Type?.ToLowerInvariant() switch
@@ -53,6 +56,9 @@ public partial class ShopButton : ShopComponentBase
         Class);
 
     private bool IsDisabled => Disabled || Loading;
+
+    private object? LinkTabIndex => IsDisabled ? -1 : AdditionalAttributes?
+        .FirstOrDefault(attribute => string.Equals(attribute.Key, "tabindex", StringComparison.OrdinalIgnoreCase)).Value;
 
     private Task OnClickAsync(MouseEventArgs args) => IsDisabled ? Task.CompletedTask : OnClick.InvokeAsync(args);
 }

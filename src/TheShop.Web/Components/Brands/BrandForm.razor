@@ -1,0 +1,34 @@
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+
+<EditForm Model="@Model" OnSubmit="OnSave" novalidate>
+    <ShopCommandValidation @ref="_validation" />
+    <div class="shop-brands-form">
+        <div><ShopImageUpload @ref="_imageUpload" Files="LogoImages"
+                             FilesChanged="LogoImagesChanged"
+                             UploadText="@Strings.AddBrand_LogoUploadButton"
+                             RemoveLabel="@Strings.AddBrand_LogoRemove"
+                             PreviewAlt="@Strings.AddBrand_LogoLabel"
+                             PreviewPreset="ShopImagePreset.BrandLogo"
+                             InvalidTypeError="@Strings.Brand_LogoInvalidType"
+                             MaxFileSizeError="@Strings.Brand_LogoTooLarge"
+                             Multiple="false"
+                             Disabled="@Busy" /></div>
+        <div class="shop-brands-fields">
+            <ShopTextField @bind-Value="Model.Name" Label="@Strings.AddBrand_NamePlaceholder"
+                           Disabled="@Busy" data-testid="@NameTestId" />
+            <ShopTextField @bind-Value="Model.Description" Label="@Strings.AddBrand_DescriptionPlaceholder" Disabled="@Busy" />
+            <fieldset class="shop-brands-status" disabled="@Busy">
+                <legend>@Strings.AddBrand_StatusLabel</legend>
+                <div>
+                    <ShopChip Selected="@Model.IsActive" SelectedChanged="@((bool _) => Model.IsActive = true)" Disabled="@Busy">@Strings.AddBrand_StatusActive</ShopChip>
+                    <ShopChip Selected="@(!Model.IsActive)" SelectedChanged="@((bool _) => Model.IsActive = false)" Disabled="@Busy">@Strings.AddBrand_StatusInactive</ShopChip>
+                </div>
+            </fieldset>
+            <div class="shop-brands-form-actions">
+                <ShopButton Type="submit" Size="ShopSize.Large" Loading="@Busy" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD" data-testid="@SaveTestId">@Strings.Save</ShopButton>
+                <ShopButton Variant="ShopVariant.Outlined" Disabled="@Busy" OnClick="Cancel">@Strings.Cancel</ShopButton>
+            </div>
+        </div>
+    </div>
+</EditForm>

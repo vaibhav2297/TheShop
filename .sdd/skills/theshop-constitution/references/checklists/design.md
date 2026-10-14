@@ -24,6 +24,8 @@ Verification checklist for the canonical constitution. Apply native requirements
 
 ## Components and forms
 
+- [ ] Rule 35: supplied Figma instances have source/variant-to-code mappings; page source uses mapped components and supported parameters.
+- [ ] Capability gaps and semantic fallbacks have recorded decisions; no page-owned copies of existing controls or invented component parameters.
 - [ ] Extractions have repeated behavior or established design-consistency responsibility.
 - [ ] ComponentBase or ShopComponentBase owns presentation; validated inputs use built-in controls or InputBase.
 - [ ] Class, Style, and unmatched attributes reach the documented element.

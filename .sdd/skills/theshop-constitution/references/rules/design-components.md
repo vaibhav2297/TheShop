@@ -8,6 +8,20 @@ Use headings, paragraphs, lists, anchors, sections, Grid, and Flexbox directly. 
 
 Extract repeated UI and behavior with a stable responsibility. Keep single-use layout inline. Share repeated logic through a helper or state object when a visual component adds nothing. Avoid speculative flags, generic frameworks, and extraction solely to shorten a file. Search existing controls such as `ShopButton` and `ShopImage` before adding another.
 
+## Figma component mapping (Rule 35)
+
+Before writing page markup, inspect relevant Figma instances through MCP. Follow each instance to its source component or component set. Read selected variants, exposed properties, nested instances, and overrides; screenshots alone do not establish component identity.
+
+Search existing code components and inspect their actual APIs and call sites. Record concise mappings beside Figma links in the feature plan: design component/variant, code component, supported parameters, and any capability gap. Keep decisions in the plan; do not create a duplicate design registry or copy node trees.
+
+Map appearance through existing parameters such as `Variant`, `Color`, `Size`, and icon slots where supported. Do not invent parameters or override component internals with page CSS to imitate a variant. Rule 25's inline-first guidance concerns new abstractions, not bypassing an existing control. Ordinary semantic text and layout need no new wrapper component.
+
+For a capability gap, choose the smallest compatible shared-component extension or an explicit semantic fallback. Record the reason and reuse shared appearance rather than creating page-specific copies. Resolve routine choices within scope; request direction only when behavior or scope materially changes.
+
+Cancel illustrates the distinction: closing a dialog or resetting state is an action; returning to another route is navigation. Use `ShopButton` without `Href` for actions and with `Href` for button-styled navigation. Non-null `Href` renders an anchor with a real destination; `Type` applies only to buttons. Do not replace link semantics with an `OnClick` navigation callback or nest interactive elements.
+
+During review, compare page source against recorded mappings. Check actual component usage, parameter choices, and justified fallbacks; matching screenshots alone cannot prove reuse.
+
 ## Base and attribute forwarding
 
 | Need | Base |
@@ -46,7 +60,9 @@ For native elements, Blazor resolves duplicate attributes from right to left. Pl
 
 ## Actions and state
 
-Use `ShopButton` for actions and anchors with centralized `Routes` values for navigation. Do not nest interactive elements or make generic `div` elements imitate buttons. `ShopButton` defaults to `type="button"`; opt into submission explicitly.
+Use `ShopButton` for actions and button-styled navigation (`Href` with centralized `Routes` values). Ordinary text links remain anchors. Do not nest interactive elements or make generic `div` elements imitate buttons. Without `Href`, `ShopButton` defaults to `type="button"`; opt into submission explicitly.
+
+Navigation retains native browser behavior, including modified clicks and link targets supplied through unmatched attributes. `OnClick` can observe enabled activation without replacing navigation. Disabled/loading links omit `href`, expose `aria-disabled`, leave the tab order, and suppress click callbacks/default activation. Shared styles cover disabled anchors. `Class`, `Style`, icons, variants, and loading content work in either mode.
 
 ```razor
 <ShopButton Type="submit"

@@ -33,7 +33,7 @@
     text-decoration: none;
     cursor: pointer;
 
-    &:disabled {
+    &:disabled, &[aria-disabled="true"] {
         color: var(--shop-color-on-disabled);
         cursor: not-allowed;
     }
@@ -78,7 +78,7 @@ $button-sizes: (
 }
 
 .shop-button-filled {
-    &:disabled {
+    &:disabled, &[aria-disabled="true"] {
         background-color: var(--shop-color-action-disabled);
     }
 }
@@ -93,11 +93,11 @@ $button-sizes: (
 
 .shop-button-outlined,
 .shop-button-text {
-    &:hover:not(:disabled) {
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
         background-color: var(--shop-color-surface-subtle);
     }
 
-    &:active:not(:disabled) {
+    &:active:not(:disabled):not([aria-disabled="true"]) {
         background-color: var(--shop-color-tertiary);
     }
 }
@@ -189,7 +189,7 @@ $button-colors: (
 );
 
 @each $color, $treatment in $button-colors {
-    .shop-button-filled.shop-button-#{$color}:not(:disabled) {
+    .shop-button-filled.shop-button-#{$color}:not(:disabled):not([aria-disabled="true"]) {
         color: map.get($treatment, on-fill);
         background-color: map.get($treatment, fill);
 
@@ -204,12 +204,12 @@ $button-colors: (
         }
     }
 
-    .shop-button-outlined.shop-button-#{$color}:not(:disabled),
-    .shop-button-text.shop-button-#{$color}:not(:disabled) {
+    .shop-button-outlined.shop-button-#{$color}:not(:disabled):not([aria-disabled="true"]),
+    .shop-button-text.shop-button-#{$color}:not(:disabled):not([aria-disabled="true"]) {
         color: map.get($treatment, text);
     }
 
-    .shop-button-outlined.shop-button-#{$color}:not(:disabled) {
+    .shop-button-outlined.shop-button-#{$color}:not(:disabled):not([aria-disabled="true"]) {
         box-shadow: inset 0 0 0 1px map.get($treatment, line);
     }
 }

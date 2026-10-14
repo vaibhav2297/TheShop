@@ -125,6 +125,10 @@ public sealed class NativeSkeletonJourneyTests(PlaywrightFixture playwright) : E
             await Page.Keyboard.TypeAsync("123456");
             await Page.GetByTestId("otp-submit").ClickAsync();
 
+            var dismiss = Page.GetByRole(AriaRole.Button, new() { Name = Strings.Notification_Dismiss, Exact = true });
+            while (await dismiss.CountAsync() > 0)
+                await dismiss.First.ClickAsync();
+
             // Manage Brands: real header, ten hidden skeleton rows, busy table and one status message.
             var table = Page.Locator(".shop-table");
             var loadingRows = table.Locator("tr.shop-table-loading-row");
@@ -133,20 +137,33 @@ public sealed class NativeSkeletonJourneyTests(PlaywrightFixture playwright) : E
             await Assertions.Expect(table.Locator("thead th").Nth(1)).ToHaveTextAsync(Strings.ManageBrands_ColumnName);
             await Assertions.Expect(loadingRows.First).ToHaveAttributeAsync("aria-hidden", "true");
             await Assertions.Expect(loadingRows.First.Locator("td")).ToHaveCountAsync(5);
+            await Assertions.Expect(Page.Locator(".shop-brands-filter-placeholder .shop-skeleton")).ToHaveCountAsync(5);
+            await Assertions.Expect(Page.Locator(".shop-brands-filter-skeleton")).ToHaveAttributeAsync("aria-hidden", "true");
             // The bar follows whatever text size the real cells inherit.
             var cellFont = await loadingRows.First.Locator("td").Nth(1).EvaluateAsync<string>("el => getComputedStyle(el).fontSize");
             await Assertions.Expect(loadingRows.First.Locator(".shop-skeleton").Nth(1)).ToHaveCSSAsync("background-size", "100% " + cellFont);
-            await Assertions.Expect(Page.Locator(".shop-table-scroll [role=status]")).ToHaveTextAsync(Strings.Loading);
+            await Assertions.Expect(Page.Locator(".shop-table-scroll > [role=status]")).ToHaveTextAsync(Strings.Loading);
             await Assertions.Expect(table.GetByRole(AriaRole.Checkbox, new() { Name = Strings.Table_SelectPage, Exact = true })).ToBeDisabledAsync();
             await Assertions.Expect(Page.Locator(".shop-pagination")).ToHaveCountAsync(0);
             var headerBefore = (await table.Locator("thead").BoundingBoxAsync())!;
             await SaveAsync("skeleton-table-loading-live");
 
+            foreach (var width in new[] { 834, 390 })
+            {
+                await Page.SetViewportSizeAsync(width, 1000);
+                await Assertions.Expect(loadingRows).ToHaveCountAsync(10);
+                await Assertions.Expect(Page.Locator(".shop-brands-sidebar")).ToBeHiddenAsync();
+                (await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= innerWidth")).Should().BeTrue();
+                await SaveAsync($"skeleton-brands-loading-{width}");
+            }
+            await Page.SetViewportSizeAsync(1440, 1000);
+
             brandsGate.TrySetResult();
             await Assertions.Expect(table.GetByText("Skeleton brand A", new() { Exact = true })).ToBeVisibleAsync();
             await Assertions.Expect(loadingRows).ToHaveCountAsync(0);
+            await Assertions.Expect(Page.Locator(".shop-brands-filter-skeleton")).ToHaveCountAsync(0);
             await Assertions.Expect(table).Not.ToHaveAttributeAsync("aria-busy", "true");
-            await Assertions.Expect(Page.Locator(".shop-table-scroll [role=status]")).ToHaveTextAsync(string.Empty);
+            await Assertions.Expect(Page.Locator(".shop-table-scroll > [role=status]")).ToHaveTextAsync(string.Empty);
             (await table.Locator("thead").BoundingBoxAsync())!.Y.Should().BeApproximately(headerBefore.Y, 1f, "the header stays in place");
             await SaveAsync("skeleton-table-loaded-live");
 
@@ -162,12 +179,11 @@ public sealed class NativeSkeletonJourneyTests(PlaywrightFixture playwright) : E
 
             // Edit brand: heading line, field-height block and panel with the page padding.
             await Page.EvaluateAsync("route => Blazor.navigateTo(route)", "/admin/brands/ac09dac2-bc69-4e50-8f1a-49c98a963bc1/edit");
-            var form = Page.Locator(".shop-admin-form-skeleton");
+            var form = Page.Locator(".shop-brands-form[role=status]");
             await Assertions.Expect(form).ToBeVisibleAsync(new() { Timeout = 30_000 });
-            await Assertions.Expect(form).ToHaveCSSAsync("padding", "32px");
-            await Assertions.Expect(form).ToHaveCSSAsync("row-gap", "24px");
-            await Assertions.Expect(form.Locator(".shop-admin-form-skeleton-field")).ToHaveCSSAsync("height", "61px");
-            await Assertions.Expect(form.Locator(".shop-admin-form-skeleton-panel")).ToHaveCSSAsync("height", "240px");
+            await Assertions.Expect(form).ToHaveCSSAsync("row-gap", "32px");
+            await Assertions.Expect(form.Locator(".shop-brands-field-skeleton").First).ToHaveCSSAsync("height", "57px");
+            await Assertions.Expect(form.Locator(".shop-brands-upload-skeleton")).ToHaveCSSAsync("height", "224px");
             await SaveAsync("skeleton-edit-form-live");
 
             (await Page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth <= innerWidth")).Should().BeTrue();

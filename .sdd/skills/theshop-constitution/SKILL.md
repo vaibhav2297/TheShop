@@ -55,7 +55,7 @@ Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*)
 
 23. [components] Use `ComponentBase` directly or a small `ShopComponentBase` exposing only `Class`, `Style`, and `AdditionalAttributes` for repeated visual-root forwarding. Custom validated inputs derive from `InputBase<TValue>` and preserve its binding, parsing, field notification, and validation contracts. Render-only components do not need a visual base.
 24. [components] Forward exposed styling and unmatched attributes to their documented target. Input `id`, `name`, and `aria-*` belong on the actual input; expose separate wrapper styling only when needed. Define merge precedence so attributes cannot negate enforced disabled/busy behavior. CSS class order does not establish selector precedence.
-25. [components] Inline first; extract on the second real call site. Don't extract for single use, to shorten a parent page, with many flag parameters, or to future-proof.
+25. [components] Reuse existing components first (Rule 35). For UI without an existing match, inline first; extract on the second real call site. Don't extract for single use, to shorten a parent page, with many flag parameters, or to future-proof.
 
 ### Web — styling
 
@@ -74,6 +74,10 @@ Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*)
 32. [validation] Dispatch through `IMediator.Send(...)`. Reuse registered `ValidationBehavior<,>`; never invoke validators directly from pages or handlers. Validate asynchronously before handler execution. Invalid requests returning `Result` / `Result<T>` carry all field failures in `ValidationErrors`; preserve primary error compatibility. Keep authorization before validation. Validators return resource keys, never display text (Rule 12).
 33. [validation] Command-backed forms use `EditForm` with `OnSubmit`, `novalidate`, and `ShopCommandValidation`. Web owns editing state, input parsing, command mapping, busy guards, error presentation, and navigation. Clear previous command errors before dispatch; pass returned `ValidationErrors` to `ShowErrors`; display other failures through existing notification UI. Do not gate command dispatch with duplicate input rules or `EditContext.Validate()`. Native input semantics and parsing remain supported; they do not replace Application validation.
 34. [validation] Normalize deliberately; normalization is not validation. Existing Web trimming may remain. When every caller needs identical normalization, put it at an Application boundary before validation and use the same normalized value for handling. Do not mutate requests inside validators. Field edits clear displayed command errors; they do not prove validity or rerun commands. Revalidate on submission.
+
+### Design component reuse
+
+35. [components] Map supplied Figma component instances to existing code components before implementation. Inspect source components, variants, properties, and overrides; reuse matching components through supported parameters. Do not recreate existing controls with page-owned markup or CSS. Resolve missing component capabilities explicitly and record the decision. Preserve native action/navigation semantics; visual similarity never justifies changing behavior. Verify component reuse in source as well as appearance in browser.
 
 ### Migration coexistence
 

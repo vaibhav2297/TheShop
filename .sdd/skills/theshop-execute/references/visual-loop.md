@@ -31,6 +31,7 @@ Reference: exact supplied Figma frame URL. If MCP is unavailable, exported scree
 No supplied Figma URL: follow existing components, constitution and feature plan through normal SDD flow; do not claim Figma parity.
 For widths/states lacking designs, Resolve records expected responsive behavior. Do not claim Figma parity for inferred designs.
 Resolve MudBlazor, typography and token conflicts once. Keep accepted decisions in plan; do not ask repeatedly during execution.
+Apply constitution Rule 35 using [component mapping guidance](../../theshop-constitution/references/rules/design-components.md#figma-component-mapping-rule-35). Record component mappings and capability-gap decisions beside Figma links before implementing affected controls.
 
 ## Execute: inspect, render, compare, correct
 
@@ -38,7 +39,7 @@ Resolve MudBlazor, typography and token conflicts once. Keep accepted decisions 
    Inspect screenshot with image tool. Split oversized responses by section. Tool names vary by Figma provider.
    Record revision or capture date. If design changed since Resolve, reconcile affected decisions before coding.
    Export reference PNG at 1x. Keep exact assets locally; never use whole screenshot as implementation.
-2. Implement section using project components. Match layout, typography, spacing, imagery and states.
+2. Implement section using recorded component mappings (Rule 35). Inspect actual component APIs before choosing parameters. Match layout, typography, spacing, imagery and states.
 3. Build current Web source. Start app using capture helper, or reuse an app built from current source.
    An already running host must be rebuilt/reloaded after source edits; hashes alone cannot prove its served build.
 4. Capture each planned target using command below. Use deterministic local data and existing test persona/storage state.
@@ -50,7 +51,7 @@ Resolve MudBlazor, typography and token conflicts once. Keep accepted decisions 
 6. Correct responsible Razor/SCSS/theme code. Rebuild and repeat affected targets. After final edit, recapture all targets invalidated by source hash.
    Three consecutive passes without reducing differences: stop with concrete blockers and resume command. Keep Implement pending.
    Browser inspection is permitted in Execute; feature test authoring remains with Test/E2E.
-7. Write `review.md` only after inspecting final capture. Run visual gate, then mark Web complete.
+7. Check source against component mappings and recorded fallbacks; screenshots cannot prove reuse. Write `review.md` only after inspecting final capture, and include component-reuse findings. Run visual gate, then mark Web complete.
 
 ## Capture command
 

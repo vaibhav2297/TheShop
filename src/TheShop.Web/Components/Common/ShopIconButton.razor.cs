@@ -4,7 +4,7 @@ using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
-/// <summary>An icon-only action composing ShopButton with size- and variant-specific geometry.</summary>
+/// <summary>An icon-only action or navigation link composing ShopButton with size- and variant-specific geometry.</summary>
 public partial class ShopIconButton : ShopComponentBase
 {
     /// <summary>Trusted SVG fragment from ShopIcons; never pass user or remote markup.</summary>
@@ -28,10 +28,13 @@ public partial class ShopIconButton : ShopComponentBase
     /// <summary>Replaces the visible icon with the shared loading spinner while preserving size and Label. Supply the value from BusyFor.</summary>
     [Parameter] public bool Loading { get; set; }
 
-    /// <summary>Native button, submit, or reset behavior; unknown values safely default to button.</summary>
+    /// <summary>Navigation destination forwarded to ShopButton. Non-null values render an anchor with shared disabled/loading guards.</summary>
+    [Parameter] public string? Href { get; set; }
+
+    /// <summary>Native button, submit, or reset behavior when Href is null; unknown values safely default to button.</summary>
     [Parameter] public string Type { get; set; } = "button";
 
-    /// <summary>Raised for an enabled button activation.</summary>
+    /// <summary>Raised for enabled activation; link navigation retains the browser's default behavior.</summary>
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     private string ClassName => ShopCssClass.Join("shop-icon-button", Class);

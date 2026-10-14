@@ -12,6 +12,41 @@ namespace TheShop.Web.Tests.Components.Common;
 
 public class ShopIconButtonTests : TestContext
 {
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public async Task Href_WhenProvided_PreservesLinkSemanticsNameAndSharedActivationGuards(bool disabled, bool loading)
+    {
+        var calls = 0;
+        var cut = Render<ShopIconButton>(p => p
+            .Add(c => c.Icon, ShopIcons.Outlined.Heart_01)
+            .Add(c => c.Label, Strings.Wishlist_Add)
+            .Add(c => c.Href, "/wishlist")
+            .Add(c => c.Disabled, disabled)
+            .Add(c => c.Loading, loading)
+            .Add(c => c.OnClick, () => calls++)
+            .AddUnmatched("aria-label", "Wrong name")
+            .AddUnmatched("aria-labelledby", "wrong-label")
+            .AddUnmatched("target", "_blank"));
+
+        var link = cut.Find("a");
+        cut.FindAll("button").Should().BeEmpty();
+        link.GetAttribute("href").Should().Be(disabled || loading ? null : "/wishlist");
+        link.GetAttribute("aria-label").Should().Be(Strings.Wishlist_Add);
+        link.HasAttribute("aria-labelledby").Should().BeFalse();
+        link.GetAttribute("target").Should().Be("_blank");
+        link.GetAttribute("aria-disabled").Should().Be((disabled || loading).ToString().ToLowerInvariant());
+        link.ClassList.Should().Contain("shop-icon-button");
+        link.QuerySelector("svg")!.GetAttribute("aria-hidden").Should().Be("true");
+        await link.TriggerEventAsync("onclick", new MouseEventArgs());
+        calls.Should().Be(disabled || loading ? 0 : 1);
+
+        cut.Render(p => p.Add(c => c.Href, (string?)null));
+        cut.FindAll("a").Should().BeEmpty();
+        cut.Find("button").HasAttribute("disabled").Should().Be(disabled || loading);
+    }
+
     [Fact]
     public void Render_Defaults_ComposesOneNamedNativeButtonAndDecorativeIcon()
     {

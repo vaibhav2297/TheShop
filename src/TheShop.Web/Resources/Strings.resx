@@ -1193,13 +1193,13 @@
     <value>Brand Name</value>
   </data>
   <data name="AddBrand_NamePlaceholder" xml:space="preserve">
-    <value>Enter brand name</value>
+    <value>Brand Name</value>
   </data>
   <data name="AddBrand_DescriptionLabel" xml:space="preserve">
     <value>Description</value>
   </data>
   <data name="AddBrand_DescriptionPlaceholder" xml:space="preserve">
-    <value>Enter a description (optional)</value>
+    <value>Description</value>
   </data>
   <data name="AddBrand_LogoLabel" xml:space="preserve">
     <value>Logo</value>
@@ -1235,7 +1235,7 @@
     <value>Manage Brands</value>
   </data>
   <data name="ManageBrands_SearchPlaceholder" xml:space="preserve">
-    <value>Search brands</value>
+    <value>Search by name</value>
   </data>
   <data name="ManageBrands_ColumnName" xml:space="preserve">
     <value>Name</value>
@@ -1813,4 +1813,6 @@
   <data name="Pagination_StatusLabel" xml:space="preserve">
     <value>Page {0} of {1}</value>
   </data>
+  <data name="Brands_Filters" xml:space="preserve"><value>Filters</value></data>
+  <data name="Brands_CreateHeading" xml:space="preserve"><value>Create Brand</value></data>
 </root>
