@@ -851,7 +851,7 @@
     <value>Some pasted formatting is not supported and was removed. Supported text and emphasis were kept.</value>
   </data>
   <data name="ProductSpecifications_Heading" xml:space="preserve">
-    <value>Specification</value>
+    <value>Specifications</value>
   </data>
   <data name="ProductSpecifications_AddRow" xml:space="preserve">
     <value>Add Specification</value>
@@ -893,10 +893,10 @@
     <value>Option name (e.g. Flavour)</value>
   </data>
   <data name="ProductVariants_OptionNameLabel" xml:space="preserve">
-    <value>Option Name</value>
+    <value>Option name</value>
   </data>
   <data name="ProductVariants_OptionValuesLabel" xml:space="preserve">
-    <value>Option Values</value>
+    <value>Value</value>
   </data>
   <data name="ProductVariants_VariantNumber" xml:space="preserve">
     <value>Variant {0}</value>
@@ -911,10 +911,10 @@
     <value>Add a value</value>
   </data>
   <data name="ProductVariants_AddValue" xml:space="preserve">
-    <value>Add Option</value>
+    <value>Add Value</value>
   </data>
   <data name="ProductVariants_ColumnVariant" xml:space="preserve">
-    <value>Variant</value>
+    <value>Variant Combination</value>
   </data>
   <data name="ProductVariants_ColumnSku" xml:space="preserve">
     <value>SKU</value>
@@ -929,7 +929,7 @@
     <value>Status</value>
   </data>
   <data name="ProductVariants_ColumnImage" xml:space="preserve">
-    <value>Image</value>
+    <value>Images</value>
   </data>
   <data name="ProductVariants_StatusAvailable" xml:space="preserve">
     <value>Available</value>
@@ -938,10 +938,10 @@
     <value>Unavailable</value>
   </data>
   <data name="ProductVariants_PinImage" xml:space="preserve">
-    <value>Pin Image</value>
+    <value>Add Images</value>
   </data>
   <data name="ProductVariants_ChangeImage" xml:space="preserve">
-    <value>Change Image</value>
+    <value>Edit Images</value>
   </data>
   <data name="ProductVariants_RemoveOptionConfirmTitle" xml:space="preserve">
     <value>Discard configured variants?</value>
@@ -1820,4 +1820,17 @@
   <data name="Brands_CreateHeading" xml:space="preserve"><value>Create Brand</value></data>
   <data name="Categories_Filters" xml:space="preserve"><value>Filters</value></data>
   <data name="Categories_CreateHeading" xml:space="preserve"><value>Create Category</value></data>
+  <data name="Products_Filters" xml:space="preserve"><value>Filters</value></data>
+  <data name="ProductSpecifications_Count" xml:space="preserve"><value>{0} Specifications</value></data>
+  <data name="ProductSpecifications_RowInvalid" xml:space="preserve"><value>Check the name and value of this specification.</value></data>
+  <data name="ProductForm_GalleryVariantsHint" xml:space="preserve"><value>Images uploaded here are available to product variants.</value></data>
+  <data name="ProductForm_VariantPricingHint" xml:space="preserve"><value>Pricing is set per variant. Enter the price and sale price for each variant below.</value></data>
+  <data name="VariantImage_ImageFieldLabel" xml:space="preserve"><value>Variant image</value></data>
+  <data name="VariantImage_UploadHint" xml:space="preserve"><value>Choose or upload an image. Uploads are added to the product images.</value></data>
+  <data name="VariantImage_EmptyUploadHint" xml:space="preserve"><value>This product has no images yet. Uploads are added to the product images.</value></data>
+  <data name="VariantImage_FileHint" xml:space="preserve"><value>Drag and drop, or click to browse. PNG, JPG or WebP up to 2 MB.</value></data>
+  <data name="ProductForm_CreateHeading" xml:space="preserve"><value>Create Product</value></data>
+  <data name="ProductVariants_NewOption" xml:space="preserve"><value>New option</value></data>
+  <data name="Products_BrandsFilter" xml:space="preserve"><value>Brands</value></data>
+  <data name="Products_CategoriesFilter" xml:space="preserve"><value>Categories</value></data>
 </root>

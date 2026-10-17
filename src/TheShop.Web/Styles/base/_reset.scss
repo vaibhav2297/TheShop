@@ -5,3 +5,7 @@
 .shop-native *::after {
     box-sizing: border-box;
 }
+// The application shell must retain its viewport geometry without vendor CSS.
+body {
+    margin: 0;
+}

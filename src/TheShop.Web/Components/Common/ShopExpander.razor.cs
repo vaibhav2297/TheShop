@@ -7,13 +7,13 @@ namespace TheShop.Web.Components.Common;
 /// <summary>Independent disclosure with a named heading, persistent body and optional two-way expanded state.</summary>
 public partial class ShopExpander : ShopComponentBase
 {
-    /// <summary>Localized heading used when TitleContent is omitted.</summary>
+    /// <summary>Localized heading rendered with the default Figma typography when TitleContent is omitted.</summary>
     [Parameter] public string? Title { get; set; }
 
-    /// <summary>Optional non-interactive phrasing content replacing the default heading text.</summary>
+    /// <summary>Optional non-interactive title markup replacing the default heading and its typography. Supply a heading matching the surrounding document when applicable.</summary>
     [Parameter] public RenderFragment? TitleContent { get; set; }
 
-    /// <summary>Optional non-interactive summary shown beside the heading.</summary>
+    /// <summary>Optional non-interactive summary shown beside the title and exposed as the toggle's accessible description.</summary>
     [Parameter] public RenderFragment? OverviewContent { get; set; }
 
     /// <summary>Body content; remains mounted but hidden and unfocusable while collapsed.</summary>
@@ -29,6 +29,8 @@ public partial class ShopExpander : ShopComponentBase
     [Parameter] public bool Disabled { get; set; }
 
     private readonly string _headerId = $"shop-expander-header-{Guid.NewGuid():N}";
+    private readonly string _titleId = $"shop-expander-title-{Guid.NewGuid():N}";
+    private readonly string _overviewId = $"shop-expander-overview-{Guid.NewGuid():N}";
     private readonly string _contentId = $"shop-expander-content-{Guid.NewGuid():N}";
     private bool _initialized;
     private bool _lastExpanded;

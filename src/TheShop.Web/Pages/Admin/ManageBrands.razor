@@ -253,7 +253,7 @@
 <ShopDrawer @bind-Open="_filtersOpen" Side="ShopDrawerSide.Left">
     <HeaderContent><h2 class="shop-drawer-title">@Strings.Brands_Filters</h2></HeaderContent>
     <DrawerContent>
-        <ShopFilterPanel Class="shop-brands-filter-panel" InitiallyExpanded="true"
+        <ShopFilterPanel Class="shop-brands-filter-panel"
                          ClearLabel="@Strings.Filter_ClearAll"
                          Groups="@FilterGroups" SelectedFilters="@SelectedFilters"
                          SingleSelectChanged="OnSingleSelectChangedAsync" OnClearFilters="OnClearFiltersAsync" />

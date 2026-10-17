@@ -146,6 +146,8 @@ public class ShopFilterPanelTests : TestContext
         triggers[1].GetAttribute("aria-expanded").Should().Be("true");
         cut.Find("span.shop-chip").TextContent.Trim().Should().Be("1");
         cut.FindAll(".shop-expander-trigger button").Should().BeEmpty();
+        cut.FindAll("h3.shop-filter-title").Should().HaveCount(2);
+        cut.FindAll(".shop-expander-default-title, button h3").Should().BeEmpty();
         cut.FindAll(".mud-expand-panel, .mud-chip").Should().BeEmpty();
     }
 

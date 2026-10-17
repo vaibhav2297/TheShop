@@ -103,6 +103,9 @@ public partial class ShopImageUpload : ShopComponentBase, IAsyncDisposable
     /// <summary>Waits for file preparation and its callback before the owning form submits.</summary>
     public Task WaitForPendingFilesAsync() => _processing;
 
+    /// <summary>Appends files received by another picker through this control's preparation and URL ownership.</summary>
+    public Task AddFilesAsync(IReadOnlyList<IBrowserFile> files) => SelectAsync(files);
+
     private Task SelectAsync(IReadOnlyList<IBrowserFile> files)
     {
         if (Blocked || files.Count == 0) return Task.CompletedTask;

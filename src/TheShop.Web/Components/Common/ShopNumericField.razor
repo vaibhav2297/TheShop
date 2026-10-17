@@ -5,7 +5,7 @@
         <input @attributes="InputAttributes"
                id="@InputId" name="@NameAttributeValue" class="@InputClass"
                type="text" inputmode="decimal" autocomplete="off" placeholder=" " data-shop-numeric
-               disabled="@Disabled" aria-required="@Required" aria-invalid="@InvalidAttribute"
+               disabled="@Disabled" aria-required="@((Required || AriaRequired == true).ToString().ToLowerInvariant())" aria-invalid="@InvalidAttribute"
                value="@DisplayText" @oninput="SetDraft" @onfocus="BeginEdit"
                @onblur="BlurAsync" @onkeydown="EditKeyAsync" />
         @if (HasLabel)

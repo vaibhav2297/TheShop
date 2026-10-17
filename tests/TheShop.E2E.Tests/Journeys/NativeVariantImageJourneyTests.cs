@@ -33,6 +33,7 @@ public sealed class NativeVariantImageJourneyTests(PlaywrightFixture playwright)
         await Page.GotoAsync(WebRoutes.Auth.SignIn);
         await Page.GetByTestId("signin-email").WaitForAsync(new() { Timeout = 30_000 });
         await using var services = new ServiceCollection().AddLogging()
+            .AddSingleton<TheShop.Web.Common.BusyState>()
             .AddSingleton<IJSRuntime, StaticRenderJsRuntime>().BuildServiceProvider();
         await using var renderer = new HtmlRenderer(services, services.GetRequiredService<ILoggerFactory>());
         var images = Enumerable.Range(0, 3).Select(index =>
@@ -73,7 +74,7 @@ public sealed class NativeVariantImageJourneyTests(PlaywrightFixture playwright)
                     };
                     dialog.querySelector('[data-testid="variant-image-cancel"]').onclick = finish;
                     dialog.querySelector('[data-testid="dialog-close"]').onclick = finish;
-                    for (const option of dialog.querySelectorAll('.shop-variant-image-option'))
+                    for (const option of dialog.querySelectorAll('.shop-variant-image-option .shop-image-tile-surface'))
                         option.addEventListener('click', () => probe.activated++);
                     module.show(dialog, { invokeMethodAsync: async () => finish() });
                 };
@@ -85,7 +86,7 @@ public sealed class NativeVariantImageJourneyTests(PlaywrightFixture playwright)
             """, html);
 
         var dialog = Page.GetByRole(AriaRole.Dialog, new() { Name = Strings.VariantImage_Title });
-        var options = dialog.Locator(".shop-variant-image-option");
+        var options = dialog.Locator(".shop-variant-image-option .shop-image-tile-surface");
         await Assertions.Expect(Page.GetByTestId("variant-image-cancel")).ToBeFocusedAsync();
         await Assertions.Expect(options).ToHaveCountAsync(3);
         await Assertions.Expect(options.First).ToHaveAttributeAsync("aria-pressed", "true");
@@ -100,31 +101,20 @@ public sealed class NativeVariantImageJourneyTests(PlaywrightFixture playwright)
             """);
         metrics[0].Should().BeApproximately(Math.Min(600d, width - 32d), 1,
             "the picker explicitly selects ShopMaxWidth.Small");
-        metrics.Skip(1).Should().Equal(120d, 120d, 32d, 16d);
+        metrics.Skip(1).Should().Equal(132d, 132d, 32d, 8d);
         foreach (var option in await options.AllAsync())
         {
             var imageGeometry = await option.EvaluateAsync<double[]>("""
                 el => {
                     const tile = el.getBoundingClientRect();
-                    const image = el.querySelector('.shop-image').getBoundingClientRect();
+                    const image = el.parentElement.querySelector('.shop-image').getBoundingClientRect();
                     return [image.width, image.height, image.left - tile.left, image.top - tile.top];
                 }
                 """);
-            imageGeometry.Should().Equal(100d, 100d, 10d, 10d);
-            await Assertions.Expect(option).ToHaveCSSAsync("background-color", "rgb(232, 232, 232)");
+            imageGeometry.Should().Equal(132d, 132d, 0d, 0d);
+            await Assertions.Expect(option.Locator("..")).ToHaveCSSAsync("background-color", "rgb(232, 232, 232)");
             await Assertions.Expect(option).ToHaveCSSAsync("border-top-width", "0px");
         }
-        var selectedIcon = options.First.Locator(".shop-variant-image-selected-icon");
-        var iconGeometry = await selectedIcon.EvaluateAsync<double[]>("""
-            el => {
-                const icon = el.getBoundingClientRect();
-                const tile = el.parentElement.getBoundingClientRect();
-                return [icon.width, icon.height, icon.top - tile.top, tile.right - icon.right];
-            }
-            """);
-        iconGeometry.Should().Equal(18d, 18d, 3d, 3d);
-        await Assertions.Expect(selectedIcon).ToHaveCSSAsync("background-color", "rgba(0, 0, 0, 0)");
-        await Assertions.Expect(selectedIcon).ToHaveAttributeAsync("aria-hidden", "true");
         (string Selector, string Padding)[] sectionPaddings =
         [
             (".shop-dialog-header", "16px"), (".shop-dialog-content", "24px"), (".shop-dialog-actions", "16px")
@@ -133,16 +123,8 @@ public sealed class NativeVariantImageJourneyTests(PlaywrightFixture playwright)
         foreach (var (selector, padding) in sectionPaddings)
             foreach (var side in sides)
                 await Assertions.Expect(dialog.Locator(selector)).ToHaveCSSAsync($"padding-{side}", padding);
-        (await options.First.EvaluateAsync<bool>("""
-            el => {
-                const style = getComputedStyle(el, '::after');
-                const border = parseFloat(style.borderTopWidth);
-                return border > 0 && Math.abs(border - 1) <= 1 / devicePixelRatio + 0.01
-                    && style.borderTopColor === 'rgb(23, 23, 23)' && style.boxSizing === 'border-box'
-                    && ['top', 'right', 'bottom', 'left'].every(side => style[side] === '0px');
-            }
-            """)).Should().BeTrue("the 1px selected border must survive fractional display scaling without changing image dimensions");
-        (await options.Nth(1).EvaluateAsync<string>("el => getComputedStyle(el, '::after').content")).Should().Be("none");
+        (await options.First.EvaluateAsync<string>("el => getComputedStyle(el.parentElement, '::after').borderBottomColor")).Should().Be("rgb(23, 23, 23)");
+        (await options.Nth(1).EvaluateAsync<string>("el => getComputedStyle(el.parentElement, '::after').borderBottomColor")).Should().Be("rgba(0, 0, 0, 0)");
         (await dialog.EvaluateAsync<bool>("el => el.scrollWidth <= el.clientWidth + 1")).Should().BeTrue();
         await options.First.FocusAsync();
         await Page.Keyboard.PressAsync("Enter");

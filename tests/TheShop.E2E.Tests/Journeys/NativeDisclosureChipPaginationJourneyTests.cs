@@ -66,10 +66,12 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         (await expanders.Nth(1).BoundingBoxAsync())!.Height.Should().BeApproximately(241, 1);
         await Assertions.Expect(expanders.Nth(0).Locator(".shop-expander-content")).ToBeHiddenAsync();
         await Assertions.Expect(expanders.Nth(1).Locator(".shop-expander-content")).ToBeVisibleAsync();
-        await Assertions.Expect(expanders.Nth(0).Locator(".shop-expander-title")).ToHaveCSSAsync("font-size", "34px");
+        await Assertions.Expect(expanders.Nth(0).Locator(".shop-expander-default-title")).ToHaveCSSAsync("font-size", "34px");
+        await Assertions.Expect(expanders.Nth(0).GetByRole(AriaRole.Button, new() { Name = "BAG", Exact = true })).ToHaveCountAsync(1);
         await Assertions.Expect(expanders.Nth(0).Locator(".shop-expander-icon")).ToHaveCSSAsync("width", "24px");
         await Assertions.Expect(expanders.Nth(0).Locator(".shop-expander-icon")).ToHaveCSSAsync("padding", "3px");
         var trigger = expanders.Nth(0).Locator(".shop-expander-trigger");
+        await Assertions.Expect(trigger).ToHaveAccessibleDescriptionAsync("2 Items");
         await trigger.FocusAsync();
         await Assertions.Expect(trigger).ToBeFocusedAsync();
         await Assertions.Expect(trigger).ToHaveCSSAsync("outline-style", "solid");
@@ -189,7 +191,7 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         await Page.EvaluateAsync("""
             () => {
                 document.documentElement.style.fontSize = '32px';
-                document.querySelector('.shop-expander-title').textContent = 'Long heading that wraps on a narrow screen';
+                document.querySelector('.shop-expander-default-title').textContent = 'Long heading that wraps on a narrow screen';
                 document.querySelector('.shop-chip-label').textContent = 'A longer chip label that must wrap';
             }
             """);
@@ -247,6 +249,9 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         Regex.Matches(firstShadow, "inset").Count.Should().Be(2);
         Regex.Matches(nextShadow, "inset").Count.Should().Be(1);
         var titleBox = (await category.Locator(".shop-filter-title").BoundingBoxAsync())!;
+        await Assertions.Expect(category.GetByRole(AriaRole.Heading, new() { Name = Strings.Filter_Category, Level = 3 })).ToHaveCountAsync(1);
+        await Assertions.Expect(category.Locator(".shop-filter-title")).ToHaveCSSAsync("font-size", "16px");
+        await Assertions.Expect(trigger).ToHaveAccessibleNameAsync(Strings.Filter_Category);
         var iconBox = (await category.Locator(".shop-expander-icon").BoundingBoxAsync())!;
         (titleBox.Y + titleBox.Height / 2).Should().BeApproximately(iconBox.Y + iconBox.Height / 2, 1);
         await trigger.FocusAsync();

@@ -239,12 +239,15 @@ public class ManageBrandsTests : TestContext
         var cut = await RenderListAsync();
 
         var filterPanel = cut.FindComponent<ShopFilterPanel>();
+        filterPanel.FindAll(".shop-expander-trigger").Should().OnlyContain(trigger => trigger.GetAttribute("aria-expanded") == "false");
+        filterPanel.Find(".shop-expander-trigger").Click();
         await cut.InvokeAsync(() => filterPanel.Instance.SingleSelectChanged.InvokeAsync(("status", "inactive")));
 
         _receivedQueries.Should().ContainSingle(
             "changing the status filter must reach the mediator without a page refresh");
         _receivedQueries[0].Status.Should().Be(BrandStatusFilter.Inactive);
         _receivedQueries[0].Pagination.Page.Should().Be(1);
+        filterPanel.Find(".shop-expander-trigger").GetAttribute("aria-expanded").Should().Be("true");
     }
 
     [Fact]

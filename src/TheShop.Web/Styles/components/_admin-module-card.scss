@@ -22,7 +22,7 @@
 
 .shop-admin-module-card-label, .shop-admin-module-card-skeleton-label {
     margin: 0;
-    @include text-style.apply(h6);
+    @include text-style.apply(h5);
     text-transform: uppercase;
     overflow-wrap: anywhere;
 }

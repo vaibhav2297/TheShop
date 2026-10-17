@@ -24,7 +24,7 @@ public sealed class ManageProductsPage(IPage page) : ShopPage(page)
     /// </summary>
     public async Task SearchAsync(string term)
     {
-        await Page.GetByPlaceholder(Strings.ManageProducts_SearchPlaceholder).FillAsync(term);
+        await Page.GetByLabel(Strings.ManageProducts_SearchPlaceholder, new() { Exact = true }).FillAsync(term);
         await Page.WaitForURLAsync(url => url.Contains("search=", StringComparison.Ordinal),
             new() { Timeout = 15_000 });
     }

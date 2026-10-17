@@ -1,3 +1,4 @@
+using TheShop.Web.Components.Common;
 using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
@@ -8,8 +9,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.DTOs;
@@ -49,11 +48,7 @@ public class EditProductTests : TestContext
         Services.AddSingleton(_mediator);
         Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
-        Services.AddMudServices();
         Services.AddSingleton(Substitute.For<IShopDialogService>());
-        var popoverService = Substitute.For<IPopoverService>();
-        popoverService.PopoverOptions.Returns(new PopoverOptions());
-        Services.Replace(ServiceDescriptor.Singleton(popoverService));
 
         _localizer[Arg.Any<string>()].Returns(call => new LocalizedString(call.Arg<string>(), call.Arg<string>()));
 
@@ -187,7 +182,7 @@ public class EditProductTests : TestContext
         var cut = await RenderAsync(id);
 
         cut.Markup.Should().Contain(Strings.EditProduct_NotFoundTitle);
-        cut.Markup.Should().NotContain(Strings.EditProduct_Heading);
+        cut.FindComponents<ProductForm>().Should().BeEmpty();
     }
 
     [Fact]

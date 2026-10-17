@@ -136,6 +136,8 @@ public sealed class NativeCategoriesLayoutJourneyTests(PlaywrightFixture playwri
                 await Assertions.Expect(drawer.Locator(".shop-drawer-title")).ToHaveCSSAsync("font-size", "24px");
                 var filters = drawer.Locator(".shop-categories-filter-panel");
                 await Assertions.Expect(filters).ToHaveCSSAsync("padding", "16px");
+                await Assertions.Expect(filters.Locator(".shop-expander-trigger")).ToHaveAttributeAsync("aria-expanded", "false");
+                await filters.Locator(".shop-expander-trigger").ClickAsync();
                 await Assertions.Expect(filters.Locator(".shop-expander-trigger")).ToHaveAttributeAsync("aria-expanded", "true");
                 await drawer.GetByRole(AriaRole.Checkbox, new() { Name = Strings.AddCategory_StatusInactive, Exact = true }).CheckAsync();
                 await Assertions.Expect(Page).ToHaveURLAsync(new System.Text.RegularExpressions.Regex("status=inactive"));

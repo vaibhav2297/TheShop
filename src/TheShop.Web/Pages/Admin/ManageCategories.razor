@@ -39,7 +39,7 @@
                 else
                 {
                     <ShopFilterPanel Class="shop-categories-filter-panel shop-categories-sidebar-filter"
-                             InitiallyExpanded="true" ClearLabel="@Strings.Filter_ClearAll" Groups="@FilterGroups"
+                             ClearLabel="@Strings.Filter_ClearAll" Groups="@FilterGroups"
                              SelectedFilters="@SelectedFilters"
                              SingleSelectChanged="OnSingleSelectChangedAsync"
                              OnClearFilters="OnClearFiltersAsync" />
@@ -254,7 +254,7 @@
 <ShopDrawer @bind-Open="_filtersOpen" Side="ShopDrawerSide.Left">
     <HeaderContent><h2 class="shop-drawer-title">@Strings.Categories_Filters</h2></HeaderContent>
     <DrawerContent>
-        <ShopFilterPanel Class="shop-categories-filter-panel" InitiallyExpanded="true"
+        <ShopFilterPanel Class="shop-categories-filter-panel"
                          ClearLabel="@Strings.Filter_ClearAll"
                          Groups="@FilterGroups" SelectedFilters="@SelectedFilters"
                          SingleSelectChanged="OnSingleSelectChangedAsync" OnClearFilters="OnClearFiltersAsync" />

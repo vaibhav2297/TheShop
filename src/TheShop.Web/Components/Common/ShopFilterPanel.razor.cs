@@ -30,6 +30,12 @@ public partial class ShopFilterPanel : ShopComponentBase, IDisposable
     /// <summary>Starts filter groups expanded; users can still collapse each group independently.</summary>
     [Parameter] public bool InitiallyExpanded { get; set; }
 
+    /// <summary>Optional initial expansion by group key, overriding the all-groups default.</summary>
+    [Parameter] public IReadOnlySet<string>? InitiallyExpandedGroups { get; set; }
+
+    /// <summary>Requests side-by-side numeric editors from the shared range control.</summary>
+    [Parameter] public bool CompactRangeEditors { get; set; }
+
     /// <summary>Resource-backed clear action text; defaults to the shared filter label.</summary>
     [Parameter] public string ClearLabel { get; set; } = Strings.Filter_Clear;
 

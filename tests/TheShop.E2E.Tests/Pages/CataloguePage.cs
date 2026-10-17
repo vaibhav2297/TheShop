@@ -16,7 +16,7 @@ public sealed class CataloguePage(IPage page) : ShopPage(page)
     /// </summary>
     public async Task ExpandFilterGroupAsync(string groupLabel)
     {
-        var trigger = Page.Locator(".shop-expander-trigger").Filter(new() { HasText = groupLabel });
+        var trigger = Page.Locator(".shop-filter-groups").GetByRole(AriaRole.Button, new() { Name = groupLabel, Exact = true });
         if (await trigger.GetAttributeAsync("aria-expanded") == "false")
             await trigger.ClickAsync();
     }

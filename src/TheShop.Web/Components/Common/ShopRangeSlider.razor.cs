@@ -30,6 +30,9 @@ public partial class ShopRangeSlider : ShopComponentBase, IAsyncDisposable
     /// <summary>Prevents thumb and editor updates.</summary>
     [Parameter] public bool Disabled { get; set; }
 
+    /// <summary>Keeps the two numeric editors side by side in compact filter panels.</summary>
+    [Parameter] public bool CompactEditors { get; set; }
+
     [Inject] private IJSRuntime JS { get; set; } = default!;
     private readonly string _id = $"shop-range-{Guid.NewGuid():N}";
     private Task<IJSObjectReference>? _moduleTask;
@@ -41,7 +44,8 @@ public partial class ShopRangeSlider : ShopComponentBase, IAsyncDisposable
     private bool _disposed;
     private int? _activeThumb;
     private bool IsDisabled => Disabled || Min == Max;
-    private string ClassName => ShopCssClass.Join("shop-native", "shop-range", IsDisabled ? "shop-range-disabled" : null, Class);
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-range", IsDisabled ? "shop-range-disabled" : null,
+        CompactEditors ? "shop-range-compact-editors" : null, Class);
     private string BubbleClass => ShopCssClass.Join("shop-range-bubble", _activeThumb == 0 ? "shop-range-bubble-lower" : "shop-range-bubble-upper");
     private string TrackStyle => $"--shop-range-lower: {Number(Percent(_current.Lower))}%; --shop-range-upper: {Number(Percent(_current.Upper))}%;";
     private static string Number(decimal value) => value.ToString("0.############################", CultureInfo.InvariantCulture);

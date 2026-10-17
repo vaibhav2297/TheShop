@@ -3,8 +3,6 @@ using TheShop.Web.Common.Dialogs;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Components.Products;
@@ -20,9 +18,8 @@ public class ProductVariantsCardTests : TestContext
     {
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
         Services.AddSingleton(Substitute.For<IShopDialogService>());
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
+        Services.AddSingleton<TheShop.Web.Common.BusyState>();
     }
 
     [Theory]
@@ -36,7 +33,7 @@ public class ProductVariantsCardTests : TestContext
         picker.Instance.SharedScopeCount.Should().Be(2);
         if (shared)
             picker.Find("[data-testid='variant-image-scope-all']").Change(true);
-        await picker.Find("[data-image-id]").ClickAsync(new());
+        await picker.Find("[data-image-id] .shop-image-tile-surface").ClickAsync(new());
         await picker.Find("[data-testid='variant-image-save']").ClickAsync(new());
         changes.Should().ContainSingle();
         changes[0].Variants[0].PinnedImageId.Should().Be(imageId);
@@ -91,12 +88,12 @@ public class ProductVariantsCardTests : TestContext
     {
         var (cut, changes, _) = RenderPinCard(initiallyPinned: true);
         await OpenFirstPinAsync(cut);
-        await cut.Find("[data-image-id]").ClickAsync(new());
+        await cut.Find("[data-image-id] .shop-image-tile-surface").ClickAsync(new());
         await cut.Find("[data-testid='variant-image-cancel']").ClickAsync(new());
         changes.Should().BeEmpty();
         await OpenFirstPinAsync(cut);
-        cut.Find("[data-image-id]").GetAttribute("aria-pressed").Should().Be("true");
-        await cut.Find("[data-image-id]").ClickAsync(new());
+        cut.Find("[data-image-id] .shop-image-tile-surface").GetAttribute("aria-pressed").Should().Be("true");
+        await cut.Find("[data-image-id] .shop-image-tile-surface").ClickAsync(new());
         await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
         changes.Should().ContainSingle();
         changes[0].Variants[0].PinnedImageId.Should().BeNull();
@@ -140,14 +137,12 @@ public class ProductVariantsCardTests : TestContext
                 new ProductVariantDto(Guid.NewGuid(), "SKU-BLUE-S", null, null, true, null, [blue, small], "Blue / Small")
             ])
             .Add(c => c.StateChanged, state => changes.Add(state)));
-        cut.FindComponent<MudTableBase>().Render(p => p.Add(c => c.Virtualize, false));
         changes.Clear();
         return (cut, changes, imageId);
     }
 
     private static Task OpenFirstPinAsync(IRenderedComponent<ProductVariantsCard> cut)
     {
-        cut.FindComponent<MudTableBase>().Render(p => p.Add(c => c.Virtualize, false));
         return cut.FindAll("button").First(button => button.TextContent.Trim() == Strings.ProductVariants_PinImage ||
             button.TextContent.Trim() == Strings.ProductVariants_ChangeImage)
             .ClickAsync(new MouseEventArgs());
@@ -218,16 +213,13 @@ public class ProductVariantsCardTests : TestContext
             .Add(component => component.InitialOptionTypes, [optionType])
             .Add(component => component.InitialVariants, variants));
 
-        cut.FindComponent<MudTableBase>()
-            .Render(parameters => parameters.Add(table => table.Virtualize, false));
-
         cut.Markup.Should().Contain(Strings.AddProduct_StatusActive);
         cut.Markup.Should().Contain(Strings.AddProduct_StatusInactive);
         cut.Markup.Should().NotContain(Strings.ProductVariants_StatusAvailable);
         cut.Markup.Should().NotContain(Strings.ProductVariants_StatusUnavailable);
-        cut.Find("th.shop-table-column-compact").TextContent.Trim()
+        cut.Find("th:nth-child(5)").TextContent.Trim()
             .Should().Be(Strings.ProductVariants_ColumnStatus);
-        cut.FindAll("td.shop-table-column-compact").Select(cell => cell.TextContent.Trim())
+        cut.FindAll("td:nth-child(5)").Select(cell => cell.TextContent.Trim())
             .Should().Equal(Strings.AddProduct_StatusActive, Strings.AddProduct_StatusInactive);
     }
 

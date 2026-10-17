@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
@@ -60,11 +58,7 @@ public class ManageProductsTests : TestContext
         Services.AddSingleton(_localizer);
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
-        Services.AddMudServices();
 
-        var popoverService = Substitute.For<IPopoverService>();
-        popoverService.PopoverOptions.Returns(new PopoverOptions());
-        Services.Replace(ServiceDescriptor.Singleton(popoverService));
         Services.Replace(ServiceDescriptor.Singleton(_dialogService));
 
         _localizer[Arg.Any<string>()].Returns(call =>
@@ -210,11 +204,14 @@ public class ManageProductsTests : TestContext
         var cut = await RenderListAsync();
 
         var filterPanel = cut.FindComponent<ShopFilterPanel>();
+        filterPanel.FindAll(".shop-expander-trigger").Should().OnlyContain(trigger => trigger.GetAttribute("aria-expanded") == "false");
+        filterPanel.Find(".shop-expander-trigger").Click();
         await cut.InvokeAsync(() => filterPanel.Instance.SingleSelectChanged.InvokeAsync(("status", "inactive")));
 
         _receivedQueries.Should().ContainSingle();
         _receivedQueries[0].Status.Should().Be(ProductStatusFilter.Inactive);
         _receivedQueries[0].Pagination.Page.Should().Be(1);
+        filterPanel.Find(".shop-expander-trigger").GetAttribute("aria-expanded").Should().Be("true");
     }
 
     [Fact]
@@ -237,7 +234,7 @@ public class ManageProductsTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var searchField = cut.FindComponent<MudTextField<string>>();
+        var searchField = cut.FindComponent<ShopTextField>();
         await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("  elf  "));
 
         _receivedQueries.Should().ContainSingle();
@@ -396,7 +393,7 @@ public class ManageProductsTests : TestContext
         var image = cut.FindComponent<ShopImage>().Instance;
         image.Preset.Should().Be(ShopImagePreset.SquareContain);
         image.Src.Should().Be(item.PrimaryImageUrl);
-        cut.Find(".mud-avatar > [data-shop-image] img").GetAttribute("alt").Should().Be("Elf Bar BC5000");
+        cut.Find(".shop-products-image > [data-shop-image] img").GetAttribute("alt").Should().Be("Elf Bar BC5000");
     }
 
     [Fact]
@@ -408,7 +405,7 @@ public class ManageProductsTests : TestContext
 
         var cut = await RenderListAsync();
 
-        cut.Find(".mud-avatar .shop-image-placeholder").TextContent.Trim().Should().Be("Elf Bar BC5000");
+        cut.Find(".shop-products-image .shop-image-placeholder").TextContent.Trim().Should().Be("Elf Bar BC5000");
     }
 
     [Fact]
@@ -569,7 +566,7 @@ public class ManageProductsTests : TestContext
         var cut = Render<ManageProducts>();
         await cut.InvokeAsync(() => { });
 
-        cut.FindComponents<MudChip<string>>().Should().BeEmpty(
+        cut.FindComponents<ShopChip>().Should().OnlyContain(c => !c.Instance.SelectedChanged.HasDelegate,
             "a view-only staff member cannot flip a product's status, so it renders as text, not a clickable chip");
     }
 
@@ -658,7 +655,7 @@ public class ManageProductsTests : TestContext
         SetUpProductsThatDisappearUnderSearch();
         var cut = await RenderListAsync();
 
-        var searchField = cut.FindComponent<MudTextField<string>>();
+        var searchField = cut.FindComponent<ShopTextField>();
         await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("nonexistent"));
 
         cut.Markup.Should().Contain(Strings.ManageProducts_NoMatchTitle);
@@ -673,7 +670,7 @@ public class ManageProductsTests : TestContext
     {
         SetUpProductsThatDisappearUnderSearch();
         var cut = await RenderListAsync();
-        var searchField = cut.FindComponent<MudTextField<string>>();
+        var searchField = cut.FindComponent<ShopTextField>();
         await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("nonexistent"));
 
         var filterPanel = cut.FindComponent<ShopFilterPanel>();
@@ -889,8 +886,8 @@ public class ManageProductsTests : TestContext
         _mediator.Send(Arg.Any<SetProductStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new ProductStatusChangeDto(1, [])));
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new MouseEventArgs()));
+        var chip = cut.FindComponents<ShopChip>().Single(component => component.Instance.SelectedChanged.HasDelegate);
+        await cut.InvokeAsync(() => chip.Instance.SelectedChanged.InvokeAsync(!chip.Instance.Selected));
 
         await _dialogService.DidNotReceive().ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(
@@ -909,8 +906,8 @@ public class ManageProductsTests : TestContext
         _mediator.Send(Arg.Any<SetProductStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new ProductStatusChangeDto(1, [])));
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new MouseEventArgs()));
+        var chip = cut.FindComponents<ShopChip>().Single(component => component.Instance.SelectedChanged.HasDelegate);
+        await cut.InvokeAsync(() => chip.Instance.SelectedChanged.InvokeAsync(!chip.Instance.Selected));
 
         await _dialogService.Received(1).ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(Arg.Is<SetProductStatusCommand>(c => !c.IsActive), Arg.Any<CancellationToken>());
@@ -925,8 +922,8 @@ public class ManageProductsTests : TestContext
         var cut = await RenderListAsync();
         SetUpConfirmDialogResult(confirmed: false);
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new MouseEventArgs()));
+        var chip = cut.FindComponents<ShopChip>().Single(component => component.Instance.SelectedChanged.HasDelegate);
+        await cut.InvokeAsync(() => chip.Instance.SelectedChanged.InvokeAsync(!chip.Instance.Selected));
 
         await _mediator.DidNotReceive().Send(Arg.Any<SetProductStatusCommand>(), Arg.Any<CancellationToken>());
     }

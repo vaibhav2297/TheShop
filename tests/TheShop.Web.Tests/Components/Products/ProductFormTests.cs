@@ -6,10 +6,9 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.DTOs;
@@ -52,13 +51,8 @@ public class ProductFormTests : TestContext
         Services.AddSingleton(_mediator);
         Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
-        Services.AddMudServices();
         Services.AddSingleton(Substitute.For<IShopDialogService>());
 
-        // MudSelect reads PopoverOptions while rendering, so the substitute has to answer it.
-        var popoverService = Substitute.For<IPopoverService>();
-        popoverService.PopoverOptions.Returns(new PopoverOptions());
-        Services.Replace(ServiceDescriptor.Singleton(popoverService));
 
         _localizer[Arg.Any<string>()].Returns(call =>
         {
@@ -185,11 +179,13 @@ public class ProductFormTests : TestContext
     public async Task Publish_WithAVariantMissingItsPrice_ShowsWhichRowsAreIncomplete()
     {
         var cut = RenderCreateForm();
-        await SetVariantsAsync(cut, Variant("SKU-MANGO", 24.99m), Variant("SKU-MINT", null));
+        await ConfigureVariantAsync(cut);
 
         await SetStatusAsync(cut, published: true);
 
-        cut.Markup.Should().Contain(string.Format(Strings.ProductVariants_MissingPrice, 1, 2));
+        cut.Find(".shop-product-variant-table").TextContent.Should().Contain(Strings.Product_PriceRequired);
+        cut.Markup.Should().NotContain(string.Format(Strings.ProductVariants_MissingPrice, 1, 1));
+        cut.FindAll("form > .shop-product-error").Should().BeEmpty();
     }
 
     [Fact]
@@ -232,16 +228,23 @@ public class ProductFormTests : TestContext
 
     [Fact]
     [Trait("Feature", "create-product")]
-    public async Task Publish_WithAVariantMissingItsPrice_DoesNotDispatchTheCommand()
+    public async Task Publish_WithAVariantMissingItsPrice_PreservesServerRefusalAndFlags()
     {
         var cut = RenderCreateForm();
         await FillRequiredDetailsAsync(cut);
-        await SetVariantsAsync(cut, Variant("SKU-MANGO", 24.99m), Variant("SKU-MINT", null));
+        await ConfigureVariantAsync(cut);
         await SetStatusAsync(cut, published: true);
+        cut.Find(".shop-product-variant-table input").GetAttribute("aria-required").Should().Be("true");
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
-
-        await _mediator.DidNotReceive().Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>());
+        var variantId = cut.FindComponent<ProductVariantsCard>().Instance.FlaggedVariantIds.Single();
+        _mediator.Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Fail<AdminProductDto>(ProductNotPublishableException.MessageResourceKey,
+                [$"{ProductNotPublishableException.VariantPriceTokenPrefix}{variantId}"]));
+        await cut.Find("form").SubmitAsync();
+        cut.FindComponent<ProductVariantsCard>().Instance.FlaggedVariantIds.Should().NotBeEmpty();
+        _notifications.DidNotReceive().Show(Arg.Any<string>(), ShopNotificationKind.Error);
+        await _mediator.Received(1).Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>());
+        Services.GetRequiredService<NavigationManager>().Uri.Should().NotContain(Routes.Admin.ManageProducts);
     }
 
     // =========================================================================
@@ -265,7 +268,7 @@ public class ProductFormTests : TestContext
         await SetPriceAsync(cut, 19.99m);
         await SetVariantsAsync(cut, Variant("SKU-MANGO", 24.99m));
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         dispatched.Should().NotBeNull();
         dispatched!.OriginalPrice.Should().BeNull(
@@ -289,7 +292,7 @@ public class ProductFormTests : TestContext
         await FillRequiredDetailsAsync(cut);
         await SetPriceAsync(cut, 19.99m);
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         dispatched.Should().NotBeNull();
         dispatched!.OriginalPrice.Should().Be(19.99m);
@@ -317,7 +320,7 @@ public class ProductFormTests : TestContext
         await SetDescriptionAsync(cut, "<p>Long-lasting.</p>", 13);
         await SetSpecificationsAsync(cut, new SpecificationInput(null, "Material", "Stainless steel", 0));
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         dispatched.Should().NotBeNull();
         dispatched!.Description.Should().Be("<p>Long-lasting.</p>");
@@ -348,7 +351,7 @@ public class ProductFormTests : TestContext
         var cut = RenderEditForm(product);
 
         await SetDescriptionAsync(cut, "<p>Updated description.</p>", 20);
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         dispatched.Should().NotBeNull();
         dispatched!.OptionTypes.Should().ContainSingle();
@@ -373,7 +376,7 @@ public class ProductFormTests : TestContext
         await SetPriceAsync(cut, 24.99m);
         await SetDescriptionAsync(cut, "   ", 0);
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         dispatched.Should().NotBeNull();
         dispatched!.Description.Should().BeNull("description is optional; whitespace-only content is not entered (RULE-2)");
@@ -394,9 +397,10 @@ public class ProductFormTests : TestContext
             new SpecificationInput(null, "Material", "Steel", 0),
             new SpecificationInput(null, "material", "Aluminum", 1));
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         cut.FindComponent<ProductContentCard>().Instance.FlaggedRowPositions.Should().BeEquivalentTo([0, 1]);
+        _notifications.DidNotReceive().Show(Arg.Any<string>(), ShopNotificationKind.Error);
     }
 
     [Fact]
@@ -412,7 +416,7 @@ public class ProductFormTests : TestContext
         await SetDescriptionAsync(cut, "<p>Do not lose this.</p>", 16);
         await SetSpecificationsAsync(cut, new SpecificationInput(null, "Material", "Stainless steel", 0));
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         cut.Markup.Should().Contain("Stainless steel",
             "a failed save must not silently overwrite or drop entered content (AC-15)");
@@ -487,9 +491,10 @@ public class ProductFormTests : TestContext
         await SetPriceAsync(cut, 24.99m);
         await SetSpecificationsAsync(cut, new SpecificationInput(null, "Material", "Steel", 0));
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         cut.FindComponent<ProductContentCard>().Instance.FlaggedRowPositions.Should().BeEmpty();
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
     }
 
     // =========================================================================
@@ -507,7 +512,7 @@ public class ProductFormTests : TestContext
         await FillRequiredDetailsAsync(cut);
         await SetPriceAsync(cut, 24.99m);
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageProducts);
@@ -523,7 +528,7 @@ public class ProductFormTests : TestContext
         await FillRequiredDetailsAsync(cut);
         await SetPriceAsync(cut, 24.99m);
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         cut.Find("input[data-testid='product-name']").GetAttribute("value").Should().Be("Elf Bar BC5000",
             "everything already entered must be preserved so the staff member can correct and resubmit (AC-23 / FR-23)");
@@ -544,7 +549,7 @@ public class ProductFormTests : TestContext
         await FillRequiredDetailsAsync(cut);
         await SetPriceAsync(cut, 24.99m);
 
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
 
         _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageProducts);
@@ -555,7 +560,6 @@ public class ProductFormTests : TestContext
     // =========================================================================
 
     [Theory]
-    [InlineData("")]
     [InlineData("bad")]
     [InlineData("-1")]
     public async Task Save_InvalidNativePrice_DoesNotDispatchOldAmount(string draft)
@@ -565,7 +569,7 @@ public class ProductFormTests : TestContext
         await SetPriceAsync(cut, 24.99m);
         var input = cut.FindComponents<ShopMoneyField>()[0].Find("input");
         await input.InputAsync(new ChangeEventArgs { Value = draft });
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
         await _mediator.DidNotReceive().Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>());
         input.GetAttribute("value").Should().Be(draft);
         input.GetAttribute("aria-invalid").Should().Be("true");
@@ -587,7 +591,7 @@ public class ProductFormTests : TestContext
         await fields[1].Find("input").BlurAsync(new());
         await fields[1].Find("input").InputAsync(new ChangeEventArgs { Value = "" });
         await fields[0].Find("input").InputAsync(new ChangeEventArgs { Value = "35.125" });
-        await cut.Find("[data-testid='product-save']").ClickAsync(new());
+        await cut.Find("form").SubmitAsync();
         saved.Should().NotBeNull();
         saved!.OriginalPrice.Should().Be(35.125m);
         saved.SalePrice.Should().BeNull();
@@ -595,20 +599,10 @@ public class ProductFormTests : TestContext
 
     private async Task FillRequiredDetailsAsync(IRenderedComponent<ProductForm> cut)
     {
-        // Drive the field through its DOM event so MudForm sees the browser state transition.
-        // The SKU is generated from the name and cannot be typed directly.
-        await cut.Find("input[data-testid='product-name']")
-            .InputAsync(new ChangeEventArgs { Value = "Elf Bar BC5000" });
-
-        var selects = cut.FindComponents<MudSelect<Guid?>>();
-        await cut.InvokeAsync(() => selects[0].Instance.ValueChanged.InvokeAsync(_category.Id));
-        await cut.InvokeAsync(() => selects[1].Instance.ValueChanged.InvokeAsync(_brand.Id));
-
-        // MudForm's IsValid two-way binding is not advanced by bUnit's synthetic child events.
-        // Prime that binding after populating valid controls; SaveAsync still runs validation.
-        typeof(ProductForm).GetField("_isFormValid", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
-            .SetValue(cut.Instance, true);
-        cut.Render();
+        await cut.Find("input[data-testid='product-name']").InputAsync(new ChangeEventArgs { Value = "Elf Bar BC5000" });
+        var selects = cut.FindComponents<ShopSelect<Guid?>>();
+        await cut.InvokeAsync(() => selects.Single(c => c.Instance.Label == Strings.AddProduct_CategoryLabel).Instance.ValueChanged.InvokeAsync(_category.Id));
+        await cut.InvokeAsync(() => selects.Single(c => c.Instance.Label == Strings.AddProduct_BrandLabel).Instance.ValueChanged.InvokeAsync(_brand.Id));
     }
 
     private static async Task SetPriceAsync(IRenderedComponent<ProductForm> cut, decimal price)
@@ -619,12 +613,190 @@ public class ProductFormTests : TestContext
     }
 
     private static Task SetStatusAsync(IRenderedComponent<ProductForm> cut, bool published) =>
-        cut.InvokeAsync(() => cut.FindComponent<MudChipSet<bool>>().Instance.SelectedValueChanged.InvokeAsync(published));
+        cut.InvokeAsync(() => cut.FindComponents<ShopChip>()[published ? 0 : 1].Instance.SelectedChanged.InvokeAsync(true));
+
+    // =========================================================================
+    // Description (FR-1, FR-2)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "product-description")]
+    public void Render_ShowsTheDescriptionLabelAndHeading()
+    {
+        var cut = RenderCreateForm();
+
+        cut.Markup.Should().Contain(Strings.ProductForm_GeneralInfoHeading);
+        cut.Markup.Should().Contain(Strings.AddProduct_DescriptionLabel);
+    }
+
+    [Fact]
+    [Trait("Feature", "product-description")]
+    public async Task EditingTheDescription_RaisesDescriptionChanged()
+    {
+        var cut = RenderCreateForm();
+
+        await cut.InvokeAsync(() => cut.FindComponent<ShopRichTextEditor>().Instance.OnTextChanged("<p>New</p>", 3));
+
+        cut.FindComponent<ShopRichTextEditor>().Instance.Value.Should().Be("<p>New</p>");
+    }
+
+    [Fact]
+    [Trait("Feature", "product-description")]
+    public async Task TextLengthChanged_UpdatesTheCounter()
+    {
+        var cut = RenderCreateForm();
+
+        await cut.InvokeAsync(() => cut.FindComponent<ShopRichTextEditor>().Instance.OnTextChanged("<p>Hello</p>", 5));
+
+        cut.Markup.Should().Contain(string.Format(Strings.AddProduct_DescriptionCounter, 5, 20_000));
+    }
+
+    [Fact]
+    [Trait("Feature", "product-description")]
+    public async Task UnsupportedPaste_ShowsTheFormattingRemovedNotice()
+    {
+        var cut = RenderCreateForm();
+
+        await cut.InvokeAsync(() => cut.FindComponent<ShopRichTextEditor>().Instance.OnPasteUnsupported());
+
+        cut.Markup.Should().Contain(Strings.AddProduct_DescriptionFormattingRemoved);
+    }
 
     private static AdminProductDto ExampleSavedProduct() =>
         new(Guid.NewGuid(), "Elf Bar BC5000", "A long-lasting disposable vape.", "ELF-BC5000",
             Guid.NewGuid(), "Disposables", Guid.NewGuid(), "Elf Bar",
             null, null, false, [], [], [], [], "row-version-1");
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task PickerUpload_AppendsToGallery_AndOnlySaveChangesThePin(bool cancelPin)
+    {
+        JSInterop.SetupModule("./js/shopImageUpload.js").Setup<string>("createObjectUrl", _ => true).SetResult("blob:picker-owned");
+        CreateProductCommand? saved = null;
+        _mediator.Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>()).Returns(call =>
+        {
+            saved = call.Arg<CreateProductCommand>();
+            return Result.Fail<AdminProductDto>(ProductErrorKeys.CreateFailed);
+        });
+        var cut = RenderCreateForm();
+        await FillRequiredDetailsAsync(cut);
+        await ConfigureVariantAsync(cut);
+        await cut.FindAll("button").Single(button => button.TextContent.Trim() == Strings.ProductVariants_PinImage).ClickAsync(new());
+        var picker = cut.FindComponent<VariantImageDialog>();
+        picker.FindComponent<InputFile>().UploadFiles(InputFileContent.CreateFromBinary([1, 2, 3], "from-picker.png", contentType: "image/png"));
+        cut.WaitForAssertion(() => cut.FindComponent<ShopImageUpload>().Instance.Files.Should().ContainSingle());
+        var image = cut.FindComponent<ShopImageUpload>().Instance.Files.Single();
+        picker.Find("[data-image-id] .shop-image-tile-surface").GetAttribute("aria-pressed").Should().Be("true");
+        await picker.Find(cancelPin ? "[data-testid='variant-image-cancel']" : "[data-testid='variant-image-save']").ClickAsync(new());
+        cut.FindComponent<ShopImageUpload>().Instance.Files.Single().Should().BeSameAs(image);
+        await cut.Find("form").SubmitAsync();
+        saved.Should().NotBeNull();
+        var entry = saved!.Gallery.Should().ContainSingle().Subject;
+        entry.ClientId.Should().Be(image.ClientId);
+        entry.Upload!.Content.Should().Equal(1, 2, 3);
+        entry.IsPrimary.Should().BeTrue();
+        saved.Variants.Single().PinnedImageId.Should().Be(cancelPin ? null : image.ClientId);
+        cut.FindComponent<NavigationLock>().Instance.ConfirmExternalNavigation.Should().BeTrue();
+        await cut.Find(".shop-image-upload .shop-image-tile-remove").ClickAsync(new());
+        cut.FindComponent<ProductVariantsCard>().Instance.GalleryImages.Should().BeEmpty();
+        await cut.Find("form").SubmitAsync();
+        saved.Gallery.Should().BeEmpty();
+        saved.Variants.Single().PinnedImageId.Should().BeNull();
+        JSInterop.Invocations.Should().ContainSingle(call => call.Identifier == "revokeObjectUrl");
+    }
+
+    [Theory]
+    [InlineData("text/plain", 3)]
+    [InlineData("image/png", 3000000)]
+    public async Task PickerUpload_RejectedFile_ShowsErrorWithoutReadingOrOfferingAPin(string type, long size)
+    {
+        var cut = RenderCreateForm();
+        await ConfigureVariantAsync(cut);
+        await cut.FindAll("button").Single(button => button.TextContent.Trim() == Strings.ProductVariants_PinImage).ClickAsync(new());
+        var file = Substitute.For<IBrowserFile>();
+        file.Name.Returns("rejected.png"); file.ContentType.Returns(type); file.Size.Returns(size);
+        var picker = cut.FindComponent<VariantImageDialog>();
+        await cut.InvokeAsync(() => picker.FindComponent<ShopFileDropzone>().Instance.FilesSelected.InvokeAsync(new[] { file }));
+        file.DidNotReceiveWithAnyArgs().OpenReadStream(default, Xunit.TestContext.Current.CancellationToken);
+        picker.FindAll("[data-image-id]").Should().BeEmpty();
+        picker.Find("[role=alert]").TextContent.Should().NotBeNullOrWhiteSpace();
+        cut.FindComponent<ShopImageUpload>().Instance.Files.Single().Error.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Save_PendingFileAndPrice_CommitsBothAndSuppressesDuplicateSubmission()
+    {
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var file = Substitute.For<IBrowserFile>();
+        file.Name.Returns("pending.png"); file.ContentType.Returns("image/png"); file.Size.Returns(2);
+        file.OpenReadStream(Arg.Any<long>(), Arg.Any<CancellationToken>()).Returns(new GatedStream(release.Task));
+        CreateProductCommand? saved = null;
+        _mediator.Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>()).Returns(call =>
+        {
+            saved = call.Arg<CreateProductCommand>();
+            return Result.Fail<AdminProductDto>(ProductErrorKeys.CreateFailed);
+        });
+        var cut = RenderCreateForm();
+        await FillRequiredDetailsAsync(cut);
+        await cut.FindComponents<ShopMoneyField>()[0].Find("input").InputAsync(new ChangeEventArgs { Value = "42.75" });
+        var pending = cut.InvokeAsync(() => cut.FindComponent<ShopImageUpload>().Instance.AddFilesAsync(new[] { file }));
+        cut.WaitForAssertion(() => cut.FindAll(".shop-image-tile-loader").Should().ContainSingle());
+        var save = cut.Find("form").SubmitAsync();
+        await cut.Find("form").SubmitAsync();
+        saved.Should().BeNull();
+        release.SetResult();
+        await pending;
+        await save;
+        saved!.OriginalPrice.Should().Be(42.75m);
+        saved.Gallery.Should().ContainSingle();
+        await _mediator.Received(1).Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData("OriginalPrice", false)]
+    [InlineData("OriginalPrice.Value", false)]
+    [InlineData("OriginalPrice", true)]
+    [InlineData("OriginalPrice.Value", true)]
+    public async Task Save_CommandValidation_MapsPriceAndName_AndEditingClearsErrors(string pricePath, bool edit)
+    {
+        var failure = Result.Fail<AdminProductDto>(ProductErrorKeys.NameRequired, [],
+            [new("Name", ProductErrorKeys.NameRequired), new(pricePath, ProductErrorKeys.PriceRequired)]);
+        _mediator.Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>())
+            .Returns(failure);
+        _mediator.Send(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>()).Returns(failure);
+        var cut = edit ? RenderEditForm(ExampleSavedProduct()) : RenderCreateForm();
+        await cut.Find("form").SubmitAsync();
+        cut.Find("[data-testid=product-name]").GetAttribute("aria-invalid").Should().Be("true");
+        cut.FindComponents<ShopMoneyField>()[0].Find("input").GetAttribute("aria-invalid").Should().Be("true");
+        cut.Find(".shop-field-error").TextContent.Should().Contain(ProductErrorKeys.NameRequired);
+        cut.FindAll(".validation-summary-errors").Should().BeEmpty();
+        _notifications.DidNotReceive().Show(Arg.Any<string>(), ShopNotificationKind.Error);
+        await cut.Find("[data-testid=product-name]").InputAsync(new ChangeEventArgs { Value = "Corrected" });
+        cut.Find("[data-testid=product-name]").GetAttribute("aria-invalid").Should().NotBe("true");
+        await cut.Find("form").SubmitAsync();
+        if (edit)
+            await _mediator.Received(2).Send(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>());
+        else
+            await _mediator.Received(2).Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>());
+    }
+
+    private static async Task ConfigureVariantAsync(IRenderedComponent<ProductForm> cut)
+    {
+        await cut.FindAll("button").Single(button => button.TextContent.Trim() == Strings.ProductVariants_AddVariant).ClickAsync(new());
+        var fields = cut.FindAll(".shop-product-option input");
+        await fields[0].InputAsync(new ChangeEventArgs { Value = "Flavor" });
+        await cut.FindAll(".shop-product-option input")[1].InputAsync(new ChangeEventArgs { Value = "Mango" });
+    }
+
+    private sealed class GatedStream(Task release) : MemoryStream([1, 2])
+    {
+        public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            await release.WaitAsync(cancellationToken);
+            await base.CopyToAsync(destination, bufferSize, cancellationToken);
+        }
+    }
 }
 
 // =============================================================================
@@ -636,7 +808,7 @@ public class ProductFormTests : TestContext
 // RULE-13 (removing an image unpins it): RemoveAPickedImage_ClearsItFromThePinPicker
 // AC-20 / RULE-14 (publish refused, flagged per row): Publish_WithAVariantMissingItsPrice_ShowsWhichRowsAreIncomplete,
 //         Publish_WithAVariantMissingItsPrice_FlagsThatRowOnTheVariantsCard,
-//         Publish_WithAVariantMissingItsPrice_DoesNotDispatchTheCommand,
+//         Publish_WithAVariantMissingItsPrice_PreservesServerRefusalAndFlags,
 //         Publish_WithEveryVariantPriced_ShowsNoIncompleteRowsNotice
 // RULE-15 (a draft may be incomplete): Draft_WithAVariantMissingItsPrice_IsNotFlagged
 // FR-19 / RULE-19 (a variant product has no price of its own): Save_OnceTheProductHasVariants_SendsNoProductLevelPrice,

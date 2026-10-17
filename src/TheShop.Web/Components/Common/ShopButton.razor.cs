@@ -7,6 +7,11 @@ namespace TheShop.Web.Components.Common;
 /// <summary>A styled action button or native navigation link; icon-only controls require an accessible name.</summary>
 public partial class ShopButton : ShopComponentBase
 {
+    private ElementReference _element;
+
+    /// <summary>Moves focus to the rendered button or link, for action recovery.</summary>
+    public ValueTask FocusAsync() => _element.FocusAsync();
+
     /// <summary>Visible button content; may contain a decorative icon for an icon-only action.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using TheShop.Web.Common.Dialogs;
-using MudBlazor;
-using MudBlazor.Utilities;
+using Microsoft.AspNetCore.Components.Forms;
+using TheShop.Web.Common.UI;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
@@ -17,7 +17,7 @@ namespace TheShop.Web.Components.Products;
 /// option values purely for immediate feedback — <c>Product.ApplyVariantConfiguration</c> is
 /// the real truth server-side (Flow 4 step 4).
 /// </summary>
-public partial class ProductVariantsCard : MudComponentBase
+public partial class ProductVariantsCard : ShopComponentBase
 {
     [Inject] private IShopDialogService ConfirmDialogs { get; set; } = default!;
 
@@ -58,6 +58,13 @@ public partial class ProductVariantsCard : MudComponentBase
     /// </summary>
     [Parameter] public IReadOnlyList<Guid> FlaggedVariantIds { get; set; } = [];
 
+    /// <summary>File rejection messages displayed inside the gallery picker.</summary>
+    [Parameter] public IReadOnlyList<string> UploadErrors { get; set; } = [];
+
+    /// <summary>Prepares new gallery files through the owning form, without persisting them.</summary>
+    [Parameter] public EventCallback<IReadOnlyList<IBrowserFile>> AddGalleryFiles { get; set; }
+
+    /// <summary>Disables editor and dialog actions while saving.</summary>
     [Parameter] public bool Disabled { get; set; }
 
     private sealed class OptionValueRow
@@ -103,8 +110,7 @@ public partial class ProductVariantsCard : MudComponentBase
     private bool CanCopyPriceToAll => _variants.Count > 1 && _variants[0].OriginalPrice is not null;
     private bool CanCopySalePriceToAll => _variants.Count > 1 && _variants[0].SalePrice is not null;
 
-    protected string Classname => new CssBuilder("product-variants-card").AddClass(Class).Build();
-    protected string Stylename => new StyleBuilder().AddStyle(Style).Build();
+    protected string Classname => ShopCssClass.Join("shop-native", "shop-product-variants", Class);
 
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
@@ -184,6 +190,7 @@ public partial class ProductVariantsCard : MudComponentBase
 
     private Task AddOptionTypeAsync()
     {
+        if (Disabled) return Task.CompletedTask;
         var row = new OptionTypeRow
         {
             Id = Guid.NewGuid(),
@@ -193,14 +200,16 @@ public partial class ProductVariantsCard : MudComponentBase
         return NotifyAsync();
     }
 
-    private Task OnOptionTypeNameChangedAsync(OptionTypeRow type, string value)
+    private Task OnOptionTypeNameChangedAsync(OptionTypeRow type, string? value)
     {
-        type.Name = value;
+        if (Disabled) return Task.CompletedTask;
+        type.Name = value ?? string.Empty;
         return NotifyAsync();
     }
 
     private async Task RemoveOptionTypeAsync(OptionTypeRow type)
     {
+        if (Disabled) return;
         var remaining = _optionTypes.Where(t => t.Id != type.Id).ToList();
         var affected = CountConfiguredVariantsLostBy(remaining);
 
@@ -214,19 +223,22 @@ public partial class ProductVariantsCard : MudComponentBase
 
     private Task AddOptionValueAsync(OptionTypeRow type)
     {
+        if (Disabled) return Task.CompletedTask;
         type.Values.Add(new OptionValueRow { Id = Guid.NewGuid() });
         return NotifyAsync();
     }
 
-    private Task OnOptionValueChangedAsync(OptionValueRow value, string newValue)
+    private Task OnOptionValueChangedAsync(OptionValueRow value, string? newValue)
     {
-        value.Value = newValue;
+        if (Disabled) return Task.CompletedTask;
+        value.Value = newValue ?? string.Empty;
         RecomputeVariants();
         return NotifyAsync();
     }
 
     private async Task RemoveOptionValueAsync(OptionTypeRow type, OptionValueRow value)
     {
+        if (Disabled) return;
         if (type.Values.Count == 1 && type.Values[0].Id == value.Id)
         {
             await RemoveOptionTypeAsync(type);
@@ -248,14 +260,16 @@ public partial class ProductVariantsCard : MudComponentBase
     }
 
     /// <summary>Commits pending price edits before submission, including drafts retained by virtualized rows.</summary>
-    public async Task<bool> ValidatePricesAsync()
+    public async Task<bool> ValidatePricesAsync(bool includeDisabled = false)
     {
         var valid = true;
         foreach (var variant in _variants.ToArray())
         {
-            if (variant.PriceField is not null) valid &= await variant.PriceField.ValidateAsync();
-            if (variant.SalePriceField is not null) valid &= await variant.SalePriceField.ValidateAsync();
-            if (RequirePrices && variant.OriginalPrice is null) valid = false;
+            if (variant.PriceField is not null) await variant.PriceField.ValidateAsync(includeDisabled);
+            if (variant.SalePriceField is not null) await variant.SalePriceField.ValidateAsync(includeDisabled);
+            // Commit and check parsing here. Publish requirements and server markers are
+            // presentation feedback, never a substitute for command/domain validation.
+            valid &= variant.PriceDraft.Error is null && variant.SalePriceDraft.Error is null;
         }
         return valid;
     }
@@ -280,7 +294,7 @@ public partial class ProductVariantsCard : MudComponentBase
     /// </summary>
     private Task CopyPriceToAllVariantsAsync()
     {
-        if (_variants.Count == 0 || _variants[0].OriginalPrice is not decimal price)
+        if (Disabled || _variants.Count == 0 || _variants[0].OriginalPrice is not decimal price)
             return Task.CompletedTask;
 
         foreach (var variant in _variants.Skip(1))
@@ -299,7 +313,7 @@ public partial class ProductVariantsCard : MudComponentBase
     /// </summary>
     private Task CopySalePriceToAllVariantsAsync()
     {
-        if (_variants.Count == 0 || _variants[0].SalePrice is not decimal price)
+        if (Disabled || _variants.Count == 0 || _variants[0].SalePrice is not decimal price)
             return Task.CompletedTask;
 
         foreach (var variant in _variants.Skip(1))
@@ -313,6 +327,7 @@ public partial class ProductVariantsCard : MudComponentBase
 
     private Task OnVariantAvailableChangedAsync(VariantRow variant, bool value)
     {
+        if (Disabled) return Task.CompletedTask;
         variant.IsAvailable = value;
         return NotifyAsync();
     }

@@ -8,6 +8,11 @@ namespace TheShop.Web.Components.Common;
 /// <summary>An outlined, label-only text field with immediate binding and EditContext validation. Native attributes and CSS classes target its input.</summary>
 public partial class ShopTextField : InputBase<string?>
 {
+    private ElementReference _element;
+
+    /// <summary>Moves focus to the actual input, for editor row recovery.</summary>
+    public ValueTask FocusAsync() => _element.FocusAsync();
+
     private readonly string _generatedId = $"shop-field-{Guid.NewGuid():N}";
 
     /// <summary>

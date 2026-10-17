@@ -49,8 +49,13 @@ public partial class ShopTable<TItem> : ShopComponentBase
     /// <summary>Number of skeleton rows shown while Loading; must be positive. Defaults to 10.</summary>
     [Parameter] public int LoadingRowCount { get; set; } = 10;
 
+    /// <summary>Virtualizes editable rows inside a bounded scroll region; row drafts remain caller-owned.</summary>
+    [Parameter] public bool Virtualize { get; set; }
+
     private List<RowEntry> _rows = [];
     private string ClassName => ShopCssClass.Join("shop-table", Class);
+    private string ScrollClass => ShopCssClass.Join("shop-native", "shop-table-scroll",
+        Virtualize ? "shop-table-scroll-virtualized" : null);
     private int EffectiveColumnCount => ColumnCount + (Selectable ? 1 : 0);
     private bool AllSelected => _rows.Count > 0 && _rows.All(row => IsSelected(row.Key));
     private bool PartiallySelected => !AllSelected && _rows.Any(row => IsSelected(row.Key));

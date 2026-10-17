@@ -29,6 +29,9 @@ public partial class ShopNumericField : InputBase<decimal?>
     /// <summary>Rejects an empty draft instead of committing null.</summary>
     [Parameter] public bool Required { get; set; }
 
+    /// <summary>Announces a requirement enforced by the owning command without adding local validation. Cannot negate Required.</summary>
+    [Parameter] public bool? AriaRequired { get; set; }
+
     /// <summary>Localized empty-value error; defaults to the shared required-number message.</summary>
     [Parameter] public string? RequiredError { get; set; }
 
@@ -144,11 +147,12 @@ public partial class ShopNumericField : InputBase<decimal?>
     }
 
     /// <summary>Commits a valid pending draft and awaits its callback. Forms call this before submission; invalid drafts retain their previous value.</summary>
+    /// <param name="includeDisabled">Allows an owning submit scope to commit while user editing is disabled.</param>
     /// <returns>Whether both the draft and associated validation messages are valid.</returns>
-    public async Task<bool> ValidateAsync()
+    public async Task<bool> ValidateAsync(bool includeDisabled = false)
     {
         await _pendingChange;
-        if (Disabled) return !Errors.Any();
+        if (Disabled && !includeDisabled) return !Errors.Any();
         var draft = _draft;
         if (!TryParseValueFromString(_draft, out var value, out var error))
         {

@@ -52,12 +52,13 @@
 @use 'components/notification';
 @use 'components/loading-overlay';
 @use 'components/variant-image';
+@use 'components/product-form';
 @use 'components/rich-text-editor';
-@use 'components/admin-skeletons';
 @use 'components/admin-module-card';
 @use 'components/access-denied';
 @use 'layouts/auth';
 @use 'layouts/shell';
 @use 'layouts/brands';
 @use 'layouts/categories';
+@use 'layouts/products';
 @use 'layouts/admin-console';

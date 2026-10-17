@@ -14,18 +14,27 @@
     box-shadow: inset 0 -1px var(--shop-color-lines-default);
 }
 
-.shop-expander-heading {
-    margin: 0;
-}
-
-.shop-expander-trigger {
+.shop-expander-header {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--shop-space-4);
-    inline-size: 100%;
     min-inline-size: 0;
-    margin: 0;
     padding: var(--shop-space-6) 0;
+
+    &:has(> .shop-expander-trigger:disabled) {
+        color: var(--shop-color-text-disabled);
+    }
+}
+
+.shop-expander-trigger {
+    // Cover the header without nesting caller-owned heading markup inside a button.
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    inline-size: 100%;
+    margin: 0;
+    padding: 0;
     border: 0;
     border-radius: var(--shop-radius-control);
     background: transparent;
@@ -50,6 +59,10 @@
     flex: 1;
     min-inline-size: 0;
     overflow-wrap: anywhere;
+}
+
+.shop-expander-default-title {
+    margin: 0;
     @include text-style.apply(h4);
 }
 

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using TheShop.Application.Features.Products.DTOs;
+using TheShop.Web.Common;
 
 namespace TheShop.Web.Components.Products;
 
@@ -11,6 +13,16 @@ namespace TheShop.Web.Components.Products;
 /// </summary>
 public partial class VariantImageDialog : ComponentBase
 {
+    [Inject] private BusyState BusyState { get; set; } = default!;
+
+    /// <summary>Appends browser files to the owning product gallery before the input resets.</summary>
+    [Parameter] public EventCallback<IReadOnlyList<IBrowserFile>> AddGalleryFiles { get; set; }
+
+    /// <summary>File rejection messages from the product's gallery owner.</summary>
+    [Parameter] public IReadOnlyList<string> UploadErrors { get; set; } = [];
+
+    private readonly string _uploadKey = $"{BusyKeys.ImageSelection}.{Guid.NewGuid():N}";
+    private HashSet<Guid>? _imagesBeforeUpload;
     /// <summary>Completes once: null cancels; a result with null ImageId explicitly clears the pin.</summary>
     [Parameter, EditorRequired] public EventCallback<VariantImagePinResult?> OnCompleted { get; set; }
 
@@ -49,6 +61,11 @@ public partial class VariantImageDialog : ComponentBase
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
+        if (_imagesBeforeUpload is not null && GalleryImages.FirstOrDefault(image => !_imagesBeforeUpload.Contains(image.Id)) is { } added)
+        {
+            _selectedImageId = added.Id;
+            _imagesBeforeUpload = null;
+        }
         if (_selectedImageId is Guid selected && !GalleryImages.Any(image => image.Id == selected))
             _selectedImageId = null;
         if (!ShowScopeChoice)
@@ -56,8 +73,18 @@ public partial class VariantImageDialog : ComponentBase
     }
 
     // Clicking the already-selected image deselects it — the dialog has no separate "clear" action.
-    private void SelectImage(Guid imageId) =>
+    private void SelectImage(Guid imageId)
+    {
+        if (_completed || BusyState.IsBusy(_uploadKey)) return;
         _selectedImageId = _selectedImageId == imageId ? null : imageId;
+    }
+
+    private async Task AddFilesAsync(IReadOnlyList<IBrowserFile> files)
+    {
+        if (_completed || BusyState.IsBusy(_uploadKey) || !AddGalleryFiles.HasDelegate) return;
+        _imagesBeforeUpload = GalleryImages.Select(image => image.Id).ToHashSet();
+        await BusyState.RunAsync(_uploadKey, () => AddGalleryFiles.InvokeAsync(files));
+    }
 
     private Task ConfirmAsync() => CompleteAsync(new VariantImagePinResult(_selectedImageId, ShowScopeChoice && _applyToAllSharing));
 
@@ -65,7 +92,7 @@ public partial class VariantImageDialog : ComponentBase
 
     private Task CompleteAsync(VariantImagePinResult? result)
     {
-        if (_completed)
+        if (_completed || BusyState.IsBusy(_uploadKey))
             return Task.CompletedTask;
         _completed = true;
         return OnCompleted.InvokeAsync(result);

@@ -8,6 +8,7 @@
 }
 
 .shop-filter-title {
+    margin: 0;
     @include text-style.apply(subtitle-1);
 }
 

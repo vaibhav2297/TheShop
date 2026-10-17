@@ -26,6 +26,9 @@ public partial class ShopMoneyField : ComponentBase
     /// <summary>Rejects an empty amount when the owning form requires a price.</summary>
     [Parameter] public bool Required { get; set; }
 
+    /// <summary>Announces a requirement enforced by the owning command without duplicating its validation.</summary>
+    [Parameter] public bool? AriaRequired { get; set; }
+
     /// <summary>Localized message for a missing required amount.</summary>
     [Parameter] public string? RequiredError { get; set; }
 
@@ -49,5 +52,6 @@ public partial class ShopMoneyField : ComponentBase
     private static string FormatMoney(decimal value) => CurrencyFormatter.Format(value);
 
     /// <summary>Commits pending edits and awaits their callbacks before the owning form validates and saves.</summary>
-    public Task<bool> ValidateAsync() => _field.ValidateAsync();
+    /// <param name="includeDisabled">Commits a pending draft while the owning submit operation disables editing.</param>
+    public Task<bool> ValidateAsync(bool includeDisabled = false) => _field.ValidateAsync(includeDisabled);
 }

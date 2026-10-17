@@ -67,9 +67,5 @@ public class ShopSkeletonTests : TestContext
         card.Find("div").GetAttribute("aria-hidden").Should().Be("true");
         card.FindAll(".shop-skeleton").Should().HaveCount(3);
 
-        var form = Render<AdminFormSkeleton>();
-        form.Find("div").ClassList.Should().Contain("shop-admin-form-skeleton");
-        form.Find("div").GetAttribute("aria-hidden").Should().Be("true");
-        form.FindAll(".shop-skeleton").Should().HaveCount(3);
     }
 }

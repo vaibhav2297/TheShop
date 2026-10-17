@@ -8,9 +8,9 @@
         <div class="shop-filter-groups">
             @foreach (var group in Groups)
             {
-                <ShopExpander @key="group.Key" Expanded="@InitiallyExpanded">
+                <ShopExpander @key="group.Key" Expanded="@(InitiallyExpandedGroups?.Contains(group.Key) ?? InitiallyExpanded)">
                     <TitleContent>
-                        <span class="shop-filter-title">@Localizer[group.LabelKey]</span>
+                        <h3 class="shop-filter-title">@Localizer[group.LabelKey]</h3>
                     </TitleContent>
                     <OverviewContent>
                         @if (group.Kind is FilterKind.MultiSelect or FilterKind.SingleSelect && CountSelected(group.Key) is var count && count > 0)
@@ -19,7 +19,7 @@
                         }
                         else if (group.Kind == FilterKind.Range && group.Range is not null)
                         {
-                            @RangeHeaderText(group.Key)
+                            <ShopChip Size="ShopSize.Small">@RangeHeaderText(group.Key)</ShopChip>
                         }
                     </OverviewContent>
                     <ChildContent>
@@ -52,6 +52,7 @@
                         {
                             var thumbs = Thumbs(group.Key);
                             <ShopRangeSlider Label="@Localizer[group.LabelKey]" Min="@range.Min" Max="@range.Max"
+                                             CompactEditors="@CompactRangeEditors"
                                              Step="@RangeStep(group.Key)" Value="@(new ShopRangeValue(thumbs.Min, thumbs.Max))"
                                              MinimumLabel="@RangeMinimumLabel(group.Key)" MaximumLabel="@RangeMaximumLabel(group.Key)"
                                              ValueFormatter="@(value => RangeFormatter(group.Key, value))"

@@ -1,8 +1,9 @@
 @typeparam TItem
 @using TheShop.Web.Common.UI
+@using Microsoft.AspNetCore.Components.Web.Virtualization
 @inherits ShopComponentBase
 
-<div class="shop-native shop-table-scroll" role="region" aria-label="@Caption" tabindex="0">
+<div class="@ScrollClass" role="region" aria-label="@Caption" tabindex="0">
     <table @attributes="AdditionalAttributes" class="@ClassName" style="@Style" aria-busy="@(Loading ? "true" : null)">
         <caption class="shop-visually-hidden">@Caption</caption>
         <thead>
@@ -32,6 +33,12 @@
                     </tr>
                 }
             }
+            else if (Virtualize)
+            {
+                <Virtualize Items="@_rows" Context="row" SpacerElement="tr" ItemSize="96">
+                    @RenderRow(row)
+                </Virtualize>
+            }
             else
             {
                 foreach (var row in _rows)
@@ -58,3 +65,18 @@
     </table>
     <span class="shop-visually-hidden" role="status">@(Loading ? Strings.Loading : null)</span>
 </div>
+
+@code {
+    private RenderFragment RenderRow(RowEntry row) => @<tr @key="row.Key">
+        @if (Selectable)
+        {
+            <td class="shop-table-selection">
+                <ShopCheckbox Label="@RowSelectionLabel!(row.Item)" HideLabel="true"
+                              Value="@IsSelected(row.Key)" ValueExpression="@(() => row.Selected)"
+                              ValueChanged="@(value => SelectRowAsync(row.Key, value))"
+                              Disabled="@SelectionDisabled" />
+            </td>
+        }
+        @RowTemplate(row.Item)
+    </tr>;
+}

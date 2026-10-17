@@ -3,7 +3,7 @@
 
 @if (Href is not null)
 {
-    <a @attributes="AdditionalAttributes"
+    <a @attributes="AdditionalAttributes" @ref="_element"
        href="@(IsDisabled ? null : Href)"
        role="link"
        tabindex="@LinkTabIndex"
@@ -18,7 +18,7 @@
 }
 else
 {
-    <button @attributes="AdditionalAttributes"
+    <button @attributes="AdditionalAttributes" @ref="_element"
         type="@ButtonType"
         class="@ClassName"
         style="@Style"

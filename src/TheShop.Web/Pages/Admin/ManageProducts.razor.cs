@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using TheShop.Web.Common.Dialogs;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
 using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products;
@@ -118,9 +117,9 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     private IReadOnlyList<FilterGroupDto> FilterGroups =>
     [
         StatusFilterGroup,
+        new FilterGroupDto(ProductFilterKeys.Brand, nameof(Strings.Products_BrandsFilter), FilterKind.MultiSelect, _filters?.Brands ?? [], null),
+        new FilterGroupDto(ProductFilterKeys.Category, nameof(Strings.Products_CategoriesFilter), FilterKind.MultiSelect, _filters?.Categories ?? [], null),
         new FilterGroupDto(ProductFilterKeys.Price, nameof(Strings.Filter_Price), FilterKind.Range, [], PriceRange),
-        new FilterGroupDto(ProductFilterKeys.Brand, nameof(Strings.Filter_Brand), FilterKind.MultiSelect, _filters?.Brands ?? [], null),
-        new FilterGroupDto(ProductFilterKeys.Category, nameof(Strings.Filter_Category), FilterKind.MultiSelect, _filters?.Categories ?? [], null),
     ];
 
     private RangeFilterDto? PriceRange => _filters?.PriceRange;
@@ -233,6 +232,32 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
             return null;
 
         return [.. values.Where(v => Guid.TryParse(v, out _)).Select(Guid.Parse)];
+    }
+
+    private bool _filtersOpen;
+    private CancellationTokenSource? _searchDelay;
+
+    private async Task OnSearchInputAsync(string? value)
+    {
+        _search = value;
+        _searchDelay?.Cancel();
+        _searchDelay?.Dispose();
+        var delay = _searchDelay = new CancellationTokenSource();
+        try
+        {
+            await Task.Delay(300, delay.Token);
+            await OnSearchChangedAsync(value);
+        }
+        catch (OperationCanceledException) when (delay.IsCancellationRequested) { }
+    }
+
+    /// <inheritdoc />
+    public override void Dispose()
+    {
+        _searchDelay?.Cancel();
+        _searchDelay?.Dispose();
+        _searchDelay = null;
+        base.Dispose();
     }
 
     private Task OnSearchChangedAsync(string? value)

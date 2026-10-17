@@ -1,62 +1,73 @@
 @using TheShop.Web.Common.UI
 @using TheShop.Web.Components.Common
 
-<ShopDialog OnDismiss="CancelAsync"
-            MaxWidth="ShopMaxWidth.Small">
-    <TitleContent>
-        <h2 class="shop-dialog-title">@Strings.VariantImage_Title</h2>
-    </TitleContent>
+<ShopDialog OnDismiss="CancelAsync" MaxWidth="ShopMaxWidth.Small">
+    <TitleContent><h2 class="shop-dialog-title">@Strings.VariantImage_Title</h2></TitleContent>
     <DialogContent>
-        <div class="shop-variant-image">
-            <div class="shop-variant-image-description">
-                <p class="shop-variant-image-label">@Strings.VariantImage_VariantFieldLabel</p>
-                <p class="shop-variant-image-name">@VariantLabel</p>
-            </div>
-            @if (GalleryImages.Count == 0)
-            {
-                <p class="shop-variant-image-empty">@Strings.VariantImage_NoImages</p>
-            }
-            <div class="shop-variant-image-gallery">
-                @for (var index = 0; index < GalleryImages.Count; index++)
+        <BusyFor Key="@_uploadKey" Context="uploading">
+            <div class="shop-variant-image">
+                <div class="shop-variant-image-description">
+                    <p class="shop-variant-image-label">@Strings.VariantImage_VariantFieldLabel</p>
+                    <p class="shop-variant-image-name">@VariantLabel</p>
+                </div>
+                <div class="shop-variant-image-field">
+                    <p class="shop-variant-image-label">@Strings.VariantImage_ImageFieldLabel</p>
+                    <ShopFileDropzone Label="@Strings.ImageUpload_Add" DragLabel="@Strings.ImageUpload_Drop"
+                                      HelperText="@Strings.VariantImage_FileHint" Multiple="true" Accept=".png,.jpg,.jpeg,.webp"
+                                      Disabled="@(uploading || !AddGalleryFiles.HasDelegate)" FilesSelected="AddFilesAsync">
+                        <ChildContent>
+                            @if (GalleryImages.Count > 0)
+                            {
+                                <div class="shop-variant-image-gallery">
+                                    @for (var index = 0; index < GalleryImages.Count; index++)
+                                    {
+                                        var image = GalleryImages[index];
+                                        <ShopImageTile @key="image.Id" Class="shop-variant-image-option" Src="@image.Url"
+                                                       Alt="@string.Format(Strings.VariantImage_ImageLabel, index + 1, VariantLabel)"
+                                                       Selected="@(_selectedImageId == image.Id)" Removable="false" Disabled="@uploading"
+                                                       data-image-id="@image.Id" OnClick="@(() => SelectImage(image.Id))" />
+                                    }
+                                    <button type="button" class="shop-image-upload-add" data-file-picker disabled="@(uploading || !AddGalleryFiles.HasDelegate)">
+                                        <ShopIcon Icon="@ShopIcons.Outlined.Add_Plus" /><span>@Strings.ImageUpload_Add</span>
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <button type="button" class="shop-file-dropzone-trigger" data-file-picker disabled="@(uploading || !AddGalleryFiles.HasDelegate)">
+                                    <ShopIcon Icon="@ShopIcons.Outlined.Cloud_Upload" />
+                                    <span class="shop-file-dropzone-title">@Strings.ImageUpload_Add</span>
+                                    <span class="shop-file-dropzone-hint">@Strings.VariantImage_FileHint</span>
+                                </button>
+                            }
+                        </ChildContent>
+                    </ShopFileDropzone>
+                    <p class="shop-product-hint"><ShopIcon Icon="@ShopIcons.Outlined.Info" />@(GalleryImages.Count == 0 ? Strings.VariantImage_EmptyUploadHint : Strings.VariantImage_UploadHint)</p>
+                    @foreach (var error in UploadErrors.Distinct())
+                    {
+                        <p class="shop-product-error" role="alert">@error</p>
+                    }
+                    <span class="shop-visually-hidden" role="status">@(uploading ? Strings.Loading : null)</span>
+                </div>
+                @if (ShowScopeChoice)
                 {
-                    var image = GalleryImages[index];
-                    var selected = _selectedImageId == image.Id;
-                    <button @key="image.Id" type="button" class="shop-variant-image-option"
-                            aria-label="@string.Format(Strings.VariantImage_ImageLabel, index + 1, VariantLabel)"
-                            aria-pressed="@(selected ? "true" : "false")"
-                            data-image-id="@image.Id" @onclick="@(() => SelectImage(image.Id))">
-                        <ShopImage Src="@image.Url" Preset="ShopImagePreset.SquareContain"
-                                   Alt="@VariantLabel" PlaceholderLabel="@VariantLabel" />
-                        @if (selected)
-                        {
-                            <ShopIcon Icon="@ShopIcons.Outlined.Check" Class="shop-variant-image-selected-icon" />
-                        }
-                    </button>
+                    <fieldset class="shop-variant-image-scope">
+                        <legend class="shop-variant-image-label">@Strings.VariantImage_ApplyToLabel</legend>
+                        <ShopCheckbox Label="@string.Format(Strings.VariantImage_ApplyToAllSharing, SharedScopeCount, SharedScopeLabel)" Size="ShopSize.Medium"
+                                      Value="@_applyToAllSharing" ValueExpression="@(() => _applyToAllSharing)" ValueChanged="@(_ => _applyToAllSharing = true)"
+                                      Disabled="@uploading" data-testid="variant-image-scope-all" />
+                        <ShopCheckbox Label="@Strings.VariantImage_ThisVariantOnly" Size="ShopSize.Medium" Value="@(!_applyToAllSharing)"
+                                      ValueExpression="@(() => _applyToAllSharing)" ValueChanged="@(_ => _applyToAllSharing = false)"
+                                      Disabled="@uploading" data-testid="variant-image-scope-this" />
+                    </fieldset>
                 }
             </div>
-            @if (ShowScopeChoice)
-            {
-                <fieldset class="shop-variant-image-scope">
-                    <legend class="shop-variant-image-label">@Strings.VariantImage_ApplyToLabel</legend>
-                    <ShopCheckbox Label="@string.Format(Strings.VariantImage_ApplyToAllSharing, SharedScopeCount, SharedScopeLabel)"
-                                  Size="ShopSize.Medium"
-                                  Value="@_applyToAllSharing"
-                                  ValueExpression="@(() => _applyToAllSharing)"
-                                  ValueChanged="@(_ => _applyToAllSharing = true)"
-                                  data-testid="variant-image-scope-all" />
-                    <ShopCheckbox Label="@Strings.VariantImage_ThisVariantOnly"
-                                  Size="ShopSize.Medium"
-                                  Value="@(!_applyToAllSharing)"
-                                  ValueExpression="@(() => _applyToAllSharing)"
-                                  ValueChanged="@(_ => _applyToAllSharing = false)"
-                                  data-testid="variant-image-scope-this" />
-                </fieldset>
-            }
-        </div>
+        </BusyFor>
     </DialogContent>
     <DialogActions>
-        <ShopButton OnClick="ConfirmAsync" data-testid="variant-image-save">@Strings.VariantImage_Save</ShopButton>
-        <ShopButton Variant="ShopVariant.Outlined" OnClick="CancelAsync"
-                    data-dialog-initial-focus data-testid="variant-image-cancel">@Strings.Cancel</ShopButton>
+        <BusyFor Key="@_uploadKey" Context="uploading">
+            <ShopButton OnClick="ConfirmAsync" Disabled="@uploading" data-testid="variant-image-save">@Strings.VariantImage_Save</ShopButton>
+            <ShopButton Variant="ShopVariant.Outlined" OnClick="CancelAsync" Disabled="@uploading" data-dialog-initial-focus data-testid="variant-image-cancel">@Strings.Cancel</ShopButton>
+        </BusyFor>
     </DialogActions>
 </ShopDialog>

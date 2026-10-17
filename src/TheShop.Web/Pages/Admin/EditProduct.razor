@@ -1,28 +1,38 @@
-@using TheShop.Web.Common
-@using TheShop.Web.Components.Admin
 @using TheShop.Web.Components.Products
-
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Common.UI
 <PageTitle>@Strings.EditProduct_PageTitle</PageTitle>
-
-@if (!_loaded)
-{
-    <AdminFormSkeleton />
-}
-else if (_notFound)
-{
-    <MudStack Class="pa-8" AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4">
-        <MudText Typo="Typo.h4">@Strings.EditProduct_NotFoundTitle</MudText>
-        <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.EditProduct_NotFoundDescription</MudText>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@Routes.Admin.ManageProducts">
-            @Strings.EditProduct_BackToList
-        </MudButton>
-    </MudStack>
-}
-else
-{
-    <MudStack Class="pa-8" Spacing="6">
-        <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.EditProduct_Heading</MudText>
-
+<section class="shop-native shop-products-page">
+    <h1>@Strings.EditProduct_Heading</h1>
+    @if (!_loaded)
+    {
+        <span class="shop-visually-hidden" role="status">@Strings.Loading</span>
+        <div class="shop-product-form-skeleton" aria-hidden="true">
+            <ShopSkeleton Class="shop-product-section-skeleton" />
+            <div class="shop-product-general">
+                <ShopSkeleton Class="shop-product-gallery-skeleton" />
+                <div class="shop-product-fields">
+                    <ShopSkeleton Class="shop-product-field-skeleton" />
+                    <ShopSkeleton Class="shop-product-description-skeleton" />
+                    <ShopSkeleton Class="shop-product-field-skeleton" />
+                    <ShopSkeleton Class="shop-product-field-skeleton" />
+                </div>
+            </div>
+            <ShopSkeleton Class="shop-product-section-skeleton" />
+            <ShopSkeleton Class="shop-product-section-skeleton" />
+        </div>
+    }
+    else if (_notFound)
+    {
+        <div class="shop-products-empty">
+            <h2>@Strings.EditProduct_NotFoundTitle</h2>
+            <p>@Strings.EditProduct_NotFoundDescription</p>
+            <ShopButton Href="@Routes.Admin.ManageProducts">@Strings.EditProduct_BackToList</ShopButton>
+        </div>
+    }
+    else
+    {
         <ProductForm Mode="ProductFormMode.Edit" InitialData="@_product" Categories="@_categories" Brands="@_brands" />
-    </MudStack>
-}
+    }
+</section>

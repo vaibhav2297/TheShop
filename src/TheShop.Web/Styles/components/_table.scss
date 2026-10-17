@@ -1,6 +1,7 @@
 @use '../abstracts/text-style';
 
 .shop-table-scroll {
+    position: relative;
     min-inline-size: 0;
     max-inline-size: 100%;
     overflow-x: auto;
@@ -58,4 +59,7 @@
     .shop-table > :is(thead, tbody) > tr > :is(th, td) {
         border-color: CanvasText;
     }
+}
+.shop-table-scroll-virtualized {
+    max-block-size: 36rem;
 }
