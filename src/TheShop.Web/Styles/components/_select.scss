@@ -66,6 +66,7 @@
     inline-size: var(--shop-field-icon-size);
     block-size: var(--shop-field-icon-size);
     pointer-events: none;
+    transition: transform 200ms ease;
 }
 
 .shop-select-trigger[aria-expanded='true'] .shop-select-caret {
@@ -176,6 +177,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .shop-select-caret,
     .shop-select-label {
         transition: none;
     }

@@ -27,6 +27,12 @@ public partial class ShopFilterPanel : ShopComponentBase, IDisposable
     [Parameter, EditorRequired]
     public IReadOnlyList<FilterGroupDto> Groups { get; set; } = [];
 
+    /// <summary>Starts filter groups expanded; users can still collapse each group independently.</summary>
+    [Parameter] public bool InitiallyExpanded { get; set; }
+
+    /// <summary>Resource-backed clear action text; defaults to the shared filter label.</summary>
+    [Parameter] public string ClearLabel { get; set; } = Strings.Filter_Clear;
+
     /// <summary>The currently applied multi-select filter values (drives the checkbox states).</summary>
     [Parameter]
     public IReadOnlyList<AppliedFilterDto> SelectedFilters { get; set; } = [];

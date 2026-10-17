@@ -105,6 +105,9 @@ public sealed class NativeBrandsLayoutJourneyTests(PlaywrightFixture playwright)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
                         if (/MudBlazor|CodeBeam/i.test(link.href)) link.disabled = true;
                 document.body.style.margin = '0';
+                await document.fonts.load('700 24px "Barlow Condensed"');
+                await document.fonts.load('400 16px "Space Grotesk"');
+                await document.fonts.load('500 16px "Space Grotesk"');
                 await document.fonts.ready;
             }
             """, withoutVendorCss);
@@ -117,6 +120,23 @@ public sealed class NativeBrandsLayoutJourneyTests(PlaywrightFixture playwright)
             await Page.GetByRole(AriaRole.Button, new() { Name = Strings.Brands_Filters, Exact = true }).ClickAsync();
             var drawer = Page.Locator("dialog[open]");
             await Assertions.Expect(drawer).ToBeVisibleAsync();
+            await Assertions.Expect(drawer).ToHaveCSSAsync("width", width == 390 ? "390px" : "400px");
+            await Assertions.Expect(drawer.Locator(".shop-drawer-title")).ToHaveCSSAsync("font-size", "24px");
+            var filters = drawer.Locator(".shop-brands-filter-panel");
+            await Assertions.Expect(filters).ToHaveCSSAsync("padding", "16px");
+            await Assertions.Expect(filters.Locator(".shop-expander-trigger")).ToHaveAttributeAsync("aria-expanded", "true");
+            await drawer.GetByRole(AriaRole.Checkbox, new() { Name = Strings.AddBrand_StatusInactive, Exact = true }).CheckAsync();
+            await Assertions.Expect(Page).ToHaveURLAsync(new System.Text.RegularExpressions.Regex("status=inactive"));
+            await Assertions.Expect(filters.Locator("span.shop-chip")).ToHaveTextAsync("1");
+            await SaveAsync($"brands-filter-{width}");
+            await drawer.ScreenshotAsync(new()
+            {
+                Path = Path.Combine(AppContext.BaseDirectory, "native-ui-evidence", $"brands-filter-drawer-{width}.png"),
+                Animations = ScreenshotAnimations.Disabled
+            });
+            await drawer.GetByRole(AriaRole.Button, new() { Name = Strings.Filter_ClearAll, Exact = true }).ClickAsync();
+            await Assertions.Expect(filters.Locator("span.shop-chip")).ToHaveCountAsync(0);
+            await Assertions.Expect(drawer.Locator("input[type=checkbox]:checked")).ToHaveCountAsync(0);
             await Page.Keyboard.PressAsync("Escape");
             await Assertions.Expect(drawer).ToHaveCountAsync(0);
         }

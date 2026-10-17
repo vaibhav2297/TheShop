@@ -56,7 +56,7 @@
                                        StartIcon="@ShopIcons.Outlined.Search_Magnifying_Glass"
                                        Label="@Strings.ManageBrands_SearchPlaceholder" />
                     </div>
-                    <ShopButton Class="shop-brands-filter-button" Variant="ShopVariant.Outlined"
+                    <ShopButton Class="shop-brands-filter-button" Variant="ShopVariant.Outlined" Size="ShopSize.Large"
                                 StartIcon="@ShopIcons.Outlined.Filter" OnClick="@(() => _filtersOpen = true)">
                         @Strings.Brands_Filters
                     </ShopButton>
@@ -251,9 +251,11 @@
 </section>
 
 <ShopDrawer @bind-Open="_filtersOpen" Side="ShopDrawerSide.Left">
-    <HeaderContent><h2>@Strings.Brands_Filters</h2></HeaderContent>
+    <HeaderContent><h2 class="shop-drawer-title">@Strings.Brands_Filters</h2></HeaderContent>
     <DrawerContent>
-        <ShopFilterPanel Groups="@FilterGroups" SelectedFilters="@SelectedFilters"
+        <ShopFilterPanel Class="shop-brands-filter-panel" InitiallyExpanded="true"
+                         ClearLabel="@Strings.Filter_ClearAll"
+                         Groups="@FilterGroups" SelectedFilters="@SelectedFilters"
                          SingleSelectChanged="OnSingleSelectChangedAsync" OnClearFilters="OnClearFiltersAsync" />
     </DrawerContent>
 </ShopDrawer>

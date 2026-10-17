@@ -8,12 +8,12 @@
         <div class="shop-filter-groups">
             @foreach (var group in Groups)
             {
-                <ShopExpander @key="group.Key">
+                <ShopExpander @key="group.Key" Expanded="@InitiallyExpanded">
                     <TitleContent>
                         <span class="shop-filter-title">@Localizer[group.LabelKey]</span>
                     </TitleContent>
                     <OverviewContent>
-                        @if (group.Kind == FilterKind.MultiSelect && CountSelected(group.Key) is var count && count > 0)
+                        @if (group.Kind is FilterKind.MultiSelect or FilterKind.SingleSelect && CountSelected(group.Key) is var count && count > 0)
                         {
                             <ShopChip Size="ShopSize.Small">@count</ShopChip>
                         }
@@ -65,7 +65,7 @@
         {
             <div class="shop-filter-actions">
                 <ShopButton Variant="ShopVariant.Text" Size="ShopSize.Small" OnClick="OnClearFiltersAsync">
-                    @Strings.Filter_Clear
+                    @ClearLabel
                 </ShopButton>
             </div>
         }

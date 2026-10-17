@@ -250,6 +250,9 @@
   <data name="Filter_Clear" xml:space="preserve">
     <value>Clear filters</value>
   </data>
+  <data name="Filter_ClearAll" xml:space="preserve">
+    <value>Clear All</value>
+  </data>
   <data name="Sort_Label" xml:space="preserve">
     <value>Sort by</value>
   </data>

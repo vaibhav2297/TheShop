@@ -116,6 +116,23 @@ public class ShopFilterPanelTests : TestContext
         new("rating", "Filter_Rating", FilterKind.Range, [], new RangeFilterDto(1m, 5m));
 
     [Fact]
+    [Trait("Feature", "manage-brands")]
+    public void InitiallyExpanded_UserCollapseSurvivesSelectionRerender()
+    {
+        var cut = Render<ShopFilterPanel>(p => p.Add(c => c.Groups, [StatusGroup()])
+            .Add(c => c.InitiallyExpanded, true));
+        cut.Find(".shop-expander-trigger").GetAttribute("aria-expanded").Should().Be("true");
+        cut.Find(".shop-expander-trigger").Click();
+
+        cut.Render(p => p.Add(c => c.SelectedFilters, [new AppliedFilterDto("status", ["inactive"])]));
+
+        cut.Find(".shop-expander-trigger").GetAttribute("aria-expanded").Should().Be("false");
+        cut.Find("span.shop-chip").TextContent.Trim().Should().Be("1");
+        cut.Render(p => p.Add(c => c.SelectedFilters, []));
+        cut.FindAll("span.shop-chip").Should().BeEmpty();
+    }
+
+    [Fact]
     public void NativeExpanders_KeepIndependentOpenStateAcrossSelectionAndGroupReordering()
     {
         var cut = Render<ShopFilterPanel>(p => p.Add(c => c.Groups, [CategoryGroup(), StatusGroup()]));
