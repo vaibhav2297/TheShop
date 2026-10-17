@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using TheShop.Web.Common.Dialogs;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
 using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Categories.Commands.DeleteCategories;
@@ -146,6 +145,7 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
     /// </summary>
     protected override Task ApplyStateAsync(CategoryQueryState state, CancellationToken ct)
     {
+        _searchDelay?.Cancel();
         _selectedItems.Clear();
         _blockedIds.Clear();
         _search = state.Search;
@@ -168,6 +168,33 @@ public partial class ManageCategories : QueryStatePageBase<CategoryQueryState>
 
         Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
         return PagedResult<CategoryListItemDto>.Empty(request);
+    }
+
+    private bool _filtersOpen;
+    private string ListClass => TheShop.Web.Common.UI.ShopCssClass.Join("shop-categories-list",
+        _categories.HasLoaded && _categories.Items.Count == 0 && _search is null && _status is null ? "shop-categories-list-empty" : null);
+    private CancellationTokenSource? _searchDelay;
+
+    private async Task OnSearchInputAsync(string? value)
+    {
+        _search = value;
+        _searchDelay?.Cancel();
+        _searchDelay?.Dispose();
+        var delay = _searchDelay = new CancellationTokenSource();
+        try
+        {
+            await Task.Delay(300, delay.Token);
+            await OnSearchChangedAsync(value);
+        }
+        catch (OperationCanceledException) when (delay.IsCancellationRequested) { }
+    }
+
+    /// <inheritdoc />
+    public override void Dispose()
+    {
+        _searchDelay?.Cancel();
+        _searchDelay?.Dispose();
+        base.Dispose();
     }
 
     private Task OnSearchChangedAsync(string? value)

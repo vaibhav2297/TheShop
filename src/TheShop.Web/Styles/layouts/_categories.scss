@@ -1,0 +1,353 @@
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/text-style';
+
+.shop-categories-page {
+    display: grid;
+    gap: 4rem;
+    padding: 4rem 2rem;
+    min-inline-size: 0;
+}
+
+    .shop-categories-page h1 {
+        @include text-style.apply(h2);
+        margin: 0;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+    }
+
+.shop-categories-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.shop-categories-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 4fr);
+    gap: 2rem;
+}
+
+.shop-categories-results, .shop-categories-fields {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+    gap: 2rem;
+}
+
+.shop-categories-filter-skeleton {
+    display: grid;
+    gap: 1rem;
+    padding-block: 0.5rem;
+}
+
+.shop-categories-filter-placeholder {
+    block-size: 2.5rem;
+    border-block-end: 1px solid var(--shop-color-lines-default);
+}
+
+.shop-categories-filter-placeholder-title {
+    inline-size: 60%;
+    block-size: 1rem;
+}
+
+.shop-categories-list-empty {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+    .shop-categories-list-empty .shop-categories-sidebar,
+    .shop-categories-list-empty .shop-categories-tools {
+        display: none;
+    }
+
+.shop-categories-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
+    grid-template-areas: 'search sort';
+    align-items: center;
+    gap: 2rem;
+    padding-block: 0.25rem 2rem;
+    border-block-end: 1px solid var(--shop-color-lines-default);
+}
+
+.shop-categories-search {
+    grid-area: search;
+    min-inline-size: 0;
+}
+
+.shop-categories-filter-button {
+    display: none;
+    grid-area: filters;
+}
+
+.shop-categories-sort {
+    grid-area: sort;
+    min-inline-size: 0;
+}
+
+// Compact Status filter inside the tablet/phone drawer.
+.shop-categories-filter-panel {
+    gap: var(--shop-space-4);
+    padding: var(--shop-space-4);
+}
+
+.shop-categories-filter-panel .shop-expander {
+    box-shadow: inset 0 -1px var(--shop-color-lines-default);
+}
+
+.shop-categories-filter-panel .shop-expander-trigger {
+    gap: var(--shop-space-2);
+    padding: 0;
+}
+
+.shop-categories-filter-panel .shop-expander-body {
+    padding-block: var(--shop-space-4);
+}
+
+.shop-categories-filter-panel .shop-filter-actions {
+    padding-block: var(--shop-space-2);
+}
+
+.shop-categories-sidebar-filter {
+    padding: 0.5rem 0;
+}
+
+.shop-categories-pagination {
+    align-self: center;
+}
+
+// Contain absolutely positioned accessible labels inside the horizontal scroll region.
+.shop-categories-results > .shop-table-scroll {
+    position: relative;
+}
+
+.shop-categories-table {
+    min-inline-size: 67.2rem;
+    table-layout: fixed;
+}
+
+.shop-categories-table th:first-child, .shop-categories-table th:last-child {
+    inline-size: 7.5rem;
+}
+
+.shop-categories-table th:nth-child(n + 2):nth-child(-n + 4) {
+    inline-size: auto;
+}
+
+.shop-categories-table[aria-busy='true'] {
+    table-layout: fixed;
+
+    th:first-child, th:last-child {
+        inline-size: 7.5rem;
+    }
+
+    th:nth-child(n + 2):nth-child(-n + 4) {
+        inline-size: auto;
+    }
+
+    tbody td {
+        @include text-style.apply(body-1);
+    }
+}
+
+    .shop-categories-table .shop-table-selection {
+        min-inline-size: 7.5rem;
+        text-align: center;
+    }
+
+    .shop-categories-table tbody td {
+        block-size: 4.25rem;
+        overflow-wrap: anywhere;
+    }
+
+.shop-categories-name {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.shop-categories-image {
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    flex: none;
+}
+
+    .shop-categories-image > [data-shop-image] {
+        inline-size: 100%;
+        block-size: 100%;
+    }
+
+.shop-categories-in-use {
+    display: block;
+    @include text-style.apply(caption);
+}
+
+.shop-categories-row-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.shop-categories-empty {
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    gap: 1rem;
+    text-align: center;
+    min-block-size: 34rem;
+}
+
+    .shop-categories-empty h2 {
+        @include text-style.apply(h4);
+        margin: 0;
+    }
+
+    .shop-categories-empty p {
+        @include text-style.apply(subtitle-1);
+        margin: 0;
+    }
+
+.shop-categories-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 2rem;
+}
+
+.shop-categories-fields {
+    gap: 1rem;
+}
+
+.shop-categories-status {
+    margin: 0;
+    padding: 1.5rem 0;
+    min-inline-size: 0;
+    border: 0;
+    border-block: 1px solid var(--shop-color-lines-default);
+
+    > legend {
+        float: left;
+        inline-size: 100%;
+        margin-block-end: 1rem;
+        @include text-style.apply(subtitle-2);
+        color: var(--shop-color-text-secondary);
+    }
+
+    > div {
+        display: flex;
+        flex-wrap: wrap;
+        clear: both;
+        gap: 0.5rem;
+    }
+}
+
+.shop-categories-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    padding-block-start: 0.75rem;
+}
+
+.shop-categories-upload-skeleton {
+    block-size: 12.5rem;
+}
+
+.shop-categories-upload-placeholder {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+}
+
+.shop-categories-upload-hint-skeleton {
+    inline-size: 60%;
+    block-size: 1rem;
+}
+
+.shop-categories-status-label-skeleton {
+    inline-size: 3.3125rem;
+    block-size: 1rem;
+    margin-block-end: 1rem;
+}
+
+.shop-categories-status-options-skeleton {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.shop-categories-active-skeleton, .shop-categories-inactive-skeleton {
+    inline-size: 4.25rem;
+    block-size: 2rem;
+}
+
+.shop-categories-inactive-skeleton {
+    inline-size: 5rem;
+}
+
+.shop-categories-save-skeleton {
+    inline-size: 6.9375rem;
+    block-size: 2.875rem;
+}
+
+.shop-categories-cancel-skeleton {
+    inline-size: 5.5625rem;
+    block-size: 2.5rem;
+}
+
+// Category upload tiles are FIXED 144px in every inspected viewport variant.
+.shop-categories-form .shop-image-upload-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(9rem, 100%), 9rem));
+}
+
+.shop-categories-field-skeleton {
+    block-size: 3.5625rem;
+}
+
+@media (width < bp.$desktop) {
+    .shop-categories-page {
+        padding-block: 3rem;
+        gap: 3rem;
+    }
+
+    .shop-categories-list, .shop-categories-form {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .shop-categories-sidebar {
+        display: none;
+    }
+
+    .shop-categories-filter-button {
+        display: inline-flex;
+    }
+
+    .shop-categories-tools {
+        gap: 1rem;
+        grid-template-columns: auto minmax(0, 1fr) 15rem;
+        grid-template-areas: 'filters search sort';
+    }
+}
+
+@media (width < bp.$tablet) {
+    .shop-categories-page {
+        padding: 2rem 1rem;
+        gap: 2rem;
+    }
+
+    .shop-categories-heading {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .shop-categories-tools {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas: 'search search' 'filters sort';
+    }
+
+    .shop-categories-search {
+        flex-basis: 100%;
+    }
+
+    .shop-categories-tools > .shop-categories-sort {
+        flex: 1;
+        min-inline-size: 0;
+    }
+}

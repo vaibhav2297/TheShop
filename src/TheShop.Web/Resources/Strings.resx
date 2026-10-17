@@ -1818,4 +1818,6 @@
   </data>
   <data name="Brands_Filters" xml:space="preserve"><value>Filters</value></data>
   <data name="Brands_CreateHeading" xml:space="preserve"><value>Create Brand</value></data>
+  <data name="Categories_Filters" xml:space="preserve"><value>Filters</value></data>
+  <data name="Categories_CreateHeading" xml:space="preserve"><value>Create Category</value></data>
 </root>

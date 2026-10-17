@@ -8,8 +8,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Categories.Commands.DeleteCategories;
@@ -56,11 +54,6 @@ public class ManageCategoriesTests : TestContext
         Services.AddSingleton(_localizer);
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
-        Services.AddMudServices();
-
-        var popoverService = Substitute.For<IPopoverService>();
-        popoverService.PopoverOptions.Returns(new PopoverOptions());
-        Services.Replace(ServiceDescriptor.Singleton(popoverService));
         Services.Replace(ServiceDescriptor.Singleton(_dialogService));
 
         _localizer[Arg.Any<string>()].Returns(call =>
@@ -172,6 +165,42 @@ public class ManageCategoriesTests : TestContext
         return cut;
     }
 
+    [Fact]
+    public async Task PendingQuery_ShowsFilterAndTableSkeletons_ThenRestoresContent()
+    {
+        var pending = new TaskCompletionSource<Result<PagedResult<CategoryListItemDto>>>();
+        _mediator.Send(Arg.Any<GetCategoriesPageQuery>(), Arg.Any<CancellationToken>())
+            .Returns(pending.Task);
+        AuthorizeAsCategoryManager();
+        var cut = Render<ManageCategories>();
+
+        cut.FindAll(".shop-categories-filter-placeholder .shop-skeleton").Should().HaveCount(5);
+        cut.FindAll(".shop-table-loading-row").Should().HaveCount(10);
+        cut.Find(".shop-categories-filter-skeleton").GetAttribute("aria-hidden").Should().Be("true");
+        cut.Find(".shop-table").GetAttribute("aria-busy").Should().Be("true");
+        cut.FindAll(".shop-pagination").Should().BeEmpty();
+
+        await cut.InvokeAsync(() => pending.SetResult(Result.Ok(
+            BuildPage(new PaginationRequest(1, 10), totalCount: 20, itemCount: 10))));
+
+        cut.WaitForAssertion(() => cut.FindAll(".shop-table-loading-row").Should().BeEmpty());
+        cut.FindAll(".shop-categories-filter-skeleton").Should().BeEmpty();
+        cut.FindAll(".shop-table tbody tr").Should().HaveCount(10);
+        cut.FindAll(".shop-pagination").Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CreatePermission_RendersAddCategoryThroughShopButton()
+    {
+        var auth = this.AddAuthorization();
+        auth.SetAuthorized("creator");
+        auth.SetPolicies(PolicyNames.Permission(PermissionCatalogue.Categories.View.Code),
+            PolicyNames.Permission(PermissionCatalogue.Categories.Create.Code));
+        var cut = Render<ManageCategories>();
+
+        cut.FindComponents<ShopButton>().Should().Contain(button => button.Instance.Href == Routes.Admin.AddCategory);
+    }
+
     // =========================================================================
     // Initial load (AC-1 defaults half)
     // =========================================================================
@@ -265,7 +294,7 @@ public class ManageCategoriesTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var searchField = cut.FindComponent<MudTextField<string>>();
+        var searchField = cut.FindComponent<ShopTextField>();
         await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("  DIS  "));
 
         _receivedQueries.Should().ContainSingle(
@@ -310,7 +339,7 @@ public class ManageCategoriesTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var searchField = cut.FindComponent<MudTextField<string>>();
+        var searchField = cut.FindComponent<ShopTextField>();
         await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("dis"));
 
         var filterPanel = cut.FindComponent<ShopFilterPanel>();
@@ -410,7 +439,7 @@ public class ManageCategoriesTests : TestContext
         var images = cut.FindComponents<ShopImage>();
         images.Should().NotBeEmpty();
         images.Should().OnlyContain(i => i.Instance.Preset == ShopImagePreset.SquareContain);
-        cut.FindAll(".mud-avatar > [data-shop-image]").Should().HaveCount(images.Count);
+        cut.FindAll(".shop-categories-image > [data-shop-image]").Should().HaveCount(images.Count);
     }
 
     [Fact]
@@ -458,7 +487,7 @@ public class ManageCategoriesTests : TestContext
         SetUpKnownCategoriesList([]);
         var cut = await RenderListAsync();
 
-        var searchField = cut.FindComponent<MudTextField<string>>();
+        var searchField = cut.FindComponent<ShopTextField>();
         await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("nonexistent"));
 
         cut.Markup.Should().Contain(Strings.ManageCategories_NoMatchTitle);
@@ -520,7 +549,7 @@ public class ManageCategoriesTests : TestContext
         var cut = Render<ManageCategories>();
         await cut.InvokeAsync(() => { });
 
-        cut.FindComponents<MudChip<string>>().Should().BeEmpty(
+        cut.FindComponents<ShopChip>().Should().BeEmpty(
             "a view-only staff member cannot flip a category's status, so it renders as text, not a clickable chip");
     }
 
@@ -766,8 +795,8 @@ public class ManageCategoriesTests : TestContext
         _mediator.Send(Arg.Any<SetCategoryStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryStatusChangeDto(1)));
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
+        var chip = cut.FindComponent<ShopChip>();
+        await cut.InvokeAsync(() => chip.Find("button").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
 
         await _dialogService.DidNotReceive().ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(
@@ -786,8 +815,8 @@ public class ManageCategoriesTests : TestContext
         _mediator.Send(Arg.Any<SetCategoryStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryStatusChangeDto(1)));
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
+        var chip = cut.FindComponent<ShopChip>();
+        await cut.InvokeAsync(() => chip.Find("button").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
 
         await _dialogService.Received(1).ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(Arg.Is<SetCategoryStatusCommand>(c => !c.IsActive), Arg.Any<CancellationToken>());
@@ -802,8 +831,8 @@ public class ManageCategoriesTests : TestContext
         var cut = await RenderListAsync();
         SetUpConfirmDialogResult(confirmed: false);
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
+        var chip = cut.FindComponent<ShopChip>();
+        await cut.InvokeAsync(() => chip.Find("button").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
 
         await _mediator.DidNotReceive().Send(Arg.Any<SetCategoryStatusCommand>(), Arg.Any<CancellationToken>());
     }

@@ -63,7 +63,7 @@ public sealed class ManageCategoriesPage(IPage page) : ShopPage(page)
 
     /// <summary>Searches the category list.</summary>
     public async Task SearchAsync(string term) =>
-        await Page.GetByPlaceholder(Strings.ManageCategories_SearchPlaceholder).FillAsync(term);
+        await Page.GetByRole(AriaRole.Searchbox, new() { Name = Strings.ManageCategories_SearchPlaceholder }).FillAsync(term);
 
     /// <summary>
     /// Navigates to the list deep-linked to a search term. Preferred over typing into the search
