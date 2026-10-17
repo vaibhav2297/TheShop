@@ -173,8 +173,8 @@ public sealed class NativeSkeletonJourneyTests(PlaywrightFixture playwright) : E
             await Assertions.Expect(cards).ToHaveCountAsync(5, new() { Timeout = 30_000 });
             await Assertions.Expect(cards.First).ToHaveCSSAsync("padding", "24px");
             await Assertions.Expect(cards.First).ToHaveCSSAsync("box-shadow", "rgb(224, 224, 224) 0px 0px 0px 1px inset");
-            await Assertions.Expect(cards.First.Locator(".shop-admin-module-card-skeleton-action")).ToHaveCSSAsync("height", "36px");
-            await Assertions.Expect(cards.First.Locator(".shop-admin-module-card-skeleton-count")).ToHaveCSSAsync("background-size", "100% 60px");
+            await Assertions.Expect(cards.First.Locator(".shop-admin-module-card-skeleton-action")).ToHaveCSSAsync("height", "38px");
+            await Assertions.Expect(cards.First.Locator(".shop-admin-module-card-skeleton-count")).ToHaveCSSAsync("height", "56px");
             await SaveAsync("skeleton-admin-console-live");
 
             // Edit brand: heading line, field-height block and panel with the page padding.

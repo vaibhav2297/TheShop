@@ -1,0 +1,50 @@
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/text-style';
+
+.shop-access-denied {
+    min-inline-size: 0;
+    padding: 4rem 2rem;
+}
+
+.shop-access-denied-content {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 1rem;
+    min-block-size: 34.125rem;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.shop-access-denied h1 {
+    margin: 0;
+    @include text-style.apply(h4);
+    text-transform: uppercase;
+}
+
+.shop-access-denied p {
+    margin: 0;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(subtitle-1);
+}
+
+@media (width < bp.$desktop) {
+    .shop-access-denied {
+        padding-block: 3rem;
+    }
+
+    .shop-access-denied-content {
+        min-block-size: 0;
+        padding-block: 7.5rem;
+    }
+}
+
+@media (width < bp.$tablet) {
+    .shop-access-denied {
+        padding: 2rem 1rem;
+    }
+
+    .shop-access-denied-content {
+        padding-block: 4rem;
+    }
+}

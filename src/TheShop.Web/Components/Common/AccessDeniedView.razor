@@ -1,27 +1,15 @@
-@inherits MudComponentBase
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
 
 @using TheShop.Web.Common
 @using TheShop.Web.Resources
 
-<MudStack Class="@Classname"
-          Style="@Style"
-          AlignItems="AlignItems.Center"
-          Justify="Justify.Center"
-          Spacing="3">
-
-    <MudText Typo="Typo.h4" Align="Align.Center" Class="text-transform-uppercase">
-        @Strings.AccessDenied_Title
-    </MudText>
-
-    <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary" Class="fw-500">
-        @Strings.AccessDenied_Message
-    </MudText>
-
-    <MudButton Href="@BackHref"
-               Variant="Variant.Filled"
-               Color="Color.Primary"
-               Class="mt-4">
-        @Strings.AccessDenied_BackToHome
-    </MudButton>
-
-</MudStack>
+<section @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+    <div class="shop-access-denied-content">
+        <h1>@Strings.AccessDenied_Title</h1>
+        <p>@Strings.AccessDenied_Message</p>
+        <ShopButton Href="@BackHref" Variant="ShopVariant.Filled" Color="ShopColor.Primary">
+            @Strings.AccessDenied_BackToHome
+        </ShopButton>
+    </div>
+</section>

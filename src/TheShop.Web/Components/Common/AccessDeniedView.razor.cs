@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using MudBlazor.Utilities;
 using TheShop.Web.Common;
+using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
@@ -13,12 +11,9 @@ namespace TheShop.Web.Components.Common;
 /// <see cref="TheShop.Web.Pages.Admin.ManageProducts"/> on <c>products.view</c>). The single back
 /// button always returns the visitor to the store home.
 /// </summary>
-public partial class AccessDeniedView : MudComponentBase
+public partial class AccessDeniedView : ShopComponentBase
 {
     private const string BackHref = Routes.Home;
 
-    protected string Classname =>
-        new CssBuilder("py-20")
-            .AddClass(Class)
-            .Build();
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-access-denied", Class);
 }

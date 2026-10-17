@@ -1,10 +1,6 @@
 using Bunit;
 using Bunit.TestDoubles;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
@@ -21,14 +17,6 @@ namespace TheShop.Web.Tests.Components.Common;
 /// </summary>
 public class AccessDeniedViewTests : TestContext
 {
-    public AccessDeniedViewTests()
-    {
-        JSInterop.Mode = JSRuntimeMode.Loose;
-        JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
-    }
-
     // =========================================================================
     // Title + message (Figma node 2470:2220)
     // =========================================================================
@@ -71,9 +59,25 @@ public class AccessDeniedViewTests : TestContext
 
         var cut = Render<AccessDeniedView>();
 
-        cut.FindAll("a.mud-button-root").Should().HaveCount(1);
+        cut.FindAll("a.shop-button").Should().HaveCount(1);
         cut.Markup.Should().Contain(Strings.AccessDenied_BackToHome);
-        cut.Find("a.mud-button-root").GetAttribute("href").Should().Be(Routes.Home);
+        cut.Find("a.shop-button").GetAttribute("href").Should().Be(Routes.Home);
+    }
+
+    [Fact]
+    public void Render_UsesNativeHeadingAndForwardsStylingAndAttributesToTheRoot()
+    {
+        var cut = Render<AccessDeniedView>(p => p
+            .Add(c => c.Class, "custom")
+            .Add(c => c.Style, "max-width: 50rem")
+            .AddUnmatched("data-probe", "denied"));
+
+        var root = cut.Find("section.shop-access-denied");
+        root.ClassList.Should().Contain("custom");
+        root.GetAttribute("style").Should().Be("max-width: 50rem");
+        root.GetAttribute("data-probe").Should().Be("denied");
+        cut.Find("h1").TextContent.Should().Be(Strings.AccessDenied_Title);
+        cut.FindAll("[class*='mud-']").Should().BeEmpty();
     }
 }
 

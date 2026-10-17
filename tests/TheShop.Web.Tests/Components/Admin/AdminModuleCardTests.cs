@@ -1,10 +1,6 @@
 using System.Globalization;
 using Bunit;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
 using TheShop.Application.Features.Admin;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Admin;
@@ -23,14 +19,6 @@ namespace TheShop.Web.Tests.Components.Admin;
 /// </summary>
 public class AdminModuleCardTests : TestContext
 {
-    public AdminModuleCardTests()
-    {
-        JSInterop.Mode = JSRuntimeMode.Loose;
-        JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
-    }
-
     // =========================================================================
     // Label per module (FR-3, FR-8)
     // =========================================================================
@@ -158,9 +146,24 @@ public class AdminModuleCardTests : TestContext
             .Add(c => c.Class, "my-custom-admin-card")
             .Add(c => c.Style, "border: 1px solid red;"));
 
-        var root = cut.Find(".mud-paper");
+        var root = cut.Find("article.shop-admin-module-card");
         root.ClassList.Should().Contain("my-custom-admin-card");
         root.GetAttribute("style").Should().Contain("border: 1px solid red");
+    }
+
+    [Fact]
+    public void Render_ForwardsUnmatchedAttributesToTheNativeArticleAndKeepsSemanticContent()
+    {
+        var cut = Render<AdminModuleCard>(p => p
+            .Add(c => c.Module, AdminModule.Products)
+            .Add(c => c.Count, int.MaxValue)
+            .AddUnmatched("data-probe", "module"));
+
+        cut.Find("article").GetAttribute("data-probe").Should().Be("module");
+        cut.Find("h2").TextContent.Should().Be(Strings.AdminConsole_Module_Products);
+        cut.Find("p.shop-admin-module-card-count").TextContent.Should().Be(int.MaxValue.ToString());
+        cut.Find("a.shop-button-outlined").GetAttribute("href").Should().Be(Routes.Admin.ManageProducts);
+        cut.FindAll("button, [class*='mud-']").Should().BeEmpty();
     }
 }
 

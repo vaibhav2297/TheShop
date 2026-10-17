@@ -8,5 +8,5 @@ namespace TheShop.Web.Components.Admin;
 /// </summary>
 public partial class AdminModuleCardSkeleton : ShopComponentBase
 {
-    private string ClassName => ShopCssClass.Join("shop-native", "shop-admin-module-card-skeleton", Class);
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-admin-module-card", "shop-admin-module-card-skeleton", Class);
 }

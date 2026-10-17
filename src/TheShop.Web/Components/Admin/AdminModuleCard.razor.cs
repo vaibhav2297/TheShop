@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using MudBlazor.Utilities;
 using TheShop.Application.Features.Admin;
 using TheShop.Web.Common;
+using TheShop.Web.Common.UI;
+using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 
 namespace TheShop.Web.Components.Admin;
@@ -12,7 +12,7 @@ namespace TheShop.Web.Components.Admin;
 /// count (or a placeholder when unavailable), and a keyboard-focusable link to that module's
 /// management page (spec FR-3, FR-4, FR-7, AC-5).
 /// </summary>
-public partial class AdminModuleCard : MudComponentBase
+public partial class AdminModuleCard : ShopComponentBase
 {
     /// <summary>The module this card represents.</summary>
     [Parameter, EditorRequired]
@@ -48,8 +48,5 @@ public partial class AdminModuleCard : MudComponentBase
 
     private string ManageLabel => string.Format(Strings.AdminConsole_ManageAction, Label);
 
-    private string ClassName =>
-        new CssBuilder("mud-transparent")
-        .AddClass(Class)
-        .Build();
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-admin-module-card", Class);
 }

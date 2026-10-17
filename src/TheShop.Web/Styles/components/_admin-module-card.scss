@@ -1,0 +1,67 @@
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/text-style';
+
+.shop-admin-module-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 3rem;
+    min-inline-size: 0;
+    min-block-size: 15.5rem;
+    padding: 1.5rem;
+    background: var(--shop-color-surface-default);
+    box-shadow: inset 0 0 0 1px var(--shop-color-lines-default);
+    color: var(--shop-color-text-primary);
+}
+
+.shop-admin-module-card-content {
+    display: grid;
+    gap: 1rem;
+    min-inline-size: 0;
+}
+
+.shop-admin-module-card-label, .shop-admin-module-card-skeleton-label {
+    margin: 0;
+    @include text-style.apply(h6);
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+}
+
+.shop-admin-module-card-count {
+    margin: 0;
+    @include text-style.apply(h2);
+    overflow-wrap: anywhere;
+}
+
+.shop-admin-module-card-action {
+    align-self: start;
+}
+
+.shop-admin-module-card-skeleton-label {
+    inline-size: 50%;
+    background-size: 100% var(--shop-typography-body-1-font-size);
+}
+
+.shop-admin-module-card-count-placeholder {
+    display: flex;
+    align-items: center;
+    block-size: 1lh;
+    @include text-style.apply(h2);
+}
+
+.shop-admin-module-card-skeleton-count {
+    inline-size: 30%;
+    block-size: 3.5rem;
+}
+
+.shop-admin-module-card-skeleton-action {
+    inline-size: min(8rem, 100%);
+    block-size: 2.375rem;
+}
+
+@media (width < bp.$tablet) {
+    .shop-admin-module-card {
+        gap: 1.5rem;
+        min-block-size: 14rem;
+    }
+}
