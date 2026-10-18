@@ -23,7 +23,7 @@
     </div>
     @if (!string.IsNullOrWhiteSpace(HelperText))
     {
-        <div id="@HelperId" class="shop-field-hint">@HelperText</div>
+        <div id="@HelperId" class="shop-field-hint">@if (!string.IsNullOrEmpty(HelperIcon)) {<ShopIcon Icon="@HelperIcon" Class="shop-field-hint-icon" />}@HelperText</div>
     }
     @if (EditContext is not null)
     {

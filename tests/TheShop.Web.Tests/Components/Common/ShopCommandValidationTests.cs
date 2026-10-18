@@ -112,6 +112,19 @@ public class ShopCommandValidationTests : TestContext
     }
 
     [Fact]
+    public async Task ShowErrors_AliasedFields_DeduplicatesSameMessageAndKeepsDistinctFailures()
+    {
+        var context = new EditContext(new FormModel());
+        var form = RenderForm(context, new Dictionary<string, string> { ["GeneratedEmail"] = nameof(FormModel.Email) });
+
+        await form.InvokeAsync(() => form.FindComponent<ShopCommandValidation>().Instance.ShowErrors(
+            [new("Email", "Required"), new("GeneratedEmail", "Required"), new("Email", "Invalid")]));
+
+        context.GetValidationMessages(context.Field(nameof(FormModel.Email))).Should().Equal("Localized Required", "Localized Invalid");
+        form.Find(".shop-command-validation").TextContent.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task ShowErrors_SubsequentResponse_ReplacesOnlyOwnedMessages()
     {
         var context = new EditContext(new FormModel());

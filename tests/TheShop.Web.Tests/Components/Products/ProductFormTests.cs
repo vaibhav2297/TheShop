@@ -770,7 +770,7 @@ public class ProductFormTests : TestContext
         cut.Find("[data-testid=product-name]").GetAttribute("aria-invalid").Should().Be("true");
         cut.FindComponents<ShopMoneyField>()[0].Find("input").GetAttribute("aria-invalid").Should().Be("true");
         cut.Find(".shop-field-error").TextContent.Should().Contain(ProductErrorKeys.NameRequired);
-        cut.FindAll(".validation-summary-errors").Should().BeEmpty();
+        cut.Find(".shop-command-validation").TextContent.Should().BeEmpty();
         _notifications.DidNotReceive().Show(Arg.Any<string>(), ShopNotificationKind.Error);
         await cut.Find("[data-testid=product-name]").InputAsync(new ChangeEventArgs { Value = "Corrected" });
         cut.Find("[data-testid=product-name]").GetAttribute("aria-invalid").Should().NotBe("true");
@@ -779,6 +779,56 @@ public class ProductFormTests : TestContext
             await _mediator.Received(2).Send(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>());
         else
             await _mediator.Received(2).Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Save_VariantSkuRequired_ShowsOnceAtGeneratedSkuField(bool edit)
+    {
+        var failure = Result.Fail<AdminProductDto>(ProductErrorKeys.SkuRequired, [],
+            [new("Sku", ProductErrorKeys.SkuRequired), new("Variants[0].Sku", ProductErrorKeys.SkuRequired)]);
+        _mediator.Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>()).Returns(failure);
+        _mediator.Send(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>()).Returns(failure);
+        var cut = edit ? RenderEditForm(ExampleSavedProduct()) : RenderCreateForm();
+        await ConfigureVariantAsync(cut);
+
+        await cut.Find("form").SubmitAsync();
+
+        var sku = cut.FindComponents<ShopTextField>().Single(field => field.Instance.Label == Strings.AddProduct_SkuLabel);
+        sku.Find("input").GetAttribute("aria-invalid").Should().Be("true");
+        sku.FindAll(".validation-message").Should().ContainSingle().Which.TextContent.Should().Be(ProductErrorKeys.SkuRequired);
+        cut.Find(".shop-command-validation").TextContent.Should().BeEmpty();
+        _notifications.DidNotReceive().Show(Arg.Any<string>(), ShopNotificationKind.Error);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Save_AfterNameChanges_UsesDisplayedVariantSku(bool edit)
+    {
+        CreateProductCommand? created = null;
+        UpdateProductCommand? updated = null;
+        _mediator.Send(Arg.Any<CreateProductCommand>(), Arg.Any<CancellationToken>()).Returns(call =>
+        {
+            created = call.Arg<CreateProductCommand>();
+            return Result.Fail<AdminProductDto>(ProductErrorKeys.CreateFailed);
+        });
+        _mediator.Send(Arg.Any<UpdateProductCommand>(), Arg.Any<CancellationToken>()).Returns(call =>
+        {
+            updated = call.Arg<UpdateProductCommand>();
+            return Result.Fail<AdminProductDto>(ProductErrorKeys.UpdateFailed);
+        });
+        var cut = edit ? RenderEditForm(ExampleSavedProduct()) : RenderCreateForm();
+        await ConfigureVariantAsync(cut);
+        await cut.Find("[data-testid=product-name]").InputAsync(new ChangeEventArgs { Value = "Renamed Product" });
+        var displayedSku = cut.Find(".shop-product-variant-table tbody tr td:nth-child(2)").TextContent.Trim();
+
+        await cut.Find("form").SubmitAsync();
+
+        var submitted = edit ? updated!.Variants : created!.Variants;
+        submitted.Should().ContainSingle().Which.Sku.Should().Be(displayedSku);
+        displayedSku.Should().Contain("RENAMED-PRODUCT");
     }
 
     private static async Task ConfigureVariantAsync(IRenderedComponent<ProductForm> cut)

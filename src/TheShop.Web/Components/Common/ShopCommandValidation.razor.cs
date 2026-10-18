@@ -62,7 +62,9 @@ public partial class ShopCommandValidation : ComponentBase, IDisposable
                 ? mappedPath : error.PropertyName;
             var field = ResolveField(_editContext.Model, path)
                 ?? new FieldIdentifier(_editContext.Model, string.Empty);
-            _messages.Add(field, Localizer[error.MessageKey]);
+            string message = Localizer[error.MessageKey];
+            if (!_messages[field].Contains(message, StringComparer.Ordinal))
+                _messages.Add(field, message);
         }
 
         _editContext.NotifyValidationStateChanged();

@@ -31,7 +31,7 @@
                         <div class="shop-product-editor-value">
                             <ShopTextField Value="@row.Value" ValueChanged="@((string? v) => OnRowValueChangedAsync(row, v))" ValueExpression="@(() => row.Value)"
                                            Label="@Strings.ProductSpecifications_ValueLabel" Disabled="@Disabled" aria-invalid="@IsFlagged(position).ToString().ToLowerInvariant()" aria-describedby="@RowErrorId(row, position)" />
-                            <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Large" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.ProductSpecifications_RemoveRow" Disabled="@Disabled" OnClick="@(() => RemoveRowAsync(row))" />
+                            <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.ProductSpecifications_RemoveRow" Disabled="@Disabled" OnClick="@(() => RemoveRowAsync(row))" />
                         </div>
                         @if (IsFlagged(position))
                         {

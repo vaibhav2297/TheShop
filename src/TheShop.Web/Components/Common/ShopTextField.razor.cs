@@ -32,6 +32,11 @@ public partial class ShopTextField : InputBase<string?>
     [Parameter] public string? HelperText { get; set; }
 
     /// <summary>
+    /// Optional trusted decorative SVG fragment from ShopIcons, displayed before <see cref="HelperText"/>.
+    /// </summary>
+    [Parameter] public string? HelperIcon { get; set; }
+
+    /// <summary>
     /// Prevents native editing and input-event updates. Supply a BusyFor value when an operation disables the field.
     /// </summary>
     [Parameter] public bool Disabled { get; set; }

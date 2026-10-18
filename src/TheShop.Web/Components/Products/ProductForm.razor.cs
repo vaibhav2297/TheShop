@@ -27,11 +27,21 @@ namespace TheShop.Web.Components.Products;
 /// </summary>
 public partial class ProductForm : ShopComponentBase
 {
-    private static readonly IReadOnlyDictionary<string, string> CommandFieldMap = new Dictionary<string, string>
+    private IReadOnlyDictionary<string, string> CommandFieldMap
     {
-        ["OriginalPrice.Value"] = nameof(ProductFormModel.OriginalPrice),
-        ["SalePrice.Value"] = nameof(ProductFormModel.SalePrice),
-    };
+        get
+        {
+            var fields = new Dictionary<string, string>
+            {
+                ["OriginalPrice.Value"] = nameof(ProductFormModel.OriginalPrice),
+                ["SalePrice.Value"] = nameof(ProductFormModel.SalePrice),
+            };
+            // Variant SKUs are generated from this read-only field; staff correct them through the product name.
+            for (var index = 0; index < _variants.Count; index++)
+                fields[$"Variants[{index}].Sku"] = nameof(ProductFormModel.Sku);
+            return fields;
+        }
+    }
 
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;

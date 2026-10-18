@@ -895,6 +895,39 @@ public class ManageProductsTests : TestContext
             Arg.Any<CancellationToken>());
     }
 
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task StatusToggle_WhilePending_ReplacesOnlyTargetChip_AndRestoresAfterCompletion(bool published, bool fails)
+    {
+        var items = new[] { Item("Target", isPublished: published), Item("Other", isPublished: published) };
+        SetUpKnownProductsList(items);
+        var cut = await RenderListAsync();
+        SetUpConfirmDialogResult(confirmed: true);
+        var completion = new TaskCompletionSource<Result<ProductStatusChangeDto>>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _mediator.Send(Arg.Any<SetProductStatusCommand>(), Arg.Any<CancellationToken>()).Returns(completion.Task);
+        var chip = cut.FindComponents<ShopChip>().First(component => component.Instance.SelectedChanged.HasDelegate);
+        var toggle = cut.InvokeAsync(() => chip.Instance.SelectedChanged.InvokeAsync(!published));
+        try
+        {
+            cut.WaitForAssertion(() =>
+            {
+                cut.Find("tbody tr:first-child td:nth-child(7)").QuerySelector(".shop-chip").Should().BeNull();
+                cut.Find("tbody tr:first-child td:nth-child(7) [role=status]").GetAttribute("aria-label").Should().Be(Strings.Loading);
+                cut.Find("tbody tr:nth-child(2) td:nth-child(7) .shop-chip").HasAttribute("disabled").Should().BeTrue();
+            });
+        }
+        finally
+        {
+            completion.TrySetResult(fails ? Result.Fail<ProductStatusChangeDto>(ProductErrorKeys.UpdateFailed) : Result.Ok(new ProductStatusChangeDto(1, [])));
+            await toggle;
+        }
+        cut.Find("tbody tr:first-child td:nth-child(7) .shop-chip").HasAttribute("disabled").Should().BeFalse();
+        cut.FindAll("tbody td .shop-loader-inline").Should().BeEmpty();
+    }
+
     [Fact]
     [Trait("Feature", "manage-product")]
     public async Task StatusToggle_WhenDeactivatingAnActiveProduct_AsksForConfirmationBeforeSending()

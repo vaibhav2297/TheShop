@@ -86,6 +86,24 @@ public class ShopTextFieldTests : TestContext
     }
 
     [Fact]
+    public void Render_HelperIcon_RendersDecorativeIconBeforeHintText()
+    {
+        var model = new FieldModel();
+        var cut = Render<ShopTextField>(p => p
+            .Add(c => c.Label, Strings.AddProduct_SkuLabel)
+            .Add(c => c.HelperText, Strings.AddProduct_SkuHelperText)
+            .Add(c => c.HelperIcon, ShopIcons.Outlined.Info)
+            .Add(c => c.ValueExpression, () => model.Value));
+
+        var hint = cut.Find(".shop-field-hint");
+        hint.TextContent.Should().Be(Strings.AddProduct_SkuHelperText);
+        hint.QuerySelector("svg.shop-field-hint-icon")!.GetAttribute("aria-hidden").Should().Be("true");
+        cut.Find("input").GetAttribute("aria-describedby").Should().Be(hint.Id);
+        cut.Render(p => p.Add(c => c.HelperText, (string?)null));
+        cut.FindAll(".shop-field-hint, svg").Should().BeEmpty();
+    }
+
+    [Fact]
     public void Input_ImmediateBindingAndDisabledGuard_PreserveValuesAndCallbacks()
     {
         var model = new FieldModel();

@@ -121,8 +121,17 @@
 }
 
 .shop-field-hint {
+    display: flex;
+    align-items: start;
+    gap: var(--shop-space-1);
     color: var(--shop-color-text-secondary);
     @include text-style.apply(caption);
+}
+
+.shop-field-hint-icon {
+    flex: none;
+    inline-size: 1rem;
+    block-size: 1rem;
 }
 
 .shop-field-error {

@@ -91,7 +91,8 @@ public sealed class NativeAdminProductLayoutJourneyTests(PlaywrightFixture playw
             await SaveAsync($"products-create-empty-{width}-{withoutVendorCss}");
             await Page.GetByTestId("product-save").ClickAsync();
             await Assertions.Expect(Page.GetByTestId("product-name")).ToHaveAttributeAsync("aria-invalid", "true");
-            await Assertions.Expect(surface.Locator(".validation-summary-errors")).ToHaveCountAsync(0);
+            await Assertions.Expect(surface.Locator(".shop-command-validation")).ToBeEmptyAsync();
+            await Assertions.Expect(Page.GetByTestId("product-sku")).ToHaveAttributeAsync("aria-invalid", "true");
             await Assertions.Expect(Page.GetByTestId("notification-dismiss")).ToHaveCountAsync(0);
             await Page.GetByTestId("product-name").FillAsync("Vape Pen 500");
             await Assertions.Expect(Page.GetByTestId("product-sku")).Not.ToHaveValueAsync("");
@@ -105,6 +106,21 @@ public sealed class NativeAdminProductLayoutJourneyTests(PlaywrightFixture playw
             await Page.GetByLabel(Strings.ProductVariants_OptionNameLabel, new() { Exact = true }).FillAsync("Color");
             await Page.Locator(".shop-product-variants").GetByLabel(Strings.ProductVariants_OptionValuesLabel, new() { Exact = true }).FillAsync("Red");
             await Assertions.Expect(Page.Locator(".shop-product-variant-table tbody tr")).ToHaveCountAsync(1);
+            foreach (var label in new[] { Strings.ProductSpecifications_RemoveRow, Strings.ProductVariants_RemoveOptionType, Strings.ProductVariants_RemoveOptionValue })
+            {
+                var remove = surface.GetByRole(AriaRole.Button, new() { Name = label, Exact = true }).First;
+                await Assertions.Expect(remove).ToHaveCSSAsync("width", "48px");
+                await Assertions.Expect(remove.Locator("svg")).ToHaveCSSAsync("width", "24px");
+            }
+            await Page.GetByTestId("product-name").FillAsync("");
+            await Page.GetByTestId("product-save").ClickAsync();
+            await Assertions.Expect(Page.GetByTestId("product-sku")).ToHaveAttributeAsync("aria-invalid", "true");
+            await Assertions.Expect(surface.Locator(".shop-command-validation")).ToBeEmptyAsync();
+            var skuErrorId = (await Page.GetByTestId("product-sku").GetAttributeAsync("aria-describedby"))!.Split(' ').Single(id => id.EndsWith("-error"));
+            await Assertions.Expect(Page.Locator("#" + skuErrorId + " .validation-message")).ToHaveCountAsync(1);
+            await SaveComponentAsync(surface.Locator(".shop-product-fields"), $"products-inline-sku-error-{width}-{withoutVendorCss}");
+            await Page.GetByTestId("product-name").FillAsync("Vape Pen 500");
+            await Assertions.Expect(Page.GetByTestId("product-sku")).Not.ToHaveAttributeAsync("aria-invalid", "true");
             await Page.GetByRole(AriaRole.Button, new() { Name = Strings.ProductVariants_PinImage, Exact = true }).ClickAsync();
             var dialog = Page.GetByRole(AriaRole.Dialog, new() { Name = Strings.VariantImage_Title });
             await Assertions.Expect(Page.GetByTestId("variant-image-cancel")).ToBeFocusedAsync();

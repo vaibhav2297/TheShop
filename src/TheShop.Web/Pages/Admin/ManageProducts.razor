@@ -111,8 +111,15 @@
                                     <td>@product.BrandName</td>
                                     <td>@product.CategoryName</td>
                                     <td class="shop-table-column-compact"><AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Edit.Code)" Context="statusAuth">
-                                        <Authorized><ShopChip Size="ShopSize.Small" Selected="@product.IsPublished" SelectedChanged="@(value => OnStatusToggledAsync(product, value))" Disabled="@mutating">@(product.IsPublished ? Strings.ManageProducts_StatusActive : Strings.ManageProducts_StatusInactive)</ShopChip>
-                                            @if (IsRowPending(product.Id, RowMutation.Status)) { <span role="status" aria-label="@Strings.Loading"><ShopLoader Class="shop-loader-inline" /></span> }
+                                        <Authorized>
+                                            @if (IsRowPending(product.Id, RowMutation.Status))
+                                            {
+                                                <span role="status" aria-label="@Strings.Loading"><ShopLoader Class="shop-loader-inline" /></span>
+                                            }
+                                            else
+                                            {
+                                                <ShopChip Size="ShopSize.Small" Selected="@product.IsPublished" SelectedChanged="@(value => OnStatusToggledAsync(product, value))" Disabled="@mutating">@(product.IsPublished ? Strings.ManageProducts_StatusActive : Strings.ManageProducts_StatusInactive)</ShopChip>
+                                            }
                                         </Authorized>
                                         <NotAuthorized><ShopChip Size="ShopSize.Small" Selected="@product.IsPublished">@(product.IsPublished ? Strings.ManageProducts_StatusActive : Strings.ManageProducts_StatusInactive)</ShopChip></NotAuthorized>
                                     </AuthorizeView></td>

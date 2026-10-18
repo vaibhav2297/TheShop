@@ -60,6 +60,9 @@
                             <ShopSelect TValue="Guid?" Value="@_model.CategoryId" ValueChanged="OnCategoryChanged" ValueExpression="@(() => _model.CategoryId)"
                                         Options="@CategoryOptions" Label="@Strings.AddProduct_CategoryLabel" aria-required="true" Disabled="@busy" />
                         </div>
+                        <ShopTextField Value="@_model.Sku" ValueExpression="@(() => _model.Sku)" Label="@Strings.AddProduct_SkuLabel"
+                                       HelperText="@Strings.AddProduct_SkuHelperText" HelperIcon="@ShopIcons.Outlined.Info"
+                                       readonly Disabled="@busy" data-testid="product-sku" />
                         <fieldset class="shop-product-status">
                             <legend>@Strings.AddProduct_StatusLabel</legend>
                             <div>
@@ -67,8 +70,6 @@
                                 <ShopChip Selected="@(!_model.IsPublished)" SelectedChanged="@(_ => OnPublishedChangedAsync(false))" Disabled="@busy">@Strings.AddProduct_StatusInactive</ShopChip>
                             </div>
                         </fieldset>
-                        <ShopTextField Value="@_model.Sku" ValueExpression="@(() => _model.Sku)" Label="@Strings.AddProduct_SkuLabel"
-                                       HelperText="@Strings.AddProduct_SkuHelperText" readonly Disabled="@busy" data-testid="product-sku" />
                     </div>
                 </div>
             </ChildContent>

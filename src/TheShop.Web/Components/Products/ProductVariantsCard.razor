@@ -28,7 +28,7 @@
                     <section class="shop-product-option" @key="type.Id">
                         <header class="shop-product-option-heading">
                             <h3>@(string.IsNullOrWhiteSpace(type.Name) ? Strings.ProductVariants_NewOption : type.Name)</h3>
-                            <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Large" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.ProductVariants_RemoveOptionType" Disabled="@Disabled" OnClick="@(() => RemoveOptionTypeAsync(type))" />
+                            <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.ProductVariants_RemoveOptionType" Disabled="@Disabled" OnClick="@(() => RemoveOptionTypeAsync(type))" />
                         </header>
                         <div class="shop-product-editor-row">
                             <ShopTextField Value="@type.Name" ValueChanged="@((string? v) => OnOptionTypeNameChangedAsync(type, v))" ValueExpression="@(() => type.Name)"
@@ -39,7 +39,7 @@
                                     <div class="shop-product-editor-value" @key="value.Id">
                                         <ShopTextField Value="@value.Value" ValueChanged="@((string? v) => OnOptionValueChangedAsync(value, v))" ValueExpression="@(() => value.Value)"
                                                        Label="@Strings.ProductVariants_OptionValuesLabel" Disabled="@Disabled" />
-                                        <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Large" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.ProductVariants_RemoveOptionValue" Disabled="@Disabled" OnClick="@(() => RemoveOptionValueAsync(type, value))" />
+                                        <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.ProductVariants_RemoveOptionValue" Disabled="@Disabled" OnClick="@(() => RemoveOptionValueAsync(type, value))" />
                                     </div>
                                 }
                                 <ShopButton Class="shop-product-editor-add" Variant="ShopVariant.Outlined" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus" Disabled="@Disabled" OnClick="@(() => AddOptionValueAsync(type))">@Strings.ProductVariants_AddValue</ShopButton>

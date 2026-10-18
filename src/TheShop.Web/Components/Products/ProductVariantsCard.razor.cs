@@ -125,8 +125,11 @@ public partial class ProductVariantsCard : ShopComponentBase
         // option values (FR-15) — is kept live rather than fixed at the moment the row was created.
         if (_lastProductSku != ProductSku)
         {
+            var skuChanged = _lastProductSku is not null;
             _lastProductSku = ProductSku;
             RefreshVariantSkus();
+            if (skuChanged && _variants.Count > 0)
+                await NotifyAsync();
         }
 
         await PruneRemovedPinsAsync();
