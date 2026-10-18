@@ -5,6 +5,7 @@ export function initialize(root, receiver) {
     const trigger = root.querySelector('.shop-select-trigger');
     const list = root.querySelector('.shop-select-options');
     let active;
+    let anchor;
     let expanded = false;
     let disposed = false;
     let search = '';
@@ -23,6 +24,7 @@ export function initialize(root, receiver) {
     };
     const position = () => {
         const rect = trigger.getBoundingClientRect();
+        anchor = rect;
         const viewport = window.visualViewport;
         const top = viewport?.offsetTop ?? 0;
         const left = viewport?.offsetLeft ?? 0;
@@ -127,7 +129,12 @@ export function initialize(root, receiver) {
         else if (list.contains(event.target) && event.target.closest('[role="option"]')) event.preventDefault();
     };
     const focusout = event => { if (!root.contains(event.relatedTarget)) close(); };
-    const scroll = event => { if (expanded && !list.contains(event.target)) close(); };
+    const scroll = event => {
+        if (!expanded || list.contains(event.target)) return;
+        // A scroll queued before opening can arrive after the menu has been positioned.
+        const rect = trigger.getBoundingClientRect();
+        if (rect.top !== anchor.top || rect.left !== anchor.left) close();
+    };
     const resize = () => { if (expanded) position(); };
     const syncState = () => {
         const next = JSON.stringify([trigger.dataset.selected, trigger.disabled,

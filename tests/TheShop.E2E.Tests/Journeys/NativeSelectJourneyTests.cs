@@ -76,6 +76,9 @@ public sealed class NativeSelectJourneyTests(PlaywrightFixture playwright) : E2E
         await Assertions.Expect(list).ToHaveCSSAsync("border-top-width", "0px");
         await Assertions.Expect(list).ToHaveCSSAsync("padding-left", "1px");
         await Assertions.Expect(selected).ToHaveAttributeAsync("aria-expanded", "true");
+        // A scroll queued before opening must not dismiss a menu whose anchor has not moved.
+        await Page.EvaluateAsync("document.dispatchEvent(new Event('scroll'))");
+        await Assertions.Expect(list).ToBeVisibleAsync();
         var options = list.Locator("[role='option']");
         (await options.Nth(0).BoundingBoxAsync())!.Height.Should().BeApproximately(44, 0.1f);
         await Assertions.Expect(options.Nth(0)).ToHaveCSSAsync("background-color", "rgb(245, 245, 245)");
@@ -140,6 +143,15 @@ public sealed class NativeSelectJourneyTests(PlaywrightFixture playwright) : E2E
         await Page.Keyboard.PressAsync("End");
         await Assertions.Expect(list).ToBeVisibleAsync();
         (await list.EvaluateAsync<bool>("el => el.scrollTop > 0")).Should().BeTrue();
+        await Page.EvaluateAsync("""
+            () => {
+                document.getElementById('select-probe').style.minHeight = '2000px';
+                window.scrollBy(0, 40);
+            }
+            """);
+        await Assertions.Expect(list).ToBeHiddenAsync();
+        await selected.ClickAsync();
+        await Assertions.Expect(list).ToBeVisibleAsync();
         await Page.EvaluateAsync("""
             () => {
                 const root = document.querySelectorAll('#select-probe .shop-select')[1];

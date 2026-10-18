@@ -1593,7 +1593,7 @@ The migration is complete only when all applicable conditions hold:
 
 Use this section as the durable progress record, or link a concise companion record from here if it grows. Local evidence may live under `.migration/ui/`; review `.gitignore` and repository conventions before creating it. Never store secrets or authenticated browser state in committed evidence.
 
-Current status: **Dependency contraction and native frontend checks complete through batch 51; Docker verification in batch 52 found three unresolved live product journeys.** Mud packages, registrations, global imports, host assets, C# palettes and legacy styles are removed. All 282 Infrastructure tests pass. Live Supabase browser checks: 13 passed, 3 failed during category selection. Product detail and additional variant-filter behavior are separate development work.
+Current status: **Dependency contraction complete; batch 53 resolves all three live product journeys found in batch 52.** Mud packages, registrations, global imports, host assets, C# palettes and legacy styles are removed. All 282 Infrastructure tests pass. Live Supabase smoke/admin/auth checks have passing results, including product creation, editing and status changes across the catalogue. Product detail and additional variant-filter behavior are separate development work.
 
 | Phase | Status | Changed scope/checkpoint | Evidence or blocker |
 |---|---|---|---|
@@ -1604,7 +1604,7 @@ Current status: **Dependency contraction and native frontend checks complete thr
 | P4 Auth/controls | Complete | Native sign-in, sign-up, verification and existing shared controls | Prior batch evidence plus batch 51 Release regression. |
 | P5 Feature screens | Complete for existing UI | Brands/Categories/Products list/create/edit, Admin Console and catalogue listing | Batches 45–50; no live Mud Razor consumers remain. Product detail development remains outside scope. |
 | P6 Remove dependencies | Complete | Packages, registrations, imports, assets, palettes, vendor selectors and template CSS removed | Debug build, Release publish, resolved package/published-asset audit and runtime request guards passed. |
-| P7 Final verification | Follow-up required | Native Release checks complete; Docker/real Supabase checks executed | 148 native cases have passing results; 282 Infrastructure tests pass. Live browser checks: 13 passed, 3 product journeys fail at category selection; see batch 52. Production accessibility sign-off remains unverified. |
+| P7 Final verification | Complete for existing UI | Native Release checks and scoped Docker/real Supabase checks complete | 148 earlier native cases have passing results; 282 Infrastructure tests pass. Batch 53 resolves all three batch 52 product failures. Full legacy live E2E suite and production accessibility sign-off remain unverified. |
 
 ### Batch 1 — 2026-10-02
 
@@ -2473,10 +2473,29 @@ Rollback: revert batch 51 package, DI/import, host, deleted theme/style, SCSS, t
 
 Live passing evidence covers real OTP sign-in/session persistence, application boot, catalogue brand filtering, Admin Console counts/module navigation, Customer denial, Support view-only access, brand/category creation and saved renames, and sign-out. Passing write journeys create uniquely named `e2e-*` brand/category records, which remain on this local stack under the existing test discipline. No existing database was reset or seeded catalogue data changed.
 
-Unresolved live product cases (`tests/TheShop.E2E.Tests/Journeys/ManageProductsJourneyTests.cs`):
+Initially failing live product cases, resolved in batch 53 (`tests/TheShop.E2E.Tests/Journeys/ManageProductsJourneyTests.cs`):
 
 - `AC8_Creating_a_product_through_the_add_flow_appears_in_subsequent_matching_results`
 - `AC9_Editing_a_product_through_the_edit_flow_shows_saved_changes_in_subsequent_matching_results`
 - `AC12_Deactivating_a_published_product_removes_it_from_the_catalogue_while_staff_still_see_it_and_reactivating_restores_it`
 
-All three time out in `ProductFormPage.SelectCategoryAsync` waiting for the `Accessories` option after clicking the Category combobox. The local database contains active Accessories and Naked 100 rows; trace requests for categories/brands return HTTP 200. Failure screenshots show the category menu closed. A standalone diagnostic could also open it, so a consistent component-versus-timing cause is not established. Traces remain under `tests/TheShop.E2E.Tests/bin/Debug/net10.0/playwright-traces/` for those methods. Assertions were not weakened and no product/test source was changed in this verification follow-up. The full live E2E suite was not run. P7 remains open for these three product interactions.
+At this checkpoint, all three timed out in `ProductFormPage.SelectCategoryAsync` waiting for the `Accessories` option after clicking the Category combobox. The local database contained active Accessories and Naked 100 rows; trace requests for categories/brands returned HTTP 200. Failure screenshots showed the category menu closed, while a standalone diagnostic could also open it. The timing cause was still unresolved. Traces remain under `tests/TheShop.E2E.Tests/bin/Debug/net10.0/playwright-traces/` for those methods. Assertions were not weakened and no product/test source was changed in batch 52. Batch 53 records the fixes and passing rerun; the full live E2E suite was not run.
+
+### Batch 53 — Live product journey corrections — 2026-10-18
+
+- Reproduced two shared select timing problems. With the category response held, the enabled empty select accepted a click before choices arrived, leaving its menu closed afterward. Separately, an outer scroll queued before opening could reach the scroll listener after positioning and immediately dismiss the menu, although its anchor had not moved.
+- `ShopSelect` now disables its actual combobox while no enabled choice exists, preserving explicit disabled state and attribute precedence. Its JavaScript records the positioned anchor and dismisses on outer scrolling only when that anchor moves. Menu scrolling, selection, keyboard navigation, focus restoration and actual page-scroll dismissal remain covered. No page-specific waits, retries, data changes or weakened assertions.
+- Added a Web test for empty/disabled-only/loaded option transitions and a browser regression that holds the lookup response, starts a click while disabled, then verifies category/brand selection after release. Existing select browser checks now cover a queued scroll with an unchanged anchor and real page scrolling that moves it. The unit regression failed before the C# fix; both viewport scroll regressions failed before the JavaScript fix.
+- Initial combined rerun: 8 passed / 3 failed. Besides the remaining scroll bug, one live request received local PostgREST `PGRST303` (`JWT issued at future`); a new intercepted regression also needed SPA navigation to preserve its fake in-memory session. Final checks retain real backend traffic for all three `ManageProductsJourneyTests`; their page objects and assertions are unchanged. Diagnostic-only API delays stayed in ignored probe scripts and are absent from the tests and application.
+
+| Check | Result / evidence |
+|---|---|
+| Full Web suite | 1,253 passed, 0 failed, 0 skipped. `.sdd/.test-work/p6-select-web.log`. |
+| Full solution build / final E2E build | Passed, 0 errors; existing package/analyzer warnings remain. `p6-select-build.log`, `p6-select-e2e-build-r2.log`. |
+| Fresh Release publish | Passed to `.sdd/.test-work/p6-select-release-r2/`; served the actual published output. `p6-select-publish-r2.log`. |
+| Final focused Release browser run | 11 passed, 0 failed, 0 skipped. Three real Supabase product journeys, three select/sort cases and five native product layout/lookup cases. `p6-select-browser-r2.log`; `tests/TheShop.E2E.Tests/TestResults/p6-select-final-r2.trx`. |
+| Design / whitespace / graph | Changed-file design gate and `git diff --check` passed; graph refreshed. `p6-select-graph.log`. Existing missing SQL parser limitation remains. |
+
+All three batch 52 failures are resolved: draft creation appears in matching results; editing persists a renamed product; publishing then deactivating/reactivating removes/restores catalogue visibility while preserving the admin row. Earlier smoke/admin/auth and 282 Infrastructure passing results remain applicable; those suites were not repeated for this Web-only correction. The full legacy live E2E suite and production accessibility sign-off remain outside this evidence.
+
+Temporary test server stopped; existing Supabase stack remains running. Uniquely named E2E product rows and the uploaded test image remain under the existing local test discipline. No schema migration, database reset, commit, push, merge or deployment. Rollback: revert this batch's shared select, regression-test and guide hunks together.
