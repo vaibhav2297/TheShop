@@ -3,12 +3,15 @@
     flex-direction: column;
     block-size: 100dvh;
     overflow: hidden;
+    background: var(--shop-color-surface-default);
 }
 
 .shop-shell .shop-main-scroll {
     flex: 1;
     min-block-size: 0;
-    overflow: auto;
+    min-inline-size: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding-block-start: 0;
 }
 

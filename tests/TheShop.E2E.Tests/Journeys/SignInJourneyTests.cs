@@ -16,7 +16,7 @@ public sealed class SignInJourneyTests(PlaywrightFixture playwright)
     public async Task Signed_in_customer_lands_on_an_authenticated_page()
     {
         await Page.GotoAsync("/");
-        await Page.Locator(".mud-layout").WaitForAsync(new() { Timeout = 30_000 });
+        await Page.Locator("main[data-shop-scroll-root]").WaitForAsync(new() { Timeout = 30_000 });
         var session = await Page.EvaluateAsync<string?>("() => localStorage.getItem('shop.auth.session')");
         session.Should().NotBeNullOrEmpty("the OTP sign-in must persist a Supabase session");
     }

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using TheShop.Web.Components.Common;
 using TheShop.Web.State;
-using TheShop.Web.Theme;
 
 namespace TheShop.Web.Components.Layout;
 
@@ -17,8 +16,6 @@ namespace TheShop.Web.Components.Layout;
 /// </summary>
 public partial class MainLayout : LayoutComponentBase, IDisposable
 {
-    [Inject] private ShopTheme ShopTheme { get; set; } = default!;
-
     [Inject] private AnnouncementState Announcement { get; set; } = default!;
 
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;

@@ -46,7 +46,7 @@ public sealed class NativeShellJourneyTests(PlaywrightFixture playwright) : E2ET
             async args => {
                 document.body.style.margin = '0';
                 document.getElementById('blazor-error-ui').style.display = 'none';
-                document.querySelector('.mud-main-content').style.display = 'none';
+                document.querySelector('[data-shop-scroll-root]').style.display = 'none';
                 if (args.withoutVendorCss)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
                         if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
@@ -111,6 +111,84 @@ public sealed class NativeShellJourneyTests(PlaywrightFixture playwright) : E2ET
         await trail.GetByRole(AriaRole.Link, new() { Name = Strings.Nav_Home, Exact = true }).ClickAsync();
         await Page.WaitForURLAsync(url => new Uri(url).AbsolutePath == WebRoutes.Home);
         await Assertions.Expect(Page.Locator(".shop-breadcrumbs")).ToHaveCountAsync(0);
+    }
+
+    [Theory]
+    [InlineData(390, true)]
+    [InlineData(390, false)]
+    [InlineData(1440, true)]
+    [InlineData(1440, false)]
+    public async Task Shell_FallbackPagesAndAuthorizing_PreserveNativeNavigationAndScroll(int width, bool withoutVendorCss)
+    {
+        var errors = new List<string>();
+        Page.PageError += (_, error) => errors.Add(error);
+        await Context.RouteAsync(E2EEnvironment.Get("API_URL").TrimEnd('/') + "/**", route => route.AbortAsync());
+        await Page.SetViewportSizeAsync(width, 900);
+        await Page.GotoAsync(WebRoutes.NotFound);
+        var main = Page.Locator("main[data-shop-scroll-root]");
+        await main.WaitForAsync();
+        await Page.EvaluateAsync("""
+            async withoutVendorCss => {
+                if (withoutVendorCss)
+                    for (const link of document.querySelectorAll('link[rel=stylesheet]'))
+                        if (/MudBlazor|CodeBeam/i.test(link.href)) link.disabled = true;
+                await document.fonts.load('700 34px "Barlow Condensed"');
+                await document.fonts.load('500 16px "Space Grotesk"');
+                await document.fonts.ready;
+            }
+            """, withoutVendorCss);
+        await Assertions.Expect(Page.Locator("main")).ToHaveCountAsync(1);
+        await Assertions.Expect(Page.Locator(".shop-shell [class*='mud-']")).ToHaveCountAsync(0);
+        await Assertions.Expect(main.Locator("h1")).ToHaveTextAsync(Strings.NotFound_Heading);
+        await Assertions.Expect(main.Locator("h1")).ToHaveCSSAsync("font-size", "34px");
+        await Assertions.Expect(Page.Locator(".shop-not-found-page")).ToHaveCSSAsync("gap", "16px");
+        var home = main.GetByRole(AriaRole.Link, new() { Name = Strings.NotFound_GoHome, Exact = true });
+        await Assertions.Expect(home).ToHaveAttributeAsync("href", WebRoutes.Home);
+        await home.FocusAsync();
+        await Assertions.Expect(home).ToHaveCSSAsync("outline-style", "solid");
+        await SaveAsync($"native-not-found-{width}-{withoutVendorCss}");
+        await Page.Keyboard.PressAsync("Enter");
+        await Page.WaitForURLAsync(url => new Uri(url).AbsolutePath == WebRoutes.Home);
+        await Assertions.Expect(main.Locator("h1")).ToHaveTextAsync(Strings.Stay_Tuned);
+        await Assertions.Expect(main.Locator("h1")).ToBeFocusedAsync();
+        await Assertions.Expect(main.Locator("h1")).ToHaveCSSAsync("font-size", "34px");
+        await SaveAsync($"native-home-{width}-{withoutVendorCss}");
+        await Page.GoBackAsync();
+        await Assertions.Expect(main.Locator("h1")).ToHaveTextAsync(Strings.NotFound_Heading);
+        await Page.GotoAsync(WebRoutes.NotFound + "/missing");
+        await Assertions.Expect(main.Locator("h1")).ToHaveTextAsync(Strings.NotFound_Heading);
+        await Page.EvaluateAsync("""
+            async withoutVendorCss => {
+                if (withoutVendorCss)
+                    for (const link of document.querySelectorAll('link[rel=stylesheet]'))
+                        if (/MudBlazor|CodeBeam/i.test(link.href)) link.disabled = true;
+                await document.fonts.load('500 16px "Space Grotesk"');
+                await document.fonts.ready;
+            }
+            """, withoutVendorCss);
+
+        await using var services = new ServiceCollection().AddLogging().BuildServiceProvider();
+        await using var renderer = new HtmlRenderer(services, services.GetRequiredService<ILoggerFactory>());
+        var authorizing = await renderer.Dispatcher.InvokeAsync(async () =>
+            (await renderer.RenderComponentAsync<AuthorizingView>()).ToHtmlString());
+        await Page.EvaluateAsync("html => document.querySelector('.shop-shell-page').insertAdjacentHTML('afterbegin', html)", authorizing);
+        var status = main.Locator(".shop-authorizing-view");
+        await Assertions.Expect(status).ToHaveAttributeAsync("role", "status");
+        await Assertions.Expect(status).ToHaveCSSAsync("padding-top", "80px");
+        await Assertions.Expect(status).ToHaveCSSAsync("gap", "16px");
+        await Assertions.Expect(status.Locator("p")).ToHaveTextAsync(Strings.Authorizing_Loading);
+        await Assertions.Expect(status.Locator("p")).ToHaveCSSAsync("font-weight", "500");
+        await Assertions.Expect(status.Locator(".shop-loader")).ToHaveCSSAsync("width", "48px");
+        await status.ScreenshotAsync(new() { Path = Path.Combine(AppContext.BaseDirectory, "native-ui-evidence", $"native-authorizing-{width}-{withoutVendorCss}.png") });
+        var appbarY = (await Page.Locator(".shop-appbar").BoundingBoxAsync())!.Y;
+        await main.EvaluateAsync("el => { const tall = document.createElement('div'); tall.style.height = '1500px'; el.append(tall); el.scrollTop = el.scrollHeight; }");
+        (await main.EvaluateAsync<double>("el => el.scrollTop")).Should().BeGreaterThan(0);
+        (await Page.Locator(".shop-appbar").BoundingBoxAsync())!.Y.Should().BeApproximately(appbarY, 1);
+        (await Page.EvaluateAsync<double>("() => document.scrollingElement.scrollTop")).Should().Be(0);
+        await Page.EvaluateAsync("() => document.documentElement.style.fontSize = '32px'");
+        await AssertNoOverflowAsync();
+        await Assertions.Expect(Page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
+        errors.Should().BeEmpty();
     }
 
     private async Task AssertNoOverflowAsync() =>

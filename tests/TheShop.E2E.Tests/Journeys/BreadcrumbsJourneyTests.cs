@@ -16,7 +16,7 @@ public sealed class BreadcrumbsJourneyTests(PlaywrightFixture playwright) : E2ET
     public async Task AC1_Storefront_page_shows_a_trail_from_home_to_the_current_page()
     {
         await Page.GotoAsync(WebRoutes.Products);
-        await Page.Locator(".mud-layout").WaitForAsync(new() { Timeout = 30_000 });
+        await Page.Locator("main[data-shop-scroll-root]").WaitForAsync(new() { Timeout = 30_000 });
 
         var trail = Page.GetByRole(AriaRole.Navigation, new() { Name = Strings.Breadcrumb_AriaLabel });
         await trail.GetByRole(AriaRole.Link, new() { Name = Strings.Nav_Home, Exact = true })
@@ -33,7 +33,7 @@ public sealed class BreadcrumbsJourneyTests(PlaywrightFixture playwright) : E2ET
     public async Task AC3_Clicking_a_non_final_level_navigates_to_that_page()
     {
         await Page.GotoAsync(WebRoutes.Products);
-        await Page.Locator(".mud-layout").WaitForAsync(new() { Timeout = 30_000 });
+        await Page.Locator("main[data-shop-scroll-root]").WaitForAsync(new() { Timeout = 30_000 });
 
         var trail = Page.GetByRole(AriaRole.Navigation, new() { Name = Strings.Breadcrumb_AriaLabel });
         await trail.GetByRole(AriaRole.Link, new() { Name = Strings.Nav_Home, Exact = true }).ClickAsync();

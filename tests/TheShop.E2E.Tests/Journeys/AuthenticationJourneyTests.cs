@@ -23,7 +23,7 @@ public sealed class AuthenticationJourneyTests(PlaywrightFixture playwright)
         try
         {
             await Page.GotoAsync("/");
-            await Page.Locator(".mud-layout").WaitForAsync(new() { Timeout = 30_000 });
+            await Page.Locator("main[data-shop-scroll-root]").WaitForAsync(new() { Timeout = 30_000 });
 
             // MudMenu wraps the activator in its own role="button" div, so the icon button's
             // aria-label matches twice — the outer wrapper is what actually receives the click.

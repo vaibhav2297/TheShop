@@ -2,15 +2,10 @@
 
 @using TheShop.Web.Components.Common
 @using TheShop.Web.Common.UI
-@using TheShop.Web.Theme
-
-<MudThemeProvider Theme="@ShopTheme.BuildTheme()"
-                  IsDarkMode="false" />
-<MudPopoverProvider />
 
 <ShopUiHost />
 
-<MudLayout Class="shop-shell d-flex flex-column overflow-hidden">
+<div class="shop-native shop-shell">
 
     @if (Announcement.HasAnnouncement)
     {
@@ -26,7 +21,7 @@
         <ShopBreadcrumbs Items="@Breadcrumbs.Trail" />
     }
 
-    <MudMainContent Class="shop-main-scroll flex-grow-1 overflow-y-auto overflow-x-hidden min-height-0 pt-0" data-shop-scroll-root>
+    <main class="shop-main-scroll" data-shop-scroll-root>
 
         <div class="shop-shell-page">
 
@@ -38,9 +33,9 @@
             }
 
         </div>
-    </MudMainContent>
+    </main>
 
-</MudLayout>
+</div>
 
 <ShopDrawer id="@_navigationDrawerId" Side="ShopDrawerSide.Left" Class="shop-navigation-drawer"
             Open="@NavigationOpen" OpenChanged="NavigationOpenChanged">

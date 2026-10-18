@@ -56,8 +56,11 @@
 @use 'components/rich-text-editor';
 @use 'components/admin-module-card';
 @use 'components/access-denied';
+@use 'components/authorizing-view';
 @use 'layouts/auth';
 @use 'layouts/shell';
+@use 'layouts/home';
+@use 'layouts/not-found';
 @use 'layouts/brands';
 @use 'layouts/categories';
 @use 'layouts/products';
