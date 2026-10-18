@@ -4,8 +4,6 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
@@ -15,6 +13,7 @@ using TheShop.Application.Features.Products.Queries.GetCatalogueFilters;
 using TheShop.Application.Features.Products.Queries.GetProductCataloguePage;
 using TheShop.Domain.Enums;
 using TheShop.Web.Common;
+using TheShop.Web.Common.UI;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Components.Products;
 using TheShop.Web.Pages.Products;
@@ -48,11 +47,6 @@ public class ProductCatalogueTests : TestContext
         Services.AddSingleton(_localizer);
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
-        Services.AddMudServices();
-
-        var popoverService = Substitute.For<IPopoverService>();
-        popoverService.PopoverOptions.Returns(new PopoverOptions());
-        Services.Replace(ServiceDescriptor.Singleton(popoverService));
 
         _localizer[Arg.Any<string>()].Returns(call =>
         {
@@ -157,6 +151,10 @@ public class ProductCatalogueTests : TestContext
 
         cut.Markup.Should().Contain(Strings.Empty_NoResults);
         cut.FindComponents<ProductCard>().Should().BeEmpty();
+        cut.Find(".shop-catalogue-count").TextContent.Should().Contain(
+            string.Format(Strings.Catalogue_ResultCount, 0, 0, 0));
+        cut.FindComponent<ShopSortSelect<ProductSortOption>>().Should().NotBeNull();
+        cut.FindComponents<ShopPagination>().Should().BeEmpty();
     }
 
     // =========================================================================
@@ -192,12 +190,38 @@ public class ProductCatalogueTests : TestContext
         _receivedPageQueries.Clear();
 
         var filterPanel = cut.FindComponent<ShopFilterPanel>();
+        cut.FindAll(".shop-expander-trigger[aria-expanded=false]").Should().HaveCount(1);
+        cut.Find(".shop-expander-trigger").Click();
         await cut.InvokeAsync(() => filterPanel.Instance.FilterToggled.InvokeAsync(
             new FilterToggle("category", "cat-1", IsSelected: true)));
 
         _receivedPageQueries.Should().ContainSingle();
         _receivedPageQueries[0].SelectedFilters.Should().ContainSingle(f => f.Key == "category");
         _receivedPageQueries[0].Pagination.Page.Should().Be(1);
+        cut.Find(".shop-expander-trigger").GetAttribute("aria-expanded").Should().Be("true");
+    }
+
+    [Fact]
+    public async Task DrawerFilter_WhenToggled_UpdatesUrlAndTheDesktopPanel()
+    {
+        var cut = Render<ProductCatalogue>();
+        await cut.InvokeAsync(() => { });
+        cut.Find(".shop-catalogue-filter-button").Click();
+
+        var drawer = cut.FindComponent<ShopDrawer>();
+        drawer.Instance.Open.Should().BeTrue();
+        drawer.Instance.Side.Should().Be(ShopDrawerSide.Left);
+        var panels = cut.FindComponents<ShopFilterPanel>();
+        panels.Should().HaveCount(2);
+        cut.FindAll("dialog .shop-expander-trigger[aria-expanded=false]").Should().HaveCount(1);
+        await cut.InvokeAsync(() => panels[1].Instance.FilterToggled.InvokeAsync(
+            new FilterToggle("category", "cat-1", true)));
+
+        panels[0].Instance.SelectedFilters.Should().ContainSingle(f => f.Key == "category" && f.Values.Contains("cat-1"));
+        _receivedPageQueries.Last().SelectedFilters.Should().ContainSingle(f => f.Key == "category");
+        await cut.InvokeAsync(() => drawer.Instance.OpenChanged.InvokeAsync(false));
+        drawer.Instance.Open.Should().BeFalse();
+        cut.FindComponents<ShopFilterPanel>().Should().HaveCount(1);
     }
 
     [Fact]

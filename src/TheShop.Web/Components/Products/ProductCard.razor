@@ -12,7 +12,7 @@
 
         @if (!Product.IsInStock)
         {
-            <span class="shop-product-card-stock">@Strings.OutOfStock</span>
+            <ShopBadge Color="ShopColor.Error" Class="shop-product-card-stock">@Strings.OutOfStock</ShopBadge>
         }
 
         @if (Product.IsInStock)

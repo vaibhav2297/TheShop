@@ -37,10 +37,6 @@
     position: absolute;
     inset-block-start: var(--shop-space-4);
     inset-inline-end: var(--shop-space-4);
-    padding: var(--shop-space-1) var(--shop-space-3);
-    background-color: var(--shop-color-error);
-    color: var(--shop-color-text-primary);
-    @include text-style.apply(body-2);
 }
 
 .shop-product-card-content {

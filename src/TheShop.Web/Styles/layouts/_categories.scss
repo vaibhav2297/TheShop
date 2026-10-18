@@ -85,34 +85,6 @@
     min-inline-size: 0;
 }
 
-// Compact Status filter inside the tablet/phone drawer.
-.shop-categories-filter-panel {
-    gap: var(--shop-space-4);
-    padding: var(--shop-space-4);
-}
-
-.shop-categories-filter-panel .shop-expander {
-    box-shadow: inset 0 -1px var(--shop-color-lines-default);
-}
-
-.shop-categories-filter-panel .shop-expander-header {
-    gap: var(--shop-space-2);
-    padding: 0;
-}
-
-// Collapsed groups hide the body, so the header carries the 24px group bottom padding.
-.shop-categories-filter-panel .shop-expander:not(.shop-expander-expanded) .shop-expander-header {
-    padding-block-end: var(--shop-space-6);
-}
-
-.shop-categories-filter-panel .shop-expander-body {
-    padding-block: var(--shop-space-4) var(--shop-space-6);
-}
-
-.shop-categories-filter-panel .shop-filter-actions {
-    padding-block: var(--shop-space-2);
-}
-
 .shop-categories-sidebar-filter {
     padding: 0.5rem 0;
 }

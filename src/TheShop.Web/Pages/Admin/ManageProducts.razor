@@ -118,10 +118,10 @@
                                     </AuthorizeView></td>
                                     <td class="shop-table-column-compact"><div class="shop-products-row-actions">
                                         <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Edit.Code)" Context="editAuth">
-                                            <Authorized><ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Large" Icon="@ShopIcons.Outlined.Edit_Pencil_02" Label="@string.Format(Strings.ManageProducts_EditAria, product.Name)" Href="@Routes.Admin.EditProduct(product.Id)" Disabled="@mutating" /></Authorized>
+                                            <Authorized><ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Icon="@ShopIcons.Outlined.Edit_Pencil_02" Label="@string.Format(Strings.ManageProducts_EditAria, product.Name)" Href="@Routes.Admin.EditProduct(product.Id)" Disabled="@mutating" /></Authorized>
                                         </AuthorizeView>
                                         <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Delete.Code)" Context="deleteAuth">
-                                            <Authorized><ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Large" Color="ShopColor.Error" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@string.Format(Strings.ManageProducts_DeleteAria, product.Name)" Loading="@IsRowPending(product.Id, RowMutation.Delete)" Disabled="@mutating" OnClick="@(() => DeleteSingleAsync(product))" /></Authorized>
+                                            <Authorized><ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Color="ShopColor.Error" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@string.Format(Strings.ManageProducts_DeleteAria, product.Name)" Loading="@IsRowPending(product.Id, RowMutation.Delete)" Disabled="@mutating" OnClick="@(() => DeleteSingleAsync(product))" /></Authorized>
                                         </AuthorizeView>
                                     </div></td>
                                 </RowTemplate>

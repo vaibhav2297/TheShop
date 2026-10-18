@@ -19,6 +19,8 @@ Styles/
 
 Reuse existing partials where ownership matches. New partials use lowercase kebab-case with a leading underscore, such as `_product-card.scss`. `TheShop.scss` loads emitting modules in an intentional order. Each partial loads its own Sass dependencies; imports elsewhere do not establish a global namespace.
 
+Shared component internals belong in the component partial, including styles for components it composes. For ShopFilterPanel, keep group gaps, filter expander spacing/dividers and clear-action spacing in `_filter-panel.scss`; page layouts own only outer placement and genuinely page-specific geometry. Do not copy those internal selectors into each page layout.
+
 Static presentation belongs in SCSS even with one caller. `base/` contains document defaults, not product-card or button rules. During coexistence, scope reset changes carefully to avoid changing unconverted controls.
 
 Button-related ownership is split: `_icon.scss` owns standalone `.shop-icon` defaults; `_button.scss` owns the shared button foundation, color/variant treatments, text-button sizes, and `.shop-button-icon` adornments; `_icon-button.scss` owns icon-only geometry. Load them in that order in `TheShop.scss` to preserve icon sizing. Surface is a shared button color role, not an icon-only recipe. Product-card styles position cart/wishlist actions, but do not redefine shared button colors or padding. Use direct Figma-backed colors and explicit accessibility tokens in owned treatment classes, not product-level button-color aliases.

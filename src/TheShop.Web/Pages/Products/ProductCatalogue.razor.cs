@@ -3,7 +3,6 @@ using System.Globalization;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
 using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products;
@@ -45,6 +44,7 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
     private decimal? _priceMin;
     private decimal? _priceMax;
     private ProductSortOption _sort = ProductSortCatalogue.Instance.Default;
+    private bool _filtersOpen;
 
     private IReadOnlyList<FilterGroupDto> FilterGroups => _filters?.Groups ?? [];
 
@@ -65,9 +65,9 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
     private static readonly IReadOnlyList<(ProductSortOption Value, string LabelKey)> SortOptions =
         ProductSortCatalogue.Instance.Picker;
 
-    private int ResultRangeStart => ((_products.Page - 1) * _products.PageSize) + 1;
+    private int ResultRangeStart => _products.Items.Count == 0 ? 0 : ((_products.Page - 1) * _products.PageSize) + 1;
 
-    private int ResultRangeEnd => ResultRangeStart + _products.Items.Count - 1;
+    private int ResultRangeEnd => _products.Items.Count == 0 ? 0 : ResultRangeStart + _products.Items.Count - 1;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()

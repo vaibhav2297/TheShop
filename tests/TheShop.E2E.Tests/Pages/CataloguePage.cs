@@ -16,14 +16,17 @@ public sealed class CataloguePage(IPage page) : ShopPage(page)
     /// </summary>
     public async Task ExpandFilterGroupAsync(string groupLabel)
     {
-        var trigger = Page.Locator(".shop-filter-groups").GetByRole(AriaRole.Button, new() { Name = groupLabel, Exact = true });
+        var filters = Page.Locator(".shop-catalogue-filter-button");
+        if (await filters.IsVisibleAsync() && !await Page.Locator(".shop-drawer[open]").IsVisibleAsync())
+            await filters.ClickAsync();
+        var trigger = Page.Locator(".shop-filter-groups:visible").GetByRole(AriaRole.Button, new() { Name = groupLabel, Exact = true });
         if (await trigger.GetAttributeAsync("aria-expanded") == "false")
             await trigger.ClickAsync();
     }
 
     /// <summary>Locator for a filter option's checkbox by its visible label — the group must already be expanded.</summary>
     public ILocator FilterOption(string optionLabel) =>
-        Page.GetByRole(AriaRole.Checkbox, new() { Name = optionLabel });
+        Page.Locator(".shop-filter-groups:visible").GetByRole(AriaRole.Checkbox, new() { Name = optionLabel });
 
     /// <summary>Toggles a filter option's checkbox by its visible label (e.g. a brand name) — the group must already be expanded.</summary>
     public async Task ToggleFilterOptionAsync(string optionLabel) =>

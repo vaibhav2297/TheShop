@@ -123,6 +123,7 @@ public class ProductCardTests : TestContext
         var cut = Render<ProductCard>(p => p.Add(c => c.Product, dto));
 
         cut.Markup.Should().Contain(Strings.OutOfStock);
+        cut.Find(".shop-product-card-stock").ClassList.Should().Contain("shop-badge-error");
     }
 
     [Fact]
