@@ -21,7 +21,7 @@ public partial class ShopSelect<TValue> : InputBase<TValue>, IAsyncDisposable
     /// <summary>Required resource-backed floating label and accessible name.</summary>
     [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
 
-    /// <summary>Ordered options with unique typed values. Labels are localized by the caller.</summary>
+    /// <summary>Ordered options with unique typed values and localized labels. The control is disabled when no enabled choice exists.</summary>
     [Parameter, EditorRequired] public IReadOnlyList<ShopSelectOption<TValue>> Options { get; set; } = [];
 
     /// <summary>Optional resource-backed hint associated with the combobox.</summary>
@@ -37,6 +37,7 @@ public partial class ShopSelect<TValue> : InputBase<TValue>, IAsyncDisposable
     private string ErrorId => $"{InputId}-error";
     private string? SelectedId => _entries.FirstOrDefault(entry => IsSelected(entry.Option.Value)).Id;
     private string? SelectedLabel => _entries.FirstOrDefault(entry => IsSelected(entry.Option.Value)).Option?.Label;
+    private bool IsDisabled => Disabled || _entries.All(entry => entry.Option.Disabled);
     private string ControlClass => ShopCssClass.Join("shop-select-control", SelectedId is not null ? "shop-select-populated" : null);
     private string TriggerClass => ShopCssClass.Join("shop-select-trigger", CssClass);
     private string? InvalidAttribute => EditContext?.GetValidationMessages(FieldIdentifier).Any() == true

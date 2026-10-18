@@ -18,6 +18,25 @@ public class ShopSelectTests : TestContext
     public ShopSelectTests() => JSInterop.Mode = JSRuntimeMode.Loose;
 
     [Fact]
+    public void Options_WithoutAvailableChoices_DisablesUntilChoicesLoad()
+    {
+        var model = new Model();
+        var cut = Render<ShopSelect<string?>>(p => p.Add(c => c.Label, Strings.Sort_Label)
+            .Add(c => c.ValueExpression, () => model.Value)
+            .Add(c => c.AdditionalAttributes, new Dictionary<string, object> { ["disabled"] = false }));
+        cut.Find("button").HasAttribute("disabled").Should().BeTrue();
+
+        cut.Render(p => p.Add(c => c.Options, [Options[2]]));
+        cut.Find("button").HasAttribute("disabled").Should().BeTrue();
+
+        cut.Render(p => p.Add(c => c.Options, Options));
+        cut.Find("button").HasAttribute("disabled").Should().BeFalse();
+
+        cut.Render(p => p.Add(c => c.Disabled, true));
+        cut.Find("button").HasAttribute("disabled").Should().BeTrue();
+    }
+
+    [Fact]
     public void Render_EmptyAndSelectedValues_UsesLabelledReadOnlyComboboxWithStableIds()
     {
         var model = new Model();

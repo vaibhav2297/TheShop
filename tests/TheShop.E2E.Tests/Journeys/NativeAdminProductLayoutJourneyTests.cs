@@ -222,7 +222,37 @@ public sealed class NativeAdminProductLayoutJourneyTests(PlaywrightFixture playw
         finally { releaseList.TrySetResult(); releaseEdit.TrySetResult(); }
     }
 
-    private Task InterceptAsync(Task releaseList, Task releaseEdit) => Context.RouteAsync(E2EEnvironment.Get("API_URL").TrimEnd('/') + "/**", async route =>
+    [Fact]
+    public async Task ProductLookups_Pending_DisableSelectsUntilChoicesArrive()
+    {
+        var releaseLookups = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        await InterceptAsync(Task.CompletedTask, Task.CompletedTask, releaseLookups.Task);
+        try
+        {
+            await SignInAsync();
+            await Page.GetByRole(AriaRole.Link, new() { Name = Strings.AddProduct_Heading, Exact = true }).ClickAsync();
+            await Page.GetByTestId("product-name").FillAsync("Waiting for product lookups");
+            var category = Page.GetByRole(AriaRole.Combobox, new() { Name = Strings.AddProduct_CategoryLabel, Exact = true });
+            var brand = Page.GetByRole(AriaRole.Combobox, new() { Name = Strings.AddProduct_BrandLabel, Exact = true });
+            await Assertions.Expect(category).ToBeDisabledAsync();
+            await Assertions.Expect(brand).ToBeDisabledAsync();
+
+            var chooseCategory = category.ClickAsync();
+            releaseLookups.TrySetResult();
+            await chooseCategory;
+            await Page.GetByRole(AriaRole.Option, new() { Name = "Vape Pen", Exact = true }).ClickAsync();
+            await Assertions.Expect(category).ToContainTextAsync("Vape Pen");
+            await Assertions.Expect(brand).ToBeEnabledAsync();
+            await brand.ClickAsync();
+            await Page.GetByRole(AriaRole.Option, new() { Name = "Puffco", Exact = true }).ClickAsync();
+            await Assertions.Expect(brand).ToContainTextAsync("Puffco");
+            await Assertions.Expect(Page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
+            _unexpected.Should().BeEmpty();
+        }
+        finally { releaseLookups.TrySetResult(); }
+    }
+
+    private Task InterceptAsync(Task releaseList, Task releaseEdit, Task? releaseLookups = null) => Context.RouteAsync(E2EEnvironment.Get("API_URL").TrimEnd('/') + "/**", async route =>
     {
         var uri = new Uri(route.Request.Url);
         var path = uri.AbsolutePath;
@@ -247,7 +277,10 @@ public sealed class NativeAdminProductLayoutJourneyTests(PlaywrightFixture playw
         else if (path.EndsWith("/rest/v1/brands") && route.Request.Method == "GET")
             body = JsonSerializer.Serialize(new[] { new { id = BrandId, name = "Puffco", is_active = true } });
         else if (path.EndsWith("/rest/v1/categories") && route.Request.Method == "GET")
+        {
+            await (releaseLookups ?? Task.CompletedTask);
             body = JsonSerializer.Serialize(new[] { new { id = CategoryId, name = "Vape Pen", is_active = true } });
+        }
         else if (path.EndsWith("/rest/v1/products") && route.Request.Method == "GET")
         {
             await releaseEdit;
