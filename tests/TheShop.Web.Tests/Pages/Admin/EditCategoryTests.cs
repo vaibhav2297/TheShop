@@ -138,6 +138,11 @@ public class EditCategoryTests : TestContext
         var cut = await RenderAsync(dto.Id);
 
         GetPrivateField<string>(cut.Instance, "_name").Should().Be("Pod Systems");
+        var trail = Services.GetRequiredService<BreadcrumbState>().Trail;
+        trail[^1].Text.Should().Be(dto.Name);
+        trail[^1].Href.Should().BeNull();
+        trail[^1].Disabled.Should().BeTrue();
+        trail[^2].Href.Should().Be(Routes.Admin.ManageCategories);
         GetPrivateField<string?>(cut.Instance, "_description").Should().Be("Another category.");
         GetPrivateField<bool>(cut.Instance, "_isActive").Should().BeFalse();
     }

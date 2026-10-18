@@ -60,6 +60,9 @@ public partial class EditCategory : ComponentBase
             }
 
             var category = result.Value;
+            Breadcrumbs.Set(BreadcrumbTrail.Admin()
+                .Add(Strings.ManageCategories_Heading, Routes.Admin.ManageCategories)
+                .Current(category.Name));
             _loaded = true;
             _model.Name = category.Name;
             _model.Description = category.Description;

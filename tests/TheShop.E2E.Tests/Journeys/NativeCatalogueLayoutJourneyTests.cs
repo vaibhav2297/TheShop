@@ -122,6 +122,39 @@ public sealed class NativeCatalogueLayoutJourneyTests(PlaywrightFixture playwrig
         _unexpected.Should().BeEmpty("all data is intercepted; no real API operations are allowed");
     }
 
+    [Theory]
+    [InlineData(1440, false)]
+    [InlineData(1440, true)]
+    [InlineData(390, false)]
+    [InlineData(390, true)]
+    public async Task Listing_ScrollingToFooter_LeavesDocumentAtViewportHeight(int width, bool withoutVendorCss)
+    {
+        await InterceptAsync(Task.CompletedTask);
+        await Page.SetViewportSizeAsync(width, 675);
+        await Page.GotoAsync(WebRoutes.Products);
+        await Assertions.Expect(Page.Locator(".shop-product-card")).ToHaveCountAsync(12);
+        await PrepareAppearanceAsync(withoutVendorCss);
+        var main = Page.Locator("main[data-shop-scroll-root]");
+
+        foreach (var fontSize in new[] { "100%", "200%" })
+        {
+            await Page.EvaluateAsync("size => document.documentElement.style.fontSize = size", fontSize);
+            var headerY = (await Page.Locator(".shop-appbar").BoundingBoxAsync())!.Y;
+            var height = await Page.EvaluateAsync<double>("() => document.scrollingElement.scrollHeight");
+            height.Should().BeApproximately(675, 1, "only the main content should scroll, including at enlarged text sizes");
+            await main.EvaluateAsync("el => el.scrollTop = el.scrollHeight");
+            (await main.EvaluateAsync<double>("el => el.scrollTop")).Should().BeGreaterThan(0);
+            var footerBottom = await Page.Locator(".shop-footer").EvaluateAsync<double>("el => el.getBoundingClientRect().bottom");
+            footerBottom.Should().BeApproximately(675, 1, "the footer should end at the viewport without an outer blank region");
+            await Page.EvaluateAsync("() => window.scrollTo(0, 10000)");
+            (await Page.EvaluateAsync<double>("() => document.scrollingElement.scrollTop")).Should().Be(0);
+            (await Page.Locator(".shop-appbar").BoundingBoxAsync())!.Y.Should().BeApproximately(headerY, 1);
+            await SaveAsync($"catalogue-scroll-footer-{width}-{withoutVendorCss}-{fontSize.TrimEnd('%')}");
+            await main.EvaluateAsync("el => el.scrollTop = 0");
+        }
+        _unexpected.Should().BeEmpty();
+    }
+
     private Task InterceptAsync(Task release) => Context.RouteAsync(E2EEnvironment.Get("API_URL").TrimEnd('/') + "/**", async route =>
     {
         var path = new Uri(route.Request.Url).AbsolutePath;

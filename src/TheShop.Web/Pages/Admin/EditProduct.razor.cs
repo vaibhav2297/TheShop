@@ -53,6 +53,9 @@ public partial class EditProduct : ComponentBase
         }
 
         _product = productResult.Value;
+        Breadcrumbs.Set(BreadcrumbTrail.Admin()
+            .Add(Strings.ManageProducts_Heading, Routes.Admin.ManageProducts)
+            .Current(_product.Name));
 
         var categoriesResult = await Mediator.Send(new GetActiveCategoriesQuery());
         if (categoriesResult.IsSuccess)

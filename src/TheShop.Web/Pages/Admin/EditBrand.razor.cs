@@ -63,6 +63,9 @@ public partial class EditBrand : ComponentBase
             }
 
             var brand = result.Value;
+            Breadcrumbs.Set(BreadcrumbTrail.Admin()
+                .Add(Strings.ManageBrands_Heading, Routes.Admin.ManageBrands)
+                .Current(brand.Name));
             _loaded = true;
             _model.Name = brand.Name;
             _model.Description = brand.Description;

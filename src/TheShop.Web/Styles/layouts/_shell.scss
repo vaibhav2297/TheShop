@@ -1,4 +1,6 @@
 .shop-shell {
+    // Contain absolutely positioned status content within the shell's overflow boundary.
+    position: relative;
     display: flex;
     flex-direction: column;
     block-size: 100dvh;

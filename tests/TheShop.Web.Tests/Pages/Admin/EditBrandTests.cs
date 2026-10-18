@@ -160,6 +160,11 @@ public class EditBrandTests : TestContext
         var cut = await RenderAsync(dto.Id);
 
         GetPrivateField<string>(cut.Instance, "_name").Should().Be("Lost Mary");
+        var trail = Services.GetRequiredService<BreadcrumbState>().Trail;
+        trail[^1].Text.Should().Be(dto.Name);
+        trail[^1].Href.Should().BeNull();
+        trail[^1].Disabled.Should().BeTrue();
+        trail[^2].Href.Should().Be(Routes.Admin.ManageBrands);
         GetPrivateField<string?>(cut.Instance, "_description").Should().Be("Another brand.");
         GetPrivateField<bool>(cut.Instance, "_isActive").Should().BeFalse();
     }

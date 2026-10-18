@@ -140,6 +140,11 @@ public class EditProductTests : TestContext
         var form = cut.FindComponent<ProductForm>();
         form.Instance.Mode.Should().Be(ProductFormMode.Edit);
         form.Instance.InitialData.Should().Be(dto);
+        var trail = Services.GetRequiredService<BreadcrumbState>().Trail;
+        trail[^1].Text.Should().Be(dto.Name);
+        trail[^1].Href.Should().BeNull();
+        trail[^1].Disabled.Should().BeTrue();
+        trail[^2].Href.Should().Be(Routes.Admin.ManageProducts);
     }
 
     // =========================================================================
