@@ -21,11 +21,11 @@ Reuse existing partials where ownership matches. New partials use lowercase keba
 
 Shared component internals belong in the component partial, including styles for components it composes. For ShopFilterPanel, keep group gaps, filter expander spacing/dividers and clear-action spacing in `_filter-panel.scss`; page layouts own only outer placement and genuinely page-specific geometry. Do not copy those internal selectors into each page layout.
 
-Static presentation belongs in SCSS even with one caller. `base/` contains document defaults, not product-card or button rules. During coexistence, scope reset changes carefully to avoid changing unconverted controls.
+Static presentation belongs in SCSS even with one caller. `base/` contains document defaults, not product-card or button rules. Reset changes affect the whole native application and require representative browser checks.
 
 Button-related ownership is split: `_icon.scss` owns standalone `.shop-icon` defaults; `_button.scss` owns the shared button foundation, color/variant treatments, text-button sizes, and `.shop-button-icon` adornments; `_icon-button.scss` owns icon-only geometry. Load them in that order in `TheShop.scss` to preserve icon sizing. Surface is a shared button color role, not an icon-only recipe. Product-card styles position cart/wishlist actions, but do not redefine shared button colors or padding. Use direct Figma-backed colors and explicit accessibility tokens in owned treatment classes, not product-level button-color aliases.
 
-Do not add Razor `<style>` blocks, `.razor.css` isolation files, or handwritten page CSS under `wwwroot/`. Never edit generated CSS. Existing vendor overrides and template CSS are transitional migration inputs, not templates for new styles.
+Do not add Razor `<style>` blocks, `.razor.css` isolation files, or handwritten page CSS under `wwwroot/`. Never edit generated CSS. Vendor overrides and template CSS were removed; boot/error presentation belongs to the owned SCSS entry point.
 
 ## Naming: component-prefixed kebab-case
 
@@ -156,6 +156,6 @@ Inline styles are for genuinely dynamic values, not fixed one-off layout. Prefer
 
 ## Coexistence and verification
 
-Native controls must work without vendor CSS. Existing Mud consumers may temporarily retain their classes/overrides; remove each bridge with its final consumer rather than deleting all shared styling at once. Do not add new `mud-*` or `--mud-*` dependencies to native components.
+Native controls must work without vendor CSS. Do not add `mud-*` or `--mud-*` dependencies; guard package and asset independence against fresh published output.
 
-Check converted and unconverted screens after shared changes. Verify responsive geometry, focus/disabled/error states, overflow, and wrapping in the browser. Use Figma for measured appearance without sacrificing semantic behavior. Sass compilation proves syntax, not visual fidelity or accessibility.
+Check representative screens after shared changes. Verify responsive geometry, focus/disabled/error states, overflow, and wrapping in the browser. Use Figma for measured appearance without sacrificing semantic behavior. Sass compilation proves syntax, not visual fidelity or accessibility.

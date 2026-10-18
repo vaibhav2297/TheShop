@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using Microsoft.Playwright;
 using TheShop.E2E.Tests.Fixtures;
 using TheShop.Web.Common.UI;
@@ -50,11 +51,11 @@ public sealed class NativeCheckboxJourneyTests(PlaywrightFixture playwright) : E
             args => {
                 if (args.withoutVendorCss) {
                     for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                     }
                 }
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 const host = document.createElement('main');
                 host.id = 'checkbox-probe';
                 host.style.cssText = 'display:grid;gap:16px;padding:24px;background:white';
@@ -141,7 +142,8 @@ public sealed class NativeCheckboxJourneyTests(PlaywrightFixture playwright) : E
 
     private static async Task<string> RenderSpecimensAsync()
     {
-        await using var services = new ServiceCollection().AddLogging().BuildServiceProvider();
+        await using var services = new ServiceCollection().AddLogging()
+            .AddSingleton<IJSRuntime, StaticJsRuntime>().BuildServiceProvider();
         await using var renderer = new HtmlRenderer(services, services.GetRequiredService<ILoggerFactory>());
         return await renderer.Dispatcher.InvokeAsync(async () =>
         {
@@ -171,6 +173,15 @@ public sealed class NativeCheckboxJourneyTests(PlaywrightFixture playwright) : E
                 html.Append(component.ToHtmlString());
             }
         });
+    }
+
+    private sealed class StaticJsRuntime : IJSRuntime
+    {
+        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args) =>
+            throw new InvalidOperationException("Static checkbox rendering must not invoke JavaScript.");
+
+        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args) =>
+            InvokeAsync<TValue>(identifier, args);
     }
 
     private Task SaveAsync(string name)

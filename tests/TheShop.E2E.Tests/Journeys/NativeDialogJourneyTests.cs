@@ -52,11 +52,9 @@ public sealed class NativeDialogJourneyTests(PlaywrightFixture playwright) : E2E
         await Page.EvaluateAsync("""
             async html => {
                 for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 }
                 document.getElementById('app').style.display = 'none';
-                // app.css normally hides the template error shell; disabling it must not reveal that shell.
-                document.getElementById('blazor-error-ui').style.display = 'none';
                 const host = document.createElement('main');
                 host.id = 'dialog-probe';
                 host.className = 'shop-native';
@@ -190,10 +188,10 @@ public sealed class NativeDialogJourneyTests(PlaywrightFixture playwright) : E2E
         await Page.EvaluateAsync("""
             () => {
                 for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 }
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
             }
             """);
         await using var services = new ServiceCollection().AddLogging()

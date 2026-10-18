@@ -103,7 +103,7 @@ public sealed class NativeBrandsLayoutJourneyTests(PlaywrightFixture playwright)
             async withoutVendorCss => {
                 if (withoutVendorCss)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 document.body.style.margin = '0';
                 await document.fonts.load('700 24px "Barlow Condensed"');
                 await document.fonts.load('400 16px "Space Grotesk"');

@@ -79,9 +79,9 @@ Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*)
 
 35. [components] Map supplied Figma component instances to existing code components before implementation. Inspect source components, variants, properties, and overrides; reuse matching components through supported parameters. Do not recreate existing controls with page-owned markup or CSS. Resolve missing component capabilities explicitly and record the decision. Preserve native action/navigation semantics; visual similarity never justifies changing behavior. Verify component reuse in source as well as appearance in browser.
 
-### Migration coexistence
+### Native dependency boundary
 
-Existing MudBlazor consumers, providers, packages, assets, utilities, and C# theme values may remain temporarily while their replacements are verified. New native controls must use project-owned tokens and work without vendor CSS. Record temporary bridges and remove them with their last consumer; do not extend Mud dependencies. Scope shared CSS changes carefully so unconverted screens keep working. This exception does not waive architecture, resources, routes, loading, accessibility, or behavioral checks.
+The native migration is complete at the source boundary. Do not reintroduce MudBlazor, extension packages, providers, vendor assets/utilities, or C# theme palettes. Presentation belongs to project SCSS and native/Shop components. Browser checks must reject legacy assets rather than disabling them or hiding runtime error UI. Preserve architecture, resources, routes, loading, accessibility, and behavioral checks.
 
 ---
 

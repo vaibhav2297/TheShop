@@ -840,7 +840,7 @@ Design: [Figma Skeleton 3010:17888](https://www.figma.com/design/63Ieb8AduwMHoVH
 - `ShopTable.Loading` (typically the list's `BusyFor` value) keeps the real header. It replaces the body with `LoadingRowCount` hidden skeleton rows (default 10; one Text skeleton per cell, including the selection column) and sets `aria-busy` on the table. It also disables and guards selection, suppresses `EmptyContent` and fills an always-mounted visually hidden `role="status"` with `Strings.Loading`. The Manage Brands, Categories and Products pages render the table while busy or populated, and hide pagination while busy.
 - Content-shaped skeletons (all decorative, `aria-hidden` roots):
   - `ProductCardSkeleton` reuses the `shop-product-card`, media, content, brand, title and price classes. Line widths are 40%, 80% and 30%.
-  - `AdminModuleCardSkeleton` shares the native card's root/content classes and `_admin-module-card.scss` owner: 24px padding, inside outline, 20px H6 label line with a 16px bar, 72px count line with a 56px block, and 128px × 38px action. Card content/action spacing is 48px on desktop/tablet and 24px on phone. `AdminFormSkeleton` and `_admin-skeletons.scss` were retired with their last consumer in batch 48. EditProduct, EditBrand and EditCategory have inline skeletons using their native form grids.
+- `AdminModuleCardSkeleton` shares the native card's root/content classes and `_admin-module-card.scss` owner: 24px padding, inside outline, 24px H5 label line with a 16px bar, 72px count line with a 56px block, and 128px × 38px action. Card content/action spacing is 48px on desktop/tablet and 24px on phone. `AdminFormSkeleton` and `_admin-skeletons.scss` were retired with their last consumer in batch 48. EditProduct, EditBrand and EditCategory have inline skeletons using their native form grids.
   - The catalogue filter skeleton is single-use page markup: five rows with the expander's 72px header height and dividers.
   - Historical: batch 36 used skeleton rows in `ShopImageUpload`. Batch 38 replaces those rows with image tiles and a loader only.
 - Announcements: `ShopTable` and the Admin Console's mounted status region announce loading. Their decorative placeholders stay hidden from assistive technology. Other page skeletons retain their existing announcement behavior.
@@ -1593,18 +1593,18 @@ The migration is complete only when all applicable conditions hold:
 
 Use this section as the durable progress record, or link a concise companion record from here if it grows. Local evidence may live under `.migration/ui/`; review `.gitignore` and repository conventions before creating it. Never store secrets or authenticated browser state in committed evidence.
 
-Current status: **All live Razor consumers migrated through batch 50; dependency contraction and final package-free verification remain.** Mud packages, registrations, global imports, host assets and legacy styles still exist; there are no remaining Mud component tags or providers in Razor.
+Current status: **Dependency contraction and native frontend checks complete through batch 51; Docker verification in batch 52 found three unresolved live product journeys.** Mud packages, registrations, global imports, host assets, C# palettes and legacy styles are removed. All 282 Infrastructure tests pass. Live Supabase browser checks: 13 passed, 3 failed during category selection. Product detail and additional variant-filter behavior are separate development work.
 
 | Phase | Status | Changed scope/checkpoint | Evidence or blocker |
 |---|---|---|---|
 | P0 Baseline | Complete for build/Web tests | Branch `refactor/ui-refactoring`, starting commit `dd747d9df0137842be5077bd7f2b90f99e6b92a6` | Solution build succeeded; baseline Web tests 845 passed, 0 failed, 0 skipped. Existing package advisories recorded below. |
-| P1 Foundation | In progress | Scoped tokens/base SCSS, ShopComponentBase, ShopCssClass, ShopButton, ShopIconButton, ShopIcon, label-only ShopTextField, two-state ShopCheckbox; canonical native guidance | Implemented subset passes build, component tests, and focused browser checks. Remaining services/controls are not implied complete. |
-| P2 First slice | In progress | ProductCard, ShopImage, SignIn markup/form, native confirmations and variant-image picker | Existing callbacks, image behavior, validation, dialog results, and BusyState preserved and tested. SignIn still uses the snackbar bridge; this is not a fully vendor-free route yet. |
+| P1 Foundation | Complete | Owned SCSS tokens/base, native primitives, component contracts and canonical guidance | Subsequent batches cover controls, states, accessibility and responsive behavior; batch 51 removes the dependency boundary. |
+| P2 First slice | Complete | ProductCard, ShopImage, SignIn, native confirmations and variant-image picker | Behavior preserved; notification/dialog bridges were replaced in subsequent batches. |
 | P3 Shell/services | Complete for existing UI | Native layouts, navigation, authorizing/access views, dialogs, notifications and loading; all Razor Mud providers removed | Batch 50 verifies native shell scrolling, footer, responsive drawers, fallback navigation and authorizing presentation. Package/asset removal belongs to P6. |
-| P4 Auth/controls | Not started | | |
-| P5 Feature screens | In progress | Brands/Categories/Products list/create/edit and Admin Console migrated | Batches 45–48; remaining catalogue/admin screens retain their migration bridges. |
-| P6 Remove dependencies | Not started | | |
-| P7 Final verification | Not started | | |
+| P4 Auth/controls | Complete | Native sign-in, sign-up, verification and existing shared controls | Prior batch evidence plus batch 51 Release regression. |
+| P5 Feature screens | Complete for existing UI | Brands/Categories/Products list/create/edit, Admin Console and catalogue listing | Batches 45–50; no live Mud Razor consumers remain. Product detail development remains outside scope. |
+| P6 Remove dependencies | Complete | Packages, registrations, imports, assets, palettes, vendor selectors and template CSS removed | Debug build, Release publish, resolved package/published-asset audit and runtime request guards passed. |
+| P7 Final verification | Follow-up required | Native Release checks complete; Docker/real Supabase checks executed | 148 native cases have passing results; 282 Infrastructure tests pass. Live browser checks: 13 passed, 3 product journeys fail at category selection; see batch 52. Production accessibility sign-off remains unverified. |
 
 ### Batch 1 — 2026-10-02
 
@@ -2417,3 +2417,66 @@ Check documentation against the installed .NET/browser versions when implementat
 
 - Restored position: relative on .shop-shell. Removing MudLayout had also removed its containing block: an absolutely positioned, visually hidden status element could escape the inner scroll clipping and enlarge the document. A browser probe reproduced 754px document height in a 675px viewport at 200% text; restoring shell positioning reduced it to 675px without suppressing document overflow globally.
 - Added four catalogue regression cases covering desktop/phone, vendor CSS on/off and normal/200% text. They assert viewport-sized document height, actual inner scrolling, footer bottom aligned to the viewport, zero outer scroll and stable header position. These four cases and 11 responsive navigation cases pass (15 total, no failures/skips). Reviewed footer screenshots at normal/enlarged text. Solution build, design-rule and diff checks pass; graph refreshed. Logs: .sdd/.test-work/shell-scroll-build.log, shell-scroll-browser.log and shell-scroll-graph.log. Backend traffic is intercepted; no real writes. Rollback: revert the shell positioning hunk and its regression cases together.
+
+### Batch 51 — Dependency contraction and final Release evidence — 2026-10-18
+
+- Removed MudBlazor and CodeBeam.MudBlazor.Extensions references, DI registrations, global imports and obsolete ShopTheme/ShopColors/ShopTypography types. ShopIcons remains the trusted icon registry. Removed unused vendor SCSS partials, old overrides and sizing/typography utilities after checking consumers.
+- Removed host vendor CSS/JS, Roboto and unused scoped/library stylesheet link. No source `.razor.css` or active library scoped styles remain. Moved active WASM boot/error styles from `app.css` into `components/_boot.scss`, preserving runtime progress variables and runtime-owned error visibility; deleted obsolete template CSS. Base SCSS now owns document sizing, box sizing, body typography and inherited link color. Active Quill assets remain.
+- Native browser probes now reject legacy assets rather than disabling CSS or hiding runtime errors. AppHostFixture honors an external `E2E_APP_URL` without launching/rebuilding another server. New NativeDependencyJourneyTests gates Release WASM startup to inspect boot presentation, then verifies unknown deep links, Home navigation, one main landmark, no legacy requests/local HTTP failures/page errors, and owned runtime error styling at 390px/1440px.
+- Preserved the owner's concurrent removal of navigation uppercase styling. Updated the stale casing assertion. Broader existing tests also needed their SSR JS service registration and catalogue drawer/collapsed-row assumptions brought up to date. Admin-card checks follow the existing H5 label and minimum-height contract, retaining equal loading/loaded geometry checks. Responsive navigation checks assert SPA destination/content rather than waiting for a document load event.
+- Canonical constitution rules, examples and checklist now enforce the native dependency boundary. No package/provider/C# theme compatibility bridge remains.
+- Release regression exposed clipped "Maximum (CAD)" text at 200% root size in the desktop catalogue. Corrected the shared field label's maximum width to account for its padded inset on both sides. Normal field padding, typography and floating-label behavior are unchanged. Range checks wait for the actual label transition before measuring enlarged text. Re-published to fresh `p6-release-r2` output and rechecked affected fields, ranges and representative screens.
+
+| Check | Result / evidence |
+|---|---|
+| Full Debug solution build | Passed, 0 errors; latest incremental run has 6 existing package/analyzer warnings. `.sdd/.test-work/p6-build.log`. |
+| Full Web tests, before/after contraction | 1,252 passed, 0 failed, 0 skipped in each run. `p6-web-before.log`, `p6-web.log`. |
+| Domain / Application / pure Infrastructure tests | 358 / 609 / 43 passed, 0 failed, 0 skipped. `p6-domain.log`, `p6-application.log`, `p6-infrastructure-pure.log`. |
+| Fresh Release publish | Passed to `.sdd/.test-work/p6-release/` and final `p6-release-r2/`; served actual output with SPA fallback and WASM MIME types. `p6-publish.log`, `p6-publish-r2.log`. |
+| Resolved packages / published assets | No Mud/CodeBeam dependency, vendor asset, template CSS or unused scoped stylesheet. `p6-packages.log`, `p6-final-audit.log`; source, project.assets.json, fresh publish and browser request audits. Source/published CSS hashes match. |
+| Final Release browser regression | 148 distinct cases have latest passing results, 0 unresolved failures, 0 skips across the completed runs. Final R2 run: 35 passed, 0 failed, 0 skipped; `p6-release-browser-r2.log`, `tests/TheShop.E2E.Tests/TestResults/p6-release-r2.trx`. |
+| Design / whitespace / Graphify | Full Web design gate and whitespace check passed; graph refreshed. SQL extraction still unavailable without tree_sitter_sql; no new graph dependency installed. |
+
+Browser diagnostics remain visible: initial priority run 21 passed / 3 failed; broader component run 100 / 24; network-enabled rerun 46 / 5; targeted rerun 4 / 3; final R2 run 35 / 0. All completed runs skipped 0 cases. Failures led to the test-contract corrections and field-label fix above; every failed case subsequently passed. Counts overlap and must not be added as distinct cases. Logs: `p6-release-browser-priority.log`, `p6-release-browser-components.log`, `p6-release-browser-final-network.log`, `p6-release-browser-last.log`, `p6-release-browser-r2.log`. Final R2 covers all NativeUiJourneyTests, OTP, boot/deep links, catalogue/list scroll, product workflows, live brand-table selection/navigation and range interactions/reflow. Unchanged areas retain the earlier passing Release checks.
+
+Release screenshot review covers boot/error presentation, desktop/mobile catalogue and sign-up, admin console, populated product editing, and final desktop/mobile 200% range labels. Keyboard focus outlines are intentional. Native date/select platform differences and previously recorded palette contrast limitations remain; this is not assistive-technology or production accessibility sign-off. Temporary browser/server processes were stopped.
+
+Section 13 frontend evidence mapping (test classes under `tests/TheShop.E2E.Tests/Journeys/`, with the full Web suite for C# contracts):
+
+| Acceptance areas | Evidence |
+|---|---|
+| Boot, shell, breadcrumbs, responsive/zoom, CSS independence | NativeDependencyJourneyTests, NativeShellJourneyTests, ResponsiveNavigationJourneyTests and NativeCatalogueLayoutJourneyTests scroll regression. |
+| Buttons, forms, auth, authorization, busy state | NativeUiJourneyTests, NativeButtonColorJourneyTests, NativeSignInLayoutJourneyTests, NativeSignInVerifyLayoutJourneyTests, NativeSignUpLayoutJourneyTests, NativeOtpInputJourneyTests, NativeDateFieldJourneyTests, NativeLoadingOverlayJourneyTests, ProfileDrawerJourneyTests; Web page/input/ShopCommandValidation tests. |
+| Dialogs and notifications | NativeDialogJourneyTests, NativeDrawerJourneyTests, NativeNotificationJourneyTests; ShopDialogServiceTests, ShopDialogTests, ShopNotificationServiceTests and ShopNotificationHostTests. |
+| Catalogue filters/ranges/sort/paging/history/loading/errors | NativeCatalogueLayoutJourneyTests, NativeRangeSliderJourneyTests, NativeDisclosureChipPaginationJourneyTests, NativeSelectJourneyTests, NativeSkeletonJourneyTests; ProductCatalogueTests. |
+| Admin listings/forms/product editing | NativeBrandsLayoutJourneyTests, NativeCategoriesLayoutJourneyTests, NativeAdminConsoleLayoutJourneyTests, NativeAdminProductLayoutJourneyTests, NativeTableJourneyTests, NativeBulkActionJourneyTests; Web admin page/editor tests. |
+| Images, uploads, variants, rich text | NativeImageUploadJourneyTests, NativeVariantImageJourneyTests, NativeRichTextEditorJourneyTests and full Web image/upload/variant/editor tests. Earlier preset-specific image browser evidence remains in its batches. |
+| Dependency removal and governance | Build/publish, package/source/publish audits, runtime request guard, full Web design gate, whitespace check and graph refresh. No gate/hook disabled. |
+| Product details/gallery | Not applicable: development remains pending; no detail route/behavior was invented. |
+
+Historical environment limit for batch 51: Docker Desktop's Linux engine was unavailable, so those browser requests were intercepted/aborted. Batch 52 supersedes that environment limitation with actual Infrastructure and scoped live Supabase results. Product detail and additional variant-filter functionality remain separate features.
+
+Reproduction: build/publish as in section 12; serve fresh Release `wwwroot` with SPA fallback, `.wasm` MIME support and sufficient connection backlog. Set `E2E_APP_URL` to that local server and `E2E_HEADLESS=1`; run the native-ui E2E trait. Generated screenshots/traces/logs remain local and contain no committed credentials or storage state. Initial concurrent runs against the temporary server's default backlog produced refused WASM connections, diagnosed from traces; final checks use an increased backlog. A sandboxed rerun was stopped after external-font downloads failed; final network-enabled checks preserve font-loading and geometry assertions.
+
+Rollback: revert batch 51 package, DI/import, host, deleted theme/style, SCSS, test and canonical-guidance hunks together, then restore/build. No schema/data migration, new feature route, commit, push or deployment occurred. Preserve unrelated owner edits, including navigation casing.
+
+### Batch 52 — Docker-backed verification — 2026-10-18
+
+- Docker engine 29.4.3 and the existing local Supabase stack became available. Reused the stack without running `start-e2e-env.ps1` or `supabase db reset`. Refreshed ignored `.e2e-env` from local status and backed up a stale cached E2E admin session so the fixture obtained a fresh one. Credentials and authenticated storage states remain ignored and were not included in reports.
+- Served the existing package-free Release R2 output. Live browser checks used real local Supabase Auth, PostgREST, permissions and the local mail catcher; no backend interception. Testcontainers owned the Infrastructure suite's disposable PostgreSQL containers. Supabase remains running; the temporary Release server was stopped.
+
+| Check | Passed | Failed | Skipped | Evidence |
+|---|---:|---:|---:|---|
+| Full Infrastructure suite | 282 | 0 | 0 | `.sdd/.test-work/p6-docker-infrastructure.log`; `tests/TheShop.Infrastructure.Tests/TestResults/p6-docker-infrastructure.trx` |
+| Live smoke (`Suite=Smoke`) | 7 | 0 | 0 | `.sdd/.test-work/p6-docker-smoke.log`; `tests/TheShop.E2E.Tests/TestResults/p6-docker-smoke.trx` |
+| Scoped live admin/auth journeys | 6 | 3 | 0 | `.sdd/.test-work/p6-docker-live.log`; `tests/TheShop.E2E.Tests/TestResults/p6-docker-live.trx` |
+
+Live passing evidence covers real OTP sign-in/session persistence, application boot, catalogue brand filtering, Admin Console counts/module navigation, Customer denial, Support view-only access, brand/category creation and saved renames, and sign-out. Passing write journeys create uniquely named `e2e-*` brand/category records, which remain on this local stack under the existing test discipline. No existing database was reset or seeded catalogue data changed.
+
+Unresolved live product cases (`tests/TheShop.E2E.Tests/Journeys/ManageProductsJourneyTests.cs`):
+
+- `AC8_Creating_a_product_through_the_add_flow_appears_in_subsequent_matching_results`
+- `AC9_Editing_a_product_through_the_edit_flow_shows_saved_changes_in_subsequent_matching_results`
+- `AC12_Deactivating_a_published_product_removes_it_from_the_catalogue_while_staff_still_see_it_and_reactivating_restores_it`
+
+All three time out in `ProductFormPage.SelectCategoryAsync` waiting for the `Accessories` option after clicking the Category combobox. The local database contains active Accessories and Naked 100 rows; trace requests for categories/brands return HTTP 200. Failure screenshots show the category menu closed. A standalone diagnostic could also open it, so a consistent component-versus-timing cause is not established. Traces remain under `tests/TheShop.E2E.Tests/bin/Debug/net10.0/playwright-traces/` for those methods. Assertions were not weakened and no product/test source was changed in this verification follow-up. The full live E2E suite was not run. P7 remains open for these three product interactions.

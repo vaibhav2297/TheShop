@@ -2,18 +2,7 @@
 @use 'sass:map';
 @use '../abstracts/text-style';
 
-// Flatten contained MudButton at rest. MudBlazor's own :hover rule
-// re-applies elevation via higher specificity, so no explicit hover
-// declaration is needed here.
-.mud-button-filled {
-    box-shadow: none;
-}
-
-.mud-button-outlined {
-    border: 1px solid var(--mud-palette-lines-inputs);
-}
-
-// Figma 157:24. Legacy overrides above remain until their last consumer is removed.
+// Figma 157:24.
 .shop-button {
     position: relative;
     display: inline-flex;

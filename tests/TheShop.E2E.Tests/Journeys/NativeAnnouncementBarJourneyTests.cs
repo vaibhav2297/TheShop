@@ -41,9 +41,9 @@ public sealed class NativeAnnouncementBarJourneyTests(PlaywrightFixture playwrig
             async args => {
                 if (args.withoutVendorCss)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 document.body.style.margin = '0';
                 const host = document.createElement('header');
                 host.id = 'announcement-probe';

@@ -48,9 +48,9 @@ public sealed class NativeDrawerJourneyTests(PlaywrightFixture playwright) : E2E
             async args => {
                 if (args.withoutVendorCss)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 document.body.style.margin = '0';
                 const host = document.createElement('main');
                 host.id = 'drawer-probe';

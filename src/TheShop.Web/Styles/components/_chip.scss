@@ -82,26 +82,3 @@
 
     .shop-chip:disabled { color: GrayText; }
 }
-
-// Temporary bridge: unconverted product/admin chip sets still need these vendor overrides.
-// MudBlazor hardcodes chip border-radius per size instead of using the
-// theme's DefaultBorderRadius token, so it must be flattened explicitly here.
-
-.mud-chip {
-
-    &.mud-chip-size-small,
-    &.mud-chip-size-medium,
-    &.mud-chip-size-large {
-        border-radius: 0;
-    }
-}
-
-// Outlined chips read their border from the divider token instead of the chip's semantic
-// Color, and drop the tinted fill MudBlazor applies on selection, so toggle chips stay a
-// plain hairline box in both states — only the text color communicates selection.
-.mud-chip-outlined {
-    
-    &.mud-chip-selected {
-        background-color: transparent !important;
-    }
-}

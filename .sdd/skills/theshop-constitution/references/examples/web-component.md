@@ -53,7 +53,7 @@ Input attributes target the actual input. The component owns the required floati
 
 Business rules remain in Domain/Application; shared work state stays in `BusyState`. A visual base must not absorb services, form validation, loading, or arbitrary rendering policy. Extract repeated behavior or stable composition, not a single-use layout merely to shorten a parent.
 
-During migration, unconverted controls may retain Mud dependencies. New native controls use owned SCSS and must work without vendor CSS; remove transitional bridges with their last consumers.
+Native controls use project-owned SCSS and require no vendor providers, stylesheets or component packages. Browser tests reject legacy assets if they reappear.
 
 ## Verification references
 

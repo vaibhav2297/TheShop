@@ -54,7 +54,7 @@ Use semantic headings, paragraphs, and inline elements. Heading level expresses 
 
 Use the 13 Figma-named styles through `text-style.apply(style)` or their direct `--shop-typography-{style}-{property}` variables. No application typography aliases. Use `rem` for scalable type and `normal` for Figma AUTO line height; use unitless ratios only when the design specifies an explicit line height. Preserve semantic text decoration and component spacing. Do not fix the height of text containers or inline static font styles. Small shared utility families, if justified, are generated from Sass maps/lists under `utilities/`, not emitted from `abstracts/`. Do not recreate `MudText` as a `ShopText` wrapper.
 
-During coexistence, shared native defaults are scoped to migrated surfaces (currently `.shop-native`). Do not broaden resets or typography selectors until remaining vendor screens have been checked.
+Shared document defaults belong in `Styles/base/`; `.shop-native` also applies body typography to component roots. Verify global reset or typography changes against existing routes and controls without vendor styles.
 
 ## Icons — custom SVG only (Rule 19)
 
@@ -81,6 +81,6 @@ Reuse `ShopImage` and its presets for product/category imagery. Presets own aspe
 
 Meaningful alternative text is resource-backed, with product data interpolated where appropriate. Decorative images have empty alt text. Preserve responsive sources, loading priorities, image-error fallbacks, and meaningful placeholder labels; lazy-load below-the-fold images, not the page's important initial image.
 
-## Transitional vendor theme
+## Native dependency boundary
 
-Unconverted MudBlazor components may continue using their existing `ShopTheme`, providers, and C# values until their replacements are verified. This is a temporary compatibility bridge, not guidance for new native components. Remove bridges with their last consumer; do not prematurely remove providers, assets, or registrations that still serve working screens.
+The application theme comes from compiled project SCSS. Do not add vendor theme providers, package assets, or parallel C# palettes. Keep native boot/error presentation in the owning SCSS partial and verify it against fresh published output.

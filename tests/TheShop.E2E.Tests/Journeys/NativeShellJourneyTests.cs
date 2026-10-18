@@ -45,11 +45,11 @@ public sealed class NativeShellJourneyTests(PlaywrightFixture playwright) : E2ET
         await Page.EvaluateAsync("""
             async args => {
                 document.body.style.margin = '0';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 document.querySelector('[data-shop-scroll-root]').style.display = 'none';
                 if (args.withoutVendorCss)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 const specimen = document.createElement('main');
                 specimen.id = 'badge-probe';
                 specimen.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:24px;background:white';
@@ -65,7 +65,7 @@ public sealed class NativeShellJourneyTests(PlaywrightFixture playwright) : E2ET
 
         await Assertions.Expect(appbar).ToHaveCSSAsync("background-color", "rgb(255, 255, 255)");
         await Assertions.Expect(appbar.Locator("nav a")).ToHaveCountAsync(5);
-        await Assertions.Expect(appbar.Locator("nav a").First).ToHaveCSSAsync("text-transform", "uppercase");
+        await Assertions.Expect(appbar.Locator("nav a").First).ToHaveCSSAsync("text-transform", "capitalize");
         await Assertions.Expect(appbar.Locator(".shop-appbar-logo")).ToHaveCSSAsync("width", "52px");
         (await appbar.Locator(".shop-appbar-logo img").BoundingBoxAsync())!.Height.Should().BeApproximately(52, 1);
         foreach (var action in await appbar.Locator(".shop-appbar-actions > button, .shop-appbar-actions > a").AllAsync())
@@ -131,7 +131,7 @@ public sealed class NativeShellJourneyTests(PlaywrightFixture playwright) : E2ET
             async withoutVendorCss => {
                 if (withoutVendorCss)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 await document.fonts.load('700 34px "Barlow Condensed"');
                 await document.fonts.load('500 16px "Space Grotesk"');
                 await document.fonts.ready;
@@ -161,7 +161,7 @@ public sealed class NativeShellJourneyTests(PlaywrightFixture playwright) : E2ET
             async withoutVendorCss => {
                 if (withoutVendorCss)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 await document.fonts.load('500 16px "Space Grotesk"');
                 await document.fonts.ready;
             }

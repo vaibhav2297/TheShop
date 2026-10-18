@@ -2,9 +2,6 @@ using Bunit;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Common;
 using Xunit;
@@ -29,8 +26,6 @@ public class ShopImageUploadTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton<BusyState>();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
     }
 
     private static ShopUploadedImage ExampleImage(string fileName = "logo.png") =>

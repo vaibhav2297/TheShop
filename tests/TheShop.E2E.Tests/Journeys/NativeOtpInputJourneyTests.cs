@@ -30,7 +30,7 @@ public sealed class NativeOtpInputJourneyTests(PlaywrightFixture playwright) : E
             async withoutVendorCss => {
                 if (withoutVendorCss)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 await document.fonts.load('500 20px "Space Grotesk"');
                 await document.fonts.ready;
             }
@@ -85,9 +85,7 @@ public sealed class NativeOtpInputJourneyTests(PlaywrightFixture playwright) : E
         await SaveAsync($"otp-{width}-{withoutVendorCss}-filled");
 
         errors.Should().BeEmpty();
-        // app.css hides the error banner, so it is only meaningful while that sheet is enabled.
-        if (!withoutVendorCss)
-            await Assertions.Expect(Page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
+        await Assertions.Expect(Page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
     }
 
     private static async Task ExpectValuesAsync(ILocator boxes, params string[] values)

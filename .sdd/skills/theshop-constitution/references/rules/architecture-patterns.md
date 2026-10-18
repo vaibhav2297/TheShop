@@ -288,7 +288,6 @@ public sealed class CartState
 
 ### Web
 ```xml
-<PackageReference Include="MudBlazor" Version="7.*" />
 <PackageReference Include="Blazored.LocalStorage" Version="4.*" />
 <PackageReference Include="Microsoft.Extensions.Localization" Version="8.*" />
 <PackageReference Include="Microsoft.AspNetCore.Localization" Version="8.*" />

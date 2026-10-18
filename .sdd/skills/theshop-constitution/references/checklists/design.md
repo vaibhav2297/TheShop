@@ -1,6 +1,6 @@
 # Checklist — Design
 
-Verification checklist for the canonical constitution. Apply native requirements to new and converted surfaces. Record remaining legacy consumers during migration; do not remove their providers before replacements are verified.
+Verification checklist for the canonical constitution. Apply native requirements to every surface. Verify package and published-asset independence; no vendor bridge remains.
 
 ## Strings and boundaries
 
@@ -12,11 +12,11 @@ Verification checklist for the canonical constitution. Apply native requirements
 ## Theme and styling
 
 - [ ] Shared design values belong to Styles/tokens; component-only values stay in their owning partial and custom properties are scoped to the component, not :root.
-- [ ] Temporary C# theme ownership is limited to existing Mud consumers and tracked for removal.
+- [ ] No C# theme palette, vendor provider or UI-suite package remains.
 - [ ] Project classes use component-prefixed kebab-case, with no BEM double underscores or double hyphens.
 - [ ] Static styles stay in the correct centralized SCSS partial; no Razor style blocks or new CSS isolation.
 - [ ] Sass modules use @use, local namespaces, and module-qualified built-ins.
-- [ ] Selectors remain shallow; no routine !important or global resets that break unconverted controls.
+- [ ] Selectors remain shallow; no routine !important or global resets that break existing controls.
 - [ ] Typography uses semantic HTML; visual size does not dictate heading level.
 - [ ] Icons use trusted ShopIcons fragments, not user HTML or external SVG strings.
 - [ ] Conditional classes use the small project helper; class order is not claimed to override CSS specificity.
@@ -55,7 +55,7 @@ Verification checklist for the canonical constitution. Apply native requirements
 - [ ] Desktop/mobile, zoom, long content, keyboard focus, and validation states are checked.
 - [ ] Supplied Figma nodes and screenshots were inspected; browser results are compared with those references.
 - [ ] Inferred states and accessibility deviations are recorded, not claimed as exact Figma parity.
-- [ ] Existing and converted consumers work during coexistence.
+- [ ] Existing consumers work against package-free published output.
 - [ ] Unavailable checks are reported honestly, not treated as passed.
 
 Use code-generation.md for architecture, tests, and public API documentation checks.

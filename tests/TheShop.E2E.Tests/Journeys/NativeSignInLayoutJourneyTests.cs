@@ -39,8 +39,8 @@ public sealed class NativeSignInLayoutJourneyTests(PlaywrightFixture playwright)
             await Page.EvaluateAsync("""
                 () => {
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
-                    document.getElementById('blazor-error-ui').style.display = 'none';
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
+
                 }
                 """);
 

@@ -35,9 +35,9 @@ public sealed class NativeTableJourneyTests(PlaywrightFixture playwright) : E2ET
             async args => {
                 if (args.withoutVendorCss)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 document.body.style.margin = '0';
                 const host = document.createElement('main');
                 host.id = 'table-probe';
@@ -204,12 +204,13 @@ public sealed class NativeTableJourneyTests(PlaywrightFixture playwright) : E2ET
         await SaveAsync("table-brands-live");
         await first.CheckAsync();
 
-        // Exercise the appbar's native activator against the retained account dropdown.
         var account = Page.Locator($".shop-appbar button[aria-label='{Strings.Nav_Account}']");
         await account.ClickAsync();
-        await Assertions.Expect(Page.GetByText(Strings.Nav_MyProfile, new() { Exact = true })).ToBeVisibleAsync();
-        await account.ClickAsync();
-        await Assertions.Expect(Page.GetByText(Strings.Nav_MyProfile, new() { Exact = true })).ToBeHiddenAsync();
+        var profileDrawer = Page.GetByRole(AriaRole.Dialog, new() { Name = Strings.Nav_Account, Exact = true });
+        await Assertions.Expect(profileDrawer.GetByRole(AriaRole.Link, new() { Name = Strings.Nav_MyProfile, Exact = true })).ToBeVisibleAsync();
+        await profileDrawer.GetByTestId("drawer-close").ClickAsync();
+        await Assertions.Expect(profileDrawer).ToBeHiddenAsync();
+        await Assertions.Expect(account).ToBeFocusedAsync();
 
         await Page.GetByRole(AriaRole.Link, new() { Name = Strings.AddBrand_Heading, Exact = true }).ClickAsync();
         await Assertions.Expect(bulk).ToHaveCountAsync(0);
@@ -218,17 +219,12 @@ public sealed class NativeTableJourneyTests(PlaywrightFixture playwright) : E2ET
         await Page.SetViewportSizeAsync(390, 900);
         var expand = trail.Locator(".shop-breadcrumb-expand");
         var parent = trail.GetByRole(AriaRole.Link, new() { Name = Strings.ManageBrands_Heading, Exact = true });
-        await Assertions.Expect(parent).ToBeHiddenAsync();
-        (await expand.BoundingBoxAsync())!.Width.Should().Be(24);
-        (await expand.Locator("svg").BoundingBoxAsync())!.Width.Should().Be(18);
-        await SaveAsync("shell-breadcrumb-collapsed-live");
-        await expand.FocusAsync();
-        await Page.Keyboard.PressAsync("Enter");
         await Assertions.Expect(parent).ToBeVisibleAsync();
-        await Assertions.Expect(expand).ToHaveCountAsync(0);
+        await Assertions.Expect(expand).ToBeHiddenAsync();
+        await parent.FocusAsync();
         await Assertions.Expect(parent).ToBeFocusedAsync();
-        await Assertions.Expect(trail.Locator(".shop-breadcrumb-separator")).ToHaveCountAsync(2);
-        await SaveAsync("shell-breadcrumb-expanded-live");
+        await Assertions.Expect(trail.Locator(".shop-breadcrumb-separator:visible")).ToHaveCountAsync(2);
+        await SaveAsync("shell-breadcrumb-short-trail-live");
         await parent.ClickAsync();
         await Assertions.Expect(trail.Locator("[aria-current='page']")).ToHaveTextAsync(Strings.ManageBrands_Heading);
         await Assertions.Expect(trail.Locator("button")).ToHaveCountAsync(0);

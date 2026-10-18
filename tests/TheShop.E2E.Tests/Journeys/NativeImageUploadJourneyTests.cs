@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using Microsoft.Playwright;
@@ -29,7 +29,7 @@ public sealed class NativeImageUploadJourneyTests(PlaywrightFixture playwright) 
             await Page.EvaluateAsync("""
                 () => {
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 }
                 """);
         }

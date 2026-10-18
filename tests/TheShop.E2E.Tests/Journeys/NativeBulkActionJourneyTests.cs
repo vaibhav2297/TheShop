@@ -36,9 +36,9 @@ public sealed class NativeBulkActionJourneyTests(PlaywrightFixture playwright) :
             async args => {
                 if (args.withoutVendorCss)
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 const host = document.createElement('div');
                 host.id = 'bulk-probe';
                 host.innerHTML = '<header style="height:100px;padding:24px;background:white">Appbar / Breadcrumbs</header>' +

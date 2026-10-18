@@ -40,14 +40,20 @@ public sealed class NativeRangeSliderJourneyTests(PlaywrightFixture playwright) 
         });
         await Page.SetViewportSizeAsync(width, 1000);
         await Page.GotoAsync(WebRoutes.Products);
-        var expander = Page.Locator(".shop-expander").Filter(new() { HasText = Strings.Filter_Price });
+        ILocator filters = Page.Locator(".shop-catalogue-sidebar");
+        if (width < 1024)
+        {
+            await Page.GetByRole(AriaRole.Button, new() { Name = Strings.Products_Filters, Exact = true }).ClickAsync();
+            filters = Page.Locator("dialog[open]");
+        }
+        var expander = filters.Locator(".shop-expander").Filter(new() { HasText = Strings.Filter_Price });
         await expander.Locator(".shop-expander-trigger").ClickAsync(new() { Timeout = 30_000 });
         var slider = expander.Locator(".shop-range");
         await Assertions.Expect(slider).ToBeVisibleAsync();
         if (withoutVendorCss)
             await Page.EvaluateAsync("""
                 () => { for (const link of document.querySelectorAll('link[rel="stylesheet"]'))
-                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true; }
+                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet'); }
                 """);
         var lower = slider.Locator(".shop-range-lower");
         var upper = slider.Locator(".shop-range-upper");
@@ -92,7 +98,14 @@ public sealed class NativeRangeSliderJourneyTests(PlaywrightFixture playwright) 
         await Assertions.Expect(lower).ToHaveValueAsync("20.25");
         await minimum.FocusAsync();
         await minimum.PressAsync("Escape");
+        if (width < 1024)
+        {
+            await Assertions.Expect(filters).ToHaveCountAsync(0);
+            await Page.GetByRole(AriaRole.Button, new() { Name = Strings.Products_Filters, Exact = true }).ClickAsync();
+            await expander.Locator(".shop-expander-trigger").ClickAsync();
+        }
         await Assertions.Expect(minimum).Not.ToHaveAttributeAsync("aria-invalid", "true");
+        await minimum.FocusAsync();
         await Assertions.Expect(minimum).ToHaveValueAsync("20.25");
 
         await upper.FocusAsync();
@@ -141,26 +154,25 @@ public sealed class NativeRangeSliderJourneyTests(PlaywrightFixture playwright) 
         await upper.FocusAsync();
         await AssertTooltipCenteredAsync(slider);
         await Page.ScreenshotAsync(new() { Path = Path.Combine(directory, $"range-tooltip-endpoint-{width}-{withoutVendorCss}.png") });
-        var scrollRoot = Page.Locator("[data-shop-scroll-root]");
+        var scrollRoot = Page.Locator(width < 1024 ? "dialog[open] .shop-drawer-content" : "[data-shop-scroll-root]");
         await scrollRoot.EvaluateAsync("async el => { el.scrollBy(0, 10); await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); }");
         await AssertTooltipCenteredAsync(slider);
         await expander.Locator(".shop-expander-trigger").ClickAsync();
         await Assertions.Expect(Page.Locator(".shop-range-bubble:popover-open")).ToHaveCountAsync(0);
         await expander.Locator(".shop-expander-trigger").ClickAsync();
-        await Assertions.Expect(Page.GetByRole(AriaRole.Button, new() { Name = Strings.Filter_Clear, Exact = true })).ToBeVisibleAsync();
-        await Page.GetByRole(AriaRole.Button, new() { Name = Strings.Filter_Clear, Exact = true }).ClickAsync();
+        await Assertions.Expect(filters.GetByRole(AriaRole.Button, new() { Name = Strings.Filter_ClearAll, Exact = true })).ToBeVisibleAsync();
+        await filters.GetByRole(AriaRole.Button, new() { Name = Strings.Filter_ClearAll, Exact = true }).ClickAsync();
         await Assertions.Expect(lower).ToHaveValueAsync("0");
         await Assertions.Expect(upper).ToHaveValueAsync("100");
         await Assertions.Expect(Page).Not.ToHaveURLAsync(new Regex("price_min|price_max"));
         await Page.EvaluateAsync("() => document.documentElement.style.fontSize = '200%'");
         await Assertions.Expect(slider.Locator(".shop-field-label").First).ToBeVisibleAsync();
+        await slider.EvaluateAsync("async el => { await document.fonts.ready; await Promise.all(el.getAnimations({subtree:true}).map(animation => animation.finished.catch(() => {}))); }");
         (await slider.EvaluateAsync<bool>("el => el.scrollWidth <= el.clientWidth + 1")).Should().BeTrue();
         await slider.ScreenshotAsync(new() { Path = Path.Combine(directory, $"range-large-text-{width}-{withoutVendorCss}.png") });
         var labelGeometry = await slider.Locator(".shop-field-label").EvaluateAllAsync<string>("labels => JSON.stringify(labels.map(el => ({scroll:el.scrollWidth,width:el.clientWidth,font:getComputedStyle(el).fontSize,container:el.closest('.shop-range').clientWidth,columns:getComputedStyle(el.closest('.shop-range-inputs')).gridTemplateColumns})))");
         (await slider.Locator(".shop-field-label").EvaluateAllAsync<bool>("labels => labels.every(el => el.scrollWidth <= el.clientWidth + 1)")).Should().BeTrue(labelGeometry);
-        if (!withoutVendorCss) await Assertions.Expect(Page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
-        // app.css normally hides this fallback; disabling that stylesheet does not mean Blazor failed.
-        (await Page.Locator("#blazor-error-ui").EvaluateAsync<string>("el => el.style.display")).Should().NotBe("block");
+        await Assertions.Expect(Page.Locator("#blazor-error-ui")).ToBeHiddenAsync();
         browserErrors.Should().BeEmpty();
         unexpectedRequests.Should().Be(0);
     }

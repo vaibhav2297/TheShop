@@ -22,7 +22,7 @@ All paths below are relative to `src/TheShop.Web/`.
 | `Styles/TheShop.scss` | Ordered `@use` entry point |
 | `Theme/ShopIcons.cs` | Trusted application SVG registry |
 
-Do not introduce replacement C# color/typography registries or a runtime theme service to hold static CSS values. Existing `ShopColors`, `ShopTypography`, and `ShopTheme` remain only while unconverted Mud consumers need them.
+Do not introduce C# color/typography registries or a runtime theme service to hold static CSS values. Tokens and component SCSS own presentation; ShopIcons remains the trusted SVG registry.
 
 ## Token setup
 
@@ -60,11 +60,11 @@ Inspect the relevant component node before assigning measured values. Preserve e
 
 Component resting variants, interactive states, and responsive behavior require browser verification. Token extraction alone is not proof of Figma parity.
 
-## Base styles and coexistence
+## Base styles and dependency independence
 
-Base styles provide shared document defaults; they do not own component variants or page layouts. While vendor components remain, scope native defaults to migrated surfaces and test mixed screens before changing global selectors.
+Base styles provide shared document defaults; they do not own component variants or page layouts. Document reset and typography defaults belong here, with responsive browser checks when global selectors change.
 
-Keep existing Mud providers, styles, scripts, registrations, and C# theme values until their final consumers are replaced and verified. Track those temporary bridges explicitly. The final native theme comes from compiled SCSS, without Mud theme DI or a permanent parallel C# palette.
+Theme values come from compiled SCSS without vendor providers, styles, scripts, registrations or a parallel C# palette. Guard this boundary in package and published-browser checks.
 
 ## `ShopIcons` registry
 

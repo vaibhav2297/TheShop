@@ -1,11 +1,19 @@
-// Scope the transition reset to converted surfaces; leave legacy Mud forms unchanged.
-.shop-native,
-.shop-native *,
-.shop-native *::before,
-.shop-native *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
-// The application shell must retain its viewport geometry without vendor CSS.
+
+html,
+body,
+#app {
+    block-size: 100%;
+}
+
 body {
     margin: 0;
+}
+
+a {
+    color: inherit;
 }

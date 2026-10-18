@@ -388,7 +388,7 @@ namespace TheShop.Web.Pages.Products;
 public partial class ProductDetail(
     IMediator mediator,
     CartState cart,
-    ISnackbar snackbar,
+    IShopNotificationService notifications,
     IStringLocalizer<Strings> localizer) { ... }
 ```
 

@@ -11,7 +11,7 @@
 | Domain | Entities, value objects, enums, domain exceptions, business invariants | `src/TheShop.Domain/` |
 | Application | Use cases (MediatR Commands/Queries/Handlers), interfaces for *all* external dependencies, DTOs, AutoMapper profiles, FluentValidation validators, `Result<T>`, MediatR pipeline behaviors | `src/TheShop.Application/` |
 | Infrastructure | Supabase repositories, Stripe service, Resend sender, `SupabaseAuthService`, DB record types, mapping between records and entities | `src/TheShop.Infrastructure/` |
-| Web | Pages, components, state stores, MudBlazor theme, resources, layouts, route definitions, UI-only services, `BusyState` / `BusyKeys` / `Routes` | `src/TheShop.Web/` |
+| Web | Pages, components, state stores, SCSS theme, resources, layouts, route definitions, UI-only services, `BusyState` / `BusyKeys` / `Routes` | `src/TheShop.Web/` |
 | Composition root | DI wiring — the only place that touches every layer | `Program.cs` |
 
 ### Folder layout
@@ -79,10 +79,7 @@ src/
     │   └── ToastState.cs
     ├── Services/               ← UI-only services (browser storage, etc.)
     ├── Theme/
-    │   ├── ShopColors.cs
-    │   ├── ShopIcons.cs
-    │   ├── ShopTypography.cs
-    │   └── ShopTheme.cs
+    │   └── ShopIcons.cs
     ├── Resources/
     │   ├── Strings.resx
     ├── Common/
@@ -149,7 +146,6 @@ builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddPresentation();
 
-builder.Services.AddMudServices();
 await builder.Build().RunAsync();
 ```
 
@@ -158,7 +154,6 @@ await builder.Build().RunAsync();
 public static IServiceCollection AddPresentation(this IServiceCollection services)
 {
     services.AddLocalization(o => o.ResourcesPath = "Resources");
-    services.AddSingleton<ShopTheme>();
     services.AddScoped<CartState>();
     services.AddScoped<AuthState>();
     services.AddScoped<ToastState>();
@@ -237,7 +232,7 @@ public static class Routes
 | DTO | `{Noun}Dto` | `ProductDto` |
 | DB record | `{Noun}Record` | `ProductRecord` |
 | Test class | `{ClassUnderTest}Tests` | `AddToCartHandlerTests` |
-| Theme class | `Shop{Concept}` | `ShopColors`, `ShopIcons` |
+| Icon registry | `ShopIcons` | `ShopIcons` |
 | Resource key | `{Context}_{Purpose}` | `ProductDetail_PageTitle`, `AddToCart` |
 
 ### File organisation

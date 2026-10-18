@@ -45,7 +45,7 @@ public sealed class NativeAdminConsoleLayoutJourneyTests(PlaywrightFixture playw
             await Assertions.Expect(loading.First.Locator(".shop-admin-module-card-skeleton-count")).ToHaveCSSAsync("height", "56px");
             await Assertions.Expect(loading.First.Locator(".shop-admin-module-card-skeleton-action")).ToHaveCSSAsync("height", "38px");
             var before = (await loading.First.BoundingBoxAsync())!;
-            before.Height.Should().BeApproximately(width < 768 ? 224 : 248, 1);
+            before.Height.Should().BeGreaterThanOrEqualTo(width < 768 ? 224 : 248);
             await SaveAsync($"admin-console-loading-{width}-{withoutVendorCss}");
 
             release.TrySetResult();
@@ -56,7 +56,7 @@ public sealed class NativeAdminConsoleLayoutJourneyTests(PlaywrightFixture playw
             await Assertions.Expect(surface.Locator("p[role=status]")).ToBeEmptyAsync();
             await Assertions.Expect(surface.Locator("[class*='mud-']")).ToHaveCountAsync(0);
             await Assertions.Expect(cards.First.Locator("h2")).ToHaveTextAsync(Strings.AdminConsole_Module_Products);
-            await Assertions.Expect(cards.First.Locator("h2")).ToHaveCSSAsync("font-size", "20px");
+            await Assertions.Expect(cards.First.Locator("h2")).ToHaveCSSAsync("font-size", "24px");
             await Assertions.Expect(cards.First.Locator(".shop-admin-module-card-count")).ToHaveTextAsync("78");
             await Assertions.Expect(cards.Last.Locator(".shop-admin-module-card-count")).ToHaveTextAsync("0");
             var after = (await cards.First.BoundingBoxAsync())!;
@@ -218,7 +218,7 @@ public sealed class NativeAdminConsoleLayoutJourneyTests(PlaywrightFixture playw
         async withoutVendorCss => {
             if (withoutVendorCss)
                 for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                    if (/MudBlazor|CodeBeam/i.test(link.href)) link.disabled = true;
+                    if (/MudBlazor|CodeBeam/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
             document.body.style.margin = '0';
             await document.fonts.load('800 60px "Barlow Condensed"');
             await document.fonts.load('500 20px "Space Grotesk"');

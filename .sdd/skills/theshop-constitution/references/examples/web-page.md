@@ -41,9 +41,9 @@ Read `SignIn.razor.cs` for the complete implementation:
 
 Do not introduce a second `_isBusy` state or call repositories from the page. Keep Application behavior and existing result/error contracts unchanged during markup migration.
 
-## Transitional notification bridge
+## Notifications
 
-The current SignIn implementation still injects `ISnackbar`, and its active legacy layout supplies the snackbar provider. This is an explicit temporary bridge until the project-owned notification service/host is implemented and verified. It is not the final native architecture and must not become a reason to retain MudBlazor after the last consumer migrates. The native form itself must not depend on vendor CSS or form controls.
+SignIn uses IShopNotificationService; ShopUiHost supplies the shared native host. Preserve field-level command validation and use notifications for operation feedback. No vendor provider or stylesheet is required.
 
 ## Style and verification references
 

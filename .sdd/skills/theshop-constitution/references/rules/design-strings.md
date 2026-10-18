@@ -71,24 +71,23 @@ Direct property access on the auto-generated class. Fully type-safe, no `IString
 
 <PageTitle>@Strings.ProductDetail_PageTitle</PageTitle>
 
-<MudButton OnClick="@AddToCart">@Strings.AddToCart</MudButton>
+<ShopButton OnClick="@AddToCart">@Strings.AddToCart</ShopButton>
 
-<MudTextField Label="@Strings.Email_Label"
-              Placeholder="@Strings.Email_Placeholder"
-              HelperText="@Strings.Email_Hint" />
+<ShopTextField Label="@Strings.Email_Label"
+               @bind-Value="_model.Email" HelperText="@Strings.Email_Hint" />
 ```
 
 In code-behind:
 
 ```csharp
-Snackbar.Add(Strings.AddedToCart, Severity.Success);
+Notifications.Show(Strings.AddedToCart, ShopNotificationKind.Success);
 ```
 
 For format strings with placeholders, `string.Format` works the same way:
 
 ```razor
 @* Strings.resx: Product_StockWarning = "Only {0} left in stock" *@
-<MudAlert>@string.Format(Strings.Product_StockWarning, _product.Stock)</MudAlert>
+<p>@string.Format(Strings.Product_StockWarning, _product.Stock)</p>
 ```
 
 ### Pattern 2 — `Localizer[runtimeKey]` (only when the key is determined at runtime)
@@ -106,7 +105,7 @@ private async Task AddToCart()
     if (!result.IsSuccess)
     {
         // result.Error is a string like "ProductNotFound" returned from Application
-        Snackbar.Add(Localizer[result.Error], Severity.Error);
+        Notifications.Show(Localizer[result.Error], ShopNotificationKind.Error);
     }
 }
 ```
@@ -114,7 +113,7 @@ private async Task AddToCart()
 ```razor
 @if (!result.IsSuccess)
 {
-    <MudAlert Severity="Severity.Error">@Localizer[result.Error]</MudAlert>
+    <p role="alert">@Localizer[result.Error]</p>
 }
 ```
 
@@ -123,7 +122,7 @@ private async Task AddToCart()
 For tests that inject a mocked `IStringLocalizer<Strings>`, or for components that need explicit `IStringLocalizer` for scoped culture switching, use `nameof()` so the key stays compile-safe while still going through the localizer interface.
 
 ```razor
-<MudButton>@Localizer[nameof(Strings.AddToCart)]</MudButton>
+<ShopButton>@Localizer[nameof(Strings.AddToCart)]</ShopButton>
 ```
 
 Use this only when there's a concrete reason to involve `IStringLocalizer`. For 95% of UI code, Pattern 1 is the right choice. Don't reach for `IStringLocalizer` "just in case" — the typed accessor in Pattern 1 already handles culture switching automatically.
@@ -163,7 +162,7 @@ Web then translates the runtime key via Pattern 2:
 ```razor
 @if (!result.IsSuccess)
 {
-    <MudAlert Severity="Severity.Error">@Localizer[result.Error]</MudAlert>
+    <p role="alert">@Localizer[result.Error]</p>
 }
 ```
 
@@ -200,8 +199,8 @@ Rule 11 covers every string a user reads. That includes:
 
 | Mistake | Fix |
 |---|---|
-| `<MudText>Add to Cart</MudText>` | `<MudText>@Strings.AddToCart</MudText>` |
-| `<MudButton>@Localizer["AddToCart"]</MudButton>` | `<MudButton>@Strings.AddToCart</MudButton>` |
+| `<p>Add to Cart</p>` | `<p>@Strings.AddToCart</p>` |
+| `<ShopButton>@Localizer["AddToCart"]</ShopButton>` | `<ShopButton>@Strings.AddToCart</ShopButton>` |
 | Typo: `Localizer["AddtoCart"]` — silent runtime failure showing the literal key | Pattern 1 — typo fails at compile time |
 | Application: `Result.Fail<T>("ProductNotFound")` | `Result.Fail<T>(nameof(Strings.ProductNotFound))` |
 | Resource key with hyphen: `Add-to-cart` | Use snake-case / PascalCase only — keys become C# identifiers |

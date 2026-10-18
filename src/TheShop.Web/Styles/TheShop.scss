@@ -7,14 +7,7 @@
 @use 'base/reset';
 @use 'base/typography' as base-typography;
 @use 'base/accessibility';
-
-@use 'abstracts/variables' as *;
-@use 'abstracts/colors' as *;
-@use 'abstracts/typography' as *;
-
-@use 'utilities/sizing';
-
-@use 'components/field';
+@use 'components/boot';
 @use 'components/native-field';
 @use 'components/date-field';
 @use 'components/command-validation';
@@ -26,7 +19,6 @@
 @use 'components/range-slider';
 @use 'components/button';
 @use 'components/icon-button';
-@use 'components/picker';
 @use 'components/otpinput';
 @use 'components/imageupload';
 @use 'components/file-dropzone';
@@ -42,7 +34,6 @@
 @use 'components/chip';
 @use 'components/expander';
 @use 'components/filter-panel';
-@use 'components/expansionpanel';
 @use 'components/pagination';
 @use 'components/table';
 @use 'components/bulkactionbar';

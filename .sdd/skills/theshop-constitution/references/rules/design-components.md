@@ -113,7 +113,7 @@ This example belongs in an `EditForm`. `ShopTextField` owns its ValidationMessag
 
 Custom `InputBase<TValue>` controls preserve `Value`, `ValueChanged`, `ValueExpression`, parsing errors, field notification, and the surrounding `EditContext`. Do not replace validated input behavior with an unrelated component wrapper. Preserve existing required, culture, numeric, date, and selection semantics.
 
-`ShopCheckbox` specializes the built-in `InputCheckbox` with the Figma `2031:9937` two-state design. Required `Label` owns the accessible name; shared `ShopSize` selects Small/Medium/Large geometry (Medium default). Native attributes/classes target the input; generated IDs and associated validation errors follow the input contract above. No Color, Variant, or tri-state API without a real design requirement. The browser owns checked/keyboard behavior; native disabled plus a guarded handler prevent updates. Use `@bind-Value`, or provide ValueExpression alongside Value/ValueChanged. See migration guide section 7.5 for measured icon/target sizes and inferred accessibility states. Keep required-true validation in the form; HTML required is not an EditContext validator. Do not detach a required consent checkbox from MudForm validation during a partial migration.
+`ShopCheckbox` specializes the built-in `InputCheckbox` with the Figma `2031:9937` two-state design. Required `Label` owns the accessible name; shared `ShopSize` selects Small/Medium/Large geometry (Medium default). Native attributes/classes target the input; generated IDs and associated validation errors follow the input contract above. No Color, Variant, or tri-state API without a real design requirement. The browser owns checked/keyboard behavior; native disabled plus a guarded handler prevent updates. Use `@bind-Value`, or provide ValueExpression alongside Value/ValueChanged. See migration guide section 7.5 for measured icon/target sizes and inferred accessibility states. Keep required-true validation in the form; HTML required is not an EditContext validator. Retain the command validator's consent requirement.
 
 Await asynchronous validation from the submission path; avoid `async void` validation handlers. Do not dispatch before validation completes. Application failures remain resource keys translated in Web; do not redesign the result contract for a control replacement.
 
@@ -143,9 +143,9 @@ Keep markup in `.razor` and substantial state, parameters, handlers, lifecycle, 
 
 Preserve route cancellation, event unsubscription, JS-module disposal, and existing navigation behavior when changing markup. Local transient interaction state does not transfer business behavior or shared operation ownership into the component.
 
-## Migration coexistence
+## Native dependency boundary
 
-Existing Mud consumers, providers, packages, assets, and registrations may remain until their final consumers are migrated and verified. Do not extend the dependency or require vendor CSS for native controls. Scope native and legacy styles so adding a primitive does not silently restyle unmigrated forms.
+The native migration has removed vendor consumers, providers, packages, assets and registrations. New controls must use project-owned styles and work against fresh published output. Reject legacy assets in browser checks rather than disabling them.
 
 Migrate behavior-focused tests with each control: native semantics, events, binding, accessible names, and resources replace vendor-component assertions. Retain source-specific image failures, upload cleanup, dialog completion, and keyboard contracts. Appearance alone is not preservation proof.
 

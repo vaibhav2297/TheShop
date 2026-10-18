@@ -218,7 +218,7 @@ public sealed class NativeCatalogueLayoutJourneyTests(PlaywrightFixture playwrig
     private Task PrepareAppearanceAsync(bool withoutVendorCss) => Page.EvaluateAsync("""
         async withoutVendorCss => {
             if (withoutVendorCss) for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                if (/MudBlazor|CodeBeam/i.test(link.href)) link.disabled = true;
+                if (/MudBlazor|CodeBeam/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
             await document.fonts.load('800 60px "Barlow Condensed"');
             await document.fonts.load('500 16px "Space Grotesk"');
             await document.fonts.ready;

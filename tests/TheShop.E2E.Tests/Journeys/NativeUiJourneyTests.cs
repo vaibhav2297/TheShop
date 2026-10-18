@@ -107,9 +107,9 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
             await Page.EvaluateAsync("""
                 () => {
                     for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                     }
-                    document.getElementById('blazor-error-ui').style.display = 'none';
+
                 }
                 """);
         }
@@ -244,10 +244,10 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         await Page.EvaluateAsync("""
             html => {
                 for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 }
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 const host = document.createElement('main');
                 host.id = 'text-field-probe';
                 host.className = 'shop-native';
@@ -303,9 +303,9 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
             await Page.EvaluateAsync("""
                 () => {
                     for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                     }
-                    document.getElementById('blazor-error-ui').style.display = 'none';
+
                 }
                 """);
         }
@@ -385,11 +385,11 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
             ({ html, withoutVendorCss }) => {
                 if (withoutVendorCss) {
                     for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                     }
                 }
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 const host = document.createElement('div');
                 host.id = 'icon-click-probe';
                 host.className = 'shop-native';
@@ -438,7 +438,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         await Page.EvaluateAsync("""
             () => {
                 for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 }
                 document.getElementById('app').style.display = 'none';
                 const host = document.createElement('main');
@@ -453,7 +453,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         (await Page.EvaluateAsync<bool>("""
             () => [...document.querySelectorAll('link[rel="stylesheet"]')]
                 .filter(link => /MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href))
-                .every(link => link.disabled)
+                .length === 0
             """)).Should().BeTrue();
         (await Page.EvaluateAsync<bool>("""
             () => [...document.querySelectorAll('link[rel="stylesheet"]')]
@@ -543,11 +543,11 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
             withoutVendorCss => {
                 if (withoutVendorCss) {
                     for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                     }
                 }
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 const host = document.createElement('main');
                 host.id = 'loading-button-probe';
                 host.className = 'shop-native';
@@ -622,7 +622,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
         await Page.EvaluateAsync("""
             async () => {
                 for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 }
                 document.getElementById('app').style.display = 'none';
                 const host = document.createElement('main');

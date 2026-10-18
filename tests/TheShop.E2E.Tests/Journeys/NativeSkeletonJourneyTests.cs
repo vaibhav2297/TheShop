@@ -54,7 +54,14 @@ public sealed class NativeSkeletonJourneyTests(PlaywrightFixture playwright) : E
 
             var groups = Page.Locator(".shop-filter-skeleton-group");
             await Assertions.Expect(groups).ToHaveCountAsync(5);
-            (await groups.First.BoundingBoxAsync())!.Height.Should().BeApproximately(72f, 1f);
+            if (width < 1024)
+            {
+                await Assertions.Expect(groups.First).ToBeHiddenAsync();
+                await Page.GetByRole(AriaRole.Button, new() { Name = Strings.Products_Filters, Exact = true }).ClickAsync();
+                groups = Page.Locator("dialog[open] .shop-filter-skeleton-group");
+                await Assertions.Expect(groups).ToHaveCountAsync(5);
+            }
+            (await groups.First.BoundingBoxAsync())!.Height.Should().BeApproximately(48f, 1f);
             await Assertions.Expect(groups.First.Locator(".shop-skeleton")).ToHaveCSSAsync("font-size", "16px");
 
             (await Page.EvaluateAsync<string[]>("() => [...document.querySelectorAll('.shop-skeleton')].map(e => getComputedStyle(e).animationName).filter(n => n !== 'none')"))

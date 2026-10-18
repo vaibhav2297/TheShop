@@ -36,10 +36,10 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
             async args => {
                 if (args.withoutVendorCss) {
                     for (const link of document.querySelectorAll('link[rel="stylesheet"]'))
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 }
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 document.body.style.margin = '0';
                 const host = document.createElement('main');
                 host.id = 'component-probe';
@@ -237,16 +237,23 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         });
         await Page.SetViewportSizeAsync(width, 900);
         await Page.GotoAsync(WebRoutes.Products);
-        var category = Page.Locator(".shop-expander").Filter(new() { HasText = Strings.Filter_Category });
+        var mobile = width < 1024;
+        ILocator filters = Page.Locator(".shop-catalogue-sidebar");
+        if (mobile)
+        {
+            await Page.GetByRole(AriaRole.Button, new() { Name = Strings.Products_Filters, Exact = true }).ClickAsync();
+            filters = Page.Locator("dialog[open]");
+        }
+        var category = filters.Locator(".shop-expander").Filter(new() { HasText = Strings.Filter_Category });
         var trigger = category.Locator(".shop-expander-trigger");
         await trigger.WaitForAsync(new() { Timeout = 30_000 });
         await Assertions.Expect(trigger).ToHaveAttributeAsync("aria-expanded", "false");
         var body = category.Locator(".shop-expander-content");
         await Assertions.Expect(body).ToHaveAttributeAsync("inert", "");
-        var groupExpanders = Page.Locator(".shop-filter-groups > .shop-expander");
+        var groupExpanders = filters.Locator(".shop-filter-groups > .shop-expander");
         var firstShadow = await groupExpanders.First.EvaluateAsync<string>("el => getComputedStyle(el).boxShadow");
         var nextShadow = await groupExpanders.Nth(1).EvaluateAsync<string>("el => getComputedStyle(el).boxShadow");
-        Regex.Matches(firstShadow, "inset").Count.Should().Be(2);
+        Regex.Matches(firstShadow, "inset").Count.Should().Be(1);
         Regex.Matches(nextShadow, "inset").Count.Should().Be(1);
         var titleBox = (await category.Locator(".shop-filter-title").BoundingBoxAsync())!;
         await Assertions.Expect(category.GetByRole(AriaRole.Heading, new() { Name = Strings.Filter_Category, Level = 3 })).ToHaveCountAsync(1);
@@ -275,6 +282,12 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         await Assertions.Expect(input).ToBeCheckedAsync();
         (await input.EvaluateAsync<bool>("el => el === window.retainedFilterInput")).Should().BeTrue();
 
+        if (mobile)
+        {
+            await filters.GetByTestId("drawer-close").ClickAsync();
+            await Assertions.Expect(filters).ToHaveCountAsync(0);
+        }
+
         var pagination = Page.GetByRole(AriaRole.Navigation, new() { Name = Strings.Pagination_Label });
         if (width < 768)
         {
@@ -291,8 +304,15 @@ public sealed class NativeDisclosureChipPaginationJourneyTests(PlaywrightFixture
         await Assertions.Expect(pagination.Locator("[aria-current]")).ToHaveTextAsync("4");
         await Page.GoBackAsync();
         await Assertions.Expect(pagination.Locator("[aria-current]")).ToHaveTextAsync("3");
-        await Page.GetByRole(AriaRole.Button, new() { Name = Strings.Filter_Clear, Exact = true }).ClickAsync();
+        if (mobile)
+            await Page.GetByRole(AriaRole.Button, new() { Name = Strings.Products_Filters, Exact = true }).ClickAsync();
+        await filters.GetByRole(AriaRole.Button, new() { Name = Strings.Filter_ClearAll, Exact = true }).ClickAsync();
         await Assertions.Expect(pagination.Locator("[aria-current]")).ToHaveTextAsync("1");
+        if (mobile)
+        {
+            await Assertions.Expect(trigger).ToHaveAttributeAsync("aria-expanded", "false");
+            await trigger.ClickAsync();
+        }
         await Assertions.Expect(input).Not.ToBeCheckedAsync();
         await Assertions.Expect(category.Locator(".shop-chip")).ToHaveCountAsync(0);
         await Assertions.Expect(Page.Locator("#blazor-error-ui")).ToBeHiddenAsync();

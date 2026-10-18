@@ -34,10 +34,10 @@ public sealed class NativeButtonColorJourneyTests(PlaywrightFixture playwright) 
         await Page.EvaluateAsync("""
             async () => {
                 for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
+                    if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
                 }
                 document.getElementById('app').style.display = 'none';
-                document.getElementById('blazor-error-ui').style.display = 'none';
+
                 const host = document.createElement('main');
                 host.id = 'button-colors';
                 host.className = 'shop-native';

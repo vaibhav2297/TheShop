@@ -44,8 +44,8 @@ public sealed class ResponsiveNavigationJourneyTests(PlaywrightFixture playwrigh
                 await document.fonts.ready;
                 if (withoutVendorCss) {
                     for (const link of document.querySelectorAll('link[rel=stylesheet]'))
-                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) link.disabled = true;
-                    document.getElementById('blazor-error-ui').style.display = 'none';
+                        if (/MudBlazor|CodeBeam|\/css\/app\.css(?:\?|$)/i.test(link.href)) throw new Error('Unexpected legacy stylesheet');
+
                 }
             }
             """, withoutVendorCss);
@@ -104,7 +104,8 @@ public sealed class ResponsiveNavigationJourneyTests(PlaywrightFixture playwrigh
             await menu.ClickAsync();
             await Assertions.Expect(drawer).ToBeVisibleAsync();
             await drawer.GetByRole(AriaRole.Link, new() { Name = Strings.Nav_Home, Exact = true }).ClickAsync();
-            await Page.WaitForURLAsync(url => new Uri(url).AbsolutePath == WebRoutes.Home);
+            await Assertions.Expect(Page).ToHaveURLAsync(E2EEnvironment.AppBaseUrl + WebRoutes.Home);
+            await Assertions.Expect(Page.Locator(".shop-home-page h1")).ToHaveTextAsync(Strings.Stay_Tuned);
             await Assertions.Expect(drawer).ToBeHiddenAsync();
         }
         await Page.EvaluateAsync("() => document.documentElement.style.fontSize = '32px'");
