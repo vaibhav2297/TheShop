@@ -122,7 +122,7 @@
 
 .shop-field-hint {
     display: flex;
-    align-items: start;
+    align-items: center;
     gap: var(--shop-space-1);
     color: var(--shop-color-text-secondary);
     @include text-style.apply(caption);
