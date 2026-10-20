@@ -1,0 +1,14 @@
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
+
+<svg @attributes="AdditionalAttributes"
+     class="@ClassName"
+     style="@Style"
+     xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="currentColor"
+     focusable="false"
+     tabindex="@((string?)null)"
+     aria-hidden="true">
+    @((MarkupString)Icon)
+</svg>

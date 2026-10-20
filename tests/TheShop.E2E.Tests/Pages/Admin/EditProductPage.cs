@@ -19,7 +19,7 @@ public sealed class EditProductPage(IPage page)
     public async Task GotoAsync(Guid productId)
     {
         await Page.GotoAsync(WebRoutes.Admin.EditProduct(productId));
-        await Page.Locator(".mud-layout").WaitForAsync(new() { Timeout = 30_000 });
+        await Page.Locator("main[data-shop-scroll-root]").WaitForAsync(new() { Timeout = 30_000 });
     }
 
     public ILocator NotFoundTitle => Page.GetByText(Strings.EditProduct_NotFoundTitle, new() { Exact = true });

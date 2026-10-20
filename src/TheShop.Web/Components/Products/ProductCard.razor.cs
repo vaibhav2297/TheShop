@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using MudBlazor.Utilities;
+using TheShop.Web.Common.UI;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Common;
 using TheShop.Web.Resources;
@@ -14,7 +13,7 @@ namespace TheShop.Web.Components.Products;
 /// The Add-to-Cart / Wishlist actions and the card-body click are currently empty
 /// callbacks — wired up by the Cart, Wishlist, and product-detail features respectively.
 /// </summary>
-public partial class ProductCard : MudComponentBase
+public partial class ProductCard : ShopComponentBase
 {
 
     #region Parameters
@@ -46,11 +45,7 @@ public partial class ProductCard : MudComponentBase
     /// <summary>
     /// Returns the CSS class for the product card
     /// </summary>
-    private string ClassName =>
-        new CssBuilder("shop-product-tile")
-            .AddClass("white")
-            .AddClass(Class)
-            .Build();
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-product-card", Class);
 
     /// <summary>
     /// The headline price. A variant product's figure is the lowest of its variants, not a price

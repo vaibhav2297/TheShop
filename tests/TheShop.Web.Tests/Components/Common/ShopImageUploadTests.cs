@@ -2,9 +2,6 @@ using Bunit;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Common;
 using Xunit;
@@ -29,8 +26,6 @@ public class ShopImageUploadTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton<BusyState>();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
     }
 
     private static ShopUploadedImage ExampleImage(string fileName = "logo.png") =>
@@ -60,15 +55,14 @@ public class ShopImageUploadTests : TestContext
 
     [Fact]
     [Trait("Feature", "shop-image")]
-    public void Render_ByDefault_ShowsEachPreviewAsAWholeSquareThumbnailInItsPreviewSize()
+    public void Render_ByDefault_ShowsEachPreviewAsAWholeSquareTile()
     {
         var cut = Render<ShopImageUpload>(p => p
-            .Add(c => c.Files, [ExampleImage()])
-            .Add(c => c.PreviewSize, 48));
+            .Add(c => c.Files, [ExampleImage()]));
 
         var preview = cut.FindComponent<ShopImage>();
-        preview.Instance.Preset.Should().Be(ShopImagePreset.Thumbnail);
-        preview.Find("[data-shop-image]").GetAttribute("style").Should().Contain("width:48px").And.Contain("height:48px");
+        preview.Instance.Preset.Should().Be(ShopImagePreset.SquareContain);
+        cut.FindComponent<ShopImageTile>().Should().NotBeNull();
     }
 
     [Fact]
@@ -80,7 +74,7 @@ public class ShopImageUploadTests : TestContext
             .Add(c => c.PreviewPreset, ShopImagePreset.BrandLogo));
 
         cut.FindComponent<ShopImage>().Instance.Preset.Should().Be(ShopImagePreset.BrandLogo);
-        cut.FindComponent<MudImage>().Instance.ObjectFit.Should().Be(ObjectFit.Contain);
+        cut.Find("img.shop-image-media").ClassList.Should().Contain("shop-image-contain");
     }
 
     [Fact]
@@ -95,8 +89,8 @@ public class ShopImageUploadTests : TestContext
         var preview = cut.FindComponent<ShopImage>();
         await cut.InvokeAsync(() => preview.Instance.OnImageFailed("desktop", image.PreviewUrl));
 
-        cut.Find(".shop-image__placeholder").TextContent.Trim().Should().Be("broken-logo.png");
-        cut.Find("button.remove").GetAttribute("aria-label").Should().Be("Remove logo");
+        cut.Find(".shop-image-placeholder").TextContent.Trim().Should().Be("broken-logo.png");
+        cut.Find("button.shop-image-tile-remove").GetAttribute("aria-label").Should().Be("Remove logo: broken-logo.png");
     }
 
     // =========================================================================
@@ -112,7 +106,7 @@ public class ShopImageUploadTests : TestContext
             .Add(c => c.Files, [ExampleImage()])
             .Add(c => c.FilesChanged, images => raised = images));
 
-        await cut.Find("button.remove").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+        await cut.Find("button.shop-image-tile-remove").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
         raised.Should().NotBeNull();
         raised!.Should().BeEmpty();
@@ -206,8 +200,9 @@ public class ShopImageUploadTests : TestContext
             .Add(c => c.ShowPrimaryBadge, true)
             .Add(c => c.PrimaryLabel, PrimaryLabel));
 
-        cut.FindAll(".preview .primary").Should().ContainSingle();
-        cut.Find(".preview .primary").TextContent.Should().Contain(PrimaryLabel);
+        cut.FindAll(".shop-image-tile-primary").Should().ContainSingle();
+        cut.Find(".shop-image-tile-primary").TextContent.Should().Contain(PrimaryLabel);
+        cut.FindComponents<ShopBadge>().Should().ContainSingle();
     }
 
     [Fact]
@@ -219,24 +214,7 @@ public class ShopImageUploadTests : TestContext
             .Add(c => c.Multiple, true)
             .Add(c => c.PrimaryLabel, PrimaryLabel));
 
-        cut.FindAll(".preview .primary").Should().BeEmpty();
+        cut.FindAll(".shop-image-tile-primary").Should().BeEmpty();
     }
 
-    // =========================================================================
-    // Drag-to-reorder — the dropped image lands at its new index (FR-11)
-    // =========================================================================
-
 }
-
-// =============================================================================
-// AC → Test mapping
-// =============================================================================
-// AC-4: Render_WithASelectedImage_ShowsAPreview, SelectFile_WithAnAllowedTypeAndSize_RaisesFilesChangedWithOneImage
-// AC-5: SelectFile_WithADisallowedContentType_KeepsItAsARowFlaggedWithTheTypeError,
-//        SelectFile_ExceedingTheMaxFileSize_KeepsItAsARowFlaggedWithTheSizeError
-// (Behavior 2 remove edge case: ClickRemove_WithASingleSelectedImage_RaisesFilesChangedWithAnEmptyList,
-//  Render_WithNoSelectedImage_ShowsNoPreview)
-// FR-11 (create-product, gallery sequencing): Render_WithThePrimaryBadgeEnabled_BadgesOnlyTheFirstImage,
-//        Render_WithThePrimaryBadgeDisabled_BadgesNothing
-// (Drag-to-reorder was dropped from the component — selection order alone decides the primary
-//  image, so the three drop tests that covered AllowReorder went with it.)

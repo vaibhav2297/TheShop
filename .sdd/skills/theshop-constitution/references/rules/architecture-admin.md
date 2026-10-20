@@ -7,7 +7,7 @@
 ## Why the admin lives inside the same app
 
 - One codebase, one deployment, no duplication.
-- Shared MudBlazor components, shared DTOs, shared Application/Domain logic.
+- Shared native Shop components, shared DTOs, shared Application/Domain logic.
 - Same Supabase auth flow, with permission-based access control.
 - Faster MVP delivery; admin can be built in parallel with customer features.
 - Migration path preserved — Clean Architecture means admin can be extracted to a separate Blazor project later without rewriting business logic. Don't optimize for that now.

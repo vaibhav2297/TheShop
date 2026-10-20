@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
 using FluentAssertions;
@@ -5,8 +6,8 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
+
+
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Auth.Commands.RequestSignUpOtp;
@@ -28,7 +29,7 @@ namespace TheShop.Web.Tests.Pages.Auth;
 public class SignUpTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
     private readonly PendingSignUpState _pendingSignUp = new();
 
@@ -38,16 +39,23 @@ public class SignUpTests : TestContext
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton<BusyState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddSingleton(_pendingSignUp);
-        Services.AddSingleton(Substitute.For<TheShop.Web.Theme.ShopTheme>());
-        Services.AddMudServices();
+
+
 
         _localizer[Arg.Any<string>()].Returns(call =>
         {
             var key = call.Arg<string>();
-            return new LocalizedString(key, key);
+            return new LocalizedString(key, Strings.ResourceManager.GetString(key) ?? key);
+        });
+        _mediator.Send(Arg.Any<RequestSignUpOtpCommand>(), Arg.Any<CancellationToken>()).Returns(async call =>
+        {
+            var command = call.Arg<RequestSignUpOtpCommand>();
+            var result = await new RequestSignUpOtpCommandValidator().ValidateAsync(command);
+            return result.IsValid ? Result.Ok(new OtpRequestedDto(command.Email, 60))
+                : Result<OtpRequestedDto>.Fail(result.Errors[0].ErrorMessage, [], result.Errors.Select(e => new FieldValidationError(e.PropertyName, e.ErrorMessage)).ToArray());
         });
     }
 
@@ -145,7 +153,7 @@ public class SignUpTests : TestContext
     {
         // FR-1: sign-up collects first name, last name, email, and date of birth.
         var cut = Render<SignUp>();
-        // First name field is the first text input rendered by the MudForm.
+        // Native controls have associated labels.
         cut.FindAll("input").Should().NotBeEmpty("the sign-up page must render input fields");
     }
 
@@ -174,7 +182,7 @@ public class SignUpTests : TestContext
         var cut = Render<SignUp>();
         var navManager = Services.GetRequiredService<NavigationManager>();
 
-        // Set private backing fields so the button is enabled and the handler can build the command.
+        // Fill the actual inputs so validation participates in submission.
         SetSignUpState(cut,
             firstName: "Jane",
             lastName: "Doe",
@@ -183,13 +191,12 @@ public class SignUpTests : TestContext
             isFormValid: true);
 
         // Act
-        var button = cut.Find("button.mud-button-filled");
-        await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+        await cut.Find("form").SubmitAsync();
 
         // Assert: success snackbar was shown and user was navigated to the verify page.
-        _snackbar.Received().Add(
+        _notifications.Received().Show(
             Arg.Is<string>(s => s == Strings.Auth_CodeSent),
-            Severity.Success);
+            ShopNotificationKind.Success);
         navManager.Uri.Should().Contain(Routes.Auth.SignUpVerify);
     }
 
@@ -211,8 +218,7 @@ public class SignUpTests : TestContext
             dateOfBirth: DateTime.Today.AddYears(-25),
             isFormValid: true);
 
-        var button = cut.Find("button.mud-button-filled");
-        await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+        await cut.Find("form").SubmitAsync();
 
         _pendingSignUp.HasData.Should().BeTrue();
         _pendingSignUp.FirstName.Should().Be("Jane");
@@ -240,10 +246,9 @@ public class SignUpTests : TestContext
             dateOfBirth: DateTime.Today.AddYears(-25),
             isFormValid: true);
 
-        var button = cut.Find("button.mud-button-filled");
-        await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+        await cut.Find("form").SubmitAsync();
 
-        _snackbar.Received().Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received().Show(Arg.Any<string>(), ShopNotificationKind.Error);
     }
 
     [Fact]
@@ -264,8 +269,7 @@ public class SignUpTests : TestContext
             dateOfBirth: DateTime.Today.AddYears(-25),
             isFormValid: true);
 
-        var button = cut.Find("button.mud-button-filled");
-        await button.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+        await cut.Find("form").SubmitAsync();
 
         navManager.Uri.Should().NotContain(Routes.Auth.SignUpVerify);
     }
@@ -274,11 +278,95 @@ public class SignUpTests : TestContext
     // Helpers
     // =========================================================================
 
-    /// <summary>
-    /// Sets the private backing fields on <see cref="SignUp"/> via reflection so the
-    /// form is in a state that allows the send-code button to be clicked without relying
-    /// on a real MudForm validation cycle (which requires a full JS environment).
-    /// </summary>
+    [Theory]
+    [InlineData(0, true)]
+    [InlineData(1, false)]
+    public async Task NativeDate_AgeBoundary_PreservesCommandDateAndRejectsUnderage(int daysAfterCutoff, bool allowed)
+    {
+        var cut = Render<SignUp>();
+        SetSignUpState(cut, "Jane", "Doe", "jane@example.com", DateTime.Today.AddYears(-25), true);
+        var date = DateOnly.FromDateTime(DateTime.Today).AddYears(-19).AddDays(daysAfterCutoff);
+        cut.Find("input[type=date]").Change(date.ToString("yyyy-MM-dd"));
+        await SubmitDirectlyAsync(cut);
+        if (allowed)
+        {
+            await _mediator.Received(1).Send(Arg.Is<RequestSignUpOtpCommand>(c => c.DateOfBirth == date), Arg.Any<CancellationToken>());
+            _pendingSignUp.DateOfBirth.Should().Be(date);
+        }
+        else
+        {
+            _pendingSignUp.HasData.Should().BeFalse();
+            cut.Find(".shop-date-field .shop-field-error").TextContent.Should().Contain(Strings.Auth_Underage);
+        }
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("bad")]
+    [InlineData("2999-01-01")]
+    public async Task NativeDate_InvalidInput_PreventsSuccessfulSignup(string date)
+    {
+        var cut = Render<SignUp>();
+        SetSignUpState(cut, "Jane", "Doe", "jane@example.com", DateTime.Today.AddYears(-25), true);
+        cut.Find("input[type=date]").Change(date);
+        await SubmitDirectlyAsync(cut);
+        if (date == "bad")
+            await _mediator.DidNotReceive().Send(Arg.Any<RequestSignUpOtpCommand>(), Arg.Any<CancellationToken>());
+        _pendingSignUp.HasData.Should().BeFalse();
+        cut.Find(".shop-date-field .shop-field-error").TextContent.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task NativeDate_ValidButAgeConfirmationMissing_BlocksDispatch()
+    {
+        var cut = Render<SignUp>();
+        SetSignUpState(cut, "Jane", "Doe", "jane@example.com", DateTime.Today.AddYears(-25), true);
+        cut.Find("#signup-age").Change(false);
+        cut.Render();
+        await SubmitDirectlyAsync(cut);
+        await _mediator.DidNotReceive().Send(Arg.Any<RequestSignUpOtpCommand>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Submit_CommandErrors_AppearInlineClearOnEditAndRevalidate()
+    {
+        var cut = Render<SignUp>();
+        cut.Markup.Should().NotContain("mud-");
+        cut.Find("#signup-age").Change(true);
+        await cut.Find("form").SubmitAsync();
+        cut.Markup.Should().Contain(Strings.Auth_FirstName_Required).And.Contain(Strings.Auth_LastName_Required)
+            .And.Contain(Strings.Email_Required);
+        cut.Find("#signup-first-name").GetAttribute("aria-invalid").Should().Be("true");
+        SetSignUpState(cut, "Jane", "Doe", "invalid", DateTime.Today.AddYears(-25), true);
+        await cut.Find("form").SubmitAsync();
+        cut.Markup.Should().Contain(Strings.Email_Invalid);
+        cut.Find("#signup-email").Input("still-invalid");
+        cut.Markup.Should().NotContain(Strings.Email_Invalid);
+        await cut.Find("form").SubmitAsync();
+        cut.Markup.Should().Contain(Strings.Email_Invalid);
+        _pendingSignUp.HasData.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Submit_InFlight_FreezesValuesRejectsDuplicateAndRecovers()
+    {
+        var completion = new TaskCompletionSource<Result<OtpRequestedDto>>();
+        _mediator.Send(Arg.Any<RequestSignUpOtpCommand>(), Arg.Any<CancellationToken>()).Returns(completion.Task);
+        var cut = Render<SignUp>();
+        SetSignUpState(cut, " Jane ", " Doe ", "jane@example.com", DateTime.Today.AddYears(-25), true);
+        var submit = cut.Find("form").SubmitAsync();
+        cut.WaitForAssertion(() => cut.FindAll("input").Should().OnlyContain(input => input.HasAttribute("disabled")));
+        await cut.Find("form").SubmitAsync();
+        cut.Find("#signup-first-name").Input("Changed");
+        await _mediator.Received(1).Send(Arg.Is<RequestSignUpOtpCommand>(c => c.FirstName == "Jane" && c.LastName == "Doe"), Arg.Any<CancellationToken>());
+        completion.SetResult(Result.Ok(new OtpRequestedDto("jane@example.com", 60)));
+        await submit;
+        _pendingSignUp.FirstName.Should().Be("Jane");
+        cut.FindAll("input").Should().OnlyContain(input => !input.HasAttribute("disabled"));
+    }
+
+    private static Task SubmitDirectlyAsync(IRenderedComponent<SignUp> cut) => cut.Find("form").SubmitAsync();
+
     private static void SetSignUpState(
         IRenderedComponent<SignUp> cut,
         string firstName,
@@ -287,17 +375,10 @@ public class SignUpTests : TestContext
         DateTime dateOfBirth,
         bool isFormValid)
     {
-        var type = typeof(SignUp);
-        const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-        type.GetField("_firstName", flags)!.SetValue(cut.Instance, firstName);
-        type.GetField("_lastName", flags)!.SetValue(cut.Instance, lastName);
-        type.GetField("_email", flags)!.SetValue(cut.Instance, email);
-        type.GetField("_dateOfBirth", flags)!.SetValue(cut.Instance, (DateTime?)dateOfBirth);
-        type.GetField("_isFormValid", flags)!.SetValue(cut.Instance, isFormValid);
-        // OnSendCodeAsync re-validates via MudForm.ValidateAsync() before dispatching, which
-        // re-checks the required age-confirmation checkbox — it must be pre-set here too or
-        // that revalidation flips _isFormValid back to false and the handler returns early.
-        type.GetField("_ageConfirmed", flags)!.SetValue(cut.Instance, isFormValid);
-        cut.Render();
+        cut.Find("#signup-first-name").Input(firstName);
+        cut.Find("#signup-last-name").Input(lastName);
+        cut.Find("#signup-email").Input(email);
+        cut.Find("input[type=date]").Change(dateOfBirth.ToString("yyyy-MM-dd"));
+        cut.Find("#signup-age").Change(isFormValid);
     }
 }

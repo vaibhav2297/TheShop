@@ -1,20 +1,93 @@
-// ─── Dialog chrome ────────────────────────────────────────────────────────────
-// Styles for ShopDialog (Figma node 2680:14477). MudDialog's own defaults use
-// asymmetric padding with no section dividers; the design calls for a uniform
-// 24px padding on title/content/actions, each separated by a hairline border.
+@use '../abstracts/text-style';
+@use '../tokens/sizing';
+
+// Figma 2946:14712: 16px header/actions, 24px body, H5 heading; width is caller-owned.
 .shop-dialog {
+    // Named modifiers opt into a shared cap; None/default is content-sized below.
+    --shop-dialog-max-width: none;
 
-    .mud-dialog-title {
-        padding: 16px;
-        border-bottom: 1px solid var(--mud-palette-lines-default);
+    inline-size: calc(100% - 2 * var(--shop-space-4));
+    max-inline-size: var(--shop-dialog-max-width);
+    max-block-size: calc(100dvh - 2 * var(--shop-space-4));
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--shop-radius-control);
+    background-color: var(--shop-color-surface-default);
+    overflow-wrap: anywhere;
+    overscroll-behavior: contain;
+
+    // Preserve the browser's display:none for closed dialogs.
+    &[open] {
+        display: flex;
+        flex-direction: column;
     }
 
-    .mud-dialog-content {
-        padding: 16px;
-    }
+    &::backdrop {
+        // Backdrop owns its custom property; do not rely on pseudo-element inheritance.
+        // Application opacity, not a named Figma paint style.
+        --shop-color-dialog-backdrop: rgb(0 0 0 / 50%);
 
-    .mud-dialog-actions {
-        padding: 16px;
-        border-top: 1px solid var(--mud-palette-lines-default);
+        background-color: var(--shop-color-dialog-backdrop);
     }
+}
+
+@each $name, $width in sizing.$max-widths {
+    .shop-dialog-width-#{$name} {
+        --shop-dialog-max-width: var(--shop-max-width-#{$name});
+    }
+}
+
+.shop-dialog-width-none {
+    inline-size: fit-content;
+    max-inline-size: calc(100% - 2 * var(--shop-space-4));
+}
+
+.shop-dialog-header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--shop-space-2);
+    padding: var(--shop-space-4);
+    border-block-end: 1px solid var(--shop-color-lines-divider);
+}
+
+.shop-dialog-title-content {
+    min-inline-size: 0;
+}
+
+.shop-dialog-title {
+    margin: 0;
+    @include text-style.apply(h5);
+    text-transform: uppercase;
+}
+
+.shop-dialog-content {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    min-inline-size: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: var(--shop-space-6);
+}
+
+.shop-dialog-description {
+    margin: 0;
+}
+
+.shop-dialog-actions {
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--shop-space-2);
+    padding: var(--shop-space-4);
+    border-block-start: 1px solid var(--shop-color-lines-divider);
+}
+
+html:has(.shop-dialog:modal),
+body:has(.shop-dialog:modal) {
+    overflow: hidden;
 }

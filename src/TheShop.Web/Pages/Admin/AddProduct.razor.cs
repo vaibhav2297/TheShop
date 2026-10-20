@@ -32,7 +32,7 @@ public partial class AddProduct : ComponentBase
     {
         Breadcrumbs.Set(BreadcrumbTrail.Admin()
             .Add(Strings.ManageProducts_Heading, Routes.Admin.ManageProducts)
-            .Current(Strings.AddProduct_Heading));
+            .Current(Strings.ProductForm_CreateHeading));
 
         var categoriesResult = await Mediator.Send(new GetActiveCategoriesQuery());
         if (categoriesResult.IsSuccess)

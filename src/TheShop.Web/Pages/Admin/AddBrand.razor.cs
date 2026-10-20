@@ -1,7 +1,8 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
+using TheShop.Web.Components.Brands;
 using TheShop.Application.Features.Brands.Commands.CreateBrand;
 using TheShop.Application.Features.Brands.DTOs;
 using TheShop.Web.Auth;
@@ -24,33 +25,17 @@ namespace TheShop.Web.Pages.Admin;
 public partial class AddBrand : ComponentBase
 {
 
-    private const int MaxNameLength = 100;
-    private const int MaxDescriptionLength = 250;
-
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
 
-    private MudForm _form = default!;
-    private string _name = string.Empty;
-    private string? _description;
-    private bool _isActive = true;
-    private bool _isFormValid;
+    private BrandForm _form = default!;
+    private readonly BrandFormModel _model = new();
 
     private IReadOnlyList<ShopUploadedImage> _logoImages = [];
-
-    private readonly Func<string, string?> _nameValidation = name =>
-        !string.IsNullOrWhiteSpace(name) && name.Trim().Length > MaxNameLength
-            ? Strings.Brand_NameTooLong
-            : null;
-
-    private readonly Func<string, string?> _descriptionValidation = description =>
-        !string.IsNullOrWhiteSpace(description) && description.Trim().Length > MaxDescriptionLength
-            ? Strings.Brand_DescriptionTooLong
-            : null;
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -64,11 +49,13 @@ public partial class AddBrand : ComponentBase
 
     private async Task SaveAsync()
     {
-        await _form.ValidateAsync();
-        if (!_isFormValid) return;
+        if (BusyState.IsBusy(BusyKeys.Brands.AddBrand)) return;
+        _form.ClearErrors();
 
         await BusyState.RunAsync(BusyKeys.Brands.AddBrand, async () =>
         {
+            await _form.WaitForPendingFilesAsync();
+
             // A row still showing a validation error (wrong type / too large) never leaves the client.
             var validLogoImages = _logoImages.Where(image => image.Error is null).ToList();
             var logo = validLogoImages.Count > 0
@@ -76,19 +63,23 @@ public partial class AddBrand : ComponentBase
                 : null;
 
             var result = await Mediator.Send(new CreateBrandCommand(
-                _name.Trim(),
-                string.IsNullOrWhiteSpace(_description) ? null : _description.Trim(),
+                _model.Name?.Trim() ?? string.Empty,
+                string.IsNullOrWhiteSpace(_model.Description) ? null : _model.Description.Trim(),
                 logo,
-                _isActive));
+                _model.IsActive));
 
             if (result.IsSuccess)
             {
-                Snackbar.Add(Strings.Brand_Created, Severity.Success);
+                Notifications.Show(Strings.Brand_Created, ShopNotificationKind.Success);
                 Nav.NavigateTo(Routes.Admin.ManageBrands);
+            }
+            else if (result.ValidationErrors.Count > 0)
+            {
+                _form.ShowErrors(result.ValidationErrors);
             }
             else
             {
-                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Brand_CreateFailed)], Severity.Error);
+                Notifications.Show(Localizer[result.Error ?? nameof(Strings.Brand_CreateFailed)], ShopNotificationKind.Error);
             }
         });
     }

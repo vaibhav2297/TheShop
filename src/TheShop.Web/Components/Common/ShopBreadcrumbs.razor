@@ -1,32 +1,38 @@
-@inherits MudComponentBase
-@using TheShop.Web.Resources
-@using TheShop.Web.Theme
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
 
-<nav aria-label="@Strings.Breadcrumb_AriaLabel">
-    <MudBreakpointProvider OnBreakpointChanged="OnBreakpointChanged">
-
-        <MudBreadcrumbs Items="@Items"
-                        MaxItems="@_maxItems"
-                        ExpanderIcon="@ShopIcons.Outlined.More_Horizontal"
-                        Class="@Classname"
-                        Style="@Stylename">
-
-            <SeparatorTemplate>
-                <MudIcon Icon="@ShopIcons.Outlined.Chevron_Right_MD"
-                         Size="Size.Small" />
-            </SeparatorTemplate>
-
-            <ItemTemplate Context="item">
-                <MudButton Href="@(item.Disabled ? null : item.Href)"
-                           Size="Size.Small"
-                           Variant="Variant.Text"
-                           Color="Color.Primary"
-                           Class="shop-breadcrumb-item"
-                           title="@item.Text"
-                           aria-current="@(item.Disabled ? "page" : null)">@item.Text</MudButton>
-            </ItemTemplate>
-
-        </MudBreadcrumbs>
-
-    </MudBreakpointProvider>
+<nav @attributes="AdditionalAttributes" class="@ClassName" style="@Style" aria-label="@Strings.Breadcrumb_AriaLabel">
+    <ol class="shop-breadcrumb-list" id="@_listId">
+        @for (var index = 0; index < _items.Count; index++)
+        {
+            var itemIndex = index;
+            var item = _items[index];
+            var current = index == _items.Count - 1;
+            @if (index == 1 && _items.Count > 2 && !_expanded)
+            {
+                <li class="shop-breadcrumb-expander">
+                    <ShopIcon Class="shop-breadcrumb-separator" Icon="@ShopIcons.Outlined.Chevron_Right_MD" />
+                    <ShopIconButton Class="shop-breadcrumb-expand" Icon="@ShopIcons.Outlined.More_Horizontal"
+                                    Label="@Strings.Breadcrumb_Expand" Color="ShopColor.Primary"
+                                    Variant="ShopVariant.Text" Size="ShopSize.Small" OnClick="Expand"
+                                    aria-expanded="false" aria-controls="@_listId" />
+                </li>
+            }
+            <li class="@ItemClass(index)">
+                @if (index > 0)
+                {
+                    <ShopIcon Class="shop-breadcrumb-separator" Icon="@ShopIcons.Outlined.Chevron_Right_MD" />
+                }
+                @if (!current && !item.Disabled && !string.IsNullOrWhiteSpace(item.Href))
+                {
+                    <a @ref="_itemElements[itemIndex]" class="shop-breadcrumb-item" href="@item.Href" title="@item.Text">@item.Text</a>
+                }
+                else
+                {
+                    <span @ref="_itemElements[itemIndex]" class="shop-breadcrumb-item" title="@item.Text"
+                          tabindex="@(index == 1 && !current ? "-1" : null)" aria-current="@(current ? "page" : null)">@item.Text</span>
+                }
+            </li>
+        }
+    </ol>
 </nav>

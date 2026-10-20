@@ -1,9 +1,5 @@
 using Bunit;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using Xunit;
@@ -19,14 +15,6 @@ namespace TheShop.Web.Tests.Components.Common;
 /// </summary>
 public class AuthorizingViewTests : TestContext
 {
-    public AuthorizingViewTests()
-    {
-        JSInterop.Mode = JSRuntimeMode.Loose;
-        JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
-    }
-
     [Fact]
     [Trait("Feature", "role-based-access-control")]
     public void Render_Always_ShowsTheLocalizedAuthorizingMessage()
@@ -42,6 +30,21 @@ public class AuthorizingViewTests : TestContext
     {
         var cut = Render<AuthorizingView>();
 
-        cut.FindAll(".mud-progress-circular").Should().NotBeEmpty();
+        cut.FindAll(".shop-loader").Should().HaveCount(1);
+    }
+
+    [Fact]
+    public void Render_NativeStatus_ForwardsRootAttributesAndKeepsLoaderDecorative()
+    {
+        var cut = Render<AuthorizingView>(parameters => parameters
+            .Add(component => component.Class, "custom-authorizing")
+            .AddUnmatched("data-testid", "authorizing"));
+
+        var status = cut.Find("[role=status]");
+        status.ClassList.Should().Contain("custom-authorizing");
+        status.GetAttribute("data-testid").Should().Be("authorizing");
+        status.TextContent.Trim().Should().Be(Strings.Authorizing_Loading);
+        cut.Find(".shop-loader").GetAttribute("aria-hidden").Should().Be("true");
+        cut.FindAll("[class*='mud-']").Should().BeEmpty();
     }
 }

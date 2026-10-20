@@ -1,0 +1,15 @@
+// Shared, owner-approved width scale; not Figma image or breakpoint dimensions.
+$max-widths: (
+    extra-small: 444px,
+    small: 600px,
+    medium: 960px,
+    large: 1280px,
+    extra-large: 1920px,
+    extra-extra-large: 2560px
+);
+
+:root {
+    @each $name, $width in $max-widths {
+        --shop-max-width-#{$name}: #{$width};
+    }
+}

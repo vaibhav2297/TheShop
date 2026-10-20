@@ -1,9 +1,11 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
+using Microsoft.AspNetCore.Components.Forms;
 using TheShop.Application.Features.Auth.Commands.RequestSignUpOtp;
 using TheShop.Web.Common;
+using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
 
@@ -19,66 +21,57 @@ public partial class SignUp : ComponentBase
 {
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private PendingSignUpState PendingSignUp { get; set; } = default!;
 
-    private MudForm _form = default!;
-    private string _firstName = string.Empty;
-    private string _lastName = string.Empty;
-    private string _email = string.Empty;
-    private DateTime? _dateOfBirth;
-    private bool _ageConfirmed;
-    private bool _isFormValid;
+    private readonly SignUpFormModel _model = new();
+    private EditContext _editContext = default!;
+    private ShopCommandValidation _validation = default!;
+    private ShopDateField _dateField = default!;
 
-    // Maximum selectable date: today minus 19 years — enforces age on picker level (UX hint only;
-    // authoritative check is in the domain / Application layer).
-    private readonly DateTime _maxDate = DateTime.Today.AddYears(-19);
-
-    private readonly Func<string, string?> _emailValidation = email =>
-        string.IsNullOrWhiteSpace(email)
-            ? Strings.Email_Required
-            : !email.Contains('@')
-                ? Strings.Email_Invalid
-                : null;
-
-    private readonly Func<DateTime?, string?> _dobValidation = dob =>
-    {
-        if (dob is null) return Strings.Auth_Dob_InPast;
-        if (dob.Value >= DateTime.Today) return Strings.Auth_Dob_InPast;
-
-        var age = DateTime.Today.Year - dob.Value.Year;
-        if (dob.Value.Date > DateTime.Today.AddYears(-age)) age--;
-        if (age < 19) return Strings.Auth_Underage;
-
-        return null;
-    };
+    /// <inheritdoc />
+    protected override void OnInitialized() => _editContext = new EditContext(_model);
 
     private async Task OnSendCodeAsync()
     {
-        await _form.ValidateAsync();
-        if (!_isFormValid) return;
+        if (BusyState.IsBusy(BusyKeys.Auth.SignUp)) return;
+        _validation.Clear();
+        if (!_dateField.Validate()) return;
+        // Consent is a Web-only confirmation, not an input on the existing command.
+        if (!_model.AgeConfirmed)
+        {
+            _validation.ShowErrors([new(nameof(_model.AgeConfirmed), nameof(Strings.Auth_Underage))]);
+            return;
+        }
 
-        var dob = DateOnly.FromDateTime(_dateOfBirth!.Value);
+        var dob = _model.DateOfBirth ?? default;
+        var firstName = _model.FirstName.Trim();
+        var lastName = _model.LastName.Trim();
+        var email = _model.Email.Trim();
 
         await BusyState.RunAsync(BusyKeys.Auth.SignUp, async () =>
         {
             var result = await Mediator.Send(new RequestSignUpOtpCommand(
-                _firstName.Trim(),
-                _lastName.Trim(),
-                _email.Trim(),
+                firstName,
+                lastName,
+                email,
                 dob));
 
             if (result.IsSuccess)
             {
-                PendingSignUp.Set(_firstName.Trim(), _lastName.Trim(), _email.Trim(), dob);
-                Snackbar.Add(Strings.Auth_CodeSent, Severity.Success);
+                PendingSignUp.Set(firstName, lastName, email, dob);
+                Notifications.Show(Strings.Auth_CodeSent, ShopNotificationKind.Success);
                 Nav.NavigateTo(Routes.Auth.SignUpVerify);
+            }
+            else if (result.ValidationErrors.Count > 0)
+            {
+                _validation.ShowErrors(result.ValidationErrors);
             }
             else
             {
-                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], Severity.Error);
+                Notifications.Show(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], ShopNotificationKind.Error);
             }
         });
     }

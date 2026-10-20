@@ -1,42 +1,50 @@
 @inherits LayoutComponentBase
 
 @using TheShop.Web.Components.Common
-@using TheShop.Web.Theme
+@using TheShop.Web.Common.UI
 
-<MudThemeProvider Theme="@ShopTheme.BuildTheme()"
-                  IsDarkMode="false" />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+<ShopUiHost />
 
-<ShopLoadingOverlay />
-
-<MudLayout Class="d-flex flex-column overflow-hidden">
+<div class="shop-native shop-shell">
 
     @if (Announcement.HasAnnouncement)
     {
         <ShopAnnouncementBar Message="@Announcement.Message" />
     }
 
-    <ShopAppBar />
+    <ShopAppBar OnAccountClick="OpenProfileDrawer" AccountOpen="@ProfileOpen"
+                OnMenuClick="OpenNavigationDrawer" MenuOpen="@NavigationOpen"
+                MenuDrawerId="@_navigationDrawerId" OnMenuUnavailable="CloseNavigationDrawer" />
 
     @if (Breadcrumbs.HasTrail)
     {
         <ShopBreadcrumbs Items="@Breadcrumbs.Trail" />
     }
 
-    <MudMainContent Class="flex-grow-1 overflow-y-auto overflow-x-hidden min-height-0 pt-0">
+    <main class="shop-main-scroll" data-shop-scroll-root>
 
-        <MudStack Spacing="0" AlignItems="AlignItems.Stretch" Class="min-height-full">
+        <div class="shop-shell-page">
 
             @Body
 
             @if (Footer.Visible)
             {
-                <ShopFooter Class="mt-auto" />
+                <ShopFooter />
             }
 
-        </MudStack> 
-    </MudMainContent>
+        </div>
+    </main>
 
-</MudLayout>
+</div>
+
+<ShopDrawer id="@_navigationDrawerId" Side="ShopDrawerSide.Left" Class="shop-navigation-drawer"
+            Open="@NavigationOpen" OpenChanged="NavigationOpenChanged">
+    <HeaderContent><h2 class="shop-drawer-title">@Strings.Nav_Menu</h2></HeaderContent>
+    <DrawerContent><ShopPrimaryNavigation OnNavigate="CloseNavigationDrawer" /></DrawerContent>
+</ShopDrawer>
+
+<AuthorizeView>
+    <Authorized>
+        <ProfileDrawer Open="@ProfileOpen" OpenChanged="ProfileOpenChanged" />
+    </Authorized>
+</AuthorizeView>

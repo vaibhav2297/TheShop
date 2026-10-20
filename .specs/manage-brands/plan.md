@@ -710,3 +710,32 @@ Three risks are knowingly accepted and stay logged here:
 
 ---
 **Status:** Resolved · **Spec:** `.specs/manage-brands/spec.md` · **Created:** 2026-07-25 · **Resolved:** 2026-07-26
+
+## Responsive filter correction — 2026-10-17
+
+**Visual scope:** required
+
+### Visual targets
+
+| Surface | Route | Viewport | State | Reference |
+|---|---|---|---|---|
+| brands-filter-834 | /admin/brands | 834x1000 | left drawer open; Status expanded; Inactive selected | https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=3067-83706 |
+| brands-filter-390 | /admin/brands | 390x1000 | full-width drawer; same filter state | https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=3067-83706 |
+
+Inspected the live Desktop Bridge node and exported its drawer at 1x on 2026-10-17.
+The tablet drawer is 400px wide, with a 62px header, h5 title, 16px panel padding,
+24px Status row, two 48px checkbox rows, a selection-count chip and right-aligned Clear All.
+The supplied frame has no phone drawer variant: use the existing full-width phone drawer,
+preserving the measured content spacing and right-aligned close action. Phone geometry is inferred.
+
+Reuse mappings: Drawer → `ShopDrawer` (Left), header close → its existing Small/Outlined
+`ShopIconButton`, Filter Panel → `ShopFilterPanel`, Status Filter → `ShopExpander`,
+options → Medium `ShopCheckbox`, count → Small `ShopChip`, Clear All → Small/Text `ShopButton`.
+Expose initial expansion and resource-backed clear text on the existing panel; keep its default
+collapsed state and existing clear label for other callers. Show counts for single-select groups.
+Scope compact spacing to the brand drawer. Preserve the existing filter button size edit.
+
+Browser proof uses the existing intercepted local-data brand journey; no production account or data.
+Compare the upper 320px of the tablet drawer against the unscaled Figma export.
+The phone comparison uses a left crop of that tablet reference solely to inspect shared spacing;
+its close action moves 10px left with the narrower viewport, so it is not an exact phone reference.

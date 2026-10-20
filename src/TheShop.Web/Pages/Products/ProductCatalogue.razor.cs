@@ -1,8 +1,8 @@
+using TheShop.Web.Common.Notifications;
 using System.Globalization;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
 using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products;
@@ -32,7 +32,7 @@ namespace TheShop.Web.Pages.Products;
 public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
 {
     [Inject] private IMediator Mediator { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
@@ -44,6 +44,7 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
     private decimal? _priceMin;
     private decimal? _priceMax;
     private ProductSortOption _sort = ProductSortCatalogue.Instance.Default;
+    private bool _filtersOpen;
 
     private IReadOnlyList<FilterGroupDto> FilterGroups => _filters?.Groups ?? [];
 
@@ -64,9 +65,9 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
     private static readonly IReadOnlyList<(ProductSortOption Value, string LabelKey)> SortOptions =
         ProductSortCatalogue.Instance.Picker;
 
-    private int ResultRangeStart => ((_products.Page - 1) * _products.PageSize) + 1;
+    private int ResultRangeStart => _products.Items.Count == 0 ? 0 : ((_products.Page - 1) * _products.PageSize) + 1;
 
-    private int ResultRangeEnd => ResultRangeStart + _products.Items.Count - 1;
+    private int ResultRangeEnd => _products.Items.Count == 0 ? 0 : ResultRangeStart + _products.Items.Count - 1;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -85,7 +86,7 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
         if (filtersResult.IsSuccess)
             _filters = filtersResult.Value;
         else
-            Snackbar.Add(Localizer[filtersResult.Error!], Severity.Error);
+            Notifications.Show(Localizer[filtersResult.Error!], ShopNotificationKind.Error);
     }
 
     /// <summary>
@@ -117,7 +118,7 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
         if (result.IsSuccess)
             return result.Value;
 
-        Snackbar.Add(Localizer[result.Error!], Severity.Error);
+        Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
         return PagedResult<ProductSummaryDto>.Empty(request);
     }
 

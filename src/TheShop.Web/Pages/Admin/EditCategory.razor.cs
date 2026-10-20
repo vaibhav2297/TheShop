@@ -1,7 +1,8 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
+using TheShop.Web.Components.Categories;
 using TheShop.Application.Features.Categories.Commands.UpdateCategory;
 using TheShop.Application.Features.Categories.DTOs;
 using TheShop.Application.Features.Categories.Queries.GetCategoryById;
@@ -14,50 +15,32 @@ using TheShop.Web.State;
 namespace TheShop.Web.Pages.Admin;
 
 /// <summary>
-/// Edits an existing category, id-keyed (plan §5 Decision 8). Dispatches
-/// <see cref="GetCategoryByIdQuery"/> (<c>categories.view</c>) on load and
-/// <see cref="UpdateCategoryCommand"/> on save. Requires a signed-in user via
-/// <c>Pages/Admin/_Imports.razor</c>, and is gated on <c>categories.edit</c> within the page
-/// itself — the page-level gate, not the query, is what denies a view-only admin's direct link
-/// (plan §5 Decision 9, AC-20).
+/// Loads the category addressed by the route and saves edits through
+/// <see cref="UpdateCategoryCommand"/>. Requires the categories.edit permission.
 /// </summary>
 [Route(Routes.Admin.EditCategoryPattern)]
 [AuthorizePermission("categories.edit")]
 public partial class EditCategory : ComponentBase
 {
-    private const int MaxNameLength = 100;
-    private const int MaxDescriptionLength = 250;
-
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
 
+    /// <summary>The category identifier supplied by the edit route.</summary>
     [Parameter] public Guid Id { get; set; }
 
-    private MudForm _form = default!;
-    private string _name = string.Empty;
-    private string? _description;
-    private bool _isActive = true;
-    private bool _isFormValid;
+    private CategoryForm _form = default!;
+    private readonly CategoryFormModel _model = new();
     private bool _notFound;
+    private bool _loaded;
 
     private bool _originalHadImage;
     private bool _hasExistingImage;
     private string? _existingImageUrl;
     private IReadOnlyList<ShopUploadedImage> _newCategoryImages = [];
-
-    private readonly Func<string, string?> _nameValidation = name =>
-        !string.IsNullOrWhiteSpace(name) && name.Trim().Length > MaxNameLength
-            ? Strings.Category_NameTooLong
-            : null;
-
-    private readonly Func<string, string?> _descriptionValidation = description =>
-        !string.IsNullOrWhiteSpace(description) && description.Trim().Length > MaxDescriptionLength
-            ? Strings.Category_DescriptionTooLong
-            : null;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
@@ -77,16 +60,31 @@ public partial class EditCategory : ComponentBase
             }
 
             var category = result.Value;
-            _name = category.Name;
-            _description = category.Description;
-            _isActive = category.IsActive;
+            Breadcrumbs.Set(BreadcrumbTrail.Admin()
+                .Add(Strings.ManageCategories_Heading, Routes.Admin.ManageCategories)
+                .Current(category.Name));
+            _loaded = true;
+            _model.Name = category.Name;
+            _model.Description = category.Description;
+            _model.IsActive = category.IsActive;
             _existingImageUrl = category.ImageUrl;
             _originalHadImage = category.ImageUrl is not null;
             _hasExistingImage = _originalHadImage;
         });
     }
 
-    private void OnNewCategoryImagesChanged(IReadOnlyList<ShopUploadedImage> images) => _newCategoryImages = images;
+    private IReadOnlyList<ShopUploadedImage> DisplayedImages =>
+        _hasExistingImage && _newCategoryImages.Count == 0 && _existingImageUrl is not null
+            ? [ShopUploadedImage.Existing(Id, _existingImageUrl)] : _newCategoryImages;
+
+    private void OnNewCategoryImagesChanged(IReadOnlyList<ShopUploadedImage> images)
+    {
+        var removingRejectedReplacement = _hasExistingImage && _newCategoryImages.Count > 0 && images.Count == 0;
+        _newCategoryImages = images.Where(image => !image.IsExisting).ToList();
+        if (!removingRejectedReplacement && !images.Any(image => image.IsExisting)
+            && (images.Count == 0 || images.Any(image => image.Error is null)))
+            RemoveExistingImage();
+    }
 
     private void RemoveExistingImage()
     {
@@ -96,12 +94,12 @@ public partial class EditCategory : ComponentBase
 
     private async Task SaveAsync()
     {
-        await _form.ValidateAsync();
-        if (!_isFormValid)
-            return;
+        if (BusyState.IsBusy(BusyKeys.Categories.EditCategory)) return;
+        _form.ClearErrors();
 
         await BusyState.RunAsync(BusyKeys.Categories.EditCategory, async () =>
         {
+            await _form.WaitForPendingFilesAsync();
             // A row still showing a validation error (wrong type / too large) never leaves the client.
             var validNewCategoryImages = _newCategoryImages.Where(image => image.Error is null).ToList();
             var newImage = validNewCategoryImages.Count > 0
@@ -113,20 +111,24 @@ public partial class EditCategory : ComponentBase
 
             var result = await Mediator.Send(new UpdateCategoryCommand(
                 Id,
-                _name.Trim(),
-                string.IsNullOrWhiteSpace(_description) ? null : _description.Trim(),
-                _isActive,
+                _model.Name?.Trim() ?? string.Empty,
+                string.IsNullOrWhiteSpace(_model.Description) ? null : _model.Description.Trim(),
+                _model.IsActive,
                 newImage,
                 removeImage));
 
             if (result.IsSuccess)
             {
-                Snackbar.Add(Strings.EditCategory_Success, Severity.Success);
+                Notifications.Show(Strings.EditCategory_Success, ShopNotificationKind.Success);
                 Nav.NavigateTo(Routes.Admin.ManageCategories);
+            }
+            else if (result.ValidationErrors.Count > 0)
+            {
+                _form.ShowErrors(result.ValidationErrors);
             }
             else
             {
-                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Category_UpdateFailed)], Severity.Error);
+                Notifications.Show(Localizer[result.Error ?? nameof(Strings.Category_UpdateFailed)], ShopNotificationKind.Error);
             }
         });
     }

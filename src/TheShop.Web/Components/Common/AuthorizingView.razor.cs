@@ -1,5 +1,4 @@
-using MudBlazor;
-using MudBlazor.Utilities;
+using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
@@ -9,10 +8,7 @@ namespace TheShop.Web.Components.Common;
 /// claims) now comes synchronously from the access token, so this renders at most for a frame —
 /// kept as a guard against a flash of <see cref="AccessDeniedView"/> on cold loads.
 /// </summary>
-public partial class AuthorizingView : MudComponentBase
+public partial class AuthorizingView : ShopComponentBase
 {
-    protected string Classname =>
-        new CssBuilder("py-20")
-            .AddClass(Class)
-            .Build();
+    private string Classname => ShopCssClass.Join("shop-native", "shop-authorizing-view", Class);
 }

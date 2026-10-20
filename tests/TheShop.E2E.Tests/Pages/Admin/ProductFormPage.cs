@@ -32,13 +32,8 @@ public sealed class ProductFormPage(IPage page)
     public Task SaveAsync() => SaveButton.ClickAsync();
 
     /// <summary>
-    /// <c>ShopMoneyField</c> (and the option-type name/value fields below) bind Value/ValueChanged
-    /// without <c>Immediate="true"</c>, so MudBlazor only raises <c>ValueChanged</c> on blur.
-    /// <c>FillAsync</c> alone sets the DOM input's value and dispatches an input event, which is
-    /// enough to make the raw element read back the typed text but not enough to reach the
-    /// component's C# state — an assertion against the input's own value would pass while the
-    /// bound field, and everything downstream of it (form validity, computed totals), stays
-    /// unchanged. An explicit blur after every fill is what commits the value for real.
+    /// Commits draft text before downstream assertions. Native money fields commit on blur or
+    /// Enter; the remaining legacy option fields also require blur to publish their values.
     /// </summary>
     private static async Task FillAndBlurAsync(ILocator field, string value)
     {
@@ -48,13 +43,13 @@ public sealed class ProductFormPage(IPage page)
 
     public async Task SelectCategoryAsync(string categoryName)
     {
-        await Page.GetByLabel(Strings.AddProduct_CategoryLabel).ClickAsync();
+        await Page.GetByRole(AriaRole.Combobox, new() { Name = Strings.AddProduct_CategoryLabel, Exact = true }).ClickAsync();
         await Page.GetByRole(AriaRole.Option, new() { Name = categoryName }).ClickAsync();
     }
 
     public async Task SelectBrandAsync(string brandName)
     {
-        await Page.GetByLabel(Strings.AddProduct_BrandLabel).ClickAsync();
+        await Page.GetByRole(AriaRole.Combobox, new() { Name = Strings.AddProduct_BrandLabel, Exact = true }).ClickAsync();
         await Page.GetByRole(AriaRole.Option, new() { Name = brandName }).ClickAsync();
     }
 
@@ -73,7 +68,7 @@ public sealed class ProductFormPage(IPage page)
     public Task SetPublishedAsync() => PublishedChip.ClickAsync();
     public Task SetUnpublishedAsync() => UnpublishedChip.ClickAsync();
 
-    public ILocator PriceRangeNote => Page.GetByText(Strings.AddProduct_PriceRangeNote, new() { Exact = true });
+    public ILocator PriceRangeNote => Page.GetByText(Strings.ProductForm_VariantPricingHint, new() { Exact = true });
     public ILocator PriceRangeNoteWithValue(string formattedPrice) =>
         Page.GetByText(string.Format(Strings.AddProduct_PriceRangeNoteWithValue, formattedPrice), new() { Exact = true });
 
@@ -87,17 +82,20 @@ public sealed class ProductFormPage(IPage page)
     public Task UploadImagesAsync(params FilePayload[] files) =>
         Page.Locator(".shop-image-upload input[type=file]").SetInputFilesAsync(files);
 
-    /// <summary>An uploaded image's preview row, located by its filename caption.</summary>
+    /// <summary>An uploaded image tile, located by its accessible filename.</summary>
     public ILocator ImageRow(string fileName) =>
-        Page.Locator(".shop-image-upload .preview").Filter(new() { Has = Page.GetByText(fileName, new() { Exact = true }) });
+        Page.Locator(".shop-image-upload-item").Filter(new() { Has = Page.GetByRole(AriaRole.Button, new() { Name = fileName, Exact = true }) });
 
-    public ILocator ImageRows => Page.Locator(".shop-image-upload .preview");
+    public ILocator ImageRows => Page.Locator(".shop-image-upload-item");
 
     public ILocator PrimaryBadge(string fileName) =>
         ImageRow(fileName).GetByText(Strings.AddProduct_ImagePrimary, new() { Exact = true });
 
-    public Task RemoveImageAsync(string fileName) =>
-        ImageRow(fileName).GetByRole(AriaRole.Button, new() { Name = Strings.AddProduct_ImageRemove }).ClickAsync();
+    public async Task RemoveImageAsync(string fileName)
+    {
+        await ImageRow(fileName).HoverAsync();
+        await ImageRow(fileName).GetByRole(AriaRole.Button, new() { Name = Strings.AddProduct_ImageRemove + ": " + fileName, Exact = true }).ClickAsync();
+    }
 
     public ILocator ImageError(string fileName) => ImageRow(fileName).GetByText(new System.Text.RegularExpressions.Regex(".+"));
 
@@ -107,7 +105,7 @@ public sealed class ProductFormPage(IPage page)
     public Task AddOptionTypeAsync() => AddOptionTypeButton.ClickAsync();
 
     /// <summary>The Nth option type's name field, by creation order (0-based).</summary>
-    public ILocator OptionTypeNameField(int index) => Page.GetByPlaceholder(Strings.ProductVariants_OptionNameLabel).Nth(index);
+    public ILocator OptionTypeNameField(int index) => Page.Locator(".shop-product-variants").GetByLabel(Strings.ProductVariants_OptionNameLabel, new() { Exact = true }).Nth(index);
 
     public Task FillOptionTypeNameAsync(int index, string name) => FillAndBlurAsync(OptionTypeNameField(index), name);
 
@@ -123,7 +121,7 @@ public sealed class ProductFormPage(IPage page)
     /// page, so tests must fill values in the same order they were added.
     /// </summary>
     public ILocator OptionValueField(int globalValueIndex) =>
-        Page.GetByPlaceholder(Strings.ProductVariants_OptionValuesLabel).Nth(globalValueIndex);
+        Page.Locator(".shop-product-variants").GetByLabel(Strings.ProductVariants_OptionValuesLabel, new() { Exact = true }).Nth(globalValueIndex);
 
     public Task FillOptionValueAsync(int globalValueIndex, string value) =>
         FillAndBlurAsync(OptionValueField(globalValueIndex), value);
@@ -184,12 +182,12 @@ public sealed class ProductFormPage(IPage page)
 
     // ---- Variant image pin dialog (VariantImageDialog) ----------------------------------------
 
-    private ILocator DialogSurface => Page.Locator(".mud-dialog");
+    private ILocator DialogSurface => Page.GetByRole(AriaRole.Dialog, new() { Name = Strings.VariantImage_Title });
 
     /// <summary>A selectable gallery tile inside the pin dialog, located by its alt text (the variant label).</summary>
     public ILocator PinDialogImages => DialogSurface.Locator("img");
 
-    public Task SelectPinDialogImageAsync(int index) => PinDialogImages.Nth(index).ClickAsync();
+    public Task SelectPinDialogImageAsync(int index) => DialogSurface.Locator(".shop-variant-image-option .shop-image-tile-surface").Nth(index).ClickAsync();
 
     public ILocator ApplyToAllSharingCheckbox(int sharedCount, string sharedScopeLabel) =>
         DialogSurface.GetByLabel(string.Format(Strings.VariantImage_ApplyToAllSharing, sharedCount, sharedScopeLabel));
@@ -299,11 +297,11 @@ public sealed class ProductFormPage(IPage page)
 
     /// <summary>A specification row's name field, by creation order (0-based) — the placeholder is shared across every row.</summary>
     public ILocator SpecificationNameField(int index) =>
-        Page.GetByPlaceholder(Strings.ProductSpecifications_NameLabel).Nth(index);
+        Page.Locator(".shop-product-specifications").GetByLabel(Strings.ProductSpecifications_NameLabel, new() { Exact = true }).Nth(index);
 
     /// <summary>A specification row's value field, by creation order (0-based) — the placeholder is shared across every row.</summary>
     public ILocator SpecificationValueField(int index) =>
-        Page.GetByPlaceholder(Strings.ProductSpecifications_ValueLabel).Nth(index);
+        Page.Locator(".shop-product-specifications").GetByLabel(Strings.ProductSpecifications_ValueLabel, new() { Exact = true }).Nth(index);
 
     public ILocator SpecificationRemoveButton(int index) =>
         Page.GetByRole(AriaRole.Button, new() { Name = Strings.ProductSpecifications_RemoveRow }).Nth(index);

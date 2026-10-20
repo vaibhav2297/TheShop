@@ -1,120 +1,123 @@
-@attribute [AllowAnonymous]
+﻿@attribute [AllowAnonymous]
 @inherits QueryStatePageBase<CatalogueQueryState>
 
 @using TheShop.Domain.Enums
 @using TheShop.Web.Common
+@using TheShop.Web.Common.UI
 @using TheShop.Web.Components.Common
 @using TheShop.Web.Components.Products
 
 <PageTitle>@Strings.Products_PageTitle</PageTitle>
 
-<MudStack Class="mud-height-full pa-8">
+<section class="shop-native shop-catalogue-page">
+    <h1>@Strings.Nav_Products</h1>
 
-    <MudText Typo="Typo.h3" Class="text-transform-uppercase mb-8">@Strings.Nav_Products</MudText>
-
-    <MudGrid Spacing="8">
-
-        <MudItem xs="12"
-                 md="3"
-                 xl="2">
-
+    <div class="shop-catalogue-list">
+        <aside class="shop-catalogue-sidebar">
             <BusyFor Key="@BusyKeys.Products.Filters" Context="filtersBusy">
                 @if (filtersBusy)
                 {
-                    <MudStack Spacing="3">
+                    <div class="shop-filter-skeleton shop-catalogue-filter" aria-hidden="true">
                         @for (var i = 0; i < 5; i++)
                         {
-                            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="48px" />
+                            <div class="shop-filter-skeleton-group">
+                                <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-filter-skeleton-title" />
+                            </div>
                         }
-                    </MudStack>
+                    </div>
                 }
                 else
                 {
-                    <ShopFilterPanel Groups="@FilterGroups"
-                                     SelectedFilters="@_selectedFilters"
-                                     FilterToggled="OnFilterToggledAsync"
-                                     SelectedRanges="@SelectedRanges"
-                                     RangeChanged="OnRangeChangedAsync"
-                                     RangeFormatter="FormatRange"
+                    <ShopFilterPanel Class="shop-catalogue-filter" ClearLabel="@Strings.Filter_ClearAll"
+                                     Groups="@FilterGroups" SelectedFilters="@_selectedFilters"
+                                     FilterToggled="OnFilterToggledAsync" SelectedRanges="@SelectedRanges"
+                                     RangeChanged="OnRangeChangedAsync" RangeFormatter="FormatRange"
+                                     RangeStep="@(_ => 0.01m)"
+                                     RangeMinimumLabel="@(_ => Strings.Range_MinimumCad)"
+                                     RangeMaximumLabel="@(_ => Strings.Range_MaximumCad)"
                                      OnClearFilters="OnClearFiltersAsync" />
                 }
             </BusyFor>
+        </aside>
 
-        </MudItem>
-
-        <MudItem xs="12"
-                 md="9"
-                 xl="10">
-            <MudStack Spacing="6"
-                      AlignItems="AlignItems.Stretch">
-
-                @if (_products.HasLoaded && _products.Items.Count > 0)
+        <div class="shop-catalogue-results">
+            <div class="shop-catalogue-tools">
+                <ShopButton Class="shop-catalogue-filter-button" Variant="ShopVariant.Outlined" Size="ShopSize.Large"
+                            StartIcon="@ShopIcons.Outlined.Filter" OnClick="@(() => _filtersOpen = true)">
+                    @Strings.Products_Filters
+                </ShopButton>
+                <ShopSortSelect TSort="ProductSortOption" Class="shop-catalogue-sort" Sort="@_sort"
+                                Options="@SortOptions" SortChanged="OnSortChangedAsync" />
+                @if (_products.HasLoaded)
                 {
-                    <MudStack Row
-                              AlignItems="AlignItems.Center"
-                              Spacing="4">
-
-
-                        <MudText Typo="Typo.subtitle1"
-                                 Color="Color.Secondary">
-                            @string.Format(Strings.Catalogue_ResultCount, ResultRangeStart, ResultRangeEnd, _products.TotalCount)
-                        </MudText>
-
-                        <MudSpacer />
-
-                        <ShopSortSelect TSort="ProductSortOption" Sort="@_sort" Options="@SortOptions" SortChanged="OnSortChangedAsync" />
-
-                    </MudStack>
+                    <p class="shop-catalogue-count" role="status" aria-atomic="true">
+                        @string.Format(Strings.Catalogue_ResultCount, ResultRangeStart, ResultRangeEnd, _products.TotalCount)
+                    </p>
                 }
+            </div>
 
-                <BusyFor Key="@BusyKeys.Products.Catalogue" Context="busy">
-                    @if (busy)
-                    {
-                        <MudGrid>
-                            @for (var i = 0; i < 12; i++)
-                            {
-                                <MudItem xs="12" sm="6" md="4" xl="3">
-                                    <MudSkeleton SkeletonType="SkeletonType.Rectangle"
-                                                 Height="420px" />
-                                </MudItem>
-                            }
-                        </MudGrid>
-                    }
-                    else if (_products.Items.Count > 0)
-                    {
-                        <MudGrid>
-                            @foreach (var product in _products.Items)
-                            {
-                                <MudItem xs="12" sm="6" md="4" xl="3">
-                                    <ProductCard Product="@product" />
-                                </MudItem>
-                            }
-                        </MudGrid>
+            <BusyFor Key="@BusyKeys.Products.Catalogue" Context="busy">
+                @if (busy)
+                {
+                    <div class="shop-catalogue-grid" aria-busy="true" aria-label="@Strings.Loading">
+                        @for (var i = 0; i < 12; i++)
+                        {
+                            <ProductCardSkeleton />
+                        }
+                    </div>
+                }
+                else if (_products.Items.Count > 0)
+                {
+                    <div class="shop-catalogue-grid" data-testid="catalogue-grid">
+                        @foreach (var product in _products.Items)
+                        {
+                            <ProductCard @key="product.Id" Product="@product" />
+                        }
+                    </div>
+                    <ShopPagination Page="@_products.Page" TotalPages="@_products.TotalPages"
+                                    PageChanged="OnPageChangedAsync" Class="shop-catalogue-pagination" />
+                }
+                else
+                {
+                    <div class="shop-catalogue-empty">
+                        <h2>@Strings.Empty_NoResults</h2>
+                        <p>@Strings.No_Product_Found_Desc</p>
+                    </div>
+                }
+            </BusyFor>
+        </div>
+    </div>
+</section>
 
-                        <ShopPagination Page="@_products.Page"
-                                        TotalPages="@_products.TotalPages"
-                                        PageChanged="OnPageChangedAsync"
-                                        Class="align-self-center" />
-                    }
-                    else
-                    {
-                        <MudStack AlignItems="AlignItems.Center"
-                                  Justify="Justify.Center"
-                                  Spacing="4"
-                                  Class="py-20">
-
-                            <MudText Typo="Typo.h4">@Strings.Empty_NoResults</MudText>
-
-                            <MudText Typo="Typo.subtitle1"
-                                     Color="Color.Secondary">@Strings.No_Product_Found_Desc</MudText>
-
-                        </MudStack>
-                    }
-                </BusyFor>
-
-            </MudStack>
-        </MudItem>
-
-    </MudGrid>
-
-</MudStack>
+<ShopDrawer Open="@_filtersOpen" OpenChanged="@(open => _filtersOpen = open)" Side="ShopDrawerSide.Left">
+    <HeaderContent><h2 class="shop-drawer-title">@Strings.Products_Filters</h2></HeaderContent>
+    <DrawerContent>
+        @if (_filtersOpen)
+        {
+            <BusyFor Key="@BusyKeys.Products.Filters" Context="filtersBusy">
+                @if (filtersBusy)
+                {
+                    <div class="shop-filter-skeleton shop-catalogue-filter" aria-hidden="true">
+                        @for (var i = 0; i < 5; i++)
+                        {
+                            <div class="shop-filter-skeleton-group">
+                                <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-filter-skeleton-title" />
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <ShopFilterPanel Class="shop-catalogue-filter" ClearLabel="@Strings.Filter_ClearAll"
+                                     Groups="@FilterGroups" SelectedFilters="@_selectedFilters"
+                                     FilterToggled="OnFilterToggledAsync" SelectedRanges="@SelectedRanges"
+                                     RangeChanged="OnRangeChangedAsync" RangeFormatter="FormatRange"
+                                     RangeStep="@(_ => 0.01m)"
+                                     RangeMinimumLabel="@(_ => Strings.Range_MinimumCad)"
+                                     RangeMaximumLabel="@(_ => Strings.Range_MaximumCad)"
+                                     OnClearFilters="OnClearFiltersAsync" />
+                }
+            </BusyFor>
+        }
+    </DrawerContent>
+</ShopDrawer>

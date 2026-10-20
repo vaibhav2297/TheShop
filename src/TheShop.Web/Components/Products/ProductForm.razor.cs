@@ -1,9 +1,11 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using TheShop.Web.Common.Dialogs;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Utilities;
+using Microsoft.AspNetCore.Components.Forms;
+using TheShop.Web.Common.UI;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.DTOs;
 using TheShop.Application.Features.Categories.DTOs;
@@ -20,28 +22,39 @@ using TheShop.Web.Resources;
 namespace TheShop.Web.Components.Products;
 
 /// <summary>
-/// The create/edit product form (Figma nodes <c>2687:14713</c> empty / <c>2687:15441</c>
-/// populated): General Info, the inline <see cref="ProductVariantsCard"/>, and Create/Cancel
-/// actions, shared by <c>AddProduct</c> and <c>EditProduct</c> (constitution Rule 25 — the
-/// second real call site). Owns its own MediatR dispatch, branching on <see cref="Mode"/>,
-/// since both pages need the identical field set, validation, and save mechanics.
+/// Shared create/edit editor for product fields, rich text, gallery, specifications and variants.
+/// Owns command mapping, save dispatch, field feedback and unsaved-navigation recovery.
 /// </summary>
-public partial class ProductForm : MudComponentBase
+public partial class ProductForm : ShopComponentBase
 {
-    private const int MaxNameLength = 150;
+    private IReadOnlyDictionary<string, string> CommandFieldMap
+    {
+        get
+        {
+            var fields = new Dictionary<string, string>
+            {
+                ["OriginalPrice.Value"] = nameof(ProductFormModel.OriginalPrice),
+                ["SalePrice.Value"] = nameof(ProductFormModel.SalePrice),
+            };
+            // Variant SKUs are generated from this read-only field; staff correct them through the product name.
+            for (var index = 0; index < _variants.Count; index++)
+                fields[$"Variants[{index}].Sku"] = nameof(ProductFormModel.Sku);
+            return fields;
+        }
+    }
 
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
-    [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private IShopDialogService DialogService { get; set; } = default!;
 
     /// <summary>Whether this form creates a new product or edits an existing one.</summary>
     [Parameter, EditorRequired]
     public ProductFormMode Mode { get; set; }
 
-    /// <summary>The product's current saved state. Required, and ignored, for <see cref="ProductFormMode.Create"/>.</summary>
+    /// <summary>Saved product state, required in Edit mode and ignored in Create mode.</summary>
     [Parameter]
     public AdminProductDto? InitialData { get; set; }
 
@@ -53,19 +66,18 @@ public partial class ProductForm : MudComponentBase
     [Parameter, EditorRequired]
     public IReadOnlyList<BrandLookupDto> Brands { get; set; } = [];
 
-    private MudForm _form = default!;
-    private bool _isFormValid;
+    private ShopImageUpload? _imageUpload;
+    private readonly ProductFormModel _model = new();
+    private ShopCommandValidation _validation = default!;
+    private readonly string _descriptionLabelId = $"product-description-{Guid.NewGuid():N}";
+    private string DescriptionErrorId => $"{_descriptionLabelId}-error";
+    private int _textLength;
+    private bool _showPasteNotice;
+    private ShopMoneyField? _originalPriceField, _salePriceField;
+    private ProductVariantsCard _variantsCard = default!;
     private bool _dirty;
     private bool _initialized;
 
-    private string _name = string.Empty;
-    private string? _description;
-    private string _sku = string.Empty;
-    private Guid? _categoryId;
-    private Guid? _brandId;
-    private decimal? _originalPrice;
-    private decimal? _salePrice;
-    private bool _isPublished;
     private string? _rowVersion;
 
     private IReadOnlyList<ShopUploadedImage> _galleryImages = [];
@@ -100,34 +112,24 @@ public partial class ProductForm : MudComponentBase
     private IReadOnlyList<Guid> UnpricedVariantIds =>
         [.. _variants.Where(v => v.OriginalPrice is null && v.Id is not null).Select(v => v.Id!.Value)];
 
-    /// <summary>
-    /// Whether publishing is currently impossible because some variant has no price (RULE-14). A
-    /// draft is free to be incomplete (RULE-15), so this only bites while the status is Active.
-    /// </summary>
-    private bool PublishBlockedByVariantPrices =>
-        _isPublished && HasVariants && UnpricedVariantIds.Count > 0;
-
     private IReadOnlyList<Guid> FlaggedVariantIds =>
-        [.. (_isPublished ? UnpricedVariantIds : []).Concat(_variantsFlaggedByServer).Distinct()];
+        [.. (_model.IsPublished ? UnpricedVariantIds : []).Concat(_variantsFlaggedByServer).Distinct()];
 
     private IReadOnlyList<CategoryLookupDto> DisplayCategories =>
-        _categoryId is { } id && InitialData is not null && Categories.All(c => c.Id != id)
+        _model.CategoryId is { } id && InitialData is not null && Categories.All(c => c.Id != id)
             ? [.. Categories, new CategoryLookupDto(id, InitialData.CategoryName)]
             : Categories;
 
     private IReadOnlyList<BrandLookupDto> DisplayBrands =>
-        _brandId is { } id && InitialData is not null && Brands.All(b => b.Id != id)
+        _model.BrandId is { } id && InitialData is not null && Brands.All(b => b.Id != id)
             ? [.. Brands, new BrandLookupDto(id, InitialData.BrandName)]
             : Brands;
 
-    private readonly Func<string, string?> _nameValidation = name =>
-        !string.IsNullOrWhiteSpace(name) && name.Trim().Length > MaxNameLength
-            ? Strings.Product_NameTooLong
-            : null;
-
-    protected string Classname => new CssBuilder("product-form").AddClass(Class).Build();
-
-    protected string Stylename => new StyleBuilder().AddStyle(Style).Build();
+    private IReadOnlyList<ShopSelectOption<Guid?>> CategoryOptions =>
+        [.. DisplayCategories.Select(category => new ShopSelectOption<Guid?>(category.Id, category.Name))];
+    private IReadOnlyList<ShopSelectOption<Guid?>> BrandOptions =>
+        [.. DisplayBrands.Select(brand => new ShopSelectOption<Guid?>(brand.Id, brand.Name))];
+    protected string Classname => ShopCssClass.Join("shop-native", "shop-product-form", Class);
 
     /// <inheritdoc/>
     protected override void OnParametersSet()
@@ -143,14 +145,14 @@ public partial class ProductForm : MudComponentBase
             return;
         }
 
-        _name = data.Name;
-        _description = data.Description;
-        _sku = data.Sku;
-        _categoryId = data.CategoryId;
-        _brandId = data.BrandId;
-        _originalPrice = data.OriginalPrice;
-        _salePrice = data.SalePrice;
-        _isPublished = data.IsPublished;
+        _model.Name = data.Name;
+        _model.Description = data.Description;
+        _model.Sku = data.Sku;
+        _model.CategoryId = data.CategoryId;
+        _model.BrandId = data.BrandId;
+        _model.OriginalPrice = data.OriginalPrice;
+        _model.SalePrice = data.SalePrice;
+        _model.IsPublished = data.IsPublished;
         _rowVersion = data.RowVersion;
 
         // The command carries the gallery's whole desired state, so the saved images have to be
@@ -175,56 +177,62 @@ public partial class ProductForm : MudComponentBase
         _variantsSeeded = true;
     }
 
-    private void OnNameChanged(string value)
+    private void OnNameChanged(string? value)
     {
         _dirty = true;
-        _name = value;
-        _sku = string.IsNullOrWhiteSpace(value) ? string.Empty : Sku.Suggest(value).Value;
+        _validation?.Clear();
+        _model.Name = value ?? string.Empty;
+        _model.Sku = string.IsNullOrWhiteSpace(value) ? string.Empty : Sku.Suggest(value).Value;
     }
 
     private void OnDescriptionChanged(string? value)
     {
         _dirty = true;
-        _description = value;
+        _validation?.Clear();
+        _model.Description = value;
     }
 
     private void OnCategoryChanged(Guid? value)
     {
         _dirty = true;
-        _categoryId = value;
+        _validation?.Clear();
+        _model.CategoryId = value;
     }
 
     private void OnBrandChanged(Guid? value)
     {
         _dirty = true;
-        _brandId = value;
+        _validation?.Clear();
+        _model.BrandId = value;
     }
 
     private void OnOriginalPriceChanged(decimal? value)
     {
         _dirty = true;
-        _originalPrice = value;
+        _validation?.Clear();
+        _model.OriginalPrice = value;
     }
 
     private void OnSalePriceChanged(decimal? value)
     {
         _dirty = true;
-        _salePrice = value;
+        _validation?.Clear();
+        _model.SalePrice = value;
     }
 
-    private async Task OnPublishedChangedAsync(bool value)
+    private Task OnPublishedChangedAsync(bool value)
     {
         _dirty = true;
-        _isPublished = value;
+        _validation?.Clear();
+        _model.IsPublished = value;
 
-        // Switching to Active is what makes every variant price required, so re-validate straight
-        // away rather than waiting for the staff member to press Save.
-        await _form.ValidateAsync();
+        return Task.CompletedTask;
     }
 
     private void OnGalleryImagesChanged(IReadOnlyList<ShopUploadedImage> images)
     {
         _dirty = true;
+        _validation?.Clear();
         ApplyGallery(images);
     }
 
@@ -272,6 +280,7 @@ public partial class ProductForm : MudComponentBase
         }
 
         _dirty = true;
+        _validation?.Clear();
 
         // Whatever the server flagged last time describes a save that has since been edited.
         _variantsFlaggedByServer = [];
@@ -290,36 +299,47 @@ public partial class ProductForm : MudComponentBase
         }
 
         _dirty = true;
+        _validation?.Clear();
 
         // Whatever the server flagged last time describes a save that has since been edited.
         _specificationsFlaggedByServer = [];
     }
 
+    private IReadOnlyList<string> GalleryErrors => [.. _galleryImages.Where(image => image.Error is not null).Select(image => image.Error!)];
+
+    private Task AddGalleryFilesAsync(IReadOnlyList<IBrowserFile> files) =>
+        _imageUpload?.AddFilesAsync(files) ?? Task.CompletedTask;
+
     private async Task SaveAsync()
     {
-        await _form.ValidateAsync();
-        if (!_isFormValid || PublishBlockedByVariantPrices)
-            return;
-
-        // A product with variants has no price of its own — customers pay the variant's price
-        // (RULE-19). The entered values stay in the form so they come back if the last option type
-        // is removed, but they must not be persisted while variants exist, or a price nobody can see
-        // would linger in the catalogue.
-        var originalPrice = HasVariants ? null : _originalPrice;
-        var salePrice = HasVariants ? null : _salePrice;
-
+        if (BusyState.IsBusy(BusyKeys.Products.SaveProduct)) return;
         await BusyState.RunAsync(BusyKeys.Products.SaveProduct, async () =>
         {
+            _validation.Clear();
+            if (_imageUpload is not null) await _imageUpload.WaitForPendingFilesAsync();
+            var pricesValid = true;
+            if (!HasVariants)
+            {
+                if (_originalPriceField is not null) pricesValid &= await _originalPriceField.ValidateAsync(includeDisabled: true);
+                if (_salePriceField is not null) pricesValid &= await _salePriceField.ValidateAsync(includeDisabled: true);
+            }
+            pricesValid &= await _variantsCard.ValidatePricesAsync(includeDisabled: true);
+            if (!pricesValid) return;
+
+            // Products with variants persist only the row prices. Keep the standalone drafts
+            // in the form so removing the last option restores the staff member's edits.
+            var originalPrice = HasVariants ? null : _model.OriginalPrice;
+            var salePrice = HasVariants ? null : _model.SalePrice;
             var result = Mode == ProductFormMode.Create
                 ? await Mediator.Send(new CreateProductCommand(
-                    _name.Trim(),
+                    _model.Name.Trim(),
                     NormalizedDescription(),
-                    _sku.Trim(),
-                    _categoryId!.Value,
-                    _brandId!.Value,
+                    _model.Sku.Trim(),
+                    _model.CategoryId.GetValueOrDefault(),
+                    _model.BrandId.GetValueOrDefault(),
                     originalPrice,
                     salePrice,
-                    _isPublished,
+                    _model.IsPublished,
                     _gallery,
                     _optionTypes,
                     _specifications,
@@ -327,14 +347,14 @@ public partial class ProductForm : MudComponentBase
                 : await Mediator.Send(new UpdateProductCommand(
                     InitialData!.Id,
                     _rowVersion!,
-                    _name.Trim(),
+                    _model.Name.Trim(),
                     NormalizedDescription(),
-                    _sku.Trim(),
-                    _categoryId!.Value,
-                    _brandId!.Value,
+                    _model.Sku.Trim(),
+                    _model.CategoryId.GetValueOrDefault(),
+                    _model.BrandId.GetValueOrDefault(),
                     originalPrice,
                     salePrice,
-                    _isPublished,
+                    _model.IsPublished,
                     _gallery,
                     _optionTypes,
                     _specifications,
@@ -344,18 +364,22 @@ public partial class ProductForm : MudComponentBase
             {
                 _dirty = false;
                 var message = Mode == ProductFormMode.Create
-                    ? _isPublished
+                    ? _model.IsPublished
                         ? string.Format(Strings.Product_CreatedPublished, result.Value.Name)
                         : string.Format(Strings.Product_Created, result.Value.Name)
                     : string.Format(Strings.Product_Updated, result.Value.Name);
-                Snackbar.Add(message, Severity.Success);
+                Notifications.Show(message, ShopNotificationKind.Success);
                 Nav.NavigateTo(Routes.Admin.ManageProducts);
             }
             else
             {
+                _validation.ShowErrors(result.ValidationErrors);
                 FlagVariantsReportedByServer(result);
                 FlagSpecificationsReportedByServer(result);
-                Snackbar.Add(DescribeFailure(result), Severity.Error);
+                if (result.ValidationErrors.Count == 0
+                    && !_variantsFlaggedByServer.Any(id => _variants.Any(variant => variant.Id == id))
+                    && !_specificationsFlaggedByServer.Any(position => position >= 0 && position < _specifications.Count))
+                    Notifications.Show(DescribeFailure(result), ShopNotificationKind.Error);
             }
         });
     }
@@ -424,7 +448,7 @@ public partial class ProductForm : MudComponentBase
     }
 
     private string? NormalizedDescription() =>
-        string.IsNullOrWhiteSpace(_description) ? null : _description.Trim();
+        string.IsNullOrWhiteSpace(_model.Description) ? null : _model.Description.Trim();
 
     private async Task OnBeforeInternalNavigationAsync(LocationChangingContext context)
     {
@@ -435,18 +459,7 @@ public partial class ProductForm : MudComponentBase
             context.PreventNavigation();
     }
 
-    private async Task<bool> ConfirmLeaveAsync()
-    {
-        var parameters = new DialogParameters<ShopConfirmDialog>
-        {
-            { x => x.TitleText, Strings.ProductForm_UnsavedChangesTitle },
-            { x => x.BodyText, Strings.ProductForm_UnsavedChangesBody },
-            { x => x.ConfirmLabel, Strings.ProductForm_LeaveAnyway },
-            { x => x.ConfirmColor, Color.Error },
-        };
-
-        var dialog = await DialogService.ShowAsync<ShopConfirmDialog>(Strings.ProductForm_UnsavedChangesTitle, parameters);
-        var result = await dialog.Result;
-        return result is { Canceled: false };
-    }
+    private Task<bool> ConfirmLeaveAsync() =>
+        DialogService.ConfirmAsync(new(Strings.ProductForm_UnsavedChangesTitle,
+            Strings.ProductForm_UnsavedChangesBody, Strings.ProductForm_LeaveAnyway, true));
 }

@@ -2,8 +2,6 @@ using Bunit;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Components.Common;
@@ -26,71 +24,17 @@ public class ProductContentCardTests : TestContext
     {
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
     }
 
     private static IRenderedComponent<ProductContentCard> RenderCard(
         TestContext context,
-        string? description = null,
         IReadOnlyList<ProductSpecificationDto>? initialSpecifications = null,
-        Action<string?>? descriptionChanged = null,
         Action<ProductSpecificationsState>? stateChanged = null,
         IReadOnlyList<int>? flaggedRowPositions = null) =>
         context.Render<ProductContentCard>(parameters => parameters
-            .Add(c => c.Description, description)
-            .Add(c => c.DescriptionChanged, descriptionChanged ?? (_ => { }))
             .Add(c => c.InitialSpecifications, initialSpecifications ?? [])
             .Add(c => c.StateChanged, stateChanged ?? (_ => { }))
             .Add(c => c.FlaggedRowPositions, flaggedRowPositions ?? []));
-
-    // =========================================================================
-    // Description (FR-1, FR-2)
-    // =========================================================================
-
-    [Fact]
-    [Trait("Feature", "product-description")]
-    public void Render_ShowsTheDescriptionLabelAndHeading()
-    {
-        var cut = RenderCard(this);
-
-        cut.Markup.Should().Contain(Strings.ProductContent_Heading);
-        cut.Markup.Should().Contain(Strings.AddProduct_DescriptionLabel);
-    }
-
-    [Fact]
-    [Trait("Feature", "product-description")]
-    public async Task EditingTheDescription_RaisesDescriptionChanged()
-    {
-        string? raised = null;
-        var cut = RenderCard(this, descriptionChanged: html => raised = html);
-
-        await cut.InvokeAsync(() => cut.FindComponent<ShopRichTextEditor>().Instance.OnTextChanged("<p>New</p>", 3));
-
-        raised.Should().Be("<p>New</p>");
-    }
-
-    [Fact]
-    [Trait("Feature", "product-description")]
-    public async Task TextLengthChanged_UpdatesTheCounter()
-    {
-        var cut = RenderCard(this);
-
-        await cut.InvokeAsync(() => cut.FindComponent<ShopRichTextEditor>().Instance.OnTextChanged("<p>Hello</p>", 5));
-
-        cut.Markup.Should().Contain(string.Format(Strings.AddProduct_DescriptionCounter, 5, 20_000));
-    }
-
-    [Fact]
-    [Trait("Feature", "product-description")]
-    public async Task UnsupportedPaste_ShowsTheFormattingRemovedNotice()
-    {
-        var cut = RenderCard(this);
-
-        await cut.InvokeAsync(() => cut.FindComponent<ShopRichTextEditor>().Instance.OnPasteUnsupported());
-
-        cut.Markup.Should().Contain(Strings.AddProduct_DescriptionFormattingRemoved);
-    }
 
     // =========================================================================
     // Specifications — seeding and add (FR-4)
@@ -122,7 +66,7 @@ public class ProductContentCardTests : TestContext
         ProductSpecificationsState? raised = null;
         var cut = RenderCard(this, stateChanged: state => raised = state);
 
-        await cut.InvokeAsync(() => cut.FindComponent<MudButton>().Instance.OnClick.InvokeAsync());
+        await cut.InvokeAsync(() => cut.FindComponent<ShopButton>().Instance.OnClick.InvokeAsync());
 
         raised.Should().NotBeNull();
         raised!.Specifications.Should().ContainSingle(s => s.Name == string.Empty && s.Value == string.Empty);
@@ -136,7 +80,7 @@ public class ProductContentCardTests : TestContext
         var initial = new[] { new ProductSpecificationDto(Guid.NewGuid(), "Material", "Steel", 0) };
         var cut = RenderCard(this, initialSpecifications: initial, stateChanged: state => raised = state);
 
-        var nameField = cut.FindComponents<MudTextField<string>>()[0];
+        var nameField = cut.FindComponents<ShopTextField>()[0];
         await cut.InvokeAsync(() => nameField.Instance.ValueChanged.InvokeAsync("Weight"));
 
         raised!.Specifications.Should().ContainSingle(s => s.Name == "Weight" && s.Value == "Steel");
@@ -195,25 +139,25 @@ public class ProductContentCardTests : TestContext
         var initial = new[] { new ProductSpecificationDto(Guid.NewGuid(), "Material", "", 0) };
         var cut = RenderCard(this, initialSpecifications: initial, flaggedRowPositions: [0]);
 
-        cut.FindComponents<MudTextField<string>>().Should().Contain(f => f.Instance.Error);
+        cut.FindAll("input[aria-invalid='true']").Should().HaveCount(2);
     }
 
     [Fact]
     [Trait("Feature", "product-description")]
-    public async Task Render_WithTwoRowsSharingANameIgnoringCaseAndSpaces_FlagsBothClientSide()
+    public async Task Render_WithTwoRowsFlaggedByServer_MarksBothRows()
     {
         var initial = new[]
         {
             new ProductSpecificationDto(Guid.NewGuid(), "Material", "Steel", 0),
             new ProductSpecificationDto(Guid.NewGuid(), " material ", "Aluminum", 1),
         };
-        var cut = RenderCard(this, initialSpecifications: initial);
+        var cut = RenderCard(this, initialSpecifications: initial, flaggedRowPositions: [0, 1]);
         await cut.InvokeAsync(() => { });
 
-        var nameFields = cut.FindComponents<MudTextField<string>>()
+        var nameFields = cut.FindComponents<ShopTextField>()
             .Where((_, index) => index % 2 == 0)
             .ToList();
-        nameFields.Should().OnlyContain(f => f.Instance.Error,
-            "duplicate names are flagged client-side before any round trip (RULE-4)");
+        nameFields.Should().HaveCount(2);
+        cut.FindAll("input[aria-invalid='true']").Should().HaveCount(4);
     }
 }

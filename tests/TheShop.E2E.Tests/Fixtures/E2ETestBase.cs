@@ -48,10 +48,15 @@ public abstract class E2ETestBase(PlaywrightFixture playwright) : IAsyncLifetime
             await Context.StorageStateAsync(new() { Path = path });
 
         var failed = TestContext.Current.TestState?.Result is TestResult.Failed;
-        var tracePath = failed
-            ? Path.Combine(AppContext.BaseDirectory, "playwright-traces",
-                $"{TestContext.Current.Test?.TestDisplayName ?? "unknown"}.zip")
-            : null;
+        string? tracePath = null;
+        if (failed)
+        {
+            var directory = Path.Combine(AppContext.BaseDirectory, "playwright-traces");
+            Directory.CreateDirectory(directory);
+            var name = TestContext.Current.Test?.TestDisplayName ?? "unknown";
+            var safeName = string.Concat(name.Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c));
+            tracePath = Path.Combine(directory, safeName + ".zip");
+        }
         await Context.Tracing.StopAsync(new() { Path = tracePath });
         await Context.DisposeAsync();
     }

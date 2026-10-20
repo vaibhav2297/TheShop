@@ -17,28 +17,27 @@ internal static class ShopImageExpectations
     /// <summary>Every preset whose frame follows a ratio (all but BrandLogo).</summary>
     public static readonly ShopImagePreset[] RatioPresets =
     [
-        ShopImagePreset.ProductCard, ShopImagePreset.ProductDetail, ShopImagePreset.Thumbnail,
-        ShopImagePreset.CategoryTile, ShopImagePreset.CategoryBanner, ShopImagePreset.Hero,
-        ShopImagePreset.MobileBanner, ShopImagePreset.Editorial, ShopImagePreset.SocialSharing,
+        ShopImagePreset.SquareContain, ShopImagePreset.SquareCover, ShopImagePreset.Banner,
+        ShopImagePreset.Hero, ShopImagePreset.PortraitCover, ShopImagePreset.Editorial,
+        ShopImagePreset.SocialSharing,
     ];
 
     /// <summary>The spec's FR-1/FR-4 frame ratio (width, height) for <paramref name="preset"/> at a viewport width.</summary>
     public static (int Width, int Height) ExpectedRatio(ShopImagePreset preset, int viewportWidth) => preset switch
     {
-        ShopImagePreset.CategoryBanner when viewportWidth < 600 => (4, 5),
+        ShopImagePreset.Banner when viewportWidth < 600 => (4, 5),
         ShopImagePreset.Hero when viewportWidth < 600 => (4, 5),
-        ShopImagePreset.CategoryBanner => (16, 5),
+        ShopImagePreset.Banner => (16, 5),
         ShopImagePreset.Hero => (16, 9),
-        ShopImagePreset.MobileBanner => (4, 5),
+        ShopImagePreset.PortraitCover => (4, 5),
         ShopImagePreset.Editorial => (4, 3),
         ShopImagePreset.SocialSharing => (40, 21),
         _ => (1, 1),
     };
 
     /// <summary>Whether the preset shows the whole source (contain) rather than a centered crop.</summary>
-    public static bool IsWholeImage(ShopImagePreset preset) => preset is ShopImagePreset.ProductCard
-        or ShopImagePreset.ProductDetail or ShopImagePreset.Thumbnail or ShopImagePreset.BrandLogo
-        or ShopImagePreset.SocialSharing;
+    public static bool IsWholeImage(ShopImagePreset preset) => preset is ShopImagePreset.SquareContain
+        or ShopImagePreset.BrandLogo or ShopImagePreset.SocialSharing;
 
     public static void ShouldHaveRatio(this ShopImageMetrics m, (int Width, int Height) ratio, string subject) =>
         m.Height.Should().BeApproximately(m.Width * ratio.Height / ratio.Width, 1.0,

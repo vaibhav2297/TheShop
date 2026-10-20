@@ -1,13 +1,14 @@
+using TheShop.Web.Components.Common;
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
+using TheShop.Web.Common.Dialogs;
 using Bunit.TestDoubles;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.DTOs;
@@ -33,7 +34,7 @@ namespace TheShop.Web.Tests.Pages.Admin;
 public class AddProductTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public AddProductTests()
@@ -43,12 +44,9 @@ public class AddProductTests : TestContext
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
-        Services.AddMudServices();
-        var popoverService = Substitute.For<IPopoverService>();
-        popoverService.PopoverOptions.Returns(new PopoverOptions());
-        Services.Replace(ServiceDescriptor.Singleton(popoverService));
+        Services.AddSingleton(Substitute.For<IShopDialogService>());
 
         _localizer[Arg.Any<string>()].Returns(call => new LocalizedString(call.Arg<string>(), call.Arg<string>()));
 
@@ -83,7 +81,7 @@ public class AddProductTests : TestContext
     {
         var cut = await RenderAsync();
 
-        cut.Markup.Should().Contain(Strings.AddProduct_Heading);
+        cut.Markup.Should().Contain(Strings.ProductForm_CreateHeading);
     }
 
     [Fact]
@@ -135,7 +133,7 @@ public class AddProductTests : TestContext
         var cut = await RenderAsync();
 
         var breadcrumbs = Services.GetRequiredService<BreadcrumbState>();
-        breadcrumbs.Trail.Should().Contain(item => item.Text == Strings.AddProduct_Heading);
+        breadcrumbs.Trail.Should().Contain(item => item.Text == Strings.ProductForm_CreateHeading);
     }
 }
 

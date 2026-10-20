@@ -1,0 +1,31 @@
+@use 'sass:list';
+
+// Figma Typography/* text styles, inspected 2026-10-02 (Typography - New, 2001:2).
+// Size uses rem at the default 16px root. AUTO line height maps to normal.
+// Entries: family, size, weight, tracking, case. No application alias layer.
+$text-styles: (
+    h1: ('Barlow Condensed', 6rem, 800, 3px, none),
+    h2: ('Barlow Condensed', 3.75rem, 800, 3px, none),
+    h3: ('Barlow Condensed', 3rem, 800, 3px, none),
+    h4: ('Barlow Condensed', 2.125rem, 700, 2px, none),
+    h5: ('Barlow Condensed', 1.5rem, 700, 2px, none),
+    h6: ('Space Grotesk', 1.25rem, 500, 0.25px, none),
+    subtitle-1: ('Space Grotesk', 1rem, 500, 0.25px, none),
+    subtitle-2: ('Space Grotesk', 0.875rem, 500, 0.25px, none),
+    body-1: ('Space Grotesk', 1rem, 400, 0.25px, none),
+    body-2: ('Space Grotesk', 0.875rem, 400, 0.25px, none),
+    button: ('Space Grotesk', 0.875rem, 500, 0.25px, capitalize),
+    caption: ('Space Grotesk', 0.75rem, 400, 0.25px, none),
+    overline: ('Space Grotesk', 0.625rem, 400, 0.25px, none)
+);
+
+:root {
+    @each $style, $values in $text-styles {
+        --shop-typography-#{$style}-font-family: #{list.nth($values, 1)}, sans-serif;
+        --shop-typography-#{$style}-font-size: #{list.nth($values, 2)};
+        --shop-typography-#{$style}-font-weight: #{list.nth($values, 3)};
+        --shop-typography-#{$style}-line-height: normal;
+        --shop-typography-#{$style}-letter-spacing: #{list.nth($values, 4)};
+        --shop-typography-#{$style}-text-transform: #{list.nth($values, 5)};
+    }
+}

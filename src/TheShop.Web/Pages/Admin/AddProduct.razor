@@ -1,9 +1,6 @@
 @using TheShop.Web.Components.Products
-
 <PageTitle>@Strings.AddProduct_PageTitle</PageTitle>
-
-<MudStack Class="pa-8" Spacing="12">
-    <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.AddProduct_Heading</MudText>
-
+<section class="shop-native shop-products-page">
+    <h1>@Strings.ProductForm_CreateHeading</h1>
     <ProductForm Mode="ProductFormMode.Create" Categories="@_categories" Brands="@_brands" />
-</MudStack>
+</section>

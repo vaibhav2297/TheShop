@@ -1,14 +1,14 @@
 @layout TheShop.Web.Components.Layout.MainLayout
 @using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
 
 <PageTitle>@Strings.NotFound_PageTitle</PageTitle>
 
-<MudStack Spacing="4" AlignItems="AlignItems.Center" Class="mt-12">
-    <MudText Typo="Typo.h4">@Strings.NotFound_Heading</MudText>
-    <MudText Typo="Typo.body1">@Strings.NotFound_Message</MudText>
-    <MudButton Href="@Routes.Home"
-               Variant="Variant.Filled"
-               Color="Color.Primary">
+<section class="shop-native shop-not-found-page">
+    <h1>@Strings.NotFound_Heading</h1>
+    <p>@Strings.NotFound_Message</p>
+    <ShopButton Href="@Routes.Home">
         @Strings.NotFound_GoHome
-    </MudButton>
-</MudStack>
+    </ShopButton>
+</section>

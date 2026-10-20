@@ -35,11 +35,10 @@ public static class AuthStateFactory
             var page = await context.NewPageAsync();
 
             await page.GotoAsync(WebRoutes.Auth.SignIn);
-            await page.Locator(".mud-layout, .mud-container, input").First
+            await page.Locator("main.shop-auth-layout")
                 .WaitForAsync(new() { Timeout = 30_000 }); // WASM boot
 
-            // Unlike otp-input (a container), UserAttributes on MudTextField lands directly
-            // on the <input> itself here — verified by inspecting the rendered DOM.
+            // The email test ID targets the native input; otp-input targets its digit container.
             await page.GetByTestId("signin-email").FillAsync(email);
             await page.GetByTestId("signin-submit").ClickAsync();
 
@@ -53,7 +52,7 @@ public static class AuthStateFactory
             // SignInVerify navigates to Routes.Home on success (no ReturnUrl in this flow).
             await page.WaitForURLAsync(url => new Uri(url).AbsolutePath == WebRoutes.Home,
                 new() { Timeout = 30_000 });
-            await Assertions.Expect(page.Locator(".mud-layout")).ToBeVisibleAsync();
+            await Assertions.Expect(page.Locator("main[data-shop-scroll-root]")).ToBeVisibleAsync();
 
             await context.StorageStateAsync(new() { Path = path });
             await context.DisposeAsync();

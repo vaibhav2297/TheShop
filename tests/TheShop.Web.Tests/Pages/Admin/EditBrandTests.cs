@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
 using Bunit.TestDoubles;
@@ -7,8 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.Commands.UpdateBrand;
@@ -35,7 +34,7 @@ namespace TheShop.Web.Tests.Pages.Admin;
 public class EditBrandTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public EditBrandTests()
@@ -45,10 +44,8 @@ public class EditBrandTests : TestContext
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
 
         _localizer[Arg.Any<string>()].Returns(call =>
         {
@@ -100,8 +97,8 @@ public class EditBrandTests : TestContext
         var logo = cut.FindComponent<ShopImage>();
         logo.Instance.Preset.Should().Be(ShopImagePreset.BrandLogo);
         logo.Instance.Src.Should().Be("https://example.com/wide-logo.svg");
-        logo.Find("[data-shop-image]").GetAttribute("style").Should().Contain("width: 120px").And.Contain("height: 120px");
-        cut.FindAll("button").Should().Contain(b => b.TextContent.Contains(Strings.AddBrand_LogoRemove));
+        cut.Find(".shop-image-upload-grid [data-shop-image]").Should().NotBeNull();
+        cut.FindAll("button").Should().Contain(b => (b.GetAttribute("aria-label") ?? "").StartsWith(Strings.AddBrand_LogoRemove));
     }
 
     // =========================================================================
@@ -120,6 +117,7 @@ public class EditBrandTests : TestContext
         var cut = await RenderAsync(dto.Id);
 
         cut.Markup.Should().Contain(Strings.EditBrand_Heading);
+        cut.Find("input[type=file]").HasAttribute("multiple").Should().BeFalse();
     }
 
     [Fact]
@@ -162,6 +160,11 @@ public class EditBrandTests : TestContext
         var cut = await RenderAsync(dto.Id);
 
         GetPrivateField<string>(cut.Instance, "_name").Should().Be("Lost Mary");
+        var trail = Services.GetRequiredService<BreadcrumbState>().Trail;
+        trail[^1].Text.Should().Be(dto.Name);
+        trail[^1].Href.Should().BeNull();
+        trail[^1].Disabled.Should().BeTrue();
+        trail[^2].Href.Should().Be(Routes.Admin.ManageBrands);
         GetPrivateField<string?>(cut.Instance, "_description").Should().Be("Another brand.");
         GetPrivateField<bool>(cut.Instance, "_isActive").Should().BeFalse();
     }
@@ -237,7 +240,7 @@ public class EditBrandTests : TestContext
         SetFormState(cut, name: dto.Name, description: dto.Description, isActive: dto.IsActive, isFormValid: true);
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Strings.EditBrand_Success, Severity.Success);
+        _notifications.Received(1).Show(Strings.EditBrand_Success, ShopNotificationKind.Success);
         navManager.Uri.Should().EndWith(Routes.Admin.ManageBrands);
     }
 
@@ -247,8 +250,10 @@ public class EditBrandTests : TestContext
 
     [Fact]
     [Trait("Feature", "manage-brands")]
-    public async Task SaveAsync_WhenFormIsInvalid_DoesNotSendTheCommand()
+    public async Task SaveAsync_WhenCommandValidationFails_ShowsFieldError()
     {
+        _mediator.Send(Arg.Any<UpdateBrandCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result<BrandDto>.Fail(nameof(Strings.Brand_NameRequired), [], [new("Name", nameof(Strings.Brand_NameRequired))]));
         var dto = ExampleDto();
         SetUpExistingBrand(dto);
         AuthorizeAsBrandEditor();
@@ -257,7 +262,10 @@ public class EditBrandTests : TestContext
         SetFormState(cut, name: "", description: dto.Description, isActive: dto.IsActive, isFormValid: false);
         await ClickSaveAsync(cut);
 
-        await _mediator.DidNotReceive().Send(Arg.Any<UpdateBrandCommand>(), Arg.Any<CancellationToken>());
+        await _mediator.Received(1).Send(Arg.Any<UpdateBrandCommand>(), Arg.Any<CancellationToken>());
+        cut.Find(".shop-field-error").TextContent.Should().Contain(nameof(Strings.Brand_NameRequired));
+        cut.FindAll(".shop-field input")[0].Input("Valid name");
+        cut.Find(".shop-field-error").TextContent.Should().BeEmpty();
     }
 
     // =========================================================================
@@ -279,7 +287,7 @@ public class EditBrandTests : TestContext
         SetFormState(cut, name: "Lost Mary", description: dto.Description, isActive: dto.IsActive, isFormValid: true);
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageBrands);
     }
 
@@ -318,7 +326,7 @@ public class EditBrandTests : TestContext
         SetFormState(cut, name: dto.Name, description: dto.Description, isActive: dto.IsActive, isFormValid: true);
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Strings.EditBrand_Success, Severity.Success);
+        _notifications.Received(1).Show(Strings.EditBrand_Success, ShopNotificationKind.Success);
     }
 
     // =========================================================================
@@ -336,7 +344,7 @@ public class EditBrandTests : TestContext
         var cut = await RenderAsync(dto.Id);
 
         SetFormState(cut, name: dto.Name, description: dto.Description, isActive: dto.IsActive, isFormValid: true);
-        InvokePrivateMethod(cut, "RemoveExistingLogo");
+        await cut.InvokeAsync(() => cut.FindComponent<ShopImageUpload>().Instance.FilesChanged.InvokeAsync([]));
         await ClickSaveAsync(cut);
 
         await _mediator.Received(1).Send(
@@ -358,8 +366,8 @@ public class EditBrandTests : TestContext
         var cut = await RenderAsync(dto.Id);
 
         SetFormState(cut, name: dto.Name, description: dto.Description, isActive: dto.IsActive, isFormValid: true);
-        InvokePrivateMethod(cut, "RemoveExistingLogo");
-        SetNewLogoImages(cut, [new ShopUploadedImage([1, 2, 3], "logo.png", "image/png", "data:image/png;base64,AQID")]);
+        await cut.InvokeAsync(() => cut.FindComponent<ShopImageUpload>().Instance.FilesChanged.InvokeAsync(
+            [new ShopUploadedImage([1, 2, 3], "logo.png", "image/png", "data:image/png;base64,AQID")]));
         await ClickSaveAsync(cut);
 
         await _mediator.Received(1).Send(
@@ -440,7 +448,7 @@ public class EditBrandTests : TestContext
         SetFormState(cut, name: dto.Name, description: dto.Description, isActive: dto.IsActive, isFormValid: true);
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageBrands);
     }
 
@@ -450,7 +458,7 @@ public class EditBrandTests : TestContext
 
     [Fact]
     [Trait("Feature", "manage-brands")]
-    public async Task Render_Always_CancelButtonLinksToManageBrands()
+    public async Task Cancel_NavigatesToManageBrandsWithoutSubmitting()
     {
         var dto = ExampleDto();
         SetUpExistingBrand(dto);
@@ -458,7 +466,11 @@ public class EditBrandTests : TestContext
 
         var cut = await RenderAsync(dto.Id);
 
-        cut.Find($"a[href='{Routes.Admin.ManageBrands}']").Should().NotBeNull();
+        var cancel = cut.Find(".shop-brands-form-actions button[type='button']");
+        cancel.TextContent.Should().Be(Strings.Cancel);
+        cancel.Click();
+        Services.GetRequiredService<NavigationManager>().Uri.Should().EndWith(Routes.Admin.ManageBrands);
+        await _mediator.DidNotReceive().Send(Arg.Any<UpdateBrandCommand>(), Arg.Any<CancellationToken>());
     }
 
     // =========================================================================
@@ -468,13 +480,9 @@ public class EditBrandTests : TestContext
     private static void SetFormState(
         IRenderedComponent<EditBrand> cut, string name, string? description, bool isActive, bool isFormValid)
     {
-        var type = typeof(EditBrand);
-        const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-        type.GetField("_name", flags)!.SetValue(cut.Instance, name);
-        type.GetField("_description", flags)!.SetValue(cut.Instance, description);
-        type.GetField("_isActive", flags)!.SetValue(cut.Instance, isActive);
-        type.GetField("_isFormValid", flags)!.SetValue(cut.Instance, isFormValid);
-        cut.Render();
+        cut.FindAll(".shop-field input")[0].Input(name);
+        cut.FindAll(".shop-field input")[1].Input(description ?? string.Empty);
+        cut.FindAll(".shop-brands-status button")[isActive ? 0 : 1].Click();
     }
 
     private static void SetNewLogoImages(IRenderedComponent<EditBrand> cut, IReadOnlyList<ShopUploadedImage> images)
@@ -491,13 +499,20 @@ public class EditBrandTests : TestContext
         cut.Render();
     }
 
-    private static T GetPrivateField<T>(object instance, string fieldName) =>
-        (T)instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(instance)!;
+    private static T GetPrivateField<T>(object instance, string fieldName)
+    {
+        if (fieldName is "_name" or "_description" or "_isActive")
+        {
+            var model = instance.GetType().GetField("_model", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(instance)!;
+            var property = fieldName switch { "_name" => "Name", "_description" => "Description", _ => "IsActive" };
+            return (T)model.GetType().GetProperty(property)!.GetValue(model)!;
+        }
+        return (T)instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(instance)!;
+    }
 
     private static async Task ClickSaveAsync(IRenderedComponent<EditBrand> cut)
     {
-        var saveButton = cut.FindAll("button").First(b => b.TextContent.Contains(Strings.Save));
-        await cut.InvokeAsync(() => saveButton.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
+        await cut.Find("form").SubmitAsync();
     }
 }
 
@@ -506,7 +521,7 @@ public class EditBrandTests : TestContext
 // =============================================================================
 // AC-6: SaveAsync_WithChangesToNameDescriptionAndStatus_SendsUpdateBrandCommandWithTheNewValues,
 //        SaveAsync_WhenMediatorReturnsSuccess_ShowsConfirmationAndNavigatesToManageBrands
-// AC-7: SaveAsync_WhenFormIsInvalid_DoesNotSendTheCommand
+// AC-7: SaveAsync_WhenCommandValidationFails_ShowsFieldError
 // AC-8: SaveAsync_WhenRenamedToAnotherBrandsName_ShowsErrorSnackbarAndDoesNotNavigate,
 //        SaveAsync_WhenRenamedToAnotherBrandsName_PreservesTheEnteredName
 // AC-9: SaveAsync_SavedWithNoChangesAtAll_Succeeds

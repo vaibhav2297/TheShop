@@ -4,8 +4,6 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Admin;
@@ -41,8 +39,6 @@ public class AdminConsoleTests : TestContext
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton(_mediator);
         Services.AddSingleton<BusyState>();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
     }
 
     private static AdminDashboardDto BuildDto(params (AdminModule Module, int? Count)[] entries) =>
@@ -160,8 +156,27 @@ public class AdminConsoleTests : TestContext
 
         var cut = Render<AdminConsole>();
 
-        cut.FindComponents<MudSkeleton>().Should().HaveCount(5);
+        cut.FindComponents<AdminModuleCardSkeleton>().Should().HaveCount(5);
         cut.FindComponents<AdminModuleCard>().Should().BeEmpty();
+        cut.Find("h1").TextContent.Should().Be(Strings.AdminConsole_Heading);
+        cut.Find("[role=status]").TextContent.Should().Be(Strings.Loading);
+        cut.Find(".shop-admin-console-grid").GetAttribute("aria-busy").Should().Be("true");
+    }
+
+    [Fact]
+    public async Task Render_WhenLoadingCompletes_ReplacesPlaceholdersAndClearsTheBusyAnnouncement()
+    {
+        var pending = new TaskCompletionSource<Result<AdminDashboardDto>>();
+        _mediator.Send(Arg.Any<GetAdminDashboardQuery>(), Arg.Any<CancellationToken>()).Returns(pending.Task);
+        var cut = Render<AdminConsole>();
+
+        await cut.InvokeAsync(() => pending.SetResult(Result.Ok(BuildDto((AdminModule.Products, 42)))));
+
+        cut.WaitForAssertion(() => cut.FindComponents<AdminModuleCard>().Should().ContainSingle());
+        cut.FindComponents<AdminModuleCardSkeleton>().Should().BeEmpty();
+        cut.Find(".shop-admin-console-grid").GetAttribute("aria-busy").Should().Be("false");
+        cut.Find("[role=status]").TextContent.Should().BeEmpty();
+        cut.FindAll("[class*='mud-']").Should().BeEmpty();
     }
 
     // =========================================================================

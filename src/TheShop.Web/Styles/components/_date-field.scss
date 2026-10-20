@@ -1,0 +1,27 @@
+// Native date segments remain visible even when empty; keep their label above the border.
+.shop-date-field {
+    // Preserve room for the complete year and native picker when text grows in narrow forms.
+    --shop-date-padding-inline: min(var(--shop-field-padding-inline), 14px);
+}
+.shop-date-field .shop-field-control {
+    padding-inline: var(--shop-date-padding-inline);
+}
+.shop-date-field .shop-field-label {
+    inset-block-start: 0;
+    inset-inline-start: calc(var(--shop-date-padding-inline) - var(--shop-space-1));
+    background-color: var(--shop-color-surface-default);
+    font-size: var(--shop-typography-caption-font-size);
+}
+// The whole control opens the native picker (wwwroot/js/shopDateField.js).
+.shop-date-field .shop-field-control:not(:has(.shop-field-input:disabled)) {
+    cursor: pointer;
+
+    .shop-field-label,
+    .shop-field-input,
+    .shop-field-input::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+    }
+}
+.shop-date-field .shop-field-control:has(.shop-field-input:disabled) {
+    cursor: not-allowed;
+}

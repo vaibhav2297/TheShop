@@ -1,0 +1,24 @@
+// ─── ShopSkeleton ────────────────────────────────────────────────────────────
+// Figma 3010:17894: a static Brand/Tertiary block with square corners. No shimmer,
+// pulse or other motion by design. Caller classes own every size, so this file is
+// loaded before other components and their size rules win at equal specificity.
+.shop-skeleton {
+    display: block;
+    inline-size: 100%;
+    min-inline-size: 0;
+    background-color: var(--shop-color-tertiary);
+}
+
+// Text keeps the line box of the inherited text style and paints a bar the height of
+// the font size, so swapping in real text does not shift the layout.
+.shop-skeleton-text {
+    block-size: 1lh;
+    background: linear-gradient(var(--shop-color-tertiary), var(--shop-color-tertiary)) center / 100% 1em no-repeat;
+}
+
+@media (forced-colors: active) {
+    .shop-skeleton {
+        outline: 1px solid CanvasText;
+        outline-offset: -1px;
+    }
+}

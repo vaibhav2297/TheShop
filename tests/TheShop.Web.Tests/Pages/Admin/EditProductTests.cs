@@ -1,13 +1,14 @@
+using TheShop.Web.Components.Common;
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
+using TheShop.Web.Common.Dialogs;
 using Bunit.TestDoubles;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.DTOs;
@@ -35,7 +36,7 @@ namespace TheShop.Web.Tests.Pages.Admin;
 public class EditProductTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public EditProductTests()
@@ -45,12 +46,9 @@ public class EditProductTests : TestContext
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
-        Services.AddMudServices();
-        var popoverService = Substitute.For<IPopoverService>();
-        popoverService.PopoverOptions.Returns(new PopoverOptions());
-        Services.Replace(ServiceDescriptor.Singleton(popoverService));
+        Services.AddSingleton(Substitute.For<IShopDialogService>());
 
         _localizer[Arg.Any<string>()].Returns(call => new LocalizedString(call.Arg<string>(), call.Arg<string>()));
 
@@ -142,6 +140,11 @@ public class EditProductTests : TestContext
         var form = cut.FindComponent<ProductForm>();
         form.Instance.Mode.Should().Be(ProductFormMode.Edit);
         form.Instance.InitialData.Should().Be(dto);
+        var trail = Services.GetRequiredService<BreadcrumbState>().Trail;
+        trail[^1].Text.Should().Be(dto.Name);
+        trail[^1].Href.Should().BeNull();
+        trail[^1].Disabled.Should().BeTrue();
+        trail[^2].Href.Should().Be(Routes.Admin.ManageProducts);
     }
 
     // =========================================================================
@@ -184,7 +187,7 @@ public class EditProductTests : TestContext
         var cut = await RenderAsync(id);
 
         cut.Markup.Should().Contain(Strings.EditProduct_NotFoundTitle);
-        cut.Markup.Should().NotContain(Strings.EditProduct_Heading);
+        cut.FindComponents<ProductForm>().Should().BeEmpty();
     }
 
     [Fact]

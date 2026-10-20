@@ -1,0 +1,82 @@
+@typeparam TItem
+@using TheShop.Web.Common.UI
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@inherits ShopComponentBase
+
+<div class="@ScrollClass" role="region" aria-label="@Caption" tabindex="0">
+    <table @attributes="AdditionalAttributes" class="@ClassName" style="@Style" aria-busy="@(Loading ? "true" : null)">
+        <caption class="shop-visually-hidden">@Caption</caption>
+        <thead>
+            <tr>
+                @if (Selectable)
+                {
+                    <th scope="col" class="shop-table-selection">
+                        <ShopCheckbox Label="@Strings.Table_SelectPage" HideLabel="true"
+                                      Value="@AllSelected" ValueExpression="@(() => AllSelected)"
+                                      ValueChanged="SelectPageAsync" Indeterminate="@PartiallySelected"
+                                      Disabled="@(SelectionDisabled || Loading || _rows.Count == 0)" />
+                    </th>
+                }
+                @HeaderContent
+            </tr>
+        </thead>
+        <tbody>
+            @if (Loading)
+            {
+                for (var i = 0; i < LoadingRowCount; i++)
+                {
+                    <tr @key="i" class="shop-table-loading-row" aria-hidden="true">
+                        @for (var column = 0; column < EffectiveColumnCount; column++)
+                        {
+                            <td class="@LoadingCellClass(column)"><ShopSkeleton Shape="ShopSkeletonShape.Text" /></td>
+                        }
+                    </tr>
+                }
+            }
+            else if (Virtualize)
+            {
+                <Virtualize Items="@_rows" Context="row" SpacerElement="tr" ItemSize="96">
+                    @RenderRow(row)
+                </Virtualize>
+            }
+            else
+            {
+                foreach (var row in _rows)
+                {
+                    <tr @key="row.Key">
+                        @if (Selectable)
+                        {
+                            <td class="shop-table-selection">
+                                <ShopCheckbox Label="@RowSelectionLabel!(row.Item)" HideLabel="true"
+                                              Value="@IsSelected(row.Key)" ValueExpression="@(() => row.Selected)"
+                                              ValueChanged="@(value => SelectRowAsync(row.Key, value))"
+                                              Disabled="@SelectionDisabled" />
+                            </td>
+                        }
+                        @RowTemplate(row.Item)
+                    </tr>
+                }
+                if (_rows.Count == 0 && EmptyContent is not null)
+                {
+                    <tr><td colspan="@EffectiveColumnCount" class="shop-table-empty">@EmptyContent</td></tr>
+                }
+            }
+        </tbody>
+    </table>
+    <span class="shop-visually-hidden" role="status">@(Loading ? Strings.Loading : null)</span>
+</div>
+
+@code {
+    private RenderFragment RenderRow(RowEntry row) => @<tr @key="row.Key">
+        @if (Selectable)
+        {
+            <td class="shop-table-selection">
+                <ShopCheckbox Label="@RowSelectionLabel!(row.Item)" HideLabel="true"
+                              Value="@IsSelected(row.Key)" ValueExpression="@(() => row.Selected)"
+                              ValueChanged="@(value => SelectRowAsync(row.Key, value))"
+                              Disabled="@SelectionDisabled" />
+            </td>
+        }
+        @RowTemplate(row.Item)
+    </tr>;
+}

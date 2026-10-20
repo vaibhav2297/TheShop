@@ -1,8 +1,6 @@
 using Bunit;
 using FluentAssertions;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
+using TheShop.Web.Common.UI;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
@@ -24,29 +22,87 @@ public class ShopBreadcrumbsTests : TestContext
     {
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
     }
 
-    // =========================================================================
-    // Helper — build a representative storefront trail
-    // =========================================================================
+    [Fact]
+    public void Render_DisabledAncestor_OnlyFinalItemIsCurrent()
+    {
+        var cut = Render<ShopBreadcrumbs>(p => p.Add(c => c.Items,
+            BreadcrumbTrail.Storefront().Add("Removed", null).Current("Current")));
+        cut.FindAll("[aria-current='page']").Should().ContainSingle()
+            .Which.TextContent.Should().Be("Current");
+    }
 
-    private static IReadOnlyList<BreadcrumbItem> StorefrontTrail(string? categoryName = "Outerwear", string productName = "Wool Parka")
+    [Fact]
+    public void Expand_RemovesDisclosureAndResetsOnlyWhenTrailChanges()
+    {
+        var cut = Render<ShopBreadcrumbs>(p => p.Add(c => c.Items, StorefrontTrail()));
+        cut.Find(".shop-breadcrumb-expand").Click();
+        cut.Find("nav").ClassList.Should().Contain("shop-breadcrumbs-expanded");
+        cut.FindAll(".shop-breadcrumb-expander").Should().BeEmpty();
+        cut.FindAll(".shop-breadcrumb-separator").Should().HaveCount(2);
+        JSInterop.Invocations.Should().Contain(i => i.Identifier == "Blazor._internal.domWrapper.focus");
+        cut.Render(p => p.Add(c => c.Items, StorefrontTrail()));
+        cut.Find("nav").ClassList.Should().Contain("shop-breadcrumbs-expanded");
+        cut.FindAll("button").Should().BeEmpty();
+        cut.Render(p => p.Add(c => c.Items, StorefrontTrail(productName: "Changed")));
+        cut.Find("button").GetAttribute("aria-expanded").Should().Be("false");
+    }
+
+    [Fact]
+    public void Render_Disclosure_UsesSharedFigmaIconButton()
+    {
+        var cut = Render<ShopBreadcrumbs>(p => p.Add(c => c.Items, StorefrontTrail()));
+        var button = cut.FindComponent<ShopIconButton>().Instance;
+        button.Icon.Should().Be(TheShop.Web.Theme.ShopIcons.Outlined.More_Horizontal);
+        button.Color.Should().Be(ShopColor.Primary);
+        button.Variant.Should().Be(ShopVariant.Text);
+        button.Size.Should().Be(ShopSize.Small);
+        button.Label.Should().Be(Strings.Breadcrumb_Expand);
+        cut.Find("button").GetAttribute("aria-controls").Should().Be(cut.Find("ol").Id);
+    }
+
+    [Fact]
+    public void Expand_DisabledFirstAncestor_CanReceiveProgrammaticFocus()
+    {
+        var cut = Render<ShopBreadcrumbs>(p => p.Add(c => c.Items,
+            BreadcrumbTrail.Storefront().Add("Removed", null).Current("Current")));
+        cut.Find("button").Click();
+        cut.Find(".shop-breadcrumb-middle span.shop-breadcrumb-item").GetAttribute("tabindex").Should().Be("-1");
+        cut.FindAll("button").Should().BeEmpty();
+        JSInterop.Invocations.Should().Contain(i => i.Identifier == "Blazor._internal.domWrapper.focus");
+    }
+
+    [Fact]
+    public void Render_Attributes_ForwardToNavAndPreserveItsAccessibleName()
+    {
+        var cut = Render<ShopBreadcrumbs>(p => p.Add(c => c.Items, ShortTrail())
+            .Add(c => c.Class, "custom").Add(c => c.Style, "order: 2")
+            .AddUnmatched("aria-label", "wrong").AddUnmatched("data-testid", "trail"));
+        cut.Find("nav").ClassList.Should().Contain("custom");
+        cut.Find("nav").GetAttribute("style").Should().Be("order: 2");
+        cut.Find("nav").GetAttribute("data-testid").Should().Be("trail");
+        cut.Find("nav").GetAttribute("aria-label").Should().Be(Strings.Breadcrumb_AriaLabel);
+        cut.FindAll("button").Should().BeEmpty();
+        cut.FindAll("ol > li").Should().HaveCount(2);
+        cut.Markup.Should().NotContain("mud-");
+    }
+
+    private static IReadOnlyList<ShopBreadcrumbItem> StorefrontTrail(string? categoryName = "Outerwear", string productName = "Wool Parka")
     {
         return BreadcrumbTrail.Storefront()
             .Add(categoryName!, "/categories/outerwear")
             .Current(productName);
     }
 
-    private static IReadOnlyList<BreadcrumbItem> AdminTrail(string productName = "Wool Parka")
+    private static IReadOnlyList<ShopBreadcrumbItem> AdminTrail(string productName = "Wool Parka")
     {
         return BreadcrumbTrail.Admin()
             .Add("Products", "/admin/products")
             .Current(productName);
     }
 
-    private static IReadOnlyList<BreadcrumbItem> ShortTrail()
+    private static IReadOnlyList<ShopBreadcrumbItem> ShortTrail()
     {
         return BreadcrumbTrail.Storefront().Current("Products");
     }
@@ -72,7 +128,7 @@ public class ShopBreadcrumbsTests : TestContext
     {
         // AC-3: every non-final level must be a clickable link.
         var cut = Render<ShopBreadcrumbs>(p => p.Add(c => c.Items, StorefrontTrail()));
-        cut.Find(".mud-breadcrumbs-expander").Click(); // expand collapsed intermediate items (MudBreakpointProvider fires Xs in bUnit)
+        cut.Find(".shop-breadcrumb-expand").Click();
 
         cut.Find("a[href='/categories/outerwear']").Should().NotBeNull(
             "an intermediate level with an href must be rendered as a link");
@@ -94,7 +150,6 @@ public class ShopBreadcrumbsTests : TestContext
         // The product name must appear in the markup
         markup.Should().Contain("Wool Parka", "the current-page label must be present");
         // Verify there is no anchor whose text is the product name.
-        // (MudBreadcrumbs renders disabled items as text spans / MudText, not <a>.)
         var anchors = cut.FindAll("a");
         anchors.Select(a => a.TextContent.Trim()).Should().NotContain("Wool Parka",
             "the current-page item must not be wrapped in an anchor tag");
@@ -132,7 +187,7 @@ public class ShopBreadcrumbsTests : TestContext
     {
         // AC-3: admin intermediate level (Products) must be a clickable link.
         var cut = Render<ShopBreadcrumbs>(p => p.Add(c => c.Items, AdminTrail()));
-        cut.Find(".mud-breadcrumbs-expander").Click(); // expand collapsed intermediate items
+        cut.Find(".shop-breadcrumb-expand").Click();
 
         cut.Find("a[href='/admin/products']").Should().NotBeNull(
             "the Products level in the admin trail must be a link");
@@ -178,7 +233,7 @@ public class ShopBreadcrumbsTests : TestContext
         // AC-9: long labels must not overflow; the CSS class truncates with ellipsis and
         // title="..." exposes the full text on desktop hover.
         var cut = Render<ShopBreadcrumbs>(p => p.Add(c => c.Items, StorefrontTrail()));
-        cut.Find(".mud-breadcrumbs-expander").Click(); // expand collapsed intermediate items
+        cut.Find(".shop-breadcrumb-expand").Click();
 
         // Every parent link must carry the truncation class and a title attribute.
         var parentLink = cut.Find("a[href='/categories/outerwear']");
@@ -216,7 +271,7 @@ public class ShopBreadcrumbsTests : TestContext
             .Current("Wool Parka");
 
         var cut = Render<ShopBreadcrumbs>(p => p.Add(c => c.Items, trailWithRemovedParent));
-        cut.Find(".mud-breadcrumbs-expander").Click(); // expand collapsed intermediate items
+        cut.Find(".shop-breadcrumb-expand").Click();
 
         // The removed category must not appear as an anchor.
         var anchors = cut.FindAll("a");
@@ -271,7 +326,7 @@ public class ShopBreadcrumbsTests : TestContext
     {
         // Defensive: the layout may render ShopBreadcrumbs transiently before HasTrail
         // is evaluated. The component must tolerate a null Items parameter gracefully.
-        var act = () => Render<ShopBreadcrumbs>(p => p.Add(c => c.Items, (IReadOnlyList<BreadcrumbItem>?)null));
+        var act = () => Render<ShopBreadcrumbs>(p => p.Add(c => c.Items, (IReadOnlyList<ShopBreadcrumbItem>?)null));
 
         act.Should().NotThrow("the component must handle a null Items parameter without throwing");
     }

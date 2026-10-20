@@ -4,115 +4,160 @@
 @using TheShop.Domain.Enums
 @using TheShop.Domain.ValueObjects
 @using TheShop.Web.Common
+@using TheShop.Web.Common.UI
 @using TheShop.Web.Components.Common
 
 <PageTitle>@Strings.ManageCategories_PageTitle</PageTitle>
 
-<MudStack Class="@BodyClass" Spacing="6">
-    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-        <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.ManageCategories_Heading</MudText>
+<section class="shop-native shop-categories-page">
+    <header class="shop-categories-heading">
+        <h1>@Strings.ManageCategories_Heading</h1>
         <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Categories.Create.Code)" Context="createAuth">
             <Authorized>
-                <MudButton Href="@Routes.Admin.AddCategory"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           EndIcon="@ShopIcons.Outlined.Add_Plus">
+                <ShopButton Href="@Routes.Admin.AddCategory" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus">
                     @Strings.AddCategory_Heading
-                </MudButton>
+                </ShopButton>
             </Authorized>
         </AuthorizeView>
-    </MudStack>
+    </header>
 
-    <MudGrid Spacing="8">
+    <div class="@ListClass">
 
-        <MudItem xs="12" md="3" xl="2">
-            <ShopFilterPanel Groups="@FilterGroups"
+        <aside class="shop-categories-sidebar">
+            <BusyFor Key="@BusyKeys.Categories.ManageList" Context="loadingFilters">
+                @if (loadingFilters && !_categories.HasLoaded)
+                {
+                    <div class="shop-categories-filter-skeleton" aria-hidden="true">
+                        @for (var i = 0; i < 5; i++)
+                        {
+                            <div class="shop-categories-filter-placeholder">
+                                <ShopSkeleton Class="shop-categories-filter-placeholder-title" />
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <ShopFilterPanel Class="shop-categories-filter-panel shop-categories-sidebar-filter"
+                             ClearLabel="@Strings.Filter_ClearAll" Groups="@FilterGroups"
                              SelectedFilters="@SelectedFilters"
                              SingleSelectChanged="OnSingleSelectChangedAsync"
                              OnClearFilters="OnClearFiltersAsync" />
-        </MudItem>
+                }
+            </BusyFor>
+        </aside>
 
-        <MudItem xs="12" md="9" xl="10">
-            <MudStack Spacing="6" AlignItems="AlignItems.Stretch">
+        <div class="shop-categories-results">
 
-                <MudStack Row
-                          AlignItems="AlignItems.End"
-                          Spacing="8">
 
-                    <MudTextField T="string"
-                                  Value="@_search"
-                                  ValueChanged="OnSearchChangedAsync"
-                                  DebounceInterval="300"
-                                  Immediate="true"
-                                  Variant="Variant.Filled"
-                                  Typo="Typo.body2"
-                                  Placeholder="@Strings.ManageCategories_SearchPlaceholder"
-                                  Adornment="Adornment.Start"
-                                  FullWidth
-                                  Clearable
-                                  AdornmentIcon="@ShopIcons.Outlined.Search_Magnifying_Glass" />
+                <div class="shop-categories-tools">
+                    <div class="shop-categories-search">
+                        <ShopTextField type="search" Value="@_search" ValueChanged="OnSearchInputAsync"
+                                       ValueExpression="@(() => _search)"
+                                       StartIcon="@ShopIcons.Outlined.Search_Magnifying_Glass"
+                                       Label="@Strings.ManageCategories_SearchPlaceholder" />
+                    </div>
+                    <ShopButton Class="shop-categories-filter-button" Variant="ShopVariant.Outlined" Size="ShopSize.Large"
+                                StartIcon="@ShopIcons.Outlined.Filter" OnClick="@(() => _filtersOpen = true)">
+                        @Strings.Categories_Filters
+                    </ShopButton>
+                    <ShopSortSelect TSort="CategorySortOption" Class="shop-categories-sort" Sort="@_sort" Options="@SortOptions" SortChanged="OnSortChangedAsync" />
+                </div>
 
-                    <ShopSortSelect TSort="CategorySortOption"
-                                    Sort="@_sort"
-                                    Options="@SortOptions"
-                                    SortChanged="OnSortChangedAsync" />
-                </MudStack>
+                <ShopBulkActionBar Visible="@HasSelection"
+                                   SelectedCount="@_selectedItems.Count"
+                                   OnClose="OnCloseBulkActions">
+                    <Actions>
+                        <BusyFor Keys="@MutationBusyKeys" Context="mutating">
+                            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Categories.Edit.Code)"
+                                           Context="bulkEditAuth">
+
+                                <Authorized>
+
+                                    <ShopButton Variant="ShopVariant.Outlined"
+                                               Color="ShopColor.Primary"
+                                               StartIcon="@ShopIcons.Outlined.Show"
+                                               Disabled="@mutating"
+                                               OnClick="BulkActivateAsync">
+                                        <span class="shop-bulk-action-text">@Strings.ManageCategories_BulkSetActive</span>
+                                    </ShopButton>
+
+                                    <ShopButton Variant="ShopVariant.Outlined"
+                                               Color="ShopColor.Primary"
+                                               StartIcon="@ShopIcons.Outlined.Hide"
+                                               Disabled="@mutating"
+                                               OnClick="BulkDeactivateAsync">
+                                        <span class="shop-bulk-action-text">@Strings.ManageCategories_BulkSetInactive</span>
+                                    </ShopButton>
+                                </Authorized>
+
+                            </AuthorizeView>
+
+                            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Categories.Delete.Code)" Context="bulkDeleteAuth">
+
+                                <Authorized>
+
+                                    <ShopButton Variant="ShopVariant.Outlined"
+                                               Color="ShopColor.Error"
+                                               StartIcon="@ShopIcons.Outlined.Trash_Empty"
+                                               Disabled="@mutating"
+                                               OnClick="BulkDeleteAsync">
+                                        <span class="shop-bulk-action-text">@Strings.ManageCategories_BulkDelete</span>
+                                    </ShopButton>
+
+                                </Authorized>
+
+                            </AuthorizeView>
+                        </BusyFor>
+                    </Actions>
+                </ShopBulkActionBar>
 
                 <BusyFor Key="@BusyKeys.Categories.ManageList" Context="busy">
-                    @if (busy)
-                    {
-                        <MudStack Spacing="2">
-                            @for (var i = 0; i < 10; i++)
-                            {
-                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="56px" />
-                            }
-                        </MudStack>
-                    }
-                    else if (_categories.Items.Count > 0)
+                    @if (busy || _categories.Items.Count > 0)
                     {
                         <BusyFor Keys="@MutationBusyKeys" Context="mutating">
-                            <MudTable T="CategoryListItemDto"
+                            <ShopTable TItem="CategoryListItemDto"
+                                      Loading="@busy" Class="shop-categories-table"
                                       Items="@_categories.Items"
-                                      MultiSelection="true"
-                                      SelectedItems="@_selectedItems"
-                                      SelectOnRowClick="false"
-                                      SelectedItemsChanged="OnSelectedItemsChanged"
-                                      Hover="true"
-                                      Class="mud-width-full"
-                                      Elevation="0"
-                                      HeaderClass="mud-tertiary-lighten"
-                                      Outlined="true">
+                                      ItemKey="@(item => item.Id)"
+                                      Caption="@Strings.ManageCategories_Heading"
+                                      ColumnCount="4"
+                                      Selectable="true"
+                                      SelectedKeys="@SelectedKeys"
+                                      SelectedKeysChanged="OnSelectedKeysChanged"
+                                      RowSelectionLabel="@(item => string.Format(Strings.Table_SelectRow, item.Name))"
+                                      SelectionDisabled="@mutating">
 
                                 <HeaderContent>
-                                    <MudTh>@Strings.ManageCategories_ColumnName</MudTh>
-                                    <MudTh>@Strings.ManageCategories_ColumnDescription</MudTh>
-                                    <MudTh>@Strings.ManageCategories_ColumnStatus</MudTh>
-                                    <MudTh>@Strings.ManageCategories_ColumnActions</MudTh>
+                                    <th scope="col">@Strings.ManageCategories_ColumnName</th>
+                                    <th scope="col">@Strings.ManageCategories_ColumnDescription</th>
+                                    <th scope="col" class="shop-table-column-compact">@Strings.ManageCategories_ColumnStatus</th>
+                                    <th scope="col" class="shop-table-column-compact">@Strings.ManageCategories_ColumnActions</th>
                                 </HeaderContent>
 
                                 <RowTemplate Context="category">
-                                    <MudTd>
-                                        <MudStack Row AlignItems="AlignItems.Center" Spacing="3">
-                                            <MudAvatar Rounded="true">
-                                                <ShopImage Src="@category.ImageUrl" Preset="ShopImagePreset.Thumbnail" Alt="@category.Name" PlaceholderLabel="@category.Name" />
-                                            </MudAvatar>
-                                            <MudStack Spacing="0">
-                                                <MudText Typo="Typo.body2">@category.Name</MudText>
+                                    <td>
+                                        <div class="shop-categories-name">
+                                            <div class="shop-categories-image">
+                                                <ShopImage Src="@category.ImageUrl" Preset="ShopImagePreset.SquareContain" Alt="@category.Name" PlaceholderLabel="@category.Name" />
+                                            </div>
+                                            <div>
+                                                <span>@category.Name</span>
 
                                                 @if (_blockedIds.Contains(category.Id))
                                                 {
-                                                    <MudText Typo="Typo.caption" Color="Color.Warning">
+                                                    <span class="shop-categories-in-use">
                                                         @string.Format(Strings.ManageCategories_InUseIndicator, category.ProductCount)
-                                                    </MudText>
+                                                    </span>
                                                 }
 
-                                            </MudStack>
-                                        </MudStack>
-                                    </MudTd>
-                                    <MudTd>
-                                        <MudText Typo="Typo.body2" Color="Color.Secondary">@category.Description</MudText>
-                                    </MudTd>
-                                    <MudTd>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span>@category.Description</span>
+                                    </td>
+                                    <td class="shop-table-column-compact">
                                         <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Categories.Edit.Code)" Context="statusAuth">
                                             <Authorized>
 
@@ -121,52 +166,42 @@
                                                    view — unlike the table's progress bar up under the header. *@
                                                 @if (IsRowPending(category.Id, RowMutation.Status))
                                                 {
-                                                    <MudProgressCircular Color="Color.Primary"
-                                                                         Size="Size.Small"
-                                                                         Indeterminate="true" />
+                                                    <span role="status" aria-label="@Strings.Loading"><ShopLoader Class="shop-loader-inline" /></span>
                                                 }
                                                 else
                                                 {
-                                                    <MudChip T="string"
-                                                             Color="@(category.IsActive ? Color.Primary : Color.Default)"
-                                                             Variant="Variant.Outlined"
-                                                             Disabled="@mutating"
-                                                             OnClick="@(() => OnStatusToggledAsync(category, !category.IsActive))">
-                                                        <MudText Typo="Typo.body2">
-                                                            @(category.IsActive ? Strings.AddCategory_StatusActive : Strings.AddCategory_StatusInactive)
-                                                        </MudText>
-                                                    </MudChip>
+                                                    <ShopChip Size="ShopSize.Small" Selected="@category.IsActive" Disabled="@mutating"
+                                                              SelectedChanged="@((bool active) => OnStatusToggledAsync(category, active))">
+                                                        @(category.IsActive ? Strings.AddCategory_StatusActive : Strings.AddCategory_StatusInactive)
+                                                    </ShopChip>
                                                 }
 
                                             </Authorized>
                                             <NotAuthorized>
-                                                <MudText Typo="Typo.body2">
+                                                <span>
                                                     @(category.IsActive ? Strings.AddCategory_StatusActive : Strings.AddCategory_StatusInactive)
-                                                </MudText>
+                                                </span>
                                             </NotAuthorized>
                                         </AuthorizeView>
-                                    </MudTd>
-                                    <MudTd>
+                                    </td>
+                                    <td class="shop-table-column-compact">
                                         @* A deletion replaces the whole action group, not just the trash button:
                                            leaving Edit live next to a spinner would invite a navigation away from
                                            the row mid-delete. *@
                                         @if (IsRowPending(category.Id, RowMutation.Delete))
                                         {
-                                            <MudProgressCircular Color="Color.Error"
-                                                                 Size="Size.Small"
-                                                                 Indeterminate="true" />
+                                            <span role="status" aria-label="@Strings.Loading"><ShopLoader Class="shop-loader-inline shop-loader-error" /></span>
                                         }
                                         else
                                         {
-                                            <MudStack Row Spacing="1">
+                                            <div class="shop-categories-row-actions">
                                                 <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Categories.Edit.Code)" Context="editRowAuth">
                                                     <Authorized>
 
-                                                        <MudIconButton Icon="@ShopIcons.Outlined.Edit_Pencil_02"
-                                                                       Href="@Routes.Admin.EditCategory(category.Id)"
-                                                                       Color="Color.Primary"
-                                                                       Disabled="@mutating"
-                                                                       aria-label="@string.Format(Strings.ManageCategories_EditAria, category.Name)" />
+                                                        <ShopIconButton Href="@Routes.Admin.EditCategory(category.Id)"
+                                                                        Disabled="@mutating" Variant="ShopVariant.Text"
+                                                                        Icon="@ShopIcons.Outlined.Edit_Pencil_02"
+                                                                        Label="@string.Format(Strings.ManageCategories_EditAria, category.Name)" />
 
 
                                                     </Authorized>
@@ -174,97 +209,54 @@
                                                 <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Categories.Delete.Code)" Context="deleteRowAuth">
                                                     <Authorized>
 
-                                                        <MudIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
-                                                                       Color="Color.Error"
+                                                        <ShopIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
+                                                                       Color="ShopColor.Error"
                                                                        Disabled="@mutating"
                                                                        OnClick="@(() => DeleteSingleAsync(category))"
-                                                                       aria-label="@string.Format(Strings.ManageCategories_DeleteAria, category.Name)" />
+                                                                       Variant="ShopVariant.Text" Label="@string.Format(Strings.ManageCategories_DeleteAria, category.Name)" />
 
                                                     </Authorized>
                                                 </AuthorizeView>
-                                            </MudStack>
+                                            </div>
                                         }
-                                    </MudTd>
+                                    </td>
                                 </RowTemplate>
-                            </MudTable>
+                            </ShopTable>
                         </BusyFor>
 
-                        <ShopPagination Page="@_categories.Page"
-                                        TotalPages="@_categories.TotalPages"
-                                        PageChanged="OnPageChangedAsync"
-                                        Class="align-self-center" />
+                        if (!busy)
+                        {
+                            <ShopPagination Page="@_categories.Page"
+                                            TotalPages="@_categories.TotalPages"
+                                            PageChanged="OnPageChangedAsync"
+                                            Class="shop-categories-pagination" />
+                        }
                     }
                     else if (_search is not null || _status is not null)
                     {
-                        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4" Class="py-20">
-                            <MudText Typo="Typo.h4">@Strings.ManageCategories_NoMatchTitle</MudText>
-                            <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.ManageCategories_NoMatchDescription</MudText>
-                        </MudStack>
+                        <div class="shop-categories-empty">
+                            <h2>@Strings.ManageCategories_NoMatchTitle</h2>
+                            <p>@Strings.ManageCategories_NoMatchDescription</p>
+                        </div>
                     }
                     else
                     {
-                        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4" Class="py-20">
-                            <MudText Typo="Typo.h4">@Strings.ManageCategories_EmptyTitle</MudText>
-                            <MudText Typo="Typo.subtitle1" Color="Color.Secondary">@Strings.ManageCategories_EmptyDescription</MudText>
-                        </MudStack>
+                        <div class="shop-categories-empty">
+                            <h2>@Strings.ManageCategories_EmptyTitle</h2>
+                            <p>@Strings.ManageCategories_EmptyDescription</p>
+                        </div>
                     }
                 </BusyFor>
-            </MudStack>
-        </MudItem>
+        </div>
+    </div>
+</section>
 
-    </MudGrid>
-</MudStack>
-
-@* Mounted outside the padded page stack and the grid so it spans the full viewport
-   width, per Figma 2611:7585 (the shared Bulk Selection Bar) — a direct child of the
-   page frame, not of the list region. *@
-<ShopBulkActionBar Visible="@HasSelection"
-                   SelectedCount="@_selectedItems.Count"
-                   OnClose="OnCloseBulkActions">
-    <Actions>
-        @* The bar sits over the table, so the table's own progress bar can be out of view
-           while a bulk action runs — this spinner keeps the feedback where the user just
-           clicked. Every action is disabled meanwhile so a second one can't overlap. *@
-        <BusyFor Keys="@MutationBusyKeys" Context="mutating">
-            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Categories.Edit.Code)"
-                           Context="bulkEditAuth">
-
-                <Authorized>
-
-                    <MudButton Variant="Variant.Text"
-                               Color="Color.Inherit"
-                               StartIcon="@ShopIcons.Outlined.Show"
-                               Disabled="@mutating"
-                               OnClick="BulkActivateAsync">
-                        @Strings.ManageCategories_BulkSetActive
-                    </MudButton>
-
-                    <MudButton Variant="Variant.Text"
-                               Color="Color.Inherit"
-                               StartIcon="@ShopIcons.Outlined.Hide"
-                               Disabled="@mutating"
-                               OnClick="BulkDeactivateAsync">
-                        @Strings.ManageCategories_BulkSetInactive
-                    </MudButton>
-                </Authorized>
-
-            </AuthorizeView>
-
-            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Categories.Delete.Code)" Context="bulkDeleteAuth">
-
-                <Authorized>
-
-                    <MudButton Variant="Variant.Text"
-                               Color="Color.Error"
-                               StartIcon="@ShopIcons.Outlined.Trash_Empty"
-                               Disabled="@mutating"
-                               OnClick="BulkDeleteAsync">
-                        @Strings.ManageCategories_BulkDelete
-                    </MudButton>
-
-                </Authorized>
-
-            </AuthorizeView>
-        </BusyFor>
-    </Actions>
-</ShopBulkActionBar>
+<ShopDrawer @bind-Open="_filtersOpen" Side="ShopDrawerSide.Left">
+    <HeaderContent><h2 class="shop-drawer-title">@Strings.Categories_Filters</h2></HeaderContent>
+    <DrawerContent>
+        <ShopFilterPanel Class="shop-categories-filter-panel"
+                         ClearLabel="@Strings.Filter_ClearAll"
+                         Groups="@FilterGroups" SelectedFilters="@SelectedFilters"
+                         SingleSelectChanged="OnSingleSelectChangedAsync" OnClearFilters="OnClearFiltersAsync" />
+    </DrawerContent>
+</ShopDrawer>

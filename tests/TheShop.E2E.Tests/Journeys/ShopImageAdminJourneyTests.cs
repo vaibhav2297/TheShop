@@ -73,7 +73,7 @@ public sealed class ShopImageAdminJourneyTests(PlaywrightFixture playwright)
             foreach (var (w, h) in new[] { (300, 900), (900, 300) })
             {
                 var host = $"position:absolute;left:16px;top:16px;z-index:10000;display:flex;width:{rowWidth}px";
-                var thumb = await composition.MountAsync("thumbnail-row", host, ShopImagePreset.Thumbnail, ShopImageArtwork.Url(w, h));
+                var thumb = await composition.MountAsync("thumbnail-row", host, ShopImagePreset.SquareContain, ShopImageArtwork.Url(w, h));
                 await thumb.WaitForImageAsync();
                 var m = await thumb.MeasureAsync();
                 var subject = $"a thumbnail in a {rowWidth}px row with a {w}×{h} source";

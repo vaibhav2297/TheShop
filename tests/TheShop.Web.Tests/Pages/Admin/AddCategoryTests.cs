@@ -1,3 +1,4 @@
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
 using Bunit.TestDoubles;
@@ -7,8 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Categories.Commands.CreateCategory;
@@ -34,7 +33,7 @@ namespace TheShop.Web.Tests.Pages.Admin;
 public class AddCategoryTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public AddCategoryTests()
@@ -44,10 +43,8 @@ public class AddCategoryTests : TestContext
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
 
         _localizer[Arg.Any<string>()].Returns(call =>
         {
@@ -79,7 +76,7 @@ public class AddCategoryTests : TestContext
 
         var cut = Render<AddCategory>();
 
-        cut.Markup.Should().Contain(Strings.AddCategory_Heading);
+        cut.Markup.Should().Contain(Strings.Categories_CreateHeading);
     }
 
     [Fact]
@@ -122,7 +119,7 @@ public class AddCategoryTests : TestContext
         AuthorizeAsCategoryCreator();
         var cut = Render<AddCategory>();
 
-        SetFormState(cut, name: "Disposables", description: null, isActive: true, isFormValid: true);
+        SetFormState(cut, name: "Disposables", description: null, isActive: true);
 
         await ClickSaveAsync(cut);
 
@@ -142,11 +139,11 @@ public class AddCategoryTests : TestContext
         var cut = Render<AddCategory>();
         var navManager = Services.GetRequiredService<NavigationManager>();
 
-        SetFormState(cut, name: "Disposables", description: null, isActive: true, isFormValid: true);
+        SetFormState(cut, name: "Disposables", description: null, isActive: true);
 
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Strings.Category_Created, Severity.Success);
+        _notifications.Received(1).Show(Strings.Category_Created, ShopNotificationKind.Success);
         navManager.Uri.Should().EndWith(Routes.Admin.ManageCategories);
     }
 
@@ -159,7 +156,7 @@ public class AddCategoryTests : TestContext
         AuthorizeAsCategoryCreator();
         var cut = Render<AddCategory>();
 
-        SetFormState(cut, name: "Disposables", description: "Single-use vape devices.", isActive: false, isFormValid: true);
+        SetFormState(cut, name: "Disposables", description: "Single-use vape devices.", isActive: false);
 
         await ClickSaveAsync(cut);
 
@@ -177,7 +174,7 @@ public class AddCategoryTests : TestContext
         AuthorizeAsCategoryCreator();
         var cut = Render<AddCategory>();
 
-        SetFormState(cut, name: "Disposables", description: null, isActive: true, isFormValid: true);
+        SetFormState(cut, name: "Disposables", description: null, isActive: true);
         SetCategoryImages(cut, [new ShopUploadedImage([1, 2, 3], "image.png", "image/png", "data:image/png;base64,AQID")]);
 
         await ClickSaveAsync(cut);
@@ -201,25 +198,31 @@ public class AddCategoryTests : TestContext
 
         SetCategoryImages(cut, [new ShopUploadedImage([1, 2, 3], "image.png", "image/png", "data:image/png;base64,AQID")]);
 
-        cut.Find($"[aria-label='{Strings.AddCategory_ImageRemove}']").Should().NotBeNull();
+        cut.Find($"[aria-label='{Strings.AddCategory_ImageRemove}: image.png']").Should().NotBeNull();
     }
 
     // =========================================================================
-    // Save — invalid form refused, command never sent (AC-9)
+    // Save — Application validation failures appear on their fields (AC-9)
     // =========================================================================
 
     [Fact]
     [Trait("Feature", "manage-categories")]
-    public async Task SaveAsync_WhenFormIsInvalid_DoesNotSendTheCommand()
+    public async Task SaveAsync_WhenCommandValidationFails_ShowsFieldError()
     {
+        _mediator.Send(Arg.Any<CreateCategoryCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Fail<CategoryDto>(nameof(Strings.Category_NameRequired), [],
+                [new FieldValidationError("Name", nameof(Strings.Category_NameRequired))]));
         AuthorizeAsCategoryCreator();
         var cut = Render<AddCategory>();
 
-        SetFormState(cut, name: "", description: null, isActive: true, isFormValid: false);
+        SetFormState(cut, name: "", description: null, isActive: true);
 
         await ClickSaveAsync(cut);
 
-        await _mediator.DidNotReceive().Send(Arg.Any<CreateCategoryCommand>(), Arg.Any<CancellationToken>());
+        await _mediator.Received(1).Send(Arg.Any<CreateCategoryCommand>(), Arg.Any<CancellationToken>());
+        cut.Find(".shop-field-error").TextContent.Should().Contain(nameof(Strings.Category_NameRequired));
+        cut.Find("[data-testid='add-category-name']").Input("Corrected name");
+        cut.Find(".shop-field-error").TextContent.Should().BeEmpty();
     }
 
     // =========================================================================
@@ -236,11 +239,11 @@ public class AddCategoryTests : TestContext
         var cut = Render<AddCategory>();
         var navManager = Services.GetRequiredService<NavigationManager>();
 
-        SetFormState(cut, name: "Disposables", description: null, isActive: true, isFormValid: true);
+        SetFormState(cut, name: "Disposables", description: null, isActive: true);
 
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageCategories);
     }
 
@@ -253,7 +256,7 @@ public class AddCategoryTests : TestContext
         AuthorizeAsCategoryCreator();
         var cut = Render<AddCategory>();
 
-        SetFormState(cut, name: "Disposables", description: null, isActive: true, isFormValid: true);
+        SetFormState(cut, name: "Disposables", description: null, isActive: true);
 
         await ClickSaveAsync(cut);
 
@@ -275,11 +278,11 @@ public class AddCategoryTests : TestContext
         var cut = Render<AddCategory>();
         var navManager = Services.GetRequiredService<NavigationManager>();
 
-        SetFormState(cut, name: "Disposables", description: null, isActive: true, isFormValid: true);
+        SetFormState(cut, name: "Disposables", description: null, isActive: true);
 
         await ClickSaveAsync(cut);
 
-        _snackbar.Received(1).Add(Arg.Any<string>(), Severity.Error);
+        _notifications.Received(1).Show(Arg.Any<string>(), ShopNotificationKind.Error);
         navManager.Uri.Should().NotContain(Routes.Admin.ManageCategories);
     }
 
@@ -298,20 +301,44 @@ public class AddCategoryTests : TestContext
         cut.Find($"a[href='{Routes.Admin.ManageCategories}']").Should().NotBeNull();
     }
 
+    [Fact]
+    public async Task SaveAsync_WhilePending_DisablesControlsAndIgnoresDuplicateSubmission()
+    {
+        var completion = new TaskCompletionSource<Result<CategoryDto>>();
+        _mediator.Send(Arg.Any<CreateCategoryCommand>(), Arg.Any<CancellationToken>()).Returns(completion.Task);
+        AuthorizeAsCategoryCreator();
+        var cut = Render<AddCategory>();
+        SetFormState(cut, "  Disposables  ", "  Description  ", true);
+        var first = cut.Find("form").SubmitAsync();
+        cut.WaitForAssertion(() => cut.Find("button[type=submit]").HasAttribute("disabled").Should().BeTrue());
+        cut.FindAll(".shop-field input").Should().OnlyContain(input => input.HasAttribute("disabled"));
+        cut.Find(".shop-categories-form-actions a").HasAttribute("href").Should().BeFalse();
+        await cut.Find("form").SubmitAsync();
+        await _mediator.Received(1).Send(Arg.Is<CreateCategoryCommand>(c => c.Name == "Disposables" && c.Description == "Description"), Arg.Any<CancellationToken>());
+        completion.SetResult(Result.Fail<CategoryDto>(nameof(Strings.Category_CreateFailed)));
+        await first;
+        cut.WaitForAssertion(() => cut.Find("button[type=submit]").HasAttribute("disabled").Should().BeFalse());
+        cut.Find(".shop-categories-form-actions a").GetAttribute("href").Should().Be(Routes.Admin.ManageCategories);
+    }
+
+    [Fact]
+    public void Render_SingleImageSelection_HasNoMultipleAttribute()
+    {
+        AuthorizeAsCategoryCreator();
+        var cut = Render<AddCategory>();
+        cut.Find("input[type=file]").HasAttribute("multiple").Should().BeFalse();
+    }
+
     // =========================================================================
     // Helpers
     // =========================================================================
 
     private static void SetFormState(
-        IRenderedComponent<AddCategory> cut, string name, string? description, bool isActive, bool isFormValid)
+        IRenderedComponent<AddCategory> cut, string name, string? description, bool isActive)
     {
-        var type = typeof(AddCategory);
-        const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-        type.GetField("_name", flags)!.SetValue(cut.Instance, name);
-        type.GetField("_description", flags)!.SetValue(cut.Instance, description);
-        type.GetField("_isActive", flags)!.SetValue(cut.Instance, isActive);
-        type.GetField("_isFormValid", flags)!.SetValue(cut.Instance, isFormValid);
-        cut.Render();
+        cut.FindAll(".shop-field input")[0].Input(name);
+        cut.FindAll(".shop-field input")[1].Input(description ?? string.Empty);
+        cut.FindAll(".shop-categories-status button")[isActive ? 0 : 1].Click();
     }
 
     private static void SetCategoryImages(IRenderedComponent<AddCategory> cut, IReadOnlyList<ShopUploadedImage> images)
@@ -321,13 +348,16 @@ public class AddCategoryTests : TestContext
         cut.Render();
     }
 
-    private static T GetPrivateField<T>(object instance, string fieldName) =>
-        (T)instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(instance)!;
+    private static T GetPrivateField<T>(object instance, string fieldName)
+    {
+        var model = instance.GetType().GetField("_model", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(instance)!;
+        var property = fieldName switch { "_name" => "Name", "_description" => "Description", _ => "IsActive" };
+        return (T)model.GetType().GetProperty(property)!.GetValue(model)!;
+    }
 
     private static async Task ClickSaveAsync(IRenderedComponent<AddCategory> cut)
     {
-        var saveButton = cut.FindAll("button").First(b => b.TextContent.Contains(Strings.AddCategory_SaveButton));
-        await saveButton.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+        await cut.Find("form").SubmitAsync();
     }
 }
 
@@ -339,7 +369,7 @@ public class AddCategoryTests : TestContext
 //        SaveAsync_WithASelectedImage_SendsCreateCategoryCommandCarryingTheImage
 // AC-7: SaveAsync_WithDescriptionAndInactiveStatus_SendsCreateCategoryCommandWithBoth,
 //        Render_Always_DefaultsStatusToActive
-// AC-9: SaveAsync_WhenFormIsInvalid_DoesNotSendTheCommand
+// AC-9: SaveAsync_WhenCommandValidationFails_ShowsFieldError
 // AC-10: SaveAsync_WhenCategoryAlreadyExists_ShowsErrorSnackbarAndDoesNotNavigate,
 //         SaveAsync_WhenCategoryAlreadyExists_PreservesTheEnteredName
 // AC-20: Render_WhenUserHoldsCategoriesCreatePermission_ShowsTheForm,

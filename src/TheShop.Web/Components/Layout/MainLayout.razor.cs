@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using TheShop.Web.Components.Common;
 using TheShop.Web.State;
-using TheShop.Web.Theme;
 
 namespace TheShop.Web.Components.Layout;
 
@@ -17,8 +16,6 @@ namespace TheShop.Web.Components.Layout;
 /// </summary>
 public partial class MainLayout : LayoutComponentBase, IDisposable
 {
-    [Inject] private ShopTheme ShopTheme { get; set; } = default!;
-
     [Inject] private AnnouncementState Announcement { get; set; } = default!;
 
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
@@ -28,6 +25,23 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
     private IDisposable? _locationChangingRegistration;
+    private enum ActiveDrawer { None, Navigation, Profile }
+    private ActiveDrawer _activeDrawer;
+    private readonly string _navigationDrawerId = $"shop-navigation-{Guid.NewGuid():N}";
+    private bool NavigationOpen => _activeDrawer == ActiveDrawer.Navigation;
+    private bool ProfileOpen => _activeDrawer == ActiveDrawer.Profile;
+
+    private void OpenProfileDrawer() => _activeDrawer = ActiveDrawer.Profile;
+    private void OpenNavigationDrawer() => _activeDrawer = ActiveDrawer.Navigation;
+    private void CloseNavigationDrawer() => NavigationOpenChanged(false);
+    private void NavigationOpenChanged(bool open) => SetDrawerOpen(ActiveDrawer.Navigation, open);
+    private void ProfileOpenChanged(bool open) => SetDrawerOpen(ActiveDrawer.Profile, open);
+
+    private void SetDrawerOpen(ActiveDrawer drawer, bool open)
+    {
+        if (open) _activeDrawer = drawer;
+        else if (_activeDrawer == drawer) _activeDrawer = ActiveDrawer.None;
+    }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -40,8 +54,10 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
 
     private ValueTask OnLocationChanging(LocationChangingContext context)
     {
+        _activeDrawer = ActiveDrawer.None;
         Breadcrumbs.Clear();
         Footer.Show();
+        StateHasChanged();
         return ValueTask.CompletedTask;
     }
 

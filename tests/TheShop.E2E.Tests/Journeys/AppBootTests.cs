@@ -12,8 +12,8 @@ public sealed class AppBootTests(PlaywrightFixture playwright) : E2ETestBase(pla
     public async Task App_boots_and_renders_the_layout()
     {
         await Page.GotoAsync("/");
-        // The host shell serves instantly; .mud-layout appears only after the WASM runtime
+        // The host shell serves instantly; the main scroll root appears only after the WASM runtime
         // boots and MainLayout renders — this is the real "app is alive" signal.
-        await Page.Locator(".mud-layout").WaitForAsync(new() { Timeout = 30_000 });
+        await Page.Locator("main[data-shop-scroll-root]").WaitForAsync(new() { Timeout = 30_000 });
     }
 }

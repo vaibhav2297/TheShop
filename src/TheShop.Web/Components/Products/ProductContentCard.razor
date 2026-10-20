@@ -1,126 +1,47 @@
-@* Components/Products/ProductContentCard.razor *@
-@inherits MudComponentBase
+@inherits ShopComponentBase
+@using TheShop.Web.Common.UI
 
-@using TheShop.Domain.ValueObjects
-@using TheShop.Web.Components.Common
-@using TheShop.Web.Theme
-
-<MudExpansionPanels Class="@Classname" Style="@Stylename" Elevation="0" Outlined="true">
-    <MudExpansionPanel Icon="@ShopIcons.Outlined.Caret_Down_MD" Expanded="true" Class="mud-transparent">
-
-        <TitleContent>
-            <MudText Typo="Typo.h4" Class="text-transform-uppercase">@Strings.ProductContent_Heading</MudText>
-        </TitleContent>
-
-        <ChildContent>
-            <MudStack Spacing="6" Class="py-2">
-
-                @* Description *@
-                <MudStack Spacing="4">
-
-                    <MudText id="@_descriptionLabelId"
-                             Typo="Typo.h6"
-                             Class="text-transform-uppercase">@Strings.AddProduct_DescriptionLabel</MudText>
-
-                    <ShopRichTextEditor @ref="_richTextEditor"
-                                        Value="@Description"
-                                        ValueChanged="OnDescriptionChangedAsync"
-                                        TextLengthChanged="OnTextLengthChanged"
-                                        OnUnsupportedPaste="OnUnsupportedPasteAsync"
-                                        Disabled="@Disabled"
-                                        AriaLabelledBy="@_descriptionLabelId" />
-
-                    @if (_showPasteNotice)
-                    {
-                        <MudAlert Severity="Severity.Info" Dense="true">@Strings.AddProduct_DescriptionFormattingRemoved</MudAlert>
-                    }
-
-                    <MudText Typo="Typo.caption" Color="Color.Secondary" Align="Align.Right">
-                        @string.Format(Strings.AddProduct_DescriptionCounter, _textLength, ProductDescription.MaxTextLength)
-                    </MudText>
-
-                </MudStack>
-
-                <MudDivider />
-
-                @* Specifications *@
-                <MudStack Spacing="4">
-
-                    <MudText Typo="Typo.h6" Class="text-transform-uppercase">@Strings.ProductSpecifications_Heading</MudText>
-
-                    @if (_specifications.Count == 0)
-                    {
-                        <MudStack AlignItems="AlignItems.Center" Class="py-6" Spacing="2">
-
-                            <MudText Typo="Typo.h5">@Strings.ProductSpecifications_EmptyStateTitle</MudText>
-
-                            <MudText Typo="Typo.subtitle1" Color="Color.Secondary" Align="Align.Center">@Strings.ProductSpecifications_EmptyStateDescription</MudText>
-
-                            <MudButton @ref="_addButtonRef"
-                                       Variant="Variant.Outlined"
-                                       StartIcon="@ShopIcons.Outlined.Add_Plus"
-                                       Disabled="@Disabled"
-                                       OnClick="AddRowAsync">
-                                @Strings.ProductSpecifications_AddRow
-                            </MudButton>
-                        </MudStack>
-                    }
-                    else
-                    {
-                        @foreach (var (row, position) in _specifications.Select((r, i) => (r, i)))
+<ShopExpander @attributes="AdditionalAttributes" Class="@Classname" Style="@Style" Expanded="true" Disabled="@Disabled">
+    <TitleContent>
+        <h2 class="shop-product-section-title">@Strings.ProductSpecifications_Heading</h2>
+    </TitleContent>
+    <OverviewContent>
+        @if (_specifications.Count > 0)
+        {
+            @string.Format(Strings.ProductSpecifications_Count, _specifications.Count)
+        }
+    </OverviewContent>
+    <ChildContent>
+        <div class="shop-product-specification-list">
+            @if (_specifications.Count == 0)
+            {
+                <div class="shop-product-editor-empty">
+                    <h3>@Strings.ProductSpecifications_EmptyStateTitle</h3>
+                    <p>@Strings.ProductSpecifications_EmptyStateDescription</p>
+                    <ShopButton @ref="_addButtonRef" Variant="ShopVariant.Outlined" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus" Disabled="@Disabled" OnClick="AddRowAsync">@Strings.ProductSpecifications_AddRow</ShopButton>
+                </div>
+            }
+            else
+            {
+                @foreach (var (row, position) in _specifications.Select((r, i) => (r, i)))
+                {
+                    <div class="shop-product-editor-row" @key="row.Id">
+                        <ShopTextField @ref="_nameFieldRefs[row.Id]" Value="@row.Name" ValueChanged="@((string? v) => OnRowNameChangedAsync(row, v))" ValueExpression="@(() => row.Name)"
+                                       Label="@Strings.ProductSpecifications_NameLabel" Disabled="@Disabled" aria-invalid="@IsFlagged(position).ToString().ToLowerInvariant()" aria-describedby="@RowErrorId(row, position)" />
+                        <div class="shop-product-editor-value">
+                            <ShopTextField Value="@row.Value" ValueChanged="@((string? v) => OnRowValueChangedAsync(row, v))" ValueExpression="@(() => row.Value)"
+                                           Label="@Strings.ProductSpecifications_ValueLabel" Disabled="@Disabled" aria-invalid="@IsFlagged(position).ToString().ToLowerInvariant()" aria-describedby="@RowErrorId(row, position)" />
+                            <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.ProductSpecifications_RemoveRow" Disabled="@Disabled" OnClick="@(() => RemoveRowAsync(row))" />
+                        </div>
+                        @if (IsFlagged(position))
                         {
-                            <MudGrid Spacing="2" @key="@row.Id">
-                                <MudItem xs="12" sm="4">
-                                    <MudTextField @ref="@_nameFieldRefs[row.Id]"
-                                                  T="string"
-                                                  Value="@row.Name"
-                                                  ValueChanged="@((string v) => OnRowNameChangedAsync(row, v))"
-                                                  Variant="Variant.Outlined"
-                                                  Placeholder="@Strings.ProductSpecifications_NameLabel"
-                                                  Typo="Typo.body1"
-                                                  FullWidth="true"
-                                                  Disabled="@Disabled"
-                                                  Error="@IsFlagged(position)"
-                                                  UserAttributes="@(new Dictionary<string, object?> { ["aria-label"] = Strings.ProductSpecifications_NameLabel })" />
-                                </MudItem>
-                                <MudItem xs="12" sm="8" Class="d-flex align-center gap-2">
-
-                                    <MudTextField T="string"
-                                                  Value="@row.Value"
-                                                  ValueChanged="@((string v) => OnRowValueChangedAsync(row, v))"
-                                                  Variant="Variant.Outlined"
-                                                  Placeholder="@Strings.ProductSpecifications_ValueLabel"
-                                                  Typo="Typo.body1"
-                                                  FullWidth="true"
-                                                  Disabled="@Disabled"
-                                                  Error="@IsFlagged(position)"
-                                                  UserAttributes="@(new Dictionary<string, object?> { ["aria-label"] = Strings.ProductSpecifications_ValueLabel })" />
-
-                                    <MudIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
-                                                   Color="Color.Primary"
-                                                   Disabled="@Disabled"
-                                                   OnClick="@(() => RemoveRowAsync(row))"
-                                                   aria-label="@Strings.ProductSpecifications_RemoveRow" />
-                                </MudItem>
-                            </MudGrid>
+                            <p id="@RowErrorId(row, position)" class="shop-product-error" role="alert">@Strings.ProductSpecifications_RowInvalid</p>
                         }
-
-                        <MudStack AlignItems="AlignItems.Start">
-                            <MudButton @ref="_addButtonRef"
-                                       Variant="Variant.Outlined"
-                                       StartIcon="@ShopIcons.Outlined.Add_Plus"
-                                       Disabled="@Disabled"
-                                       OnClick="AddRowAsync">
-                                @Strings.ProductSpecifications_AddRow
-                            </MudButton>
-                        </MudStack>
-                    }
-
-                    <MudText Style="@VisuallyHiddenStyle" aria-live="polite">@_liveAnnouncement</MudText>
-
-                </MudStack>
-
-            </MudStack>
-        </ChildContent>
-    </MudExpansionPanel>
-</MudExpansionPanels>
+                    </div>
+                }
+                <ShopButton @ref="_addButtonRef" Class="shop-product-editor-add" Variant="ShopVariant.Outlined" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus" Disabled="@Disabled" OnClick="AddRowAsync">@Strings.ProductSpecifications_AddRow</ShopButton>
+            }
+        </div>
+        <span class="shop-visually-hidden" role="status">@_liveAnnouncement</span>
+    </ChildContent>
+</ShopExpander>

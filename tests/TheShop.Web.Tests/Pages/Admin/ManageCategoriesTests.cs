@@ -1,13 +1,13 @@
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
+using TheShop.Web.Common.Dialogs;
 using Bunit.TestDoubles;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Categories.Commands.DeleteCategories;
@@ -40,9 +40,9 @@ namespace TheShop.Web.Tests.Pages.Admin;
 public class ManageCategoriesTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
-    private readonly IDialogService _dialogService = Substitute.For<IDialogService>();
+    private readonly IShopDialogService _dialogService = Substitute.For<IShopDialogService>();
     private readonly List<GetCategoriesPageQuery> _receivedQueries = [];
 
     public ManageCategoriesTests()
@@ -50,15 +50,10 @@ public class ManageCategoriesTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
-        Services.AddMudServices();
-
-        var popoverService = Substitute.For<IPopoverService>();
-        popoverService.PopoverOptions.Returns(new PopoverOptions());
-        Services.Replace(ServiceDescriptor.Singleton(popoverService));
         Services.Replace(ServiceDescriptor.Singleton(_dialogService));
 
         _localizer[Arg.Any<string>()].Returns(call =>
@@ -120,10 +115,8 @@ public class ManageCategoriesTests : TestContext
     /// </summary>
     private void SetUpConfirmDialogResult(bool confirmed)
     {
-        var dialogReference = Substitute.For<IDialogReference>();
-        dialogReference.Result.Returns(Task.FromResult<DialogResult?>(confirmed ? DialogResult.Ok(true) : DialogResult.Cancel()));
-        _dialogService.ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>())
-                      .Returns(Task.FromResult(dialogReference));
+        _dialogService.ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>())
+            .Returns(confirmed);
     }
 
     /// <summary>
@@ -145,6 +138,24 @@ public class ManageCategoriesTests : TestContext
     private static CategoryListItemDto Item(string name, bool isActive = true, int productCount = 0) =>
         new(Guid.NewGuid(), name, $"{name} description", "https://example.com/image.webp", isActive, productCount);
 
+    [Fact]
+    public async Task Table_StatusAndActions_UseCompactHeadersAndCells()
+    {
+        var cut = await RenderListAsync();
+
+        cut.FindAll(".shop-table th.shop-table-column-compact")
+            .Select(header => header.TextContent.Trim()).Should()
+            .Equal(Strings.ManageCategories_ColumnStatus, Strings.ManageCategories_ColumnActions);
+        var rows = cut.FindAll(".shop-table tbody tr");
+        rows.Should().NotBeEmpty();
+        foreach (var row in rows)
+        {
+            row.QuerySelectorAll("td.shop-table-column-compact").Should().HaveCount(2);
+            row.Children.TakeLast(2).Should()
+                .OnlyContain(cell => cell.ClassList.Contains("shop-table-column-compact"));
+        }
+    }
+
     private async Task<IRenderedComponent<ManageCategories>> RenderListAsync()
     {
         AuthorizeAsCategoryManager();
@@ -152,6 +163,42 @@ public class ManageCategoriesTests : TestContext
         await cut.InvokeAsync(() => { });
         _receivedQueries.Clear();
         return cut;
+    }
+
+    [Fact]
+    public async Task PendingQuery_ShowsFilterAndTableSkeletons_ThenRestoresContent()
+    {
+        var pending = new TaskCompletionSource<Result<PagedResult<CategoryListItemDto>>>();
+        _mediator.Send(Arg.Any<GetCategoriesPageQuery>(), Arg.Any<CancellationToken>())
+            .Returns(pending.Task);
+        AuthorizeAsCategoryManager();
+        var cut = Render<ManageCategories>();
+
+        cut.FindAll(".shop-categories-filter-placeholder .shop-skeleton").Should().HaveCount(5);
+        cut.FindAll(".shop-table-loading-row").Should().HaveCount(10);
+        cut.Find(".shop-categories-filter-skeleton").GetAttribute("aria-hidden").Should().Be("true");
+        cut.Find(".shop-table").GetAttribute("aria-busy").Should().Be("true");
+        cut.FindAll(".shop-pagination").Should().BeEmpty();
+
+        await cut.InvokeAsync(() => pending.SetResult(Result.Ok(
+            BuildPage(new PaginationRequest(1, 10), totalCount: 20, itemCount: 10))));
+
+        cut.WaitForAssertion(() => cut.FindAll(".shop-table-loading-row").Should().BeEmpty());
+        cut.FindAll(".shop-categories-filter-skeleton").Should().BeEmpty();
+        cut.FindAll(".shop-table tbody tr").Should().HaveCount(10);
+        cut.FindAll(".shop-pagination").Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CreatePermission_RendersAddCategoryThroughShopButton()
+    {
+        var auth = this.AddAuthorization();
+        auth.SetAuthorized("creator");
+        auth.SetPolicies(PolicyNames.Permission(PermissionCatalogue.Categories.View.Code),
+            PolicyNames.Permission(PermissionCatalogue.Categories.Create.Code));
+        var cut = Render<ManageCategories>();
+
+        cut.FindComponents<ShopButton>().Should().Contain(button => button.Instance.Href == Routes.Admin.AddCategory);
     }
 
     // =========================================================================
@@ -185,12 +232,15 @@ public class ManageCategoriesTests : TestContext
         var cut = await RenderListAsync();
 
         var filterPanel = cut.FindComponent<ShopFilterPanel>();
+        filterPanel.FindAll(".shop-expander-trigger").Should().OnlyContain(trigger => trigger.GetAttribute("aria-expanded") == "false");
+        filterPanel.Find(".shop-expander-trigger").Click();
         await cut.InvokeAsync(() => filterPanel.Instance.SingleSelectChanged.InvokeAsync(("status", "inactive")));
 
         _receivedQueries.Should().ContainSingle(
             "changing the status filter must reach the mediator without a page refresh");
         _receivedQueries[0].Status.Should().Be(CategoryStatusFilter.Inactive);
         _receivedQueries[0].Pagination.Page.Should().Be(1);
+        filterPanel.Find(".shop-expander-trigger").GetAttribute("aria-expanded").Should().Be("true");
     }
 
     [Fact]
@@ -247,7 +297,7 @@ public class ManageCategoriesTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var searchField = cut.FindComponent<MudTextField<string>>();
+        var searchField = cut.FindComponent<ShopTextField>();
         await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("  DIS  "));
 
         _receivedQueries.Should().ContainSingle(
@@ -292,7 +342,7 @@ public class ManageCategoriesTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var searchField = cut.FindComponent<MudTextField<string>>();
+        var searchField = cut.FindComponent<ShopTextField>();
         await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("dis"));
 
         var filterPanel = cut.FindComponent<ShopFilterPanel>();
@@ -341,19 +391,21 @@ public class ManageCategoriesTests : TestContext
         bar.Instance.Visible.Should().BeTrue();
         bar.Instance.SelectedCount.Should().Be(3);
 
-        await cut.InvokeAsync(() => bar.Instance.OnClose.InvokeAsync());
+        var slot = cut.Find(".shop-bulk-action-slot");
+        slot.ParentElement!.QuerySelector(".shop-table").Should().NotBeNull();
+        bar.FindAll("button").Should().OnlyContain(button => button.ClassList.Contains("shop-button"));
+        await cut.InvokeAsync(() => bar.Find($"button[aria-label='{Strings.Close_BulkActionBar}']").Click());
 
         cut.FindComponent<ShopBulkActionBar>().Instance.Visible.Should().BeFalse(
             "dismissing the bar must drop the selection that put it up");
-        cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.SelectedItems.Should().BeEmpty();
+        cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.SelectedKeys.Should().BeEmpty();
         _receivedQueries.Should().BeEmpty("dismissing a selection is local UI state, not a re-query");
     }
 
     private static async Task SelectCategoriesAsync(IRenderedComponent<ManageCategories> cut, int count)
     {
-        var table = cut.FindComponent<MudTable<CategoryListItemDto>>();
-        var selected = table.Instance.Items!.Take(count).ToHashSet();
-        await cut.InvokeAsync(() => table.Instance.SelectedItemsChanged.InvokeAsync(selected));
+        for (var index = 0; index < count; index++)
+            await cut.InvokeAsync(() => cut.FindAll(".shop-table tbody input[type=checkbox]")[index].Change(true));
     }
 
     // =========================================================================
@@ -366,7 +418,7 @@ public class ManageCategoriesTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var firstCategory = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var firstCategory = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         cut.Markup.Should().Contain(firstCategory.Name);
         cut.Markup.Should().Contain(firstCategory.Description!);
     }
@@ -377,7 +429,7 @@ public class ManageCategoriesTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var firstCategory = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var firstCategory = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         cut.FindAll("img").Should().Contain(img => img.GetAttribute("src") == firstCategory.ImageUrl);
     }
 
@@ -389,8 +441,8 @@ public class ManageCategoriesTests : TestContext
 
         var images = cut.FindComponents<ShopImage>();
         images.Should().NotBeEmpty();
-        images.Should().OnlyContain(i => i.Instance.Preset == ShopImagePreset.Thumbnail);
-        cut.FindAll(".mud-avatar > [data-shop-image]").Should().HaveCount(images.Count);
+        images.Should().OnlyContain(i => i.Instance.Preset == ShopImagePreset.SquareContain);
+        cut.FindAll(".shop-categories-image > [data-shop-image]").Should().HaveCount(images.Count);
     }
 
     [Fact]
@@ -438,7 +490,7 @@ public class ManageCategoriesTests : TestContext
         SetUpKnownCategoriesList([]);
         var cut = await RenderListAsync();
 
-        var searchField = cut.FindComponent<MudTextField<string>>();
+        var searchField = cut.FindComponent<ShopTextField>();
         await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("nonexistent"));
 
         cut.Markup.Should().Contain(Strings.ManageCategories_NoMatchTitle);
@@ -486,7 +538,7 @@ public class ManageCategoriesTests : TestContext
         var cut = Render<ManageCategories>();
         await cut.InvokeAsync(() => { });
 
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         cut.FindAll($"[aria-label='{string.Format(Strings.ManageCategories_EditAria, category.Name)}']").Should().BeEmpty();
         cut.FindAll($"[aria-label='{string.Format(Strings.ManageCategories_DeleteAria, category.Name)}']").Should().BeEmpty();
     }
@@ -500,7 +552,7 @@ public class ManageCategoriesTests : TestContext
         var cut = Render<ManageCategories>();
         await cut.InvokeAsync(() => { });
 
-        cut.FindComponents<MudChip<string>>().Should().BeEmpty(
+        cut.FindComponents<ShopChip>().Should().BeEmpty(
             "a view-only staff member cannot flip a category's status, so it renders as text, not a clickable chip");
     }
 
@@ -534,7 +586,7 @@ public class ManageCategoriesTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         cut.Find($"[aria-label='{string.Format(Strings.ManageCategories_EditAria, category.Name)}']")
            .GetAttribute("href").Should().Be(Routes.Admin.EditCategory(category.Id));
     }
@@ -548,7 +600,7 @@ public class ManageCategoriesTests : TestContext
     public async Task DeleteSingle_WhenConfirmed_SendsDeleteCategoriesCommandWithThatCategorysId()
     {
         var cut = await RenderListAsync();
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryDeletionOutcomeDto(1, [])));
@@ -566,7 +618,7 @@ public class ManageCategoriesTests : TestContext
     public async Task DeleteSingle_WhenActivated_ShowsAConfirmDialogNamingTheCategory()
     {
         var cut = await RenderListAsync();
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryDeletionOutcomeDto(1, [])));
@@ -574,9 +626,8 @@ public class ManageCategoriesTests : TestContext
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageCategories_DeleteAria, category.Name)}']");
         await cut.InvokeAsync(() => deleteButton.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
 
-        await _dialogService.Received(1).ShowAsync<ShopConfirmDialog>(
-            Arg.Any<string>(),
-            Arg.Is<DialogParameters>(p => p.Get<string>("BodyText")!.Contains(category.Name)));
+        await _dialogService.Received(1).ConfirmAsync(
+            Arg.Is<ShopConfirmationOptions>(p => p.Body.Contains(category.Name)), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -584,7 +635,7 @@ public class ManageCategoriesTests : TestContext
     public async Task DeleteSingle_WhenCancelled_DoesNotSendTheCommand()
     {
         var cut = await RenderListAsync();
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: false);
 
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageCategories_DeleteAria, category.Name)}']");
@@ -602,7 +653,7 @@ public class ManageCategoriesTests : TestContext
     public async Task DeleteSingle_WhenTheCategoryIsInUse_ShowsTheInUseMessageNamingItAndItsProductCount()
     {
         var cut = await RenderListAsync();
-        var category = cut.FindComponent<MudTable<CategoryListItemDto>>().Instance.Items!.First();
+        var category = cut.FindComponent<ShopTable<CategoryListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryDeletionOutcomeDto(0, [new BlockedCategoryDto(category.Id, category.Name, 3)])));
@@ -610,7 +661,7 @@ public class ManageCategoriesTests : TestContext
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageCategories_DeleteAria, category.Name)}']");
         await cut.InvokeAsync(() => deleteButton.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
 
-        _snackbar.Received(1).Add(string.Format(Strings.Category_InUse, category.Name, 3), Severity.Warning);
+        _notifications.Received(1).Show(string.Format(Strings.Category_InUse, category.Name, 3), ShopNotificationKind.Warning);
     }
 
     // =========================================================================
@@ -629,7 +680,7 @@ public class ManageCategoriesTests : TestContext
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryDeletionOutcomeDto(3, [])));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.Received(1).Send(
@@ -649,12 +700,11 @@ public class ManageCategoriesTests : TestContext
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryDeletionOutcomeDto(2, [])));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
-        await _dialogService.Received(1).ShowAsync<ShopConfirmDialog>(
-            Arg.Any<string>(),
-            Arg.Is<DialogParameters>(p => p.Get<string>("BodyText")!.Contains("2")));
+        await _dialogService.Received(1).ConfirmAsync(
+            Arg.Is<ShopConfirmationOptions>(p => p.Body.Contains("2")), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -667,7 +717,7 @@ public class ManageCategoriesTests : TestContext
         await SelectCategoriesAsync(cut, count: 2);
         SetUpConfirmDialogResult(confirmed: false);
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.DidNotReceive().Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>());
@@ -689,10 +739,10 @@ public class ManageCategoriesTests : TestContext
         var outcome = new CategoryDeletionOutcomeDto(3, [.. blocked.Select(b => new BlockedCategoryDto(b.Id, b.Name, 2))]);
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>()).Returns(Result.Ok(outcome));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
-        _snackbar.Received(1).Add(string.Format(Strings.Category_BulkDeletePartial, 3, 2), Severity.Warning);
+        _notifications.Received(1).Show(string.Format(Strings.Category_BulkDeletePartial, 3, 2), ShopNotificationKind.Warning);
     }
 
     [Fact]
@@ -709,7 +759,7 @@ public class ManageCategoriesTests : TestContext
         var outcome = new CategoryDeletionOutcomeDto(3, [.. blocked.Select(b => new BlockedCategoryDto(b.Id, b.Name, 2))]);
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>()).Returns(Result.Ok(outcome));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
         cut.FindComponent<ShopBulkActionBar>().Instance.SelectedCount.Should().Be(2,
@@ -728,10 +778,10 @@ public class ManageCategoriesTests : TestContext
         var outcome = new CategoryDeletionOutcomeDto(0, [.. items.Select(i => new BlockedCategoryDto(i.Id, i.Name, 1))]);
         _mediator.Send(Arg.Any<DeleteCategoriesCommand>(), Arg.Any<CancellationToken>()).Returns(Result.Ok(outcome));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
-        _snackbar.Received(1).Add(Strings.Category_BulkDeleteAllBlocked, Severity.Warning);
+        _notifications.Received(1).Show(Strings.Category_BulkDeleteAllBlocked, ShopNotificationKind.Warning);
     }
 
     // =========================================================================
@@ -748,10 +798,10 @@ public class ManageCategoriesTests : TestContext
         _mediator.Send(Arg.Any<SetCategoryStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryStatusChangeDto(1)));
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
+        var chip = cut.FindComponent<ShopChip>();
+        await cut.InvokeAsync(() => chip.Find("button").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
 
-        await _dialogService.DidNotReceive().ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>());
+        await _dialogService.DidNotReceive().ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(
             Arg.Is<SetCategoryStatusCommand>(c => c.CategoryIds.Count == 1 && c.CategoryIds[0] == items[0].Id && c.IsActive),
             Arg.Any<CancellationToken>());
@@ -768,10 +818,10 @@ public class ManageCategoriesTests : TestContext
         _mediator.Send(Arg.Any<SetCategoryStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryStatusChangeDto(1)));
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
+        var chip = cut.FindComponent<ShopChip>();
+        await cut.InvokeAsync(() => chip.Find("button").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
 
-        await _dialogService.Received(1).ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>());
+        await _dialogService.Received(1).ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(Arg.Is<SetCategoryStatusCommand>(c => !c.IsActive), Arg.Any<CancellationToken>());
     }
 
@@ -784,8 +834,8 @@ public class ManageCategoriesTests : TestContext
         var cut = await RenderListAsync();
         SetUpConfirmDialogResult(confirmed: false);
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
+        var chip = cut.FindComponent<ShopChip>();
+        await cut.InvokeAsync(() => chip.Find("button").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
 
         await _mediator.DidNotReceive().Send(Arg.Any<SetCategoryStatusCommand>(), Arg.Any<CancellationToken>());
     }
@@ -805,10 +855,10 @@ public class ManageCategoriesTests : TestContext
         _mediator.Send(Arg.Any<SetCategoryStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryStatusChangeDto(2)));
 
-        var activateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkSetActive));
+        var activateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkSetActive));
         await cut.InvokeAsync(() => activateButton.Instance.OnClick.InvokeAsync());
 
-        await _dialogService.DidNotReceive().ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>());
+        await _dialogService.DidNotReceive().ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(
             Arg.Is<SetCategoryStatusCommand>(c => c.CategoryIds.Count == 2 && c.IsActive), Arg.Any<CancellationToken>());
     }
@@ -825,12 +875,12 @@ public class ManageCategoriesTests : TestContext
         _mediator.Send(Arg.Any<SetCategoryStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryStatusChangeDto(3)));
 
-        var deactivateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkSetInactive));
+        var deactivateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkSetInactive));
         await cut.InvokeAsync(() => deactivateButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.Received(1).Send(
             Arg.Is<SetCategoryStatusCommand>(c => c.CategoryIds.Count == 3 && !c.IsActive), Arg.Any<CancellationToken>());
-        _snackbar.Received(1).Add(string.Format(Strings.ManageCategories_DeactivatedSuccess, 3), Severity.Success);
+        _notifications.Received(1).Show(string.Format(Strings.ManageCategories_DeactivatedSuccess, 3), ShopNotificationKind.Success);
     }
 
     [Fact]
@@ -845,12 +895,11 @@ public class ManageCategoriesTests : TestContext
         _mediator.Send(Arg.Any<SetCategoryStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new CategoryStatusChangeDto(3)));
 
-        var deactivateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkSetInactive));
+        var deactivateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkSetInactive));
         await cut.InvokeAsync(() => deactivateButton.Instance.OnClick.InvokeAsync());
 
-        await _dialogService.Received(1).ShowAsync<ShopConfirmDialog>(
-            Arg.Any<string>(),
-            Arg.Is<DialogParameters>(p => p.Get<string>("BodyText")!.Contains("3")));
+        await _dialogService.Received(1).ConfirmAsync(
+            Arg.Is<ShopConfirmationOptions>(p => p.Body.Contains("3")), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -863,7 +912,7 @@ public class ManageCategoriesTests : TestContext
         await SelectCategoriesAsync(cut, count: 2);
         SetUpConfirmDialogResult(confirmed: false);
 
-        var deactivateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkSetInactive));
+        var deactivateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageCategories_BulkSetInactive));
         await cut.InvokeAsync(() => deactivateButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.DidNotReceive().Send(Arg.Any<SetCategoryStatusCommand>(), Arg.Any<CancellationToken>());

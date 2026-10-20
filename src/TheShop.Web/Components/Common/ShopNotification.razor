@@ -1,0 +1,9 @@
+<div class="shop-notification" data-testid="notification"
+     @onmouseenter="@(() => SetHoveredAsync(true))" @onmouseleave="@(() => SetHoveredAsync(false))"
+     @onfocusin="@(() => SetFocusedAsync(true))" @onfocusout="@(() => SetFocusedAsync(false))">
+    <p class="shop-notification-message">@Message.Text</p>
+    <button type="button" class="shop-notification-dismiss" aria-label="@Strings.Notification_Dismiss"
+            @onclick="OnDismiss" data-testid="notification-dismiss">
+        <ShopIcon Icon="@ShopIcons.Outlined.Close_MD" Class="shop-notification-dismiss-icon" />
+    </button>
+</div>

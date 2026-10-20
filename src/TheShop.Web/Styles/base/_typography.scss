@@ -1,0 +1,7 @@
+@use '../abstracts/text-style';
+
+body,
+.shop-native {
+    color: var(--shop-color-text-primary);
+    @include text-style.apply(body-1);
+}

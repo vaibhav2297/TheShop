@@ -4,9 +4,8 @@ using Xunit;
 namespace TheShop.E2E.Tests.Fixtures;
 
 /// <summary>
-/// Launches the Blazor WASM dev server (<c>dotnet run --launch-profile http</c>) once per test
-/// collection, polls <see cref="E2EEnvironment.AppBaseUrl"/> until it serves 200, and kills the
-/// entire process tree on disposal so no orphaned process holds port 5218.
+/// Uses E2E_APP_URL when supplied, otherwise launches the Blazor WASM dev server once per
+/// collection. Polls readiness and disposes only the process it starts.
 /// </summary>
 public sealed class AppHostFixture : IAsyncLifetime
 {
@@ -17,21 +16,24 @@ public sealed class AppHostFixture : IAsyncLifetime
         if (!E2EEnvironment.IsAvailable)
             return; // Tests will Assert.Skip; don't burn 30s launching an app nobody will use.
 
-        _app = Process.Start(new ProcessStartInfo
+        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("E2E_APP_URL")))
         {
-            FileName = "dotnet",
-            Arguments = "run --project src/TheShop.Web --launch-profile http",
-            WorkingDirectory = E2EEnvironment.RepoRoot,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-        }) ?? throw new InvalidOperationException("Failed to start the app process.");
+            _app = Process.Start(new ProcessStartInfo
+            {
+                FileName = "dotnet",
+                Arguments = "run --project src/TheShop.Web --launch-profile http",
+                WorkingDirectory = E2EEnvironment.RepoRoot,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            }) ?? throw new InvalidOperationException("Failed to start the app process.");
+        }
 
         using var http = new HttpClient();
         var deadline = DateTime.UtcNow.AddSeconds(120);
         while (DateTime.UtcNow < deadline)
         {
-            if (_app.HasExited)
+            if (_app?.HasExited == true)
                 throw new InvalidOperationException(
                     $"App process exited during startup:\n{await _app.StandardError.ReadToEndAsync()}");
             try

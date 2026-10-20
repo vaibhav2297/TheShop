@@ -1,13 +1,15 @@
+using TheShop.Web.Common.Notifications;
 using Bunit;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using System;
+using TheShop.Application.Common.Models;
+using TheShop.Application.Features.Auth.Commands.VerifySignInOtp;
+using TheShop.Application.Features.Auth.DTOs;
 using TheShop.Web.Common;
 using TheShop.Web.Pages.Auth;
 using TheShop.Web.Resources;
@@ -23,7 +25,7 @@ namespace TheShop.Web.Tests.Pages.Auth;
 public class SignInVerifyTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public SignInVerifyTests()
@@ -32,11 +34,8 @@ public class SignInVerifyTests : TestContext
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton<BusyState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
-        Services.AddSingleton(Substitute.For<TheShop.Web.Theme.ShopTheme>());
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
 
         _localizer[Arg.Any<string>()].Returns(call =>
         {
@@ -73,14 +72,12 @@ public class SignInVerifyTests : TestContext
     [Trait("Feature", "authentication")]
     public void Render_WithEmailParameter_VerifyButtonIsInitiallyDisabled()
     {
-        // OtpInput uses JS interop so full verify flow can't be driven in bUnit.
-        // We verify the earliest observable invariant: the verify button is disabled
-        // until a complete OTP code is entered (_isCodeComplete = false on render).
         NavigateToVerifyPage();
         var cut = Render<SignInVerify>();
 
-        cut.FindAll("button[disabled]").Should().NotBeEmpty(
-            "the verify button must be disabled when no OTP code has been entered");
+        cut.Find("[data-testid='otp-submit']").HasAttribute("disabled").Should().BeTrue();
+        cut.Markup.Should().NotContain("mud-");
+        cut.Find("h1").TextContent.Should().Be(Strings.Verify_Heading);
     }
 
     // =========================================================================
@@ -111,8 +108,8 @@ public class SignInVerifyTests : TestContext
         NavigateToVerifyPage();
         var cut = Render<SignInVerify>();
 
-        cut.FindAll("button[disabled]").Should().NotBeEmpty(
-            "resend button must be disabled during the initial 60-second cooldown period");
+        cut.Find("[data-testid='otp-countdown']").TextContent.Should().Be("01:00");
+        cut.FindAll("[data-testid='otp-resend']").Should().BeEmpty();
     }
 
     // =========================================================================
@@ -135,4 +132,71 @@ public class SignInVerifyTests : TestContext
             "a valid email parameter must keep the user on the verify page, not redirect to sign-in");
     }
 
+    [Fact]
+    public async Task Submit_IncompleteCode_DoesNotDispatch()
+    {
+        NavigateToVerifyPage();
+        var cut = Render<SignInVerify>();
+        cut.Find("input").Input("012");
+
+        await cut.Find("form").SubmitAsync();
+
+        await _mediator.DidNotReceive().Send(Arg.Any<VerifySignInOtpCommand>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Submit_LeadingZeroAndReturnUrl_DispatchesOnceAndNavigates()
+    {
+        var nav = Services.GetRequiredService<NavigationManager>();
+        nav.NavigateTo(Routes.Auth.SignInVerifyWith("user@example.com", Routes.Products));
+        _mediator.Send(Arg.Any<VerifySignInOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Ok<SessionDto>(null!));
+        var cut = Render<SignInVerify>();
+        cut.Find("[data-testid='otp-change']").GetAttribute("href")
+            .Should().Be(Routes.Auth.SignInWithReturn(Routes.Products));
+        cut.Find("input").Input("012345");
+
+        await cut.Find("form").SubmitAsync();
+
+        await _mediator.Received(1).Send(new VerifySignInOtpCommand("user@example.com", "012345"), Arg.Any<CancellationToken>());
+        nav.Uri.Should().EndWith(Routes.Products);
+        _notifications.Received().Show(Strings.Auth_SignedIn, ShopNotificationKind.Success);
+    }
+
+    [Fact]
+    public async Task Submit_InFlight_FreezesInputsAndRejectsDuplicateThenClearsFailedCode()
+    {
+        NavigateToVerifyPage();
+        var completion = new TaskCompletionSource<Result<SessionDto>>();
+        _mediator.Send(Arg.Any<VerifySignInOtpCommand>(), Arg.Any<CancellationToken>()).Returns(completion.Task);
+        var cut = Render<SignInVerify>();
+        cut.Find("input").Input("012345");
+
+        var submit = cut.Find("form").SubmitAsync();
+        cut.WaitForAssertion(() => cut.FindAll("input").Should().OnlyContain(input => input.HasAttribute("disabled")));
+        cut.Find("[data-testid='otp-submit']").GetAttribute("aria-busy").Should().Be("true");
+        await cut.Find("form").SubmitAsync();
+        await _mediator.Received(1).Send(Arg.Any<VerifySignInOtpCommand>(), Arg.Any<CancellationToken>());
+        completion.SetResult(Result.Fail<SessionDto>(nameof(Strings.Auth_Unexpected)));
+        await submit;
+
+        cut.FindAll("input").Should().OnlyContain(input => !input.HasAttribute("disabled"));
+        cut.FindAll("input").Should().OnlyContain(input => string.IsNullOrEmpty(input.GetAttribute("value")));
+        cut.Find("[data-testid='otp-submit']").HasAttribute("disabled").Should().BeTrue();
+        _notifications.Received().Show(nameof(Strings.Auth_Unexpected), ShopNotificationKind.Error);
+    }
+
+    [Fact]
+    public async Task Submit_TooManyAttempts_RedirectsToEmailEntry()
+    {
+        NavigateToVerifyPage();
+        _mediator.Send(Arg.Any<VerifySignInOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Fail<SessionDto>(nameof(Strings.Auth_TooManyAttempts)));
+        var cut = Render<SignInVerify>();
+        cut.Find("input").Input("012345");
+
+        await cut.Find("form").SubmitAsync();
+
+        Services.GetRequiredService<NavigationManager>().Uri.Should().EndWith(Routes.Auth.SignIn);
+    }
 }

@@ -1,5 +1,5 @@
 using FluentAssertions;
-using MudBlazor;
+using TheShop.Web.Common.UI;
 using TheShop.Web.State;
 using Xunit;
 
@@ -47,7 +47,7 @@ public class BreadcrumbStateTests
         // A trail of exactly one item (only a root) is not considered a meaningful trail —
         // the layout should not render breadcrumbs in this state (spec §4: root pages show no trail).
         var state = new BreadcrumbState();
-        state.Set([new BreadcrumbItem("Home", "/")]);
+        state.Set([new ShopBreadcrumbItem("Home", "/")]);
 
         state.HasTrail.Should().BeFalse("a single-item trail has no parent levels and must not show");
     }
@@ -59,8 +59,8 @@ public class BreadcrumbStateTests
         // AC-1 / AC-2: once a page supplies a full trail (root + current), HasTrail must be true.
         var state = new BreadcrumbState();
         state.Set([
-            new BreadcrumbItem("Home", "/"),
-            new BreadcrumbItem("Products", null, disabled: true)
+            new ShopBreadcrumbItem("Home", "/"),
+            new ShopBreadcrumbItem("Products", null, disabled: true)
         ]);
 
         state.HasTrail.Should().BeTrue("two items constitute a genuine trail that should be rendered");
@@ -75,7 +75,7 @@ public class BreadcrumbStateTests
     public void Set_WithItems_StoresAllItems()
     {
         var state = new BreadcrumbState();
-        var items = new List<BreadcrumbItem>
+        var items = new List<ShopBreadcrumbItem>
         {
             new("Home", "/"),
             new("Products", "/products"),
@@ -98,7 +98,7 @@ public class BreadcrumbStateTests
         var changeCount = 0;
         state.OnChange += () => changeCount++;
 
-        state.Set([new BreadcrumbItem("Home", "/"), new BreadcrumbItem("Products", null, disabled: true)]);
+        state.Set([new ShopBreadcrumbItem("Home", "/"), new ShopBreadcrumbItem("Products", null, disabled: true)]);
 
         changeCount.Should().Be(1, "Set must notify subscribers so the layout re-renders");
     }
@@ -108,8 +108,8 @@ public class BreadcrumbStateTests
     public void Set_CalledRepeatedly_OverwritesPreviousTrail()
     {
         var state = new BreadcrumbState();
-        state.Set([new BreadcrumbItem("Home", "/"), new BreadcrumbItem("Products", null, disabled: true)]);
-        state.Set([new BreadcrumbItem("Home", "/"), new BreadcrumbItem("Wool Parka", null, disabled: true)]);
+        state.Set([new ShopBreadcrumbItem("Home", "/"), new ShopBreadcrumbItem("Products", null, disabled: true)]);
+        state.Set([new ShopBreadcrumbItem("Home", "/"), new ShopBreadcrumbItem("Wool Parka", null, disabled: true)]);
 
         state.Trail.Should().HaveCount(2);
         state.Trail[1].Text.Should().Be("Wool Parka", "the second Set must overwrite the first trail");
@@ -124,7 +124,7 @@ public class BreadcrumbStateTests
     public void Clear_AfterSet_MakesTrailEmpty()
     {
         var state = new BreadcrumbState();
-        state.Set([new BreadcrumbItem("Home", "/"), new BreadcrumbItem("Products", null, disabled: true)]);
+        state.Set([new ShopBreadcrumbItem("Home", "/"), new ShopBreadcrumbItem("Products", null, disabled: true)]);
 
         state.Clear();
 
@@ -137,7 +137,7 @@ public class BreadcrumbStateTests
     {
         // AC-7 runtime: navigating away (which triggers Clear) must suppress the slot
         var state = new BreadcrumbState();
-        state.Set([new BreadcrumbItem("Home", "/"), new BreadcrumbItem("Products", null, disabled: true)]);
+        state.Set([new ShopBreadcrumbItem("Home", "/"), new ShopBreadcrumbItem("Products", null, disabled: true)]);
 
         state.Clear();
 
@@ -149,7 +149,7 @@ public class BreadcrumbStateTests
     public void Clear_WhenCalled_FiresOnChange()
     {
         var state = new BreadcrumbState();
-        state.Set([new BreadcrumbItem("Home", "/"), new BreadcrumbItem("Products", null, disabled: true)]);
+        state.Set([new ShopBreadcrumbItem("Home", "/"), new ShopBreadcrumbItem("Products", null, disabled: true)]);
         var changeCount = 0;
         state.OnChange += () => changeCount++;
 
@@ -185,9 +185,9 @@ public class BreadcrumbStateTests
         var changeCount = 0;
         state.OnChange += () => changeCount++;
 
-        state.Set([new BreadcrumbItem("Home", "/"), new BreadcrumbItem("Products", null, disabled: true)]);
+        state.Set([new ShopBreadcrumbItem("Home", "/"), new ShopBreadcrumbItem("Products", null, disabled: true)]);
         state.Clear();
-        state.Set([new BreadcrumbItem("Home", "/"), new BreadcrumbItem("Brands", null, disabled: true)]);
+        state.Set([new ShopBreadcrumbItem("Home", "/"), new ShopBreadcrumbItem("Brands", null, disabled: true)]);
 
         changeCount.Should().Be(3, "each Set and Clear must fire OnChange exactly once");
     }

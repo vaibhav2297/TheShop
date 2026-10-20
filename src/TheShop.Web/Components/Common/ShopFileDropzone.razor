@@ -1,0 +1,29 @@
+@inherits ShopComponentBase
+@using Microsoft.AspNetCore.Components.Forms
+@using TheShop.Web.Common.UI
+
+<div @attributes="AdditionalAttributes" @ref="_root" class="@ClassName" style="@Style"
+     data-file-dropzone data-disabled="@EffectiveDisabled.ToString().ToLowerInvariant()">
+    <InputFile @ref="_input" id="@_inputId" class="shop-visually-hidden" tabindex="-1"
+               accept="@Accept" multiple="@Multiple" disabled="@EffectiveDisabled"
+               aria-label="@Label" aria-describedby="@_hintId" aria-invalid="@(ErrorText is not null)"
+               OnChange="ReceiveAsync" />
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+    else
+    {
+        <button type="button" class="shop-file-dropzone-trigger" data-file-picker
+                disabled="@EffectiveDisabled" aria-describedby="@_hintId">
+            <ShopIcon Icon="@ShopIcons.Outlined.Cloud_Upload" />
+            <span class="shop-file-dropzone-title">@Label</span>
+            <span class="shop-file-dropzone-drag-title">@DragLabel</span>
+            <span id="@_hintId" class="shop-file-dropzone-hint">@(ErrorText ?? HelperText)</span>
+        </button>
+    }
+    @if (ChildContent is not null)
+    {
+        <span id="@_hintId" class="shop-visually-hidden">@(ErrorText ?? HelperText)</span>
+    }
+</div>

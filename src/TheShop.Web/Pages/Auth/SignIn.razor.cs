@@ -1,60 +1,61 @@
+using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
 using TheShop.Application.Features.Auth.Commands.RequestSignInOtp;
 using TheShop.Web.Common;
+using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 
 namespace TheShop.Web.Pages.Auth;
 
-/// <summary>
-/// Sign-in page (step 1 of 2). Collects the user's email and dispatches
-/// <see cref="RequestSignInOtpCommand"/>. On success navigates to the OTP verify page.
-/// </summary>
+/// <summary>Collects an email and requests a sign-in code, preserving the optional return URL.</summary>
 [Route(Routes.Auth.SignIn)]
 public partial class SignIn : ComponentBase
 {
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
 
-    /// <summary>
-    /// Optional URL to redirect to after a successful sign-in. When absent, the user is
-    /// sent to the home page.
-    /// </summary>
+    /// <summary>Optional destination forwarded to the existing OTP verification route.</summary>
     [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
 
-    private MudForm _form = default!;
-    private string _email = string.Empty;
-    private bool _isFormValid;
+    private readonly SignInFormModel _model = new();
+    private EditContext _editContext = default!;
+    private ShopCommandValidation _validation = default!;
 
-    private readonly Func<string, string?> _emailValidation = email =>
-        string.IsNullOrWhiteSpace(email)
-            ? Strings.Email_Required
-            : !email.Contains('@')
-                ? Strings.Email_Invalid
-                : null;
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(_model);
+    }
 
     private async Task OnSendCodeAsync()
     {
-        await _form.ValidateAsync();
-        if (!_isFormValid) return;
+        if (BusyState.IsBusy(BusyKeys.Auth.SignIn))
+            return;
+
+        _validation.Clear();
+        var email = _model.Email.Trim();
 
         await BusyState.RunAsync(BusyKeys.Auth.SignIn, async () =>
         {
-            var result = await Mediator.Send(new RequestSignInOtpCommand(_email.Trim()));
-
+            var result = await Mediator.Send(new RequestSignInOtpCommand(email));
             if (result.IsSuccess)
             {
-                Snackbar.Add(Strings.Auth_CodeSent, Severity.Success);
-                Nav.NavigateTo(Routes.Auth.SignInVerifyWith(_email.Trim(), ReturnUrl));
+                Notifications.Show(Strings.Auth_CodeSent, ShopNotificationKind.Success);
+                Nav.NavigateTo(Routes.Auth.SignInVerifyWith(email, ReturnUrl));
+            }
+            else if (result.ValidationErrors.Count > 0)
+            {
+                _validation.ShowErrors(result.ValidationErrors);
             }
             else
             {
-                Snackbar.Add(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], Severity.Error);
+                Notifications.Show(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], ShopNotificationKind.Error);
             }
         });
     }

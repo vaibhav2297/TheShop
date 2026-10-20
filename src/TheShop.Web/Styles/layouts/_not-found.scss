@@ -1,0 +1,22 @@
+@use '../abstracts/text-style';
+
+.shop-not-found-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--shop-space-4);
+    margin-block-start: var(--shop-space-12);
+    min-inline-size: 0;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.shop-not-found-page h1 {
+    margin: 0;
+    @include text-style.apply(h4);
+}
+
+.shop-not-found-page p {
+    margin: 0;
+    @include text-style.apply(body-1);
+}

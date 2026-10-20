@@ -1,0 +1,12 @@
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@inherits ShopComponentBase
+
+<div @attributes="AdditionalAttributes" class="@ClassName" style="@Style" aria-hidden="true">
+    <ShopSkeleton Class="shop-product-card-media" />
+    <div class="shop-product-card-content">
+        <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-product-card-brand shop-product-card-skeleton-brand" />
+        <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-product-card-title shop-product-card-skeleton-title" />
+        <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-product-card-price shop-product-card-skeleton-price" />
+    </div>
+</div>

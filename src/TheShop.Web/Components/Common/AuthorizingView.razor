@@ -1,20 +1,12 @@
-@inherits MudComponentBase
+@inherits ShopComponentBase
+@using TheShop.Web.Common.UI
 
 @using TheShop.Web.Resources
 
-<MudStack Class="@Classname"
-          Style="@Style"
-          AlignItems="AlignItems.Center"
-          Justify="Justify.Center"
-          Spacing="4">
+<div @attributes="AdditionalAttributes" class="@Classname" style="@Style" role="status">
 
-    <MudProgressCircular Color="Color.Primary"
-                         Indeterminate="true"
-                         Size="Size.Large"
-                         aria-label="@Strings.Authorizing_Loading" />
+    <ShopLoader />
 
-    <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary" Class="fw-500">
-        @Strings.Authorizing_Loading
-    </MudText>
+    <p>@Strings.Authorizing_Loading</p>
 
-</MudStack>
+</div>

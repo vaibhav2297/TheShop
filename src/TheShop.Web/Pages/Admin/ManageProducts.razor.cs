@@ -1,8 +1,9 @@
+using TheShop.Web.Common.Notifications;
 using System.Globalization;
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using TheShop.Web.Common.Dialogs;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
 using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products;
@@ -38,8 +39,8 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     private const string StatusInactiveValue = "inactive";
 
     [Inject] private IMediator Mediator { get; set; } = default!;
-    [Inject] private IDialogService DialogService { get; set; } = default!;
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IShopDialogService DialogService { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
@@ -116,9 +117,9 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     private IReadOnlyList<FilterGroupDto> FilterGroups =>
     [
         StatusFilterGroup,
+        new FilterGroupDto(ProductFilterKeys.Brand, nameof(Strings.Products_BrandsFilter), FilterKind.MultiSelect, _filters?.Brands ?? [], null),
+        new FilterGroupDto(ProductFilterKeys.Category, nameof(Strings.Products_CategoriesFilter), FilterKind.MultiSelect, _filters?.Categories ?? [], null),
         new FilterGroupDto(ProductFilterKeys.Price, nameof(Strings.Filter_Price), FilterKind.Range, [], PriceRange),
-        new FilterGroupDto(ProductFilterKeys.Brand, nameof(Strings.Filter_Brand), FilterKind.MultiSelect, _filters?.Brands ?? [], null),
-        new FilterGroupDto(ProductFilterKeys.Category, nameof(Strings.Filter_Category), FilterKind.MultiSelect, _filters?.Categories ?? [], null),
     ];
 
     private RangeFilterDto? PriceRange => _filters?.PriceRange;
@@ -144,12 +145,6 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     /// result instead renders the in-grid no-match message so the filter panel stays available.
     /// </summary>
     private bool ShowEmptyState => _products.HasLoaded && _products.Items.Count == 0 && !HasActiveCriteria;
-
-    /// <summary>
-    /// Gets the body spacing, adding bottom padding while the viewport-fixed bulk-action bar is
-    /// visible so that it does not obscure the last table rows or pagination.
-    /// </summary>
-    private string BodyClass => HasSelection ? "px-8 pt-8 pb-14" : "pa-8";
 
     private bool IsRowPending(Guid id, RowMutation mutation) =>
         _pendingMutation == mutation && _pendingIds.Contains(id);
@@ -190,7 +185,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
         if (filtersResult.IsSuccess)
             _filters = filtersResult.Value;
         else
-            Snackbar.Add(Localizer[filtersResult.Error!], Severity.Error);
+            Notifications.Show(Localizer[filtersResult.Error!], ShopNotificationKind.Error);
     }
 
     /// <summary>
@@ -226,7 +221,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
         if (result.IsSuccess)
             return result.Value;
 
-        Snackbar.Add(Localizer[result.Error!], Severity.Error);
+        Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
         return PagedResult<ProductListItemDto>.Empty(request);
     }
 
@@ -237,6 +232,32 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
             return null;
 
         return [.. values.Where(v => Guid.TryParse(v, out _)).Select(Guid.Parse)];
+    }
+
+    private bool _filtersOpen;
+    private CancellationTokenSource? _searchDelay;
+
+    private async Task OnSearchInputAsync(string? value)
+    {
+        _search = value;
+        _searchDelay?.Cancel();
+        _searchDelay?.Dispose();
+        var delay = _searchDelay = new CancellationTokenSource();
+        try
+        {
+            await Task.Delay(300, delay.Token);
+            await OnSearchChangedAsync(value);
+        }
+        catch (OperationCanceledException) when (delay.IsCancellationRequested) { }
+    }
+
+    /// <inheritdoc />
+    public override void Dispose()
+    {
+        _searchDelay?.Cancel();
+        _searchDelay?.Dispose();
+        _searchDelay = null;
+        base.Dispose();
     }
 
     private Task OnSearchChangedAsync(string? value)
@@ -290,7 +311,10 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
         return PushStateAsync(BuildState() with { Page = 1 });
     }
 
-    private void OnSelectedItemsChanged(HashSet<ProductListItemDto> items) => _selectedItems = items;
+    private IReadOnlySet<object> SelectedKeys => _selectedItems.Select(item => (object)item.Id).ToHashSet();
+
+    private void OnSelectedKeysChanged(IReadOnlySet<object> keys) =>
+        _selectedItems = _products.Items.Where(item => keys.Contains(item.Id)).ToHashSet();
 
     /// <summary>
     /// Dismisses the bulk-action bar. The bar's visibility is derived from the selection, so
@@ -315,7 +339,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
             Strings.ManageProducts_DeactivateConfirmTitle,
             string.Format(Strings.ManageProducts_DeactivateConfirmBody, product.Name),
             Strings.ManageProducts_BulkDeactivate,
-            Color.Primary);
+            false);
 
         if (confirmed)
             await ApplyStatusChangeAsync([product.Id], false);
@@ -334,7 +358,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
             string.Format(Strings.ManageProducts_BulkDeactivateConfirmTitle, ids.Count),
             string.Format(Strings.ManageProducts_BulkDeactivateConfirmBody, ids.Count),
             Strings.ManageProducts_BulkDeactivate,
-            Color.Primary);
+            false);
 
         if (confirmed)
             await ApplyStatusChangeAsync(ids, false);
@@ -354,18 +378,18 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
                 var result = await Mediator.Send(new SetProductStatusCommand(ids, isActive));
                 if (!result.IsSuccess)
                 {
-                    Snackbar.Add(Localizer[result.Error!], Severity.Error);
+                    Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
                     return;
                 }
 
                 var messageKey = isActive ? Strings.ManageProducts_ActivatedSuccess : Strings.ManageProducts_DeactivatedSuccess;
-                Snackbar.Add(string.Format(messageKey, result.Value.ChangedCount), Severity.Success);
+                Notifications.Show(string.Format(messageKey, result.Value.ChangedCount), ShopNotificationKind.Success);
 
                 if (result.Value.NotPublishable.Count > 0)
                 {
-                    Snackbar.Add(
+                    Notifications.Show(
                         string.Format(Strings.ManageProducts_ActivateSkipped, result.Value.NotPublishable.Count),
-                        Severity.Warning);
+                        ShopNotificationKind.Warning);
                 }
 
                 _selectedItems.Clear();
@@ -385,7 +409,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
             Strings.ManageProducts_DeleteConfirmTitle,
             string.Format(Strings.ManageProducts_DeleteConfirmBody, product.Name),
             Strings.ManageProducts_BulkDelete,
-            Color.Error);
+            true);
 
         if (confirmed)
             await ApplyDeleteAsync([product.Id]);
@@ -401,7 +425,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
             string.Format(Strings.ManageProducts_BulkDeleteConfirmTitle, ids.Count),
             string.Format(Strings.ManageProducts_BulkDeleteConfirmBody, ids.Count),
             Strings.ManageProducts_BulkDelete,
-            Color.Error);
+            true);
 
         if (confirmed)
             await ApplyDeleteAsync(ids);
@@ -418,7 +442,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
                 var result = await Mediator.Send(new DeleteProductsCommand(ids));
                 if (!result.IsSuccess)
                 {
-                    Snackbar.Add(Localizer[result.Error!], Severity.Error);
+                    Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
                     return;
                 }
 
@@ -455,14 +479,14 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     {
         if (outcome.DeletedCount == 1)
         {
-            Snackbar.Add(Strings.ManageProducts_DeletedSuccess, Severity.Success);
+            Notifications.Show(Strings.ManageProducts_DeletedSuccess, ShopNotificationKind.Success);
             _selectedItems.Clear();
             return;
         }
 
         var blocked = outcome.Blocked[0];
         _referencedIds[blocked.Id] = blocked.ReferenceCount;
-        Snackbar.Add(string.Format(Strings.Product_InUse, blocked.Name, blocked.ReferenceCount), Severity.Warning);
+        Notifications.Show(string.Format(Strings.Product_InUse, blocked.Name, blocked.ReferenceCount), ShopNotificationKind.Warning);
     }
 
     /// <summary>
@@ -473,20 +497,20 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     {
         if (outcome.Blocked.Count == 0)
         {
-            Snackbar.Add(string.Format(Strings.ManageProducts_BulkDeletedSuccess, outcome.DeletedCount), Severity.Success);
+            Notifications.Show(string.Format(Strings.ManageProducts_BulkDeletedSuccess, outcome.DeletedCount), ShopNotificationKind.Success);
             _selectedItems.Clear();
             return;
         }
 
         if (outcome.DeletedCount == 0 && outcome.Blocked.Count == requestedCount)
         {
-            Snackbar.Add(Strings.Product_BulkDeleteAllBlocked, Severity.Warning);
+            Notifications.Show(Strings.Product_BulkDeleteAllBlocked, ShopNotificationKind.Warning);
         }
         else
         {
-            Snackbar.Add(
+            Notifications.Show(
                 string.Format(Strings.Product_BulkDeletePartial, outcome.DeletedCount, outcome.Blocked.Count),
-                Severity.Warning);
+                ShopNotificationKind.Warning);
         }
 
         // The referenced products are still present in _products.Items (only the reload below
@@ -497,20 +521,8 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
         _selectedItems = _products.Items.Where(p => _referencedIds.ContainsKey(p.Id)).ToHashSet();
     }
 
-    private async Task<bool> ConfirmAsync(string title, string body, string confirmLabel, Color confirmColor)
-    {
-        var parameters = new DialogParameters<ShopConfirmDialog>
-        {
-            { x => x.TitleText, title },
-            { x => x.BodyText, body },
-            { x => x.ConfirmLabel, confirmLabel },
-            { x => x.ConfirmColor, confirmColor },
-        };
-
-        var dialog = await DialogService.ShowAsync<ShopConfirmDialog>(title, parameters);
-        var result = await dialog.Result;
-        return result is { Canceled: false };
-    }
+    private Task<bool> ConfirmAsync(string title, string body, string confirmLabel, bool destructive) =>
+        DialogService.ConfirmAsync(new(title, body, confirmLabel, destructive));
 
     /// <summary>
     /// Renders a row's price range: a single amount when the lowest and highest price coincide

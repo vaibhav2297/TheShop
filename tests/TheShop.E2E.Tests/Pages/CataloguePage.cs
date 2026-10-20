@@ -13,15 +13,20 @@ public sealed class CataloguePage(IPage page) : ShopPage(page)
 
     /// <summary>
     /// Expands a collapsed filter group panel by its heading (e.g. Strings.Filter_Brand).
-    /// MudExpansionPanel's header renders as a plain div with no ARIA role, so GetByRole can't
-    /// target it — clicking the label text itself bubbles to the header's click handler.
     /// </summary>
-    public async Task ExpandFilterGroupAsync(string groupLabel) =>
-        await Page.GetByText(groupLabel, new() { Exact = true }).ClickAsync();
+    public async Task ExpandFilterGroupAsync(string groupLabel)
+    {
+        var filters = Page.Locator(".shop-catalogue-filter-button");
+        if (await filters.IsVisibleAsync() && !await Page.Locator(".shop-drawer[open]").IsVisibleAsync())
+            await filters.ClickAsync();
+        var trigger = Page.Locator(".shop-filter-groups:visible").GetByRole(AriaRole.Button, new() { Name = groupLabel, Exact = true });
+        if (await trigger.GetAttributeAsync("aria-expanded") == "false")
+            await trigger.ClickAsync();
+    }
 
     /// <summary>Locator for a filter option's checkbox by its visible label — the group must already be expanded.</summary>
     public ILocator FilterOption(string optionLabel) =>
-        Page.GetByRole(AriaRole.Checkbox, new() { Name = optionLabel });
+        Page.Locator(".shop-filter-groups:visible").GetByRole(AriaRole.Checkbox, new() { Name = optionLabel });
 
     /// <summary>Toggles a filter option's checkbox by its visible label (e.g. a brand name) — the group must already be expanded.</summary>
     public async Task ToggleFilterOptionAsync(string optionLabel) =>

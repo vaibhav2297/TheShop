@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using MudBlazor.Utilities;
+using TheShop.Web.Common.Dialogs;
+using Microsoft.AspNetCore.Components.Forms;
+using TheShop.Web.Common.UI;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
@@ -16,9 +17,9 @@ namespace TheShop.Web.Components.Products;
 /// option values purely for immediate feedback — <c>Product.ApplyVariantConfiguration</c> is
 /// the real truth server-side (Flow 4 step 4).
 /// </summary>
-public partial class ProductVariantsCard : MudComponentBase
+public partial class ProductVariantsCard : ShopComponentBase
 {
-    [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private IShopDialogService ConfirmDialogs { get; set; } = default!;
 
     /// <summary>
     /// The product's own SKU, from which every variant SKU is derived (FR-15). Read live on every
@@ -57,6 +58,13 @@ public partial class ProductVariantsCard : MudComponentBase
     /// </summary>
     [Parameter] public IReadOnlyList<Guid> FlaggedVariantIds { get; set; } = [];
 
+    /// <summary>File rejection messages displayed inside the gallery picker.</summary>
+    [Parameter] public IReadOnlyList<string> UploadErrors { get; set; } = [];
+
+    /// <summary>Prepares new gallery files through the owning form, without persisting them.</summary>
+    [Parameter] public EventCallback<IReadOnlyList<IBrowserFile>> AddGalleryFiles { get; set; }
+
+    /// <summary>Disables editor and dialog actions while saving.</summary>
     [Parameter] public bool Disabled { get; set; }
 
     private sealed class OptionValueRow
@@ -79,6 +87,10 @@ public partial class ProductVariantsCard : MudComponentBase
         public string Sku { get; set; } = string.Empty;
         public decimal? OriginalPrice { get; set; }
         public decimal? SalePrice { get; set; }
+        public ShopMoneyField? PriceField { get; set; }
+        public ShopMoneyField? SalePriceField { get; set; }
+        public TheShop.Web.Common.UI.ShopNumericDraft PriceDraft { get; } = new();
+        public TheShop.Web.Common.UI.ShopNumericDraft SalePriceDraft { get; } = new();
         public bool IsAvailable { get; set; } = true;
         public Guid? PinnedImageId { get; set; }
         public string Label { get; set; } = string.Empty;
@@ -88,6 +100,8 @@ public partial class ProductVariantsCard : MudComponentBase
     private List<VariantRow> _variants = [];
     private bool _initialized;
     private string? _lastProductSku;
+    private sealed record PinSelection(VariantRow Variant, string? ScopeLabel, int ScopeCount, Guid? ScopeValueId);
+    private PinSelection? _pinSelection;
 
     private bool IsFlagged(VariantRow variant) => FlaggedVariantIds.Contains(variant.Id);
 
@@ -96,8 +110,7 @@ public partial class ProductVariantsCard : MudComponentBase
     private bool CanCopyPriceToAll => _variants.Count > 1 && _variants[0].OriginalPrice is not null;
     private bool CanCopySalePriceToAll => _variants.Count > 1 && _variants[0].SalePrice is not null;
 
-    protected string Classname => new CssBuilder("product-variants-card").AddClass(Class).Build();
-    protected string Stylename => new StyleBuilder().AddStyle(Style).Build();
+    protected string Classname => ShopCssClass.Join("shop-native", "shop-product-variants", Class);
 
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
@@ -112,11 +125,16 @@ public partial class ProductVariantsCard : MudComponentBase
         // option values (FR-15) — is kept live rather than fixed at the moment the row was created.
         if (_lastProductSku != ProductSku)
         {
+            var skuChanged = _lastProductSku is not null;
             _lastProductSku = ProductSku;
             RefreshVariantSkus();
+            if (skuChanged && _variants.Count > 0)
+                await NotifyAsync();
         }
 
         await PruneRemovedPinsAsync();
+        if (Disabled || (_pinSelection is { } selection && !_variants.Contains(selection.Variant)))
+            _pinSelection = null;
     }
 
     private void RefreshVariantSkus()
@@ -175,6 +193,7 @@ public partial class ProductVariantsCard : MudComponentBase
 
     private Task AddOptionTypeAsync()
     {
+        if (Disabled) return Task.CompletedTask;
         var row = new OptionTypeRow
         {
             Id = Guid.NewGuid(),
@@ -184,14 +203,16 @@ public partial class ProductVariantsCard : MudComponentBase
         return NotifyAsync();
     }
 
-    private Task OnOptionTypeNameChangedAsync(OptionTypeRow type, string value)
+    private Task OnOptionTypeNameChangedAsync(OptionTypeRow type, string? value)
     {
-        type.Name = value;
+        if (Disabled) return Task.CompletedTask;
+        type.Name = value ?? string.Empty;
         return NotifyAsync();
     }
 
     private async Task RemoveOptionTypeAsync(OptionTypeRow type)
     {
+        if (Disabled) return;
         var remaining = _optionTypes.Where(t => t.Id != type.Id).ToList();
         var affected = CountConfiguredVariantsLostBy(remaining);
 
@@ -205,19 +226,22 @@ public partial class ProductVariantsCard : MudComponentBase
 
     private Task AddOptionValueAsync(OptionTypeRow type)
     {
+        if (Disabled) return Task.CompletedTask;
         type.Values.Add(new OptionValueRow { Id = Guid.NewGuid() });
         return NotifyAsync();
     }
 
-    private Task OnOptionValueChangedAsync(OptionValueRow value, string newValue)
+    private Task OnOptionValueChangedAsync(OptionValueRow value, string? newValue)
     {
-        value.Value = newValue;
+        if (Disabled) return Task.CompletedTask;
+        value.Value = newValue ?? string.Empty;
         RecomputeVariants();
         return NotifyAsync();
     }
 
     private async Task RemoveOptionValueAsync(OptionTypeRow type, OptionValueRow value)
     {
+        if (Disabled) return;
         if (type.Values.Count == 1 && type.Values[0].Id == value.Id)
         {
             await RemoveOptionTypeAsync(type);
@@ -236,6 +260,21 @@ public partial class ProductVariantsCard : MudComponentBase
         type.Values.Remove(value);
         RecomputeVariants();
         await NotifyAsync();
+    }
+
+    /// <summary>Commits pending price edits before submission, including drafts retained by virtualized rows.</summary>
+    public async Task<bool> ValidatePricesAsync(bool includeDisabled = false)
+    {
+        var valid = true;
+        foreach (var variant in _variants.ToArray())
+        {
+            if (variant.PriceField is not null) await variant.PriceField.ValidateAsync(includeDisabled);
+            if (variant.SalePriceField is not null) await variant.SalePriceField.ValidateAsync(includeDisabled);
+            // Commit and check parsing here. Publish requirements and server markers are
+            // presentation feedback, never a substitute for command/domain validation.
+            valid &= variant.PriceDraft.Error is null && variant.SalePriceDraft.Error is null;
+        }
+        return valid;
     }
 
     private Task OnVariantOriginalPriceChangedAsync(VariantRow variant, decimal? value)
@@ -258,11 +297,14 @@ public partial class ProductVariantsCard : MudComponentBase
     /// </summary>
     private Task CopyPriceToAllVariantsAsync()
     {
-        if (_variants.Count == 0 || _variants[0].OriginalPrice is not decimal price)
+        if (Disabled || _variants.Count == 0 || _variants[0].OriginalPrice is not decimal price)
             return Task.CompletedTask;
 
         foreach (var variant in _variants.Skip(1))
+        {
             variant.OriginalPrice = price;
+            variant.PriceDraft.Reset(price);
+        }
 
         return NotifyAsync();
     }
@@ -274,49 +316,45 @@ public partial class ProductVariantsCard : MudComponentBase
     /// </summary>
     private Task CopySalePriceToAllVariantsAsync()
     {
-        if (_variants.Count == 0 || _variants[0].SalePrice is not decimal price)
+        if (Disabled || _variants.Count == 0 || _variants[0].SalePrice is not decimal price)
             return Task.CompletedTask;
 
         foreach (var variant in _variants.Skip(1))
+        {
             variant.SalePrice = price;
+            variant.SalePriceDraft.Reset(price);
+        }
 
         return NotifyAsync();
     }
 
     private Task OnVariantAvailableChangedAsync(VariantRow variant, bool value)
     {
+        if (Disabled) return Task.CompletedTask;
         variant.IsAvailable = value;
         return NotifyAsync();
     }
 
-    private async Task OpenPinDialogAsync(VariantRow variant)
+    private void OpenPinDialog(VariantRow variant)
     {
+        if (Disabled || _pinSelection is not null || !_variants.Contains(variant))
+            return;
         var (scopeLabel, scopeCount) = FindSharedScope(variant);
+        _pinSelection = new(variant, scopeLabel, scopeCount, FindSharedOptionValueId(variant));
+    }
 
-        var parameters = new DialogParameters<VariantImageDialog>
-        {
-            { x => x.VariantLabel, variant.Label },
-            { x => x.GalleryImages, GalleryImages },
-            { x => x.CurrentImageId, variant.PinnedImageId },
-            { x => x.SharedScopeLabel, scopeLabel },
-            { x => x.SharedScopeCount, scopeCount },
-        };
-
-        // The gallery grid needs more room than the default dialog width (Small) affords.
-        var options = new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-        };
-
-        var dialog = await DialogService.ShowAsync<VariantImageDialog>(variant.Label, parameters, options);
-        var result = await dialog.Result;
-        if (result is not { Canceled: false, Data: VariantImagePinResult pin })
+    private async Task CompletePinAsync(PinSelection selection, VariantImagePinResult? pin)
+    {
+        if (!ReferenceEquals(_pinSelection, selection))
+            return;
+        _pinSelection = null;
+        if (pin is null || Disabled || !_variants.Contains(selection.Variant) ||
+            (pin.ImageId is Guid imageId && !GalleryImages.Any(image => image.Id == imageId)))
             return;
 
         if (pin.ApplyToAllSharing)
         {
-            var sharedValueId = FindSharedOptionValueId(variant);
+            var sharedValueId = selection.ScopeValueId;
             if (sharedValueId is Guid valueId)
             {
                 foreach (var affected in _variants.Where(v => v.OptionValueIds.Contains(valueId)))
@@ -325,7 +363,7 @@ public partial class ProductVariantsCard : MudComponentBase
         }
         else
         {
-            variant.PinnedImageId = pin.ImageId;
+            selection.Variant.PinnedImageId = pin.ImageId;
         }
 
         await NotifyAsync();
@@ -367,20 +405,10 @@ public partial class ProductVariantsCard : MudComponentBase
         return null;
     }
 
-    private async Task<bool> ConfirmRemovalAsync(int affectedCount)
-    {
-        var parameters = new DialogParameters<ShopConfirmDialog>
-        {
-            { x => x.TitleText, Strings.ProductVariants_RemoveOptionConfirmTitle },
-            { x => x.BodyText, string.Format(Strings.ProductVariants_RemoveOptionConfirmBody, affectedCount) },
-            { x => x.ConfirmLabel, Strings.ProductVariants_RemoveOptionConfirm },
-            { x => x.ConfirmColor, Color.Error },
-        };
-
-        var dialog = await DialogService.ShowAsync<ShopConfirmDialog>(Strings.ProductVariants_RemoveOptionConfirmTitle, parameters);
-        var result = await dialog.Result;
-        return result is { Canceled: false };
-    }
+    private Task<bool> ConfirmRemovalAsync(int affectedCount) =>
+        ConfirmDialogs.ConfirmAsync(new(Strings.ProductVariants_RemoveOptionConfirmTitle,
+            string.Format(Strings.ProductVariants_RemoveOptionConfirmBody, affectedCount),
+            Strings.ProductVariants_RemoveOptionConfirm, true));
 
     private void RecomputeVariants()
     {

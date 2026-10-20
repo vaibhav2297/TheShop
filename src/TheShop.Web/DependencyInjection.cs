@@ -1,13 +1,12 @@
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
-using MudBlazor.Services;
-using MudExtensions.Services;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Web.Auth;
 using TheShop.Web.Common;
+using TheShop.Web.Common.Dialogs;
+using TheShop.Web.Common.Notifications;
 using TheShop.Web.State;
-using TheShop.Web.Theme;
 
 namespace TheShop.Web;
 
@@ -17,7 +16,7 @@ namespace TheShop.Web;
 public static class DependencyInjection
 {
     /// <summary>
-    /// Adds MudBlazor, localization, theming, all scoped UI state stores, Blazored
+    /// Adds localization, native UI services, all scoped UI state stores, Blazored
     /// LocalStorage, the Supabase-backed authentication services, and the claims-based RBAC
     /// authorization (on-demand <c>perm:{code}</c> policies via
     /// <see cref="ShopAuthorizationPolicyProvider"/>, reading the permission claims minted into
@@ -25,12 +24,14 @@ public static class DependencyInjection
     /// </summary>
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
-        services.AddMudServices();
-        services.AddMudExtensions();
         services.AddLocalization();
 
-        services.AddSingleton<ShopTheme>();
         services.AddScoped<BusyState>();
+        services.AddSingleton(TimeProvider.System);
+        services.AddScoped<ShopNotificationService>();
+        services.AddScoped<IShopNotificationService>(provider => provider.GetRequiredService<ShopNotificationService>());
+        services.AddScoped<ShopDialogService>();
+        services.AddScoped<IShopDialogService>(provider => provider.GetRequiredService<ShopDialogService>());
         services.AddScoped<CartState>();
         services.AddScoped<AuthState>();
         services.AddScoped<AnnouncementState>();

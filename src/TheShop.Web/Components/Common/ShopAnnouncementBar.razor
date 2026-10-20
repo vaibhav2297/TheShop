@@ -1,16 +1,6 @@
-@inherits MudBlazor.MudComponentBase
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
 
-<MudPaper Class="@Classname"
-          Style="@Style"
-          Square
-          Elevation="0">
-
-    <MudStack AlignItems="AlignItems.Center"
-              Justify="Justify.Center"
-              Class="py-1 px-4">
-
-        <MudText Typo="Typo.body2">@Message</MudText>
-
-    </MudStack>
-
-</MudPaper>
+<div @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+    <p class="shop-announcement-bar-message">@Message</p>
+</div>

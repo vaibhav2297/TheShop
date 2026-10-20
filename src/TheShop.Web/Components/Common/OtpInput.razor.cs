@@ -1,22 +1,20 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using MudBlazor;
-using MudBlazor.Utilities;
+using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
 /// <summary>
-/// Reusable one-time-password (OTP) input. Renders <see cref="Length"/> single-digit
-/// boxes backed by <see cref="MudNumericField{T}"/> so only 0–9 are accepted natively.
-/// Supports auto-advance focus on entry, backspace navigation to the previous box,
-/// arrow-key movement, and full paste distribution via a lightweight JS clipboard
-/// intercept. A companion JS <c>focusin</c> listener selects all text whenever any box
-/// gains focus, so typing always replaces the existing digit rather than appending.
-/// Inherits from <see cref="MudComponentBase"/> so consumers can forward <c>Class</c>,
-/// <c>Style</c>, and arbitrary HTML attributes to the root element.
+/// Reusable one-time-password (OTP) input. Renders <see cref="Length"/> label-less
+/// <see cref="ShopTextField"/> digit boxes that accept only 0–9, each named by a
+/// resource-backed ARIA label. Supports auto-advance focus on entry, backspace navigation
+/// to the previous box, arrow-key movement, and full paste or one-time-code autofill
+/// distribution. A companion JS module selects the current digit whenever a box gains
+/// focus, so typing always replaces it. <c>Class</c>, <c>Style</c>, and unmatched
+/// attributes target the root element.
 /// </summary>
-public partial class OtpInput : IAsyncDisposable
+public partial class OtpInput : ShopComponentBase, IAsyncDisposable
 {
     #region Parameters
 
@@ -41,7 +39,7 @@ public partial class OtpInput : IAsyncDisposable
     /// <summary>When true, the first empty box is focused on first render.</summary>
     [Parameter] public bool AutoFocus { get; set; } = true;
 
-    /// <summary>Optional caption rendered beneath the boxes. Consumer supplies a localized string.</summary>
+    /// <summary>Optional caption rendered beneath the boxes and associated with each box. Consumer supplies a localized string.</summary>
     [Parameter] public string? HelperText { get; set; }
 
     #endregion
@@ -54,7 +52,7 @@ public partial class OtpInput : IAsyncDisposable
 
     #region State
 
-    private string[] _digits = [];
+    private DigitSlot[] _digits = [];
     private string _currentValue = string.Empty;
     private bool _completeFired;
     private bool _hasAutoFocused;
@@ -73,13 +71,9 @@ public partial class OtpInput : IAsyncDisposable
 
     #region CSS Forwarding
 
-    protected string Classname => new CssBuilder("shop-otp-input")
-        .AddClass(Class)
-        .Build();
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-otp-input", Class);
 
-    protected string Stylename => new StyleBuilder()
-        .AddStyle(Style)
-        .Build();
+    private string? HelperId => string.IsNullOrEmpty(HelperText) ? null : $"{_containerId}-hint";
 
     #endregion
 
@@ -90,9 +84,9 @@ public partial class OtpInput : IAsyncDisposable
         // Resize when Length changes, preserving digits that still fit.
         if (_digits.Length != Length)
         {
-            var newDigits = new string[Length];
+            var newDigits = new DigitSlot[Length];
             for (var i = 0; i < Length; i++)
-                newDigits[i] = i < _digits.Length ? _digits[i] : string.Empty;
+                newDigits[i] = i < _digits.Length ? _digits[i] : new DigitSlot();
 
             _digits = newDigits;
         }
@@ -103,9 +97,7 @@ public partial class OtpInput : IAsyncDisposable
             var sanitized = SanitizeDigits(Value);
             if (sanitized.Length > Length) sanitized = sanitized[..Length];
 
-            for (var i = 0; i < Length; i++)
-                _digits[i] = i < sanitized.Length ? sanitized[i].ToString() : string.Empty;
-
+            SetDigits(sanitized);
             _currentValue = sanitized;
             _completeFired = sanitized.Length == Length;
         }
@@ -115,8 +107,8 @@ public partial class OtpInput : IAsyncDisposable
     {
         if (!firstRender) return;
 
-        // Load the JS module: registers the paste interceptor and the focusin
-        // select-all handler on the container div.
+        // Load the JS module: registers the paste interceptor, digit keydown owner, and
+        // focusin select-all handler on the container div.
         _dotNetRef = DotNetObjectReference.Create(this);
         _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/shopOtpInput.js");
         await _jsModule.InvokeVoidAsync("registerPaste", _containerId, _dotNetRef);
@@ -139,44 +131,27 @@ public partial class OtpInput : IAsyncDisposable
     [JSInvokable]
     public async Task HandlePasteAsync(string text)
     {
-        var digits = SanitizeDigits(text);
-        for (var i = 0; i < Length; i++)
-            _digits[i] = i < digits.Length ? digits[i].ToString() : string.Empty;
+        if (Disabled) return;
 
+        SetDigits(SanitizeDigits(text));
         await EmitValueAsync();
         await FocusBoxAsync(FindFirstEmptyIndex());
         await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
-    /// Called by the JS keydown listener for every digit key press. By the time
-    /// this method is invoked, JS has already:
-    /// <list type="bullet">
-    ///   <item>Called <c>e.preventDefault()</c> — MudNumericField never receives
-    ///   <c>oninput</c>, so its internal edit buffer is unchanged.</item>
-    ///   <item>Written <c>e.target.value = key</c> — the digit is visible in the
-    ///   DOM immediately and MudBlazor will read the correct digit on the upcoming
-    ///   blur event (preventing it from firing <c>ValueChanged(null)</c> and
-    ///   clearing the box).</item>
-    /// </list>
-    /// Focus is advanced <em>before</em> <see cref="EmitValueAsync"/> so the box
-    /// is already unfocused when Blazor re-renders. MudNumericField only picks up
-    /// the externally-bound <c>Value</c> prop when it is not in "edit mode" (i.e.
-    /// not focused). Moving focus first guarantees the render lands in display mode.
-    /// This also means same-digit repeats always advance focus — MudBlazor would
-    /// suppress <c>ValueChanged</c> for an identical value, but
-    /// <c>FocusBoxAsync</c> is called unconditionally before that check.
+    /// Called by the JS keydown listener for every digit key press. JS has already
+    /// prevented the browser from inserting the character and written the digit into the
+    /// box, so same-digit repeats still advance focus even though no input event fires.
     /// </summary>
     [JSInvokable]
     public async Task HandleDigitKeyAsync(int index, string key)
     {
-        if (index < 0 || index >= Length) return;
+        if (Disabled || index < 0 || index >= Length) return;
 
-        var changed = _digits[index] != key;
-        _digits[index] = key;
+        var changed = _digits[index].Value != key;
+        _digits[index].Value = key;
 
-        // Move focus FIRST — before any StateHasChanged is queued — so the box
-        // is in display mode (not edit mode) when Blazor re-renders it.
         if (index + 1 < Length)
             await FocusBoxAsync(index + 1);
 
@@ -190,30 +165,46 @@ public partial class OtpInput : IAsyncDisposable
 
     #region Event Handlers
 
-    private async Task OnDigitChangedAsync(int index, int? value)
+    private async Task OnDigitChangedAsync(int index, string? value)
     {
-        // JS keydown is now prevented for digit keys, so MudNumericField only fires
-        // ValueChanged for non-keyboard input such as mobile browser autofill.
-        // Guard against value being the same (autofill re-applying an identical digit).
-        var newDigit = value.HasValue ? value.Value.ToString() : string.Empty;
-        if (_digits[index] == newDigit) return;
+        // Digit keys are owned by JS, so input events come from deletion, virtual
+        // keyboards that report no key, and one-time-code autofill.
+        var digits = SanitizeDigits(value);
 
-        _digits[index] = newDigit;
+        // A full code (autofill) fills every box; otherwise the newest digit wins.
+        if (digits.Length >= Length)
+        {
+            SetDigits(digits[..Length]);
+            await EmitValueAsync();
+            await FocusBoxAsync(Length - 1);
+            return;
+        }
+
+        var newDigit = digits.Length > 0 ? digits[^1].ToString() : string.Empty;
+
+        // Rejected characters re-render the previous digit; the receiver re-renders
+        // automatically after this callback.
+        if (digits.Length == 0 && !string.IsNullOrEmpty(value)) return;
+        if (_digits[index].Value == newDigit) return;
+
+        _digits[index].Value = newDigit;
         await EmitValueAsync();
 
-        if (value.HasValue && index + 1 < Length)
+        if (newDigit.Length > 0 && index + 1 < Length)
             await FocusBoxAsync(index + 1);
     }
 
     private async Task OnKeyDownAsync(int index, KeyboardEventArgs e)
     {
+        if (Disabled) return;
+
         switch (e.Key)
         {
             // Backspace on an empty box clears the previous box and focuses it.
             case "Backspace":
-                if (_digits[index].Length == 0 && index > 0)
+                if (string.IsNullOrEmpty(_digits[index].Value) && index > 0)
                 {
-                    _digits[index - 1] = string.Empty;
+                    _digits[index - 1].Value = string.Empty;
                     await EmitValueAsync();
                     await FocusBoxAsync(index - 1);
                 }
@@ -233,9 +224,15 @@ public partial class OtpInput : IAsyncDisposable
 
     #region Helpers
 
+    private void SetDigits(string digits)
+    {
+        for (var i = 0; i < Length; i++)
+            _digits[i].Value = i < digits.Length ? digits[i].ToString() : string.Empty;
+    }
+
     private async Task EmitValueAsync()
     {
-        _currentValue = string.Concat(_digits);
+        _currentValue = string.Concat(_digits.Select(d => d.Value));
         StateHasChanged();
 
         if (ValueChanged.HasDelegate)
@@ -263,7 +260,7 @@ public partial class OtpInput : IAsyncDisposable
     private int FindFirstEmptyIndex()
     {
         for (var i = 0; i < Length; i++)
-            if (string.IsNullOrEmpty(_digits[i])) return i;
+            if (string.IsNullOrEmpty(_digits[i].Value)) return i;
         return Length - 1;
     }
 
@@ -272,7 +269,7 @@ public partial class OtpInput : IAsyncDisposable
         if (string.IsNullOrEmpty(input)) return string.Empty;
         var sb = new System.Text.StringBuilder(input.Length);
         foreach (var ch in input)
-            if (char.IsDigit(ch)) sb.Append(ch);
+            if (char.IsAsciiDigit(ch)) sb.Append(ch);
         return sb.ToString();
     }
 
@@ -280,6 +277,7 @@ public partial class OtpInput : IAsyncDisposable
 
     #region Disposal
 
+    /// <summary>Releases the JS module and the .NET reference it holds.</summary>
     public async ValueTask DisposeAsync()
     {
         if (_jsModule is not null)
@@ -288,4 +286,10 @@ public partial class OtpInput : IAsyncDisposable
     }
 
     #endregion
+
+    // One mutable slot per box: ShopTextField's ValueExpression needs a member accessor.
+    private sealed class DigitSlot
+    {
+        public string? Value { get; set; } = string.Empty;
+    }
 }

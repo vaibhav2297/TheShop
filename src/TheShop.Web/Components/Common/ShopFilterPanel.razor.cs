@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
+using TheShop.Web.Common.UI;
 using TheShop.Application.Common.Filtering;
 using TheShop.Domain.Enums;
 using TheShop.Web.Resources;
@@ -17,13 +17,27 @@ namespace TheShop.Web.Components.Common;
 /// callbacks. Feature-agnostic — used by both the product catalogue and manage-brands (plan §5
 /// Decision 4).
 /// </summary>
-public partial class ShopFilterPanel : MudComponentBase, IDisposable
+public partial class ShopFilterPanel : ShopComponentBase, IDisposable
 {
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-filter-panel", Class);
+
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
 
     /// <summary>The backend-driven filter groups to render.</summary>
     [Parameter, EditorRequired]
     public IReadOnlyList<FilterGroupDto> Groups { get; set; } = [];
+
+    /// <summary>Starts filter groups expanded; users can still collapse each group independently.</summary>
+    [Parameter] public bool InitiallyExpanded { get; set; }
+
+    /// <summary>Optional initial expansion by group key, overriding the all-groups default.</summary>
+    [Parameter] public IReadOnlySet<string>? InitiallyExpandedGroups { get; set; }
+
+    /// <summary>Requests side-by-side numeric editors from the shared range control.</summary>
+    [Parameter] public bool CompactRangeEditors { get; set; }
+
+    /// <summary>Resource-backed clear action text; defaults to the shared filter label.</summary>
+    [Parameter] public string ClearLabel { get; set; } = Strings.Filter_Clear;
 
     /// <summary>The currently applied multi-select filter values (drives the checkbox states).</summary>
     [Parameter]
@@ -72,6 +86,15 @@ public partial class ShopFilterPanel : MudComponentBase, IDisposable
     [Parameter]
     public Func<string, decimal, string> RangeFormatter { get; set; } = FormatDefault;
 
+    /// <summary>Numeric increment for each range group; the panel assumes no currency precision.</summary>
+    [Parameter] public Func<string, decimal> RangeStep { get; set; } = _ => 1m;
+
+    /// <summary>Lower-editor label for each group, including any caller-owned units.</summary>
+    [Parameter] public Func<string, string> RangeMinimumLabel { get; set; } = _ => Strings.Range_Minimum;
+
+    /// <summary>Upper-editor label for each group, including any caller-owned units.</summary>
+    [Parameter] public Func<string, string> RangeMaximumLabel { get; set; } = _ => Strings.Range_Maximum;
+
     /// <summary>
     /// Milliseconds of drag inactivity before a range-thumb change is pushed to
     /// <see cref="RangeChanged"/>. The thumb itself moves live; only the callback is deferred.
@@ -102,6 +125,8 @@ public partial class ShopFilterPanel : MudComponentBase, IDisposable
     /// settled bounds are pushed to the parent only after the sliders have gone quiet.
     /// </summary>
     private Timer? _debounceTimer;
+    private bool _disposed;
+    private readonly Dictionary<string, (RangeFilterDto Bounds, decimal? Min, decimal? Max)> _rangeInputs = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Gets whether any option is selected or any range group is narrowed, indicating that the
@@ -133,36 +158,33 @@ public partial class ShopFilterPanel : MudComponentBase, IDisposable
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
-        _thumbs.Clear();
-
+        var keys = Groups.Where(g => g.Kind == FilterKind.Range && g.Range is not null).Select(g => g.Key).ToHashSet(StringComparer.Ordinal);
+        foreach (var removed in _rangeInputs.Keys.Where(key => !keys.Contains(key)).ToArray())
+        {
+            _rangeInputs.Remove(removed);
+            _thumbs.Remove(removed);
+            _pendingGroups.Remove(removed);
+        }
         foreach (var group in Groups.Where(g => g.Kind == FilterKind.Range && g.Range is not null))
         {
             var bounds = group.Range!;
             var (min, max) = Applied(group.Key);
 
-            // Filter -> thumb: a null bound maps to that end of the full range. This also handles
-            // Clear (both null) and any external state change, snapping the thumbs back cleanly.
-            _thumbs[group.Key] = (min ?? bounds.Min, max ?? bounds.Max);
+            var input = (bounds, min, max);
+            if (!_rangeInputs.TryGetValue(group.Key, out var previous) || previous != input)
+            {
+                _thumbs[group.Key] = (min ?? bounds.Min, max ?? bounds.Max);
+                _rangeInputs[group.Key] = input;
+                _pendingGroups.Remove(group.Key);
+            }
         }
+        if (_pendingGroups.Count == 0) _debounceTimer?.Stop();
     }
 
-    /// <summary>
-    /// Updates a group's lower-thumb position and schedules its settled bounds to be committed.
-    /// </summary>
-    private Task OnRangeMinChangedAsync(string groupKey, decimal value)
+    private Task OnRangeChangedAsync(string groupKey, ShopRangeValue value)
     {
-        var (_, max) = Thumbs(groupKey);
-        _thumbs[groupKey] = (value, max);
-        return ScheduleCommitAsync(groupKey);
-    }
-
-    /// <summary>
-    /// Updates a group's upper-thumb position and schedules its settled bounds to be committed.
-    /// </summary>
-    private Task OnRangeMaxChangedAsync(string groupKey, decimal value)
-    {
-        var (min, _) = Thumbs(groupKey);
-        _thumbs[groupKey] = (min, value);
+        if (_disposed) return Task.CompletedTask;
+        _thumbs[groupKey] = (value.Lower, value.Upper);
         return ScheduleCommitAsync(groupKey);
     }
 
@@ -198,6 +220,7 @@ public partial class ShopFilterPanel : MudComponentBase, IDisposable
     /// </summary>
     private async Task CommitAsync()
     {
+        if (_disposed) return;
         var pending = _pendingGroups.ToList();
         _pendingGroups.Clear();
 
@@ -241,11 +264,19 @@ public partial class ShopFilterPanel : MudComponentBase, IDisposable
     private Task OnSingleSelectChangedAsync(string groupKey, string? value) =>
         SingleSelectChanged.InvokeAsync((groupKey, value));
 
-    private Task OnClearFiltersAsync() => OnClearFilters.InvokeAsync();
+    private Task OnClearFiltersAsync()
+    {
+        _debounceTimer?.Stop();
+        _pendingGroups.Clear();
+        _rangeInputs.Clear();
+        OnParametersSet();
+        return OnClearFilters.InvokeAsync();
+    }
 
     /// <inheritdoc/>
     public void Dispose()
     {
+        _disposed = true;
         _debounceTimer?.Dispose();
         GC.SuppressFinalize(this);
     }

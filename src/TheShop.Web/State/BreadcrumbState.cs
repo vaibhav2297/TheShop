@@ -1,4 +1,4 @@
-using MudBlazor;
+using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.State;
 
@@ -12,7 +12,7 @@ public sealed class BreadcrumbState
     /// <summary>
     /// The active breadcrumb items, or an empty list when no trail is set.
     /// </summary>
-    public IReadOnlyList<BreadcrumbItem> Trail { get; private set; } = [];
+    public IReadOnlyList<ShopBreadcrumbItem> Trail { get; private set; } = [];
 
     /// <summary>
     /// <c>true</c> when the trail contains more than the root item alone.
@@ -27,7 +27,7 @@ public sealed class BreadcrumbState
     public event Action? OnChange;
 
     /// <summary>Activates the breadcrumb trail with the supplied items.</summary>
-    public void Set(IReadOnlyList<BreadcrumbItem> items)
+    public void Set(IReadOnlyList<ShopBreadcrumbItem> items)
     {
         Trail = items;
         NotifyStateChanged();

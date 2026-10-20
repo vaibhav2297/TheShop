@@ -1,0 +1,60 @@
+@use '../abstracts/text-style';
+
+.shop-profile-drawer-identity {
+    display: flex;
+    flex-direction: column;
+    gap: var(--shop-space-2);
+    padding: var(--shop-space-6);
+    border-block-end: 1px solid var(--shop-color-lines-divider);
+    background: var(--shop-color-tertiary);
+    color: var(--shop-color-text-primary);
+    text-decoration: none;
+}
+
+.shop-profile-drawer-name {
+    @include text-style.apply(h5);
+}
+
+.shop-profile-drawer-email {
+    @include text-style.apply(subtitle-1);
+    color: var(--shop-color-text-secondary);
+}
+
+.shop-profile-drawer-navigation {
+    padding-block: var(--shop-space-4);
+}
+
+.shop-profile-drawer-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--shop-space-2);
+    inline-size: 100%;
+    padding: var(--shop-space-4) var(--shop-space-6);
+    border: 0;
+    color: var(--shop-color-text-primary);
+    text-decoration: none;
+    text-align: start;
+    @include text-style.apply(subtitle-1);
+
+    &:hover {
+        background: var(--shop-color-surface-subtle);
+    }
+
+    .shop-icon {
+        flex: none;
+        inline-size: 1.125rem;
+        block-size: 1.125rem;
+    }
+
+    .shop-button-content {
+        inline-size: 100%;
+        justify-content: space-between;
+    }
+}
+
+    .shop-profile-drawer-identity:focus-visible,
+    .shop-profile-drawer-link:focus-visible {
+        outline: var(--shop-focus-width) solid var(--shop-color-focus-ring);
+        outline-offset: calc(-1 * var(--shop-focus-offset));
+    }

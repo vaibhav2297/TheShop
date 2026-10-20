@@ -29,3 +29,59 @@ export async function createObjectUrl(streamRef, contentType) {
 export function revokeObjectUrl(url) {
     URL.revokeObjectURL(url);
 }
+
+const ordering = new WeakMap();
+
+export function bindOrder(root, dotnet) {
+    unbindOrder(root);
+    const controller = new AbortController();
+    ordering.set(root, controller);
+    let source = null;
+    const blocked = () => root.dataset.uploadDisabled === 'true';
+    const item = event => event.target.closest('[data-upload-id]');
+    const clear = () => root.querySelectorAll('[data-drop-target]').forEach(node => delete node.dataset.dropTarget);
+    const listen = (name, handler) => root.addEventListener(name, handler, { signal: controller.signal });
+    listen('dragstart', event => {
+        const tile = item(event);
+        if (blocked() || !tile || !event.target.matches('.shop-image-tile-surface[draggable="true"]')) {
+            event.preventDefault(); return;
+        }
+        source = tile.dataset.uploadId;
+        event.dataTransfer.setData('text/plain', source);
+        event.dataTransfer.effectAllowed = 'move';
+    });
+    listen('dragover', event => {
+        if (!source || blocked() || !item(event)) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+        clear();
+        item(event).dataset.dropTarget = 'true';
+    });
+    listen('drop', event => {
+        if (!source) return;
+        event.preventDefault();
+        const from = source;
+        source = null;
+        clear();
+        const target = item(event)?.dataset.uploadId;
+        if (!blocked() && target) dotnet.invokeMethodAsync('ReorderAsync', from, target);
+    });
+    listen('dragend', () => { source = null; clear(); });
+    listen('keydown', event => {
+        if (event.target.matches('.shop-image-tile-surface') && event.altKey &&
+            ['ArrowLeft', 'ArrowRight'].includes(event.key)) event.preventDefault();
+    });
+}
+
+export function unbindOrder(root) {
+    ordering.get(root)?.abort();
+    ordering.delete(root);
+}
+
+export function focusImage(root, id) {
+    requestAnimationFrame(() => {
+        if (!root.isConnected) return;
+        const item = [...root.querySelectorAll('[data-upload-id]')].find(node => node.dataset.uploadId === id);
+        (item?.querySelector('.shop-image-tile-surface') ?? root.querySelector('[data-file-picker]'))?.focus();
+    });
+}

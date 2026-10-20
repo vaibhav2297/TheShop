@@ -58,7 +58,11 @@ static async Task<int> RunAsync(string[] arguments)
         }
 
         using var playwright = await Playwright.CreateAsync();
-        await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+        await using var browser = await playwright.Chromium.LaunchAsync(new()
+        {
+            Headless = Environment.GetEnvironmentVariable("E2E_HEADLESS") != "0",
+            Args = ["--force-device-scale-factor=1"]
+        });
         var contextOptions = new BrowserNewContextOptions
             {
                 StorageStatePath = options.StorageState,

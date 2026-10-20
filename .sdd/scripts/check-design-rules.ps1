@@ -45,9 +45,8 @@ function Get-FileViolations {
     $checks = @()
     if ($isRazor) {
         $checks += @{ Rx = '^\s*@page\b'; Rule = 20; Msg = '@page directive in markup - declare [Route(Routes.X)] on the .razor.cs partial instead' }
-        $checks += @{ Rx = '<(span|p|h[1-6])\b'; Rule = 16; Msg = 'native HTML text element - use <MudText Typo="...">' }
         $checks += @{ Rx = '<style\b'; Rule = 28; Msg = '<style> block in .razor - move to SCSS under src/TheShop.Web/Styles/' }
-        $checks += @{ Rx = '(?<!&)#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b'; Rule = 15; Msg = 'hardcoded hex value - use Color="Color.X" or the most specific mud-* class' }
+        $checks += @{ Rx = '(?<!&)#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b'; Rule = 15; Msg = 'hardcoded hex value - use a semantic --shop-* token through project SCSS' }
         $checks += @{ Rx = 'Href\s*=\s*"/'; Rule = 21; Msg = 'hardcoded route in Href - use Routes.X' }
     }
     if ($isWeb) {
@@ -85,18 +84,14 @@ function Get-FileViolations {
         # Rule 27 (heuristic): ternary or interpolation inside a Class/Style attribute.
         if ($isRazor -and $line -match '(Class|Style)\s*=\s*"@\(') {
             if (($line -match '\s\?\s' -and $line -match '\s:\s') -or $line -match '(Class|Style)\s*=\s*"@\(\$"') {
-                $violations.Add([pscustomobject]@{ Line = $i + 1; Rule = 27; Msg = 'class/style string built inline (heuristic) - compose with CssBuilder / StyleBuilder' })
+                $violations.Add([pscustomobject]@{ Line = $i + 1; Rule = 27; Msg = 'class/style string built inline (heuristic) - use project-owned class composition or a focused dynamic style property' })
             }
         }
     }
 
-    # Rule 17 (tag may span lines): MudTextField using Label=.
-    if ($isRazor) {
-        foreach ($m in [regex]::Matches($content, '<MudTextField[^>]*?\bLabel\s*=')) {
-            $lineNo = $content.Substring(0, $m.Index).Split("`n").Count
-            $violations.Add([pscustomobject]@{ Line = $lineNo; Rule = 17; Msg = 'MudTextField uses Label - use Placeholder (sibling MudText Typo.caption if a visible label is required)' })
-        }
-    }
+    # Rule 17 requires a real label/accessible-name association. Component rendering,
+    # attribute forwarding, and conditional markup need component/browser verification;
+    # a source regex cannot reliably prove this contract.
 
     foreach ($v in $violations) {
         $v | Add-Member -NotePropertyName File -NotePropertyValue $rel

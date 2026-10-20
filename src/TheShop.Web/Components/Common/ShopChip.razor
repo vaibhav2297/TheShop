@@ -1,0 +1,33 @@
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
+
+@if (SelectedChanged.HasDelegate)
+{
+    <button @attributes="AdditionalAttributes" type="button" role="button"
+            class="@ClassName" style="@Style" disabled="@Disabled"
+            aria-pressed="@Selected.ToString().ToLowerInvariant()" @onclick="ToggleAsync">
+        @Content
+    </button>
+}
+else
+{
+    <span @attributes="AdditionalAttributes" class="@ClassName" style="@Style"
+          aria-disabled="@(Disabled ? "true" : null)">
+        @Content
+    </span>
+}
+
+@code {
+    private RenderFragment Content => @<text>
+        @if (!string.IsNullOrEmpty(StartIcon))
+        {
+            <ShopIcon Icon="@StartIcon" Class="shop-chip-icon" />
+        }
+        <span class="shop-chip-label">@ChildContent</span>
+        @if (!string.IsNullOrEmpty(EndIcon))
+        {
+            <ShopIcon Icon="@EndIcon" Class="shop-chip-icon" />
+        }
+    </text>;
+}
+

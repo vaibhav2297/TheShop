@@ -1,14 +1,17 @@
+using TheShop.Web.Common.Notifications;
 using Bunit;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
+
+
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Auth.Commands.VerifySignUpOtp;
+using TheShop.Application.Features.Auth.Commands.ResendOtp;
+using TheShop.Domain.Enums;
 using TheShop.Application.Features.Auth.DTOs;
 using TheShop.Web.Common;
 using TheShop.Web.Pages.Auth;
@@ -26,7 +29,7 @@ namespace TheShop.Web.Tests.Pages.Auth;
 public class SignUpVerifyTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
 
     public SignUpVerifyTests()
@@ -35,17 +38,93 @@ public class SignUpVerifyTests : TestContext
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton<BusyState>();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
-        Services.AddSingleton(Substitute.For<TheShop.Web.Theme.ShopTheme>());
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
+
+
+
 
         _localizer[Arg.Any<string>()].Returns(call =>
         {
             var key = call.Arg<string>();
             return new LocalizedString(key, key);
         });
+    }
+
+    [Fact]
+    public async Task Submit_LeadingZero_PreservesProfileClearsPendingStateAndNavigatesHome()
+    {
+        var state = PopulatedState();
+        Services.AddSingleton(state);
+        _mediator.Send(Arg.Any<VerifySignUpOtpCommand>(), Arg.Any<CancellationToken>()).Returns(Result.Ok<SessionDto>(null!));
+        var cut = Render<SignUpVerify>();
+        cut.Markup.Should().NotContain("mud-");
+        cut.Find("[data-testid='otp-change']").GetAttribute("href").Should().Be(Routes.Auth.SignUp);
+        cut.Find("[data-testid='otp-countdown']").TextContent.Should().Be("01:00");
+        cut.Find("input").Input("012345");
+        await cut.Find("form").SubmitAsync();
+        await _mediator.Received(1).Send(new VerifySignUpOtpCommand("new@example.com", "012345", "Jane", "Doe", new DateOnly(2000, 1, 1)), Arg.Any<CancellationToken>());
+        state.HasData.Should().BeFalse();
+        Services.GetRequiredService<NavigationManager>().Uri.Should().EndWith(Routes.Home);
+    }
+
+    [Fact]
+    public async Task Submit_InFlight_BlocksDuplicateAndClearsFailedCodeWithoutLosingProfile()
+    {
+        var state = PopulatedState();
+        Services.AddSingleton(state);
+        var completion = new TaskCompletionSource<Result<SessionDto>>();
+        _mediator.Send(Arg.Any<VerifySignUpOtpCommand>(), Arg.Any<CancellationToken>()).Returns(completion.Task);
+        var cut = Render<SignUpVerify>();
+        cut.Find("input").Input("012345");
+        var submit = cut.Find("form").SubmitAsync();
+        cut.WaitForAssertion(() => cut.FindAll("input").Should().OnlyContain(input => input.HasAttribute("disabled")));
+        await cut.Find("form").SubmitAsync();
+        await _mediator.Received(1).Send(Arg.Any<VerifySignUpOtpCommand>(), Arg.Any<CancellationToken>());
+        completion.SetResult(Result.Fail<SessionDto>(nameof(Strings.Auth_Code_InvalidOrExpired)));
+        await submit;
+        state.HasData.Should().BeTrue();
+        cut.FindAll("input").Should().OnlyContain(input => string.IsNullOrEmpty(input.GetAttribute("value")));
+        cut.Find("[data-testid='otp-submit']").HasAttribute("disabled").Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Submit_IncompleteCode_ShowsCommandErrorAndClearsOnEdit()
+    {
+        Services.AddSingleton(PopulatedState());
+        _mediator.Send(Arg.Any<VerifySignUpOtpCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result<SessionDto>.Fail(nameof(Strings.Auth_Code_InvalidOrExpired), [],
+                [new("Code", nameof(Strings.Auth_Code_InvalidOrExpired))]));
+        var cut = Render<SignUpVerify>();
+        cut.Find("input").Input("012");
+        await cut.Find("form").SubmitAsync();
+        cut.Find("#signup-code-error").TextContent.Should().Contain(nameof(Strings.Auth_Code_InvalidOrExpired));
+        cut.Find("input").Input("0123");
+        cut.Find("#signup-code-error").TextContent.Should().BeEmpty();
+        await cut.Find("form").SubmitAsync();
+        cut.Find("#signup-code-error").TextContent.Should().Contain(nameof(Strings.Auth_Code_InvalidOrExpired));
+    }
+
+    [Fact]
+    public async Task Resend_AfterCooldown_PreservesPurposeAndBlocksOverlappingRequests()
+    {
+        Services.AddSingleton(PopulatedState());
+        var completion = new TaskCompletionSource<Result<OtpRequestedDto>>();
+        _mediator.Send(Arg.Any<ResendOtpCommand>(), Arg.Any<CancellationToken>()).Returns(completion.Task);
+        var cut = Render<SignUpVerify>();
+        // Advance only the timer state; all request dispatch goes through rendered controls.
+        typeof(SignUpVerify).GetField("_resendCooldown", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.SetValue(cut.Instance, 0);
+        cut.Render();
+        cut.Find("input").Input("012345");
+        var resend = cut.Find("[data-testid='otp-resend']").ClickAsync(new());
+        cut.WaitForAssertion(() => cut.FindAll("input").Should().OnlyContain(input => input.HasAttribute("disabled")));
+        await cut.Find("form").SubmitAsync();
+        await _mediator.DidNotReceive().Send(Arg.Any<VerifySignUpOtpCommand>(), Arg.Any<CancellationToken>());
+        await _mediator.Received(1).Send(new ResendOtpCommand("new@example.com", OtpPurpose.SignUp), Arg.Any<CancellationToken>());
+        completion.SetResult(Result.Ok(new OtpRequestedDto("new@example.com", 45)));
+        await resend;
+        cut.Find("[data-testid='otp-countdown']").TextContent.Should().Be("00:45");
+        cut.FindAll("input").Should().OnlyContain(input => !input.HasAttribute("disabled"));
     }
 
     private PendingSignUpState PopulatedState()
@@ -104,16 +183,11 @@ public class SignUpVerifyTests : TestContext
 
         var cut = Render<SignUpVerify>();
 
-        // Simulate the handler being invoked with TooManyAttempts outcome.
-        // We call the mediator stub directly to verify PendingSignUp.Clear() semantics:
-        var result = await _mediator.Send(
-            new VerifySignUpOtpCommand(
-                state.Email!, "123456",
-                state.FirstName!, state.LastName!,
-                state.DateOfBirth!.Value),
-            CancellationToken.None);
-
-        result.Error.Should().Be("Auth_TooManyAttempts");
+        cut.Find("input").Input("012345");
+        await cut.Find("form").SubmitAsync();
+        state.HasData.Should().BeFalse();
+        Services.GetRequiredService<NavigationManager>().Uri.Should().EndWith(Routes.Auth.SignUp);
+        _notifications.Received().Show(nameof(Strings.Auth_TooManyAttempts), ShopNotificationKind.Error);
     }
 
     // =========================================================================

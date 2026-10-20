@@ -53,7 +53,7 @@ public sealed class ShopImageFrame(ILocator root)
         new(page.Locator(FrameSelector).Filter(new() { Has = content }));
 
     /// <summary>The named placeholder currently shown inside this frame.</summary>
-    public ILocator Placeholder => Root.Locator(".shop-image__placeholder:visible");
+    public ILocator Placeholder => Root.Locator(".shop-image-placeholder:visible");
 
     /// <summary>Measures the frame, its caller allocation, and the displayed branch in the live layout.</summary>
     public Task<ShopImageMetrics> MeasureAsync() => Root.EvaluateAsync<ShopImageMetrics>(MeasureScript);

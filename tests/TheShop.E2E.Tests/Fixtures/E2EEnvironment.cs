@@ -6,8 +6,8 @@ namespace TheShop.E2E.Tests.Fixtures;
 /// </summary>
 public static class E2EEnvironment
 {
-    /// <summary>Base URL of the Blazor WASM dev server used for E2E runs.</summary>
-    public const string AppBaseUrl = "http://localhost:5218";
+    /// <summary>Base URL of the Blazor WASM dev server. E2E_APP_URL can select an isolated local server.</summary>
+    public static string AppBaseUrl => Environment.GetEnvironmentVariable("E2E_APP_URL") ?? "http://localhost:5218";
 
     /// <summary>
     /// Whether to launch the browser in headless mode.

@@ -16,6 +16,13 @@ public class RequestSignUpOtpValidatorTests
 
     private static readonly DateOnly ValidDob = new(2000, 1, 1);
 
+    [Fact]
+    public async Task Validate_EmptyDate_ReturnsRequiredDateError()
+    {
+        var result = await _validator.ValidateAsync(new RequestSignUpOtpCommand("Jane", "Doe", "a@b.com", default), TestContext.Current.CancellationToken);
+        result.Errors.Should().Contain(error => error.PropertyName == "DateOfBirth" && error.ErrorMessage == AuthErrorKeys.DobInPast);
+    }
+
     // =========================================================================
     // First name
     // =========================================================================

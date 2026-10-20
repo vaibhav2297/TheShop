@@ -1,0 +1,43 @@
+@use '../abstracts/text-style';
+.shop-variant-image {
+    display: grid;
+    gap: 2rem;
+}
+
+.shop-variant-image-description, .shop-variant-image-field {
+    display: grid;
+    min-inline-size: 0;
+    gap: 0.5rem;
+}
+
+.shop-variant-image-label {
+    margin: 0;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(subtitle-1);
+}
+
+.shop-variant-image-name {
+    margin: 0;
+    overflow-wrap: anywhere;
+    @include text-style.apply(h6);
+}
+
+.shop-variant-image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(8.25rem, 100%), 8.25rem));
+    gap: 0.5rem;
+}
+
+.shop-variant-image-option {
+    min-inline-size: 0;
+}
+
+.shop-variant-image-scope {
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    > legend {
+        margin-block-end: 0.5rem;
+    }
+}

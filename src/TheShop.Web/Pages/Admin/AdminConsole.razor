@@ -4,41 +4,33 @@
 
 <PageTitle>@Strings.AdminConsole_PageTitle</PageTitle>
 
-<MudStack Class="pa-8" Spacing="8">
-
-    <MudText Typo="Typo.h3" Class="text-transform-uppercase">@Strings.AdminConsole_Heading</MudText>
+<section class="shop-native shop-admin-console">
+    <h1>@Strings.AdminConsole_Heading</h1>
 
     <BusyFor Key="@BusyKeys.AdminDashboard" Context="busy">
-        @if (busy)
-        {
-            <MudGrid>
+        <p class="shop-visually-hidden" role="status">@(busy ? Strings.Loading : null)</p>
+        <div class="shop-admin-console-grid" aria-busy="@busy.ToString().ToLowerInvariant()">
+            @if (busy)
+            {
                 @for (var i = 0; i < 5; i++)
                 {
-                    <MudItem xs="12" sm="6" md="4" lg="3">
-                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="180px" />
-                    </MudItem>
+                    <AdminModuleCardSkeleton />
                 }
-            </MudGrid>
-        }
-        else if (_modules.Count > 0)
-        {
-            <MudGrid>
+            }
+            else if (_modules.Count > 0)
+            {
                 @foreach (var card in _modules)
                 {
-                    <MudItem xs="12" sm="6" md="4" lg="3">
-                        <AdminModuleCard Module="@card.Module" Count="@card.Count" />
-                    </MudItem>
+                    <AdminModuleCard Module="@card.Module" Count="@card.Count" />
                 }
-            </MudGrid>
-        }
-        else
+            }
+        </div>
+        @if (!busy && _modules.Count == 0)
         {
-            <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4" Class="py-20">
-                <MudText Typo="Typo.h4">@Strings.AdminConsole_Welcome</MudText>
-                <MudText Typo="Typo.h6"
-                         Color="Color.Secondary">@Strings.AdminConsole_NotHaveModulePermission</MudText>
-            </MudStack>
+            <div class="shop-admin-console-empty">
+                <h2>@Strings.AdminConsole_Welcome</h2>
+                <p>@Strings.AdminConsole_NotHaveModulePermission</p>
+            </div>
         }
     </BusyFor>
-
-</MudStack>
+</section>

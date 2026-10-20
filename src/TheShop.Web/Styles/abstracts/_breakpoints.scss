@@ -1,0 +1,5 @@
+// Desktop is the default. Apply tablet overrides before mobile overrides.
+// Mobile: width < 768px; tablet: 768px <= width < 1024px; desktop: width >= 1024px.
+// Figma reference frames: desktop 1440px, tablet 834px, mobile 390px.
+$tablet: 768px;
+$desktop: 1024px;

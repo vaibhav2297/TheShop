@@ -1,9 +1,5 @@
 using Bunit;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using MudBlazor.Services;
-using NSubstitute;
 using TheShop.Web.Components.Common;
 using Xunit;
 
@@ -11,7 +7,7 @@ namespace TheShop.Web.Tests.Components.Common;
 
 /// <summary>
 /// Tests for <see cref="ShopImage"/>: preset frame classes and fit (FR-1, FR-3), the Hero and
-/// CategoryBanner desktop/mobile branches (FR-4), named placeholders for missing or failed sources
+/// Banner desktop/mobile branches (FR-4), named placeholders for missing or failed sources
 /// inside an unchanged frame (FR-5), description semantics (FR-6), no added keyboard stops (FR-7),
 /// Class/Style/attribute forwarding, and the JS failure bridge lifecycle. Actual rendered geometry
 /// (ratios, crops, overflow across widths) is a browser concern.
@@ -30,12 +26,10 @@ public class ShopImageTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
         _module = JSInterop.SetupModule("./js/shopImage.js");
         _module.Mode = JSRuntimeMode.Loose;
-        Services.AddMudServices();
-        Services.Replace(ServiceDescriptor.Singleton(Substitute.For<IPopoverService>()));
     }
 
     private IRenderedComponent<ShopImage> RenderImage(
-        ShopImagePreset preset = ShopImagePreset.ProductCard,
+        ShopImagePreset preset = ShopImagePreset.SquareContain,
         string? src = DesktopUrl,
         string? mobileSrc = null,
         string alt = "Image of Elf Bar BC5000") =>
@@ -51,16 +45,14 @@ public class ShopImageTests : TestContext
     // =========================================================================
 
     [Theory]
-    [InlineData(ShopImagePreset.ProductCard, "shop-image--product-card")]
-    [InlineData(ShopImagePreset.ProductDetail, "shop-image--product-detail")]
-    [InlineData(ShopImagePreset.Thumbnail, "shop-image--thumbnail")]
-    [InlineData(ShopImagePreset.CategoryTile, "shop-image--category-tile")]
-    [InlineData(ShopImagePreset.CategoryBanner, "shop-image--category-banner")]
-    [InlineData(ShopImagePreset.Hero, "shop-image--hero")]
-    [InlineData(ShopImagePreset.MobileBanner, "shop-image--mobile-banner")]
-    [InlineData(ShopImagePreset.Editorial, "shop-image--editorial")]
-    [InlineData(ShopImagePreset.BrandLogo, "shop-image--brand-logo")]
-    [InlineData(ShopImagePreset.SocialSharing, "shop-image--social-sharing")]
+    [InlineData(ShopImagePreset.SquareContain, "shop-image-square-contain")]
+    [InlineData(ShopImagePreset.SquareCover, "shop-image-square-cover")]
+    [InlineData(ShopImagePreset.Banner, "shop-image-banner")]
+    [InlineData(ShopImagePreset.Hero, "shop-image-hero")]
+    [InlineData(ShopImagePreset.PortraitCover, "shop-image-portrait-cover")]
+    [InlineData(ShopImagePreset.Editorial, "shop-image-editorial")]
+    [InlineData(ShopImagePreset.BrandLogo, "shop-image-brand-logo")]
+    [InlineData(ShopImagePreset.SocialSharing, "shop-image-social-sharing")]
     [Trait("Feature", "shop-image")]
     public void Render_WithEachPreset_TagsTheFrameWithThatPresetsGeometryClass(ShopImagePreset preset, string expectedClass)
     {
@@ -71,9 +63,7 @@ public class ShopImageTests : TestContext
     }
 
     [Theory]
-    [InlineData(ShopImagePreset.ProductCard)]
-    [InlineData(ShopImagePreset.ProductDetail)]
-    [InlineData(ShopImagePreset.Thumbnail)]
+    [InlineData(ShopImagePreset.SquareContain)]
     [InlineData(ShopImagePreset.BrandLogo)]
     [InlineData(ShopImagePreset.SocialSharing)]
     [Trait("Feature", "shop-image")]
@@ -81,26 +71,28 @@ public class ShopImageTests : TestContext
     {
         var cut = RenderImage(preset);
 
-        var image = cut.FindComponent<MudImage>().Instance;
-        image.ObjectFit.Should().Be(ObjectFit.Contain);
-        image.ObjectPosition.Should().Be(ObjectPosition.Center);
+        cut.Find("img").ClassList.Should().Contain("shop-image-media").And.Contain("shop-image-contain")
+            .And.NotContain("shop-image-cover");
+        cut.FindAll("img").Should().ContainSingle();
     }
 
     [Theory]
-    [InlineData(ShopImagePreset.CategoryTile)]
-    [InlineData(ShopImagePreset.CategoryBanner)]
+    [InlineData(ShopImagePreset.SquareCover)]
+    [InlineData(ShopImagePreset.Banner)]
     [InlineData(ShopImagePreset.Hero)]
-    [InlineData(ShopImagePreset.MobileBanner)]
+    [InlineData(ShopImagePreset.PortraitCover)]
     [InlineData(ShopImagePreset.Editorial)]
     [Trait("Feature", "shop-image")]
     public void Render_WithAPhotographyPreset_FillsTheFrameWithACenteredCrop(ShopImagePreset preset)
     {
         var cut = RenderImage(preset);
 
-        foreach (var image in cut.FindComponents<MudImage>())
+        var images = cut.FindAll("img");
+        images.Should().NotBeEmpty();
+        foreach (var image in images)
         {
-            image.Instance.ObjectFit.Should().Be(ObjectFit.Cover);
-            image.Instance.ObjectPosition.Should().Be(ObjectPosition.Center);
+            image.ClassList.Should().Contain("shop-image-media").And.Contain("shop-image-cover")
+                .And.NotContain("shop-image-contain");
         }
     }
 
@@ -108,7 +100,7 @@ public class ShopImageTests : TestContext
     [Trait("Feature", "shop-image")]
     public void Render_Always_LeavesTheSourceUrlUnchanged()
     {
-        var cut = RenderImage(ShopImagePreset.CategoryTile, src: DesktopUrl);
+        var cut = RenderImage(ShopImagePreset.SquareCover, src: DesktopUrl);
 
         cut.Find("img").GetAttribute("src").Should().Be(DesktopUrl);
     }
@@ -119,7 +111,7 @@ public class ShopImageTests : TestContext
 
     [Theory]
     [InlineData(ShopImagePreset.Hero)]
-    [InlineData(ShopImagePreset.CategoryBanner)]
+    [InlineData(ShopImagePreset.Banner)]
     [Trait("Feature", "shop-image")]
     public void Render_WithDedicatedMobileArtwork_ShowsItInTheMobileBranchAndKeepsDesktopArtworkForDesktop(ShopImagePreset preset)
     {
@@ -127,13 +119,13 @@ public class ShopImageTests : TestContext
 
         cut.Find("img[data-shop-image-branch='desktop']").GetAttribute("src").Should().Be(DesktopUrl);
         cut.Find("img[data-shop-image-branch='mobile']").GetAttribute("src").Should().Be(MobileUrl);
-        cut.Find("img[data-shop-image-branch='mobile']").ClassList.Should().Contain("shop-image__branch--mobile");
+        cut.Find("img[data-shop-image-branch='mobile']").ClassList.Should().Contain("shop-image-branch-mobile");
     }
 
     [Theory]
     [InlineData(ShopImagePreset.Hero, null)]
     [InlineData(ShopImagePreset.Hero, "   ")]
-    [InlineData(ShopImagePreset.CategoryBanner, null)]
+    [InlineData(ShopImagePreset.Banner, null)]
     [Trait("Feature", "shop-image")]
     public void Render_WithoutMobileArtwork_ReusesTheDesktopArtworkInTheMobileBranch(ShopImagePreset preset, string? mobileSrc)
     {
@@ -143,8 +135,8 @@ public class ShopImageTests : TestContext
     }
 
     [Theory]
-    [InlineData(ShopImagePreset.ProductCard)]
-    [InlineData(ShopImagePreset.MobileBanner)]
+    [InlineData(ShopImagePreset.SquareContain)]
+    [InlineData(ShopImagePreset.PortraitCover)]
     [InlineData(ShopImagePreset.Editorial)]
     [Trait("Feature", "shop-image")]
     public void Render_WithANonResponsivePreset_IgnoresMobileArtworkAndRendersOneImage(ShopImagePreset preset)
@@ -168,7 +160,7 @@ public class ShopImageTests : TestContext
         var cut = RenderImage(src: src);
 
         cut.FindAll("img").Should().BeEmpty();
-        cut.Find(".shop-image__placeholder").TextContent.Trim().Should().Be(Label);
+        cut.Find(".shop-image-placeholder").TextContent.Trim().Should().Be(Label);
     }
 
     [Fact]
@@ -177,7 +169,7 @@ public class ShopImageTests : TestContext
     {
         var cut = Render<ShopImage>(p => p
             .Add(c => c.Src, DesktopUrl)
-            .Add(c => c.Preset, ShopImagePreset.ProductCard)
+            .Add(c => c.Preset, ShopImagePreset.SquareContain)
             .Add(c => c.PlaceholderLabel, Label)
             .Add(c => c.Style, "width: 240px;"));
         var frameBefore = cut.Find("[data-shop-image]");
@@ -187,7 +179,7 @@ public class ShopImageTests : TestContext
         await cut.InvokeAsync(() => cut.Instance.OnImageFailed("desktop", DesktopUrl));
 
         cut.FindAll("img").Should().BeEmpty();
-        cut.Find(".shop-image__placeholder").TextContent.Trim().Should().Be(Label);
+        cut.Find(".shop-image-placeholder").TextContent.Trim().Should().Be(Label);
         var frameAfter = cut.Find("[data-shop-image]");
         frameAfter.GetAttribute("class").Should().Be(frameClass);
         frameAfter.GetAttribute("style").Should().Be(frameStyle);
@@ -203,7 +195,7 @@ public class ShopImageTests : TestContext
         await cut.InvokeAsync(() => cut.Instance.OnImageFailed("desktop", "https://example.com/old.webp"));
 
         cut.Find("img").GetAttribute("src").Should().Be(DesktopUrl);
-        cut.FindAll(".shop-image__placeholder").Should().BeEmpty();
+        cut.FindAll(".shop-image-placeholder").Should().BeEmpty();
     }
 
     [Fact]
@@ -216,7 +208,7 @@ public class ShopImageTests : TestContext
         cut.Render(p => p.Add(c => c.Src, DesktopUrl));
 
         cut.Find("img").GetAttribute("src").Should().Be(DesktopUrl);
-        cut.FindAll(".shop-image__placeholder").Should().BeEmpty();
+        cut.FindAll(".shop-image-placeholder").Should().BeEmpty();
     }
 
     [Fact]
@@ -229,26 +221,26 @@ public class ShopImageTests : TestContext
 
         cut.Find("img[data-shop-image-branch='desktop']").GetAttribute("src").Should().Be(DesktopUrl);
         cut.FindAll("img[data-shop-image-branch='mobile']").Should().BeEmpty();
-        cut.Find(".shop-image__placeholder.shop-image__branch--mobile").TextContent.Trim().Should().Be(Label);
+        cut.Find(".shop-image-placeholder.shop-image-branch-mobile").TextContent.Trim().Should().Be(Label);
     }
 
     [Fact]
     [Trait("Feature", "shop-image")]
     public async Task ImageFails_InTheDesktopBranch_LeavesDedicatedMobileArtworkShowing()
     {
-        var cut = RenderImage(ShopImagePreset.CategoryBanner, src: DesktopUrl, mobileSrc: MobileUrl);
+        var cut = RenderImage(ShopImagePreset.Banner, src: DesktopUrl, mobileSrc: MobileUrl);
 
         await cut.InvokeAsync(() => cut.Instance.OnImageFailed("desktop", DesktopUrl));
 
         cut.Find("img[data-shop-image-branch='mobile']").GetAttribute("src").Should().Be(MobileUrl);
-        cut.Find(".shop-image__placeholder.shop-image__branch--desktop").TextContent.Trim().Should().Be(Label);
+        cut.Find(".shop-image-placeholder.shop-image-branch-desktop").TextContent.Trim().Should().Be(Label);
     }
 
     [Fact]
     [Trait("Feature", "shop-image")]
     public async Task ImageFails_ForAMobileReportOnANonResponsivePreset_IsIgnored()
     {
-        var cut = RenderImage(ShopImagePreset.ProductCard, src: DesktopUrl);
+        var cut = RenderImage(ShopImagePreset.SquareContain, src: DesktopUrl);
 
         await cut.InvokeAsync(() => cut.Instance.OnImageFailed("mobile", DesktopUrl));
 
@@ -267,7 +259,7 @@ public class ShopImageTests : TestContext
 
         var frame = cut.Find("[data-shop-image]");
         frame.GetAttribute("style").Should().Contain("width: 52px").And.Contain("height: 52px");
-        frame.QuerySelector(".shop-image__placeholder")!.TextContent.Trim().Should().Be("Elf Bar");
+        frame.QuerySelector(".shop-image-placeholder")!.TextContent.Trim().Should().Be("Elf Bar");
     }
 
     // =========================================================================
@@ -298,10 +290,10 @@ public class ShopImageTests : TestContext
     {
         var cut = RenderImage(src: null, alt: "Image of Elf Bar BC5000");
 
-        var placeholder = cut.Find(".shop-image__placeholder");
+        var placeholder = cut.Find(".shop-image-placeholder");
         placeholder.GetAttribute("role").Should().Be("img");
         placeholder.GetAttribute("aria-label").Should().Be("Image of Elf Bar BC5000");
-        placeholder.QuerySelector(".shop-image__label")!.GetAttribute("aria-hidden").Should().Be("true");
+        placeholder.QuerySelector(".shop-image-label")!.GetAttribute("aria-hidden").Should().Be("true");
     }
 
     [Fact]
@@ -310,7 +302,7 @@ public class ShopImageTests : TestContext
     {
         var cut = RenderImage(src: null, alt: string.Empty);
 
-        var placeholder = cut.Find(".shop-image__placeholder");
+        var placeholder = cut.Find(".shop-image-placeholder");
         placeholder.GetAttribute("aria-hidden").Should().Be("true");
         placeholder.GetAttribute("role").Should().NotBe("img");
         placeholder.HasAttribute("aria-label").Should().BeFalse();

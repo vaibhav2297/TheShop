@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using MudBlazor;
-using MudBlazor.Utilities;
+using TheShop.Web.Common.UI;
 
 namespace TheShop.Web.Components.Common;
 
@@ -14,45 +13,68 @@ namespace TheShop.Web.Components.Common;
 /// <c>quill.clipboard.dangerouslyPasteHTML</c> so it is parsed into a Delta against the registered
 /// formats rather than assigned to <c>innerHTML</c> (AC-11). Quill's own <c>snow</c> toolbar owns
 /// formatting UI directly (Decision 2 waiver — Rules 2/3/19 waived for this component only, so no
-/// consumer-side toolbar or format-state callback is needed). Rule 14 custom UI primitive,
-/// approved for this feature (plan Decision 1); inherits <see cref="MudComponentBase"/> and
-/// forwards <c>Class</c>/<c>Style</c> per Rules 23–24; theme overrides live in
-/// <c>Styles/components/_rich-text-editor.scss</c> per Rule 28.
+/// consumer-side toolbar or format-state callback is needed). <c>Class</c>, <c>Style</c>, and
+/// unmatched attributes target the host; its theme overrides live in
+/// <c>Styles/components/_rich-text-editor.scss</c>.
 /// </summary>
-public partial class ShopRichTextEditor : MudComponentBase, IAsyncDisposable
+public partial class ShopRichTextEditor : ShopComponentBase, IAsyncDisposable
 {
     private static readonly string[] Formats = ["header", "bold", "italic", "list", "link"];
 
     [Inject] private IJSRuntime JS { get; set; } = default!;
 
-    /// <summary>The editor's HTML content. Use with <c>@bind-Value</c>.</summary>
+    /// <summary>
+    /// The editor's HTML content. Use with <c>@bind-Value</c>.
+    /// </summary>
     [Parameter] public string? Value { get; set; }
 
-    /// <summary>Fires with the editor's current HTML whenever the staff member edits it.</summary>
+    /// <summary>
+    /// Fires with the editor's current HTML whenever the staff member edits it.
+    /// </summary>
     [Parameter] public EventCallback<string?> ValueChanged { get; set; }
 
-    /// <summary>Fires with the plain-text length (Decision 5's counting rule) on every edit, for a consumer-rendered counter.</summary>
+    /// <summary>
+    /// Fires with the plain-text length (Decision 5's counting rule) on every edit, for a consumer-rendered counter.
+    /// </summary>
     [Parameter] public EventCallback<int> TextLengthChanged { get; set; }
 
-    /// <summary>Fires once per paste whose clipboard HTML carried formatting outside the grammar (FR-7, AC-10).</summary>
+    /// <summary>
+    /// Fires once per paste whose clipboard HTML carried formatting outside the grammar (FR-7, AC-10).
+    /// </summary>
     [Parameter] public EventCallback OnUnsupportedPaste { get; set; }
 
+    /// <summary>
+    /// Makes the editor read-only and dims its toolbar.
+    /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
+    /// <summary>
+    /// Optional resource-backed hint shown inside an empty editor; it never replaces the label.
+    /// </summary>
     [Parameter] public string? Placeholder { get; set; }
 
-    /// <summary>The id of the element that labels this editor, applied to its editable region.</summary>
+    /// <summary>
+    /// The id of the element that labels this editor, applied to its editable region.
+    /// </summary>
     [Parameter] public string? AriaLabelledBy { get; set; }
 
     private ElementReference _host;
+
     private IJSObjectReference? _jsModule;
+
     private DotNetObjectReference<ShopRichTextEditor>? _dotNetRef;
+
     private bool _initialized;
+
     private string? _lastAppliedValue;
+
     private bool _lastAppliedDisabled;
 
-    protected string Classname => new CssBuilder("shop-rich-text-editor").AddClass(Class).Build();
-    protected string Stylename => new StyleBuilder().AddStyle(Style).Build();
+    private string ClassName => ShopCssClass.Join(
+        "shop-native",
+        "shop-rich-text-editor",
+        Disabled ? "shop-rich-text-editor-disabled" : null,
+        Class);
 
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -70,6 +92,7 @@ public partial class ShopRichTextEditor : MudComponentBase, IAsyncDisposable
             placeholder = Placeholder,
             ariaLabelledBy = AriaLabelledBy,
         };
+
         await _jsModule.InvokeVoidAsync("init", _host, _dotNetRef, options);
 
         _initialized = true;
@@ -96,7 +119,9 @@ public partial class ShopRichTextEditor : MudComponentBase, IAsyncDisposable
         }
     }
 
-    /// <summary>Called by the JS <c>text-change</c> listener with the editor's current semantic HTML and plain-text length.</summary>
+    /// <summary>
+    /// Called by the JS <c>text-change</c> listener with the editor's current semantic HTML and plain-text length.
+    /// </summary>
     [JSInvokable]
     public async Task OnTextChanged(string html, int textLength)
     {
@@ -110,7 +135,9 @@ public partial class ShopRichTextEditor : MudComponentBase, IAsyncDisposable
             await TextLengthChanged.InvokeAsync(textLength);
     }
 
-    /// <summary>Called by the JS paste listener when the clipboard HTML carried unsupported formatting.</summary>
+    /// <summary>
+    /// Called by the JS paste listener when the clipboard HTML carried unsupported formatting.
+    /// </summary>
     [JSInvokable]
     public async Task OnPasteUnsupported()
     {

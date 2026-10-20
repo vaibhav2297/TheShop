@@ -1,13 +1,14 @@
+using TheShop.Web.Common.Notifications;
 using System.Reflection;
 using Bunit;
+using Microsoft.AspNetCore.Components;
+using TheShop.Web.Common.Dialogs;
 using Bunit.TestDoubles;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using MudBlazor;
-using MudBlazor.Services;
 using NSubstitute;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.Commands.DeleteBrands;
@@ -40,9 +41,9 @@ namespace TheShop.Web.Tests.Pages.Admin;
 public class ManageBrandsTests : TestContext
 {
     private readonly IMediator _mediator = Substitute.For<IMediator>();
-    private readonly ISnackbar _snackbar = Substitute.For<ISnackbar>();
+    private readonly IShopNotificationService _notifications = Substitute.For<IShopNotificationService>();
     private readonly IStringLocalizer<Strings> _localizer = Substitute.For<IStringLocalizer<Strings>>();
-    private readonly IDialogService _dialogService = Substitute.For<IDialogService>();
+    private readonly IShopDialogService _dialogService = Substitute.For<IShopDialogService>();
     private readonly List<GetBrandsPageQuery> _receivedQueries = [];
 
     public ManageBrandsTests()
@@ -50,15 +51,10 @@ public class ManageBrandsTests : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton(_mediator);
-        Services.AddSingleton(_snackbar);
+        Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddSingleton<BusyState>();
         Services.AddSingleton<BreadcrumbState>();
-        Services.AddMudServices();
-
-        var popoverService = Substitute.For<IPopoverService>();
-        popoverService.PopoverOptions.Returns(new PopoverOptions());
-        Services.Replace(ServiceDescriptor.Singleton(popoverService));
         Services.Replace(ServiceDescriptor.Singleton(_dialogService));
 
         _localizer[Arg.Any<string>()].Returns(call =>
@@ -120,10 +116,8 @@ public class ManageBrandsTests : TestContext
     /// </summary>
     private void SetUpConfirmDialogResult(bool confirmed)
     {
-        var dialogReference = Substitute.For<IDialogReference>();
-        dialogReference.Result.Returns(Task.FromResult<DialogResult?>(confirmed ? DialogResult.Ok(true) : DialogResult.Cancel()));
-        _dialogService.ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>())
-                      .Returns(Task.FromResult(dialogReference));
+        _dialogService.ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>())
+            .Returns(confirmed);
     }
 
     /// <summary>
@@ -145,6 +139,24 @@ public class ManageBrandsTests : TestContext
     private static BrandListItemDto Item(string name, bool isActive = true, int productCount = 0) =>
         new(Guid.NewGuid(), name, $"{name} description", "https://example.com/logo.webp", isActive, productCount);
 
+    [Fact]
+    public async Task Table_StatusAndActions_UseCompactHeadersAndCells()
+    {
+        var cut = await RenderListAsync();
+
+        cut.FindAll(".shop-table th.shop-table-column-compact")
+            .Select(header => header.TextContent.Trim()).Should()
+            .Equal(Strings.ManageBrands_ColumnStatus, Strings.ManageBrands_ColumnActions);
+        var rows = cut.FindAll(".shop-table tbody tr");
+        rows.Should().NotBeEmpty();
+        foreach (var row in rows)
+        {
+            row.QuerySelectorAll("td.shop-table-column-compact").Should().HaveCount(2);
+            row.Children.TakeLast(2).Should()
+                .OnlyContain(cell => cell.ClassList.Contains("shop-table-column-compact"));
+        }
+    }
+
     private async Task<IRenderedComponent<ManageBrands>> RenderListAsync()
     {
         AuthorizeAsBrandManager();
@@ -152,6 +164,42 @@ public class ManageBrandsTests : TestContext
         await cut.InvokeAsync(() => { });
         _receivedQueries.Clear();
         return cut;
+    }
+
+    [Fact]
+    public async Task PendingQuery_ShowsFilterAndTableSkeletons_ThenRestoresContent()
+    {
+        var pending = new TaskCompletionSource<Result<PagedResult<BrandListItemDto>>>();
+        _mediator.Send(Arg.Any<GetBrandsPageQuery>(), Arg.Any<CancellationToken>())
+            .Returns(pending.Task);
+        AuthorizeAsBrandManager();
+        var cut = Render<ManageBrands>();
+
+        cut.FindAll(".shop-brands-filter-placeholder .shop-skeleton").Should().HaveCount(5);
+        cut.FindAll(".shop-table-loading-row").Should().HaveCount(10);
+        cut.Find(".shop-brands-filter-skeleton").GetAttribute("aria-hidden").Should().Be("true");
+        cut.Find(".shop-table").GetAttribute("aria-busy").Should().Be("true");
+        cut.FindAll(".shop-pagination").Should().BeEmpty();
+
+        await cut.InvokeAsync(() => pending.SetResult(Result.Ok(
+            BuildPage(new PaginationRequest(1, 10), totalCount: 20, itemCount: 10))));
+
+        cut.WaitForAssertion(() => cut.FindAll(".shop-table-loading-row").Should().BeEmpty());
+        cut.FindAll(".shop-brands-filter-skeleton").Should().BeEmpty();
+        cut.FindAll(".shop-table tbody tr").Should().HaveCount(10);
+        cut.FindAll(".shop-pagination").Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CreatePermission_RendersAddBrandThroughShopButton()
+    {
+        var auth = this.AddAuthorization();
+        auth.SetAuthorized("creator");
+        auth.SetPolicies(PolicyNames.Permission(PermissionCatalogue.Brands.View.Code),
+            PolicyNames.Permission(PermissionCatalogue.Brands.Create.Code));
+        var cut = Render<ManageBrands>();
+
+        cut.FindComponents<ShopButton>().Should().Contain(button => button.Instance.Href == Routes.Admin.AddBrand);
     }
 
     // =========================================================================
@@ -191,12 +239,15 @@ public class ManageBrandsTests : TestContext
         var cut = await RenderListAsync();
 
         var filterPanel = cut.FindComponent<ShopFilterPanel>();
+        filterPanel.FindAll(".shop-expander-trigger").Should().OnlyContain(trigger => trigger.GetAttribute("aria-expanded") == "false");
+        filterPanel.Find(".shop-expander-trigger").Click();
         await cut.InvokeAsync(() => filterPanel.Instance.SingleSelectChanged.InvokeAsync(("status", "inactive")));
 
         _receivedQueries.Should().ContainSingle(
             "changing the status filter must reach the mediator without a page refresh");
         _receivedQueries[0].Status.Should().Be(BrandStatusFilter.Inactive);
         _receivedQueries[0].Pagination.Page.Should().Be(1);
+        filterPanel.Find(".shop-expander-trigger").GetAttribute("aria-expanded").Should().Be("true");
     }
 
     [Fact]
@@ -239,11 +290,11 @@ public class ManageBrandsTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var searchField = cut.FindComponent<MudTextField<string>>();
-        await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("  AUR  "));
+        var searchField = cut.Find("input[type=search]");
+        await searchField.InputAsync(new ChangeEventArgs { Value = "  AUR  " });
 
-        _receivedQueries.Should().ContainSingle(
-            "searching must reach the mediator without a page refresh");
+        cut.WaitForAssertion(() => _receivedQueries.Should().ContainSingle(
+            "debounced search must reach the mediator without a page refresh"));
         _receivedQueries[0].Search.Should().Be("AUR", "the term is trimmed before it is queried");
         _receivedQueries[0].Pagination.Page.Should().Be(1);
     }
@@ -284,8 +335,8 @@ public class ManageBrandsTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var searchField = cut.FindComponent<MudTextField<string>>();
-        await cut.InvokeAsync(() => searchField.Instance.ValueChanged.InvokeAsync("aur"));
+        var searchField = cut.Find("input[type=search]");
+        await searchField.InputAsync(new ChangeEventArgs { Value = "aur" });
 
         var filterPanel = cut.FindComponent<ShopFilterPanel>();
         await cut.InvokeAsync(() => filterPanel.Instance.SingleSelectChanged.InvokeAsync(("status", "inactive")));
@@ -333,11 +384,14 @@ public class ManageBrandsTests : TestContext
         bar.Instance.Visible.Should().BeTrue();
         bar.Instance.SelectedCount.Should().Be(3);
 
-        await cut.InvokeAsync(() => bar.Instance.OnClose.InvokeAsync());
+        var slot = cut.Find(".shop-bulk-action-slot");
+        slot.ParentElement!.QuerySelector(".shop-table").Should().NotBeNull();
+        bar.FindAll("button").Should().OnlyContain(button => button.ClassList.Contains("shop-button"));
+        await cut.InvokeAsync(() => bar.Find($"button[aria-label='{Strings.Close_BulkActionBar}']").Click());
 
         cut.FindComponent<ShopBulkActionBar>().Instance.Visible.Should().BeFalse(
             "dismissing the bar must drop the selection that put it up");
-        cut.FindComponent<MudTable<BrandListItemDto>>().Instance.SelectedItems.Should().BeEmpty();
+        cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.SelectedKeys.Should().BeEmpty();
         _receivedQueries.Should().BeEmpty("dismissing a selection is local UI state, not a re-query");
     }
 
@@ -356,15 +410,15 @@ public class ManageBrandsTests : TestContext
         await SelectBrandsAsync(cut, count: 2);
 
         // Fire the bulk activate but leave the command unresolved, so the page stays mid-mutation.
-        var activate = cut.FindComponents<MudButton>()
+        var activate = cut.FindComponents<ShopButton>()
             .First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetActive));
         var inFlight = cut.InvokeAsync(() => activate.Instance.OnClick.InvokeAsync());
 
         // The table's own progress bar is deliberately unused for row-scoped mutations (see
         // MutationBusyKeys in ManageBrands.razor.cs) — progress is reported per row instead.
-        cut.FindComponent<MudProgressCircular>().Should().NotBeNull(
+        cut.FindComponent<ShopLoader>().Should().NotBeNull(
             "the acted-on rows report the mutation with their own in-row spinners");
-        cut.FindComponents<MudButton>()
+        cut.FindComponents<ShopButton>()
             .Where(b => b.Markup.Contains(Strings.ManageBrands_BulkSetActive)
                      || b.Markup.Contains(Strings.ManageBrands_BulkSetInactive)
                      || b.Markup.Contains(Strings.ManageBrands_BulkDelete))
@@ -385,17 +439,17 @@ public class ManageBrandsTests : TestContext
         var cut = await RenderListAsync();
         await SelectBrandsAsync(cut, count: 1);
 
-        var activate = cut.FindComponents<MudButton>()
+        var activate = cut.FindComponents<ShopButton>()
             .First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetActive));
         var inFlight = cut.InvokeAsync(() => activate.Instance.OnClick.InvokeAsync());
 
-        cut.FindComponents<MudChip<string>>().Should().OnlyContain(c => c.Instance.Disabled,
+        cut.FindComponents<ShopChip>().Should().OnlyContain(c => c.Instance.Disabled,
             "the per-row status toggle must not fire while another status change is running");
 
         pending.SetResult(Result.Ok(new BrandStatusChangeDto(1)));
         await inFlight;
 
-        cut.FindComponents<MudChip<string>>().Should().OnlyContain(c => !c.Instance.Disabled);
+        cut.FindComponents<ShopChip>().Should().OnlyContain(c => !c.Instance.Disabled);
     }
 
     // Regression: the only in-list indicator was the table's own progress bar, which MudBlazor
@@ -410,32 +464,31 @@ public class ManageBrandsTests : TestContext
         _mediator.Send(Arg.Any<SetBrandStatusCommand>(), Arg.Any<CancellationToken>()).Returns(pending.Task);
 
         var cut = await RenderListAsync();
-        var chipsBefore = cut.FindComponents<MudChip<string>>().Count;
+        var chipsBefore = cut.FindComponents<ShopChip>().Count;
 
         await SelectBrandsAsync(cut, count: 1);
-        var activate = cut.FindComponents<MudButton>()
+        var activate = cut.FindComponents<ShopButton>()
             .First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetActive));
         var inFlight = cut.InvokeAsync(() => activate.Instance.OnClick.InvokeAsync());
 
-        cut.FindComponents<MudChip<string>>().Should().HaveCount(chipsBefore - 1,
+        cut.FindComponents<ShopChip>().Should().HaveCount(chipsBefore - 1,
             "the acted-on row gives up its status chip to the spinner that reports the change");
-        cut.FindComponents<MudProgressCircular>().Should().HaveCount(1,
+        cut.FindComponents<ShopLoader>().Should().HaveCount(1,
             "the acted-on row carries the only spinner — unlike the table's progress bar under "
             + "the header, it stays in view wherever the click happened");
 
         pending.SetResult(Result.Ok(new BrandStatusChangeDto(1)));
         await inFlight;
 
-        cut.FindComponents<MudChip<string>>().Should().HaveCount(chipsBefore,
+        cut.FindComponents<ShopChip>().Should().HaveCount(chipsBefore,
             "the chip comes back once the mutation settles");
-        cut.FindComponents<MudProgressCircular>().Should().BeEmpty();
+        cut.FindComponents<ShopLoader>().Should().BeEmpty();
     }
 
     private static async Task SelectBrandsAsync(IRenderedComponent<ManageBrands> cut, int count)
     {
-        var table = cut.FindComponent<MudTable<BrandListItemDto>>();
-        var selected = table.Instance.Items!.Take(count).ToHashSet();
-        await cut.InvokeAsync(() => table.Instance.SelectedItemsChanged.InvokeAsync(selected));
+        for (var index = 0; index < count; index++)
+            await cut.InvokeAsync(() => cut.FindAll(".shop-table tbody input[type=checkbox]")[index].Change(true));
     }
 
     // =========================================================================
@@ -448,7 +501,7 @@ public class ManageBrandsTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var firstBrand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var firstBrand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         cut.Markup.Should().Contain(firstBrand.Name);
         cut.Markup.Should().Contain(firstBrand.Description!);
     }
@@ -459,7 +512,7 @@ public class ManageBrandsTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var firstBrand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var firstBrand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         cut.FindAll("img").Should().Contain(img => img.GetAttribute("src") == firstBrand.LogoUrl);
     }
 
@@ -472,7 +525,7 @@ public class ManageBrandsTests : TestContext
         var images = cut.FindComponents<ShopImage>();
         images.Should().NotBeEmpty();
         images.Should().OnlyContain(i => i.Instance.Preset == ShopImagePreset.BrandLogo);
-        cut.FindAll(".mud-avatar > [data-shop-image]").Should().HaveCount(images.Count);
+        cut.FindAll(".shop-brands-logo > [data-shop-image]").Should().HaveCount(images.Count);
     }
 
     [Fact]
@@ -484,7 +537,7 @@ public class ManageBrandsTests : TestContext
 
         var cut = await RenderListAsync();
 
-        cut.Find(".mud-avatar .shop-image__placeholder").TextContent.Trim().Should().Be("Lost Mary");
+        cut.Find(".shop-brands-logo .shop-image-placeholder").TextContent.Trim().Should().Be("Lost Mary");
     }
 
     [Fact]
@@ -564,7 +617,7 @@ public class ManageBrandsTests : TestContext
         var cut = Render<ManageBrands>();
         await cut.InvokeAsync(() => { });
 
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         cut.FindAll($"[aria-label='{string.Format(Strings.ManageBrands_EditAria, brand.Name)}']").Should().BeEmpty();
         cut.FindAll($"[aria-label='{string.Format(Strings.ManageBrands_DeleteAria, brand.Name)}']").Should().BeEmpty();
     }
@@ -578,7 +631,7 @@ public class ManageBrandsTests : TestContext
         var cut = Render<ManageBrands>();
         await cut.InvokeAsync(() => { });
 
-        cut.FindComponents<MudChip<string>>().Should().BeEmpty(
+        cut.FindComponents<ShopChip>().Should().BeEmpty(
             "a view-only staff member cannot flip a brand's status, so it renders as text, not a clickable chip");
     }
 
@@ -612,7 +665,7 @@ public class ManageBrandsTests : TestContext
     {
         var cut = await RenderListAsync();
 
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         cut.Find($"[aria-label='{string.Format(Strings.ManageBrands_EditAria, brand.Name)}']")
            .GetAttribute("href").Should().Be(Routes.Admin.EditBrand(brand.Id));
     }
@@ -626,7 +679,7 @@ public class ManageBrandsTests : TestContext
     public async Task DeleteSingle_WhenConfirmed_SendsDeleteBrandsCommandWithThatBrandsId()
     {
         var cut = await RenderListAsync();
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandDeletionOutcomeDto(1, [])));
@@ -644,7 +697,7 @@ public class ManageBrandsTests : TestContext
     public async Task DeleteSingle_WhenActivated_ShowsAConfirmDialogNamingTheBrand()
     {
         var cut = await RenderListAsync();
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandDeletionOutcomeDto(1, [])));
@@ -652,9 +705,8 @@ public class ManageBrandsTests : TestContext
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageBrands_DeleteAria, brand.Name)}']");
         await cut.InvokeAsync(() => deleteButton.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
 
-        await _dialogService.Received(1).ShowAsync<ShopConfirmDialog>(
-            Arg.Any<string>(),
-            Arg.Is<DialogParameters>(p => p.Get<string>("BodyText")!.Contains(brand.Name)));
+        await _dialogService.Received(1).ConfirmAsync(
+            Arg.Is<ShopConfirmationOptions>(p => p.Body.Contains(brand.Name)), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -662,7 +714,7 @@ public class ManageBrandsTests : TestContext
     public async Task DeleteSingle_WhenCancelled_DoesNotSendTheCommand()
     {
         var cut = await RenderListAsync();
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: false);
 
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageBrands_DeleteAria, brand.Name)}']");
@@ -680,7 +732,7 @@ public class ManageBrandsTests : TestContext
     public async Task DeleteSingle_WhenTheBrandIsInUse_ShowsTheInUseMessageNamingItAndItsProductCount()
     {
         var cut = await RenderListAsync();
-        var brand = cut.FindComponent<MudTable<BrandListItemDto>>().Instance.Items!.First();
+        var brand = cut.FindComponent<ShopTable<BrandListItemDto>>().Instance.Items!.First();
         SetUpConfirmDialogResult(confirmed: true);
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandDeletionOutcomeDto(0, [new BlockedBrandDto(brand.Id, brand.Name, 3)])));
@@ -688,7 +740,7 @@ public class ManageBrandsTests : TestContext
         var deleteButton = cut.Find($"[aria-label='{string.Format(Strings.ManageBrands_DeleteAria, brand.Name)}']");
         await cut.InvokeAsync(() => deleteButton.ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
 
-        _snackbar.Received(1).Add(string.Format(Strings.Brand_InUse, brand.Name, 3), Severity.Warning);
+        _notifications.Received(1).Show(string.Format(Strings.Brand_InUse, brand.Name, 3), ShopNotificationKind.Warning);
     }
 
     // =========================================================================
@@ -707,7 +759,7 @@ public class ManageBrandsTests : TestContext
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandDeletionOutcomeDto(3, [])));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.Received(1).Send(
@@ -727,12 +779,11 @@ public class ManageBrandsTests : TestContext
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandDeletionOutcomeDto(2, [])));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
-        await _dialogService.Received(1).ShowAsync<ShopConfirmDialog>(
-            Arg.Any<string>(),
-            Arg.Is<DialogParameters>(p => p.Get<string>("BodyText")!.Contains("2")));
+        await _dialogService.Received(1).ConfirmAsync(
+            Arg.Is<ShopConfirmationOptions>(p => p.Body.Contains("2")), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -745,7 +796,7 @@ public class ManageBrandsTests : TestContext
         await SelectBrandsAsync(cut, count: 2);
         SetUpConfirmDialogResult(confirmed: false);
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.DidNotReceive().Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>());
@@ -767,10 +818,10 @@ public class ManageBrandsTests : TestContext
         var outcome = new BrandDeletionOutcomeDto(3, [.. blocked.Select(b => new BlockedBrandDto(b.Id, b.Name, 2))]);
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>()).Returns(Result.Ok(outcome));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
-        _snackbar.Received(1).Add(string.Format(Strings.Brand_BulkDeletePartial, 3, 2), Severity.Warning);
+        _notifications.Received(1).Show(string.Format(Strings.Brand_BulkDeletePartial, 3, 2), ShopNotificationKind.Warning);
     }
 
     [Fact]
@@ -787,7 +838,7 @@ public class ManageBrandsTests : TestContext
         var outcome = new BrandDeletionOutcomeDto(3, [.. blocked.Select(b => new BlockedBrandDto(b.Id, b.Name, 2))]);
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>()).Returns(Result.Ok(outcome));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
         cut.FindComponent<ShopBulkActionBar>().Instance.SelectedCount.Should().Be(2,
@@ -806,10 +857,10 @@ public class ManageBrandsTests : TestContext
         var outcome = new BrandDeletionOutcomeDto(0, [.. items.Select(i => new BlockedBrandDto(i.Id, i.Name, 1))]);
         _mediator.Send(Arg.Any<DeleteBrandsCommand>(), Arg.Any<CancellationToken>()).Returns(Result.Ok(outcome));
 
-        var deleteButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
+        var deleteButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkDelete));
         await cut.InvokeAsync(() => deleteButton.Instance.OnClick.InvokeAsync());
 
-        _snackbar.Received(1).Add(Strings.Brand_BulkDeleteAllBlocked, Severity.Warning);
+        _notifications.Received(1).Show(Strings.Brand_BulkDeleteAllBlocked, ShopNotificationKind.Warning);
     }
 
     // =========================================================================
@@ -826,10 +877,10 @@ public class ManageBrandsTests : TestContext
         _mediator.Send(Arg.Any<SetBrandStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandStatusChangeDto(1)));
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
+        var chip = cut.FindComponent<ShopChip>();
+        await cut.InvokeAsync(() => chip.Instance.SelectedChanged.InvokeAsync(!chip.Instance.Selected));
 
-        await _dialogService.DidNotReceive().ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>());
+        await _dialogService.DidNotReceive().ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(
             Arg.Is<SetBrandStatusCommand>(c => c.BrandIds.Count == 1 && c.BrandIds[0] == items[0].Id && c.IsActive),
             Arg.Any<CancellationToken>());
@@ -846,10 +897,10 @@ public class ManageBrandsTests : TestContext
         _mediator.Send(Arg.Any<SetBrandStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandStatusChangeDto(1)));
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
+        var chip = cut.FindComponent<ShopChip>();
+        await cut.InvokeAsync(() => chip.Instance.SelectedChanged.InvokeAsync(!chip.Instance.Selected));
 
-        await _dialogService.Received(1).ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>());
+        await _dialogService.Received(1).ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(Arg.Is<SetBrandStatusCommand>(c => !c.IsActive), Arg.Any<CancellationToken>());
     }
 
@@ -862,8 +913,8 @@ public class ManageBrandsTests : TestContext
         var cut = await RenderListAsync();
         SetUpConfirmDialogResult(confirmed: false);
 
-        var chip = cut.FindComponent<MudChip<string>>();
-        await cut.InvokeAsync(() => chip.Instance.OnClick.InvokeAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()));
+        var chip = cut.FindComponent<ShopChip>();
+        await cut.InvokeAsync(() => chip.Instance.SelectedChanged.InvokeAsync(!chip.Instance.Selected));
 
         await _mediator.DidNotReceive().Send(Arg.Any<SetBrandStatusCommand>(), Arg.Any<CancellationToken>());
     }
@@ -883,10 +934,10 @@ public class ManageBrandsTests : TestContext
         _mediator.Send(Arg.Any<SetBrandStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandStatusChangeDto(2)));
 
-        var activateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetActive));
+        var activateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetActive));
         await cut.InvokeAsync(() => activateButton.Instance.OnClick.InvokeAsync());
 
-        await _dialogService.DidNotReceive().ShowAsync<ShopConfirmDialog>(Arg.Any<string>(), Arg.Any<DialogParameters>());
+        await _dialogService.DidNotReceive().ConfirmAsync(Arg.Any<ShopConfirmationOptions>(), Arg.Any<CancellationToken>());
         await _mediator.Received(1).Send(
             Arg.Is<SetBrandStatusCommand>(c => c.BrandIds.Count == 2 && c.IsActive), Arg.Any<CancellationToken>());
     }
@@ -903,12 +954,12 @@ public class ManageBrandsTests : TestContext
         _mediator.Send(Arg.Any<SetBrandStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandStatusChangeDto(3)));
 
-        var deactivateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetInactive));
+        var deactivateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetInactive));
         await cut.InvokeAsync(() => deactivateButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.Received(1).Send(
             Arg.Is<SetBrandStatusCommand>(c => c.BrandIds.Count == 3 && !c.IsActive), Arg.Any<CancellationToken>());
-        _snackbar.Received(1).Add(string.Format(Strings.ManageBrands_DeactivatedSuccess, 3), Severity.Success);
+        _notifications.Received(1).Show(string.Format(Strings.ManageBrands_DeactivatedSuccess, 3), ShopNotificationKind.Success);
     }
 
     [Fact]
@@ -923,12 +974,11 @@ public class ManageBrandsTests : TestContext
         _mediator.Send(Arg.Any<SetBrandStatusCommand>(), Arg.Any<CancellationToken>())
                  .Returns(Result.Ok(new BrandStatusChangeDto(3)));
 
-        var deactivateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetInactive));
+        var deactivateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetInactive));
         await cut.InvokeAsync(() => deactivateButton.Instance.OnClick.InvokeAsync());
 
-        await _dialogService.Received(1).ShowAsync<ShopConfirmDialog>(
-            Arg.Any<string>(),
-            Arg.Is<DialogParameters>(p => p.Get<string>("BodyText")!.Contains("3")));
+        await _dialogService.Received(1).ConfirmAsync(
+            Arg.Is<ShopConfirmationOptions>(p => p.Body.Contains("3")), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -941,7 +991,7 @@ public class ManageBrandsTests : TestContext
         await SelectBrandsAsync(cut, count: 2);
         SetUpConfirmDialogResult(confirmed: false);
 
-        var deactivateButton = cut.FindComponents<MudButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetInactive));
+        var deactivateButton = cut.FindComponents<ShopButton>().First(b => b.Markup.Contains(Strings.ManageBrands_BulkSetInactive));
         await cut.InvokeAsync(() => deactivateButton.Instance.OnClick.InvokeAsync());
 
         await _mediator.DidNotReceive().Send(Arg.Any<SetBrandStatusCommand>(), Arg.Any<CancellationToken>());
