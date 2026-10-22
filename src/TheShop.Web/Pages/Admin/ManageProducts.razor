@@ -82,7 +82,14 @@
 
 
                 <BusyFor Key="@BusyKeys.Products.ManageList" Context="busy">
-                    @if (busy || _products.Items.Count > 0)
+                    @if (!busy && LoadFailed)
+                    {
+                        <div class="shop-products-empty" role="alert" data-testid="listing-load-error">
+                            <p>@Strings.VariantFilters_LoadFailed</p>
+                            <ShopButton OnClick="RetryAsync" data-testid="listing-retry">@Strings.VariantFilters_Retry</ShopButton>
+                        </div>
+                    }
+                    else if (busy || _products.Items.Count > 0)
                     {
                         <BusyFor Keys="@MutationBusyKeys" Context="mutating">
                             <ShopTable TItem="ProductListItemDto" Class="shop-products-table" Loading="@busy" Items="@_products.Items"
@@ -138,7 +145,7 @@
                     }
                     else
                     {
-                        <div class="shop-products-empty"><h2>@Strings.ManageProducts_NoMatchTitle</h2><p>@Strings.ManageProducts_NoMatchDescription</p></div>
+                        <div class="shop-products-empty"><h2>@Strings.ManageProducts_NoMatchTitle</h2><p>@Strings.ManageProducts_NoMatchDescription</p><ShopButton OnClick="OnClearFiltersAsync">@Strings.Filter_ClearAll</ShopButton></div>
                     }
                 </BusyFor>
             </div>
@@ -154,6 +161,11 @@
     <DrawerContent>
         @if (!ShowEmptyState)
         {
+            @if (_filtersErrorKey is not null)
+            {
+                <p role="alert">@Strings.VariantFilters_LoadFailed</p>
+                <ShopButton OnClick="RetryAsync">@Strings.VariantFilters_Retry</ShopButton>
+            }
 <ShopFilterPanel Class="shop-products-filter" CompactRangeEditors="true" Groups="@FilterGroups" ClearLabel="@Strings.Filter_ClearAll"
                          SingleSelectChanged="OnSingleSelectChangedAsync" SelectedFilters="@SelectedFilters"
                          FilterToggled="OnFilterToggledAsync" SelectedRanges="@SelectedRanges" RangeChanged="OnRangeChangedAsync"

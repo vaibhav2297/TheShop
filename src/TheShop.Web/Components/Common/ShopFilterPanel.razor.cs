@@ -19,6 +19,12 @@ namespace TheShop.Web.Components.Common;
 /// </summary>
 public partial class ShopFilterPanel : ShopComponentBase, IDisposable
 {
+    private readonly string _groupIdPrefix = $"shop-filter-{Guid.NewGuid():N}";
+
+    private string GroupLabelId(string key) => $"{_groupIdPrefix}-{Uri.EscapeDataString(key)}";
+
+    private string GroupLabel(FilterGroupDto group) => group.Label ?? Localizer[group.LabelKey].Value;
+
     private string ClassName => ShopCssClass.Join("shop-native", "shop-filter-panel", Class);
 
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;

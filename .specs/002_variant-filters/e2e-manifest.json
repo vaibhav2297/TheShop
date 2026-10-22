@@ -1,0 +1,226 @@
+{
+  "feature": "002_variant-filters",
+  "trait": "002_variant-filters",
+  "date": "2026-10-22",
+  "journeys": [
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/VariantFilterPublicJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.VariantFilterPublicJourneyTests",
+      "tests": 8,
+      "methods": [
+        {
+          "name": "AC4_MultipleChoicesMatchEitherValueAndRemainSelected",
+          "ac": 4
+        },
+        {
+          "name": "AC5_OneVariantMustSatisfyAllSelectedGroups",
+          "ac": 5
+        },
+        {
+          "name": "AC6_MultipleMatchingVariantsDoNotDuplicateProductsAndClearRestoresPlainProduct",
+          "ac": 6
+        },
+        {
+          "name": "AC8_PublicBrandCategoryPriceAndSortCombineWithVariantRestriction",
+          "ac": 8
+        },
+        {
+          "name": "AC11_RemovingOneChoiceAndFinalChoicePreservesOtherSelections",
+          "ac": 11
+        },
+        {
+          "name": "AC12_NoMatchKeepsClearActionAndClearRestoresResults",
+          "ac": 12
+        },
+        {
+          "name": "AC16_OutdatedLinkExplainsRemovedChoiceAndPreservesValidCriteria",
+          "ac": 16
+        },
+        {
+          "name": "AC18_DesktopAndMobileKeyboardControlsHaveNamesSelectionAndVisibleFocus",
+          "ac": 18
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/VariantFilterStaffJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests",
+      "tests": 10,
+      "methods": [
+        {
+          "name": "AC1_BothListingsShowConfiguredGroupsWithoutDuplicateChoices",
+          "ac": 1
+        },
+        {
+          "name": "AC2_LaterPageChoicesRemainAvailableAfterSearchAndFiltering",
+          "ac": 2
+        },
+        {
+          "name": "AC3_SavedConfigurationAndFinalRemovalRefreshBothListings",
+          "ac": 3
+        },
+        {
+          "name": "AC7_PublicUsesActiveVariantsWhileManagementIncludesInactiveAndExcludesDeleted",
+          "ac": 7
+        },
+        {
+          "name": "AC9_ManagementCriteriaPreserveFullPriceRangeAndVariantCount",
+          "ac": 9
+        },
+        {
+          "name": "AC10_ChangingVariantsResetsPageAndSelectionWhilePagingRetainsCriteria",
+          "ac": 10
+        },
+        {
+          "name": "AC13_RefreshSharedLinkAndHistoryRestoreCriteriaOnBothListings",
+          "ac": 13
+        },
+        {
+          "name": "AC14_NoEligibleVariantsLeavesFixedControlsUsableOnBothListings",
+          "ac": 14
+        },
+        {
+          "name": "AC17_MetadataAndResultFailuresShowRetryAndRecoverOnBothListings",
+          "ac": 17
+        },
+        {
+          "name": "AC19_InactiveOnlyMatchIsExcludedPubliclyAndIncludedForStaff",
+          "ac": 19
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/VariantFilterCustomerJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.VariantFilterCustomerJourneyTests",
+      "tests": 1,
+      "methods": [
+        {
+          "name": "AC15_UnpublishedChoicesStayHiddenAndCustomerCannotOpenManagement",
+          "ac": 15
+        }
+      ]
+    }
+  ],
+  "totalTests": 19,
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests.AC1_BothListingsShowConfiguredGroupsWithoutDuplicateChoices",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-2",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests.AC2_LaterPageChoicesRemainAvailableAfterSearchAndFiltering",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-3",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests.AC3_SavedConfigurationAndFinalRemovalRefreshBothListings",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-4",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterPublicJourneyTests.AC4_MultipleChoicesMatchEitherValueAndRemainSelected",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-5",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterPublicJourneyTests.AC5_OneVariantMustSatisfyAllSelectedGroups",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-6",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterPublicJourneyTests.AC6_MultipleMatchingVariantsDoNotDuplicateProductsAndClearRestoresPlainProduct",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-7",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests.AC7_PublicUsesActiveVariantsWhileManagementIncludesInactiveAndExcludesDeleted",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-8",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterPublicJourneyTests.AC8_PublicBrandCategoryPriceAndSortCombineWithVariantRestriction",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-9",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests.AC9_ManagementCriteriaPreserveFullPriceRangeAndVariantCount",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-10",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests.AC10_ChangingVariantsResetsPageAndSelectionWhilePagingRetainsCriteria",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-11",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterPublicJourneyTests.AC11_RemovingOneChoiceAndFinalChoicePreservesOtherSelections",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-12",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterPublicJourneyTests.AC12_NoMatchKeepsClearActionAndClearRestoresResults",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-13",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests.AC13_RefreshSharedLinkAndHistoryRestoreCriteriaOnBothListings",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-14",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests.AC14_NoEligibleVariantsLeavesFixedControlsUsableOnBothListings",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-15",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterCustomerJourneyTests.AC15_UnpublishedChoicesStayHiddenAndCustomerCannotOpenManagement",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-16",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterPublicJourneyTests.AC16_OutdatedLinkExplainsRemovedChoiceAndPreservesValidCriteria",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-17",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests.AC17_MetadataAndResultFailuresShowRetryAndRecoverOnBothListings",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-18",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterPublicJourneyTests.AC18_DesktopAndMobileKeyboardControlsHaveNamesSelectionAndVisibleFocus",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    },
+    {
+      "id": "AC-19",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantFilterStaffJourneyTests.AC19_InactiveOnlyMatchIsExcludedPubliclyAndIncludedForStaff",
+      "reason": "Browser verifies listing behavior against unique local Supabase data and existing authorization."
+    }
+  ],
+  "pageObjects": [
+    "tests/TheShop.E2E.Tests/Pages/VariantListingPage.cs",
+    "tests/TheShop.E2E.Tests/Pages/VariantFilterData.cs"
+  ],
+  "environment": "Existing local Supabase and fixture-owned app; no remote project access."
+}

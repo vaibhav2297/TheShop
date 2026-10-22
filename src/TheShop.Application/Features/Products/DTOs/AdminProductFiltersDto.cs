@@ -10,4 +10,8 @@ namespace TheShop.Application.Features.Products.DTOs;
 public sealed record AdminProductFiltersDto(
     IReadOnlyList<FilterOptionDto> Brands,
     IReadOnlyList<FilterOptionDto> Categories,
-    RangeFilterDto PriceRange);
+    RangeFilterDto PriceRange)
+{
+    /// <summary>Configured variant groups across all management-visible products.</summary>
+    public IReadOnlyList<FilterGroupDto> VariantGroups { get; init; } = [];
+}

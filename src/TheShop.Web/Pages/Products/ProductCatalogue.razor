@@ -26,6 +26,11 @@
                         }
                     </div>
                 }
+                else if (_filtersErrorKey is not null)
+                {
+                    <p role="alert">@Strings.VariantFilters_LoadFailed</p>
+                    <ShopButton OnClick="RetryAsync">@Strings.VariantFilters_Retry</ShopButton>
+                }
                 else
                 {
                     <ShopFilterPanel Class="shop-catalogue-filter" ClearLabel="@Strings.Filter_ClearAll"
@@ -48,7 +53,7 @@
                 </ShopButton>
                 <ShopSortSelect TSort="ProductSortOption" Class="shop-catalogue-sort" Sort="@_sort"
                                 Options="@SortOptions" SortChanged="OnSortChangedAsync" />
-                @if (_products.HasLoaded)
+                @if (_products.HasLoaded && !LoadFailed)
                 {
                     <p class="shop-catalogue-count" role="status" aria-atomic="true">
                         @string.Format(Strings.Catalogue_ResultCount, ResultRangeStart, ResultRangeEnd, _products.TotalCount)
@@ -64,6 +69,13 @@
                         {
                             <ProductCardSkeleton />
                         }
+                    </div>
+                }
+                else if (LoadFailed)
+                {
+                    <div class="shop-catalogue-empty" role="alert" data-testid="listing-load-error">
+                        <p>@Strings.VariantFilters_LoadFailed</p>
+                        <ShopButton OnClick="RetryAsync" data-testid="listing-retry">@Strings.VariantFilters_Retry</ShopButton>
                     </div>
                 }
                 else if (_products.Items.Count > 0)
@@ -82,6 +94,7 @@
                     <div class="shop-catalogue-empty">
                         <h2>@Strings.Empty_NoResults</h2>
                         <p>@Strings.No_Product_Found_Desc</p>
+                        <ShopButton OnClick="OnClearFiltersAsync">@Strings.Filter_ClearAll</ShopButton>
                     </div>
                 }
             </BusyFor>
@@ -105,6 +118,11 @@
                             </div>
                         }
                     </div>
+                }
+                else if (_filtersErrorKey is not null)
+                {
+                    <p role="alert">@Strings.VariantFilters_LoadFailed</p>
+                    <ShopButton OnClick="RetryAsync">@Strings.VariantFilters_Retry</ShopButton>
                 }
                 else
                 {

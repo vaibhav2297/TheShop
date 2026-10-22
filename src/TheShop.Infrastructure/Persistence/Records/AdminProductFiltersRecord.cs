@@ -9,6 +9,9 @@ namespace TheShop.Infrastructure.Persistence.Records;
 /// </summary>
 internal sealed class AdminProductFiltersRecord
 {
+    [JsonProperty("option_types")]
+    public IReadOnlyList<OptionTypeLookupRecord> OptionTypes { get; set; } = [];
+
     [JsonProperty("brands")]
     public IReadOnlyList<FilterLookupRecord> Brands { get; set; } = [];
 

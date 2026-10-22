@@ -10,9 +10,11 @@ namespace TheShop.Application.Common.Filtering;
 /// <param name="LabelKey">A resource key naming the group (e.g. <c>Filter_Category</c>).</param>
 /// <param name="Options">Populated when <paramref name="Kind"/> is <see cref="FilterKind.MultiSelect"/> or <see cref="FilterKind.SingleSelect"/>.</param>
 /// <param name="Range">Populated when <paramref name="Kind"/> is <see cref="FilterKind.Range"/>.</param>
+/// <param name="Label">Configured display text; when absent, use the resource key.</param>
 public sealed record FilterGroupDto(
     string Key,
     string LabelKey,
     FilterKind Kind,
     IReadOnlyList<FilterOptionDto> Options,
-    RangeFilterDto? Range);
+    RangeFilterDto? Range,
+    string? Label = null);

@@ -1,4 +1,5 @@
 using MediatR;
+using TheShop.Application.Common.Filtering;
 using TheShop.Application.Common.Behaviors;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products.DTOs;
@@ -22,4 +23,5 @@ public sealed record GetAdminProductsPageQuery(
     decimal? PriceMin,
     decimal? PriceMax,
     AdminProductSortOption Sort,
-    PaginationRequest Pagination) : IRequest<Result<PagedResult<ProductListItemDto>>>;
+    PaginationRequest Pagination,
+    IReadOnlyList<AppliedFilterDto>? VariantFilters = null) : IRequest<Result<PagedResult<ProductListItemDto>>>;

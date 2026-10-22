@@ -106,6 +106,13 @@ public abstract class QueryStatePageBase<TState> : ComponentBase, IDisposable
     /// </param>
     protected abstract Task ApplyStateAsync(TState state, CancellationToken ct);
 
+    /// <summary>Reloads the current URL state and cancels any superseded application.</summary>
+    protected Task ReloadStateAsync() => ApplyCoreAsync(ReadState());
+
+    /// <summary>Cancellation scope for refreshes that must follow the currently applied query.</summary>
+    protected CancellationToken QueryCancellationToken =>
+        _disposed ? new CancellationToken(true) : _cts?.Token ?? CancellationToken.None;
+
     // Wraps each ApplyStateAsync in a fresh cancellation scope, cancelling the previous one so the
     // latest state always wins even when an earlier fetch resolves later.
     private async Task ApplyCoreAsync(TState state)
@@ -114,15 +121,16 @@ public abstract class QueryStatePageBase<TState> : ComponentBase, IDisposable
             return;
 
         var cts = new CancellationTokenSource();
+        var token = cts.Token;
         var prior = Interlocked.Exchange(ref _cts, cts);
         prior?.Cancel();
         prior?.Dispose();
 
         try
         {
-            await ApplyStateAsync(state, cts.Token);
+            await ApplyStateAsync(state, token);
         }
-        catch (OperationCanceledException) when (cts.Token.IsCancellationRequested)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             // Superseded by a newer state application — drop this stale result.
         }

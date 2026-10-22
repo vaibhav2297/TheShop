@@ -18,6 +18,7 @@ using TheShop.Application.Features.Products.Commands.SetProductStatus;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Application.Features.Products.Queries.GetAdminProductFilters;
 using TheShop.Application.Features.Products.Queries.GetAdminProductsPage;
+using TheShop.Application.Features.Products.Queries.GetAdminProductListing;
 using TheShop.Domain.Enums;
 using TheShop.Domain.ValueObjects;
 using TheShop.Web.Common;
@@ -69,6 +70,16 @@ public class ManageProductsTests : TestContext
 
         _mediator.Send(Arg.Any<GetAdminProductFiltersQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Ok(new AdminProductFiltersDto([], [], new RangeFilterDto(0, 100))));
+
+        // Preserve existing page-result fixtures while exercising the new listing dispatch.
+        _mediator.Send(Arg.Any<GetAdminProductListingQuery>(), Arg.Any<CancellationToken>())
+            .Returns(async call =>
+            {
+                var result = await _mediator.Send(call.Arg<GetAdminProductListingQuery>().PageQuery, call.Arg<CancellationToken>());
+                return result.IsSuccess
+                    ? Result.Ok(new ProductListingPageDto<ProductListItemDto>(result.Value, [], [], false))
+                    : Result.Fail<ProductListingPageDto<ProductListItemDto>>(result.Error!, result.ErrorArgs, result.ValidationErrors);
+            });
 
         _mediator.Send(Arg.Any<GetAdminProductsPageQuery>(), Arg.Any<CancellationToken>())
             .Returns(call =>
@@ -139,6 +150,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     public async Task Table_StatusAndActions_UseCompactHeadersAndCells()
     {
         var cut = await RenderListAsync();
@@ -176,6 +188,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_OnInitialize_QueriesTheFirstPageWithNoNarrowingAndNameAToZ()
     {
@@ -198,6 +211,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task ChangeStatusFilter_WhenStaffFiltersByInactive_ReQueriesWithThatStatusFromPageOne()
     {
@@ -215,6 +229,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task ChangeSort_WhenStaffReversesTheNameOrder_ReQueriesWithThatSortFromPageOne()
     {
@@ -229,6 +244,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Search_WhenStaffTypesATerm_ReQueriesWithThatTermFromPageOne()
     {
@@ -243,6 +259,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task ChangeBrandFilter_WhenStaffTogglesABrand_ReQueriesWithThatBrandIdFromPageOne()
     {
@@ -262,6 +279,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task ChangePriceRange_WhenStaffSettlesTheSlider_ReQueriesWithThoseBoundsFromPageOne()
     {
@@ -282,6 +300,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task ChangePage_AfterFilteringAndSorting_KeepsBothCriteriaOnTheNewPage()
     {
@@ -308,6 +327,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task ChangeSort_WithProductsSelected_ClearsTheSelectionAndHidesTheBulkBar()
     {
@@ -327,6 +347,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task SelectAll_OnAPageWithMoreProductsThanFit_SelectsOnlyTheCurrentPagesProducts()
     {
@@ -341,6 +362,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task CloseBulkBar_WhenStaffDismissesIt_ClearsTheSelectionAndHidesTheBar()
     {
@@ -366,6 +388,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenProductsExist_ShowsEachProductsNameSkuBrandCategoryAndStatus()
     {
@@ -382,6 +405,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "shop-image")]
     public async Task Render_WhenProductsExist_ShowsEachPrimaryImageWholeAsASquareThumbnail()
     {
@@ -397,6 +421,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "shop-image")]
     public async Task Render_WhenAProductHasNoPrimaryImage_ShowsItsNameInTheThumbnailSpace()
     {
@@ -409,6 +434,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenAProductIsUnpublished_ShowsInactiveStatus()
     {
@@ -420,6 +446,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenAProductHasVariants_ShowsTheVariantCountCaption()
     {
@@ -431,6 +458,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenAProductHasNoVariants_OmitsTheVariantCountCaption()
     {
@@ -442,6 +470,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenPriceRangeDiffers_ShowsBothEndsFormattedAsARange()
     {
@@ -453,6 +482,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenProductsSpanMultiplePages_ShowsPaginationControls()
     {
@@ -466,6 +496,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenAProductHasExactlyOneVariant_ShowsSingularVariantCountWording()
     {
@@ -477,6 +508,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenEveryVariantSharesThePrice_ShowsOneAmountNotARange()
     {
@@ -493,6 +525,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhileTheFirstPageIsStillLoading_ShowsSkeletonsNotAFalseEmptyMessage()
     {
@@ -518,6 +551,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public void ManageProducts_Always_CarriesTheProductsViewAuthorizePolicy()
     {
@@ -530,6 +564,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenUserHoldsOnlyProductsView_DoesNotShowTheAddProductButton()
     {
@@ -542,6 +577,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenUserHoldsOnlyProductsView_DoesNotShowEditOrDeleteRowControls()
     {
@@ -557,6 +593,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenUserHoldsOnlyProductsView_RendersStatusAsPlainTextNotAClickableToggle()
     {
@@ -571,6 +608,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenUserHoldsEditButNotDelete_BulkBarOffersActivateAndDeactivateButNotDelete()
     {
@@ -587,6 +625,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_EditControl_LinksToTheProductsIdKeyedEditRoute()
     {
@@ -600,6 +639,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenUserHoldsProductsCreatePermission_ShowsTheAddProductButtonLinkedToTheAddRoute()
     {
@@ -614,6 +654,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenNoProductsExistYet_ShowsTheEmptyStateMessageAndHidesTheFilterPanel()
     {
@@ -649,6 +690,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task Render_WhenSearchMatchesNothing_ShowsTheNoMatchMessageAndKeepsTheFilterPanel()
     {
@@ -665,6 +707,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task ClearFilters_FromTheNoMatchState_RestoresUnrestrictedResults()
     {
@@ -685,6 +728,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task DeleteSingle_WhenConfirmed_SendsDeleteProductsCommandWithThatProductsId()
     {
@@ -703,6 +747,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task DeleteSingle_WhenCancelled_DoesNotSendTheCommand()
     {
@@ -721,6 +766,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task DeleteSingle_WhenItEmptiesTheLastPage_RecoversToTheNewLastPage()
     {
@@ -755,6 +801,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task DeleteSingle_WhenTheCommandFails_ShowsTheErrorMessageAndNeverClaimsSuccess()
     {
@@ -776,6 +823,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task DeleteSingle_WhenTheProductIsReferenced_ShowsTheInUseMessageNamingItAndItsReferenceCount()
     {
@@ -796,6 +844,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task BulkDelete_WhenConfirmed_SendsDeleteProductsCommandWithEverySelectedId()
     {
@@ -816,6 +865,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task BulkDelete_WithAMixedOutcome_ReportsBothCountsAndKeepsOnlyTheReferencedProductsSelected()
     {
@@ -838,6 +888,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task BulkDelete_WhenEverySelectedProductIsReferenced_ShowsTheAllBlockedMessage()
     {
@@ -856,6 +907,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task BulkDelete_WhenCancelled_DoesNotSendTheCommandAndKeepsTheSelection()
     {
@@ -877,6 +929,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task StatusToggle_WhenActivatingAnInactiveProduct_SendsImmediatelyWithoutConfirmation()
     {
@@ -896,6 +949,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Theory]
+    [Trait("Feature", "002_variant-filters")]
     [InlineData(false, false)]
     [InlineData(true, false)]
     [InlineData(false, true)]
@@ -929,6 +983,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task StatusToggle_WhenDeactivatingAnActiveProduct_AsksForConfirmationBeforeSending()
     {
@@ -947,6 +1002,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task StatusToggle_WhenDeactivationIsCancelled_DoesNotSendTheCommand()
     {
@@ -966,6 +1022,7 @@ public class ManageProductsTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task BulkActivate_SendsImmediatelyWithoutConfirmation()
     {
@@ -985,6 +1042,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task BulkActivate_WhenSomeAreSkippedForMissingAPrice_ReportsBothTheChangedAndSkippedCounts()
     {
@@ -1004,6 +1062,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task BulkDeactivate_WhenConfirmed_SendsWithEverySelectedIdAndReportsHowManyChanged()
     {
@@ -1024,6 +1083,7 @@ public class ManageProductsTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "manage-product")]
     public async Task BulkDeactivate_WhenCancelled_DoesNotSendTheCommand()
     {

@@ -14,6 +14,12 @@ public sealed class GetAdminProductsPageQueryValidator : AbstractValidator<GetAd
 
     public GetAdminProductsPageQueryValidator()
     {
+        RuleForEach(x => x.VariantFilters)
+            .Must(filter => filter is not null && ProductFilterKeys.IsVariantKey(filter.Key)
+                && filter.Values is not null && filter.Values.All(value => value is not null))
+            .WithMessage(ProductErrorKeys.CatalogueFilterInvalid)
+            .When(x => x.VariantFilters is not null);
+
         RuleFor(x => x.Pagination.Page)
             .GreaterThanOrEqualTo(1).WithMessage(ProductErrorKeys.PageInvalid);
 

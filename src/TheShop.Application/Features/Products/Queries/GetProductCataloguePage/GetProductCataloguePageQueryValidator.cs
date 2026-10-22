@@ -25,8 +25,11 @@ public sealed class GetProductCataloguePageQueryValidator : AbstractValidator<Ge
         RuleFor(x => x.Sort)
             .IsInEnum().WithMessage(ProductErrorKeys.CatalogueSortInvalid);
 
+        RuleFor(x => x.SelectedFilters).NotNull().WithMessage(ProductErrorKeys.CatalogueFilterInvalid);
         RuleForEach(x => x.SelectedFilters)
-            .Must(filter => ProductFilterKeys.SelectableKeys.Contains(filter.Key))
-            .WithMessage(ProductErrorKeys.CatalogueFilterInvalid);
+            .Must(filter => filter is not null && ProductFilterKeys.IsSelectableKey(filter.Key)
+                && filter.Values is not null && filter.Values.All(value => value is not null))
+            .WithMessage(ProductErrorKeys.CatalogueFilterInvalid)
+            .When(x => x.SelectedFilters is not null);
     }
 }

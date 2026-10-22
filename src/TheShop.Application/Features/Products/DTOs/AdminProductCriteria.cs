@@ -1,4 +1,5 @@
 using TheShop.Application.Common.Models;
+using TheShop.Application.Common.Filtering;
 using TheShop.Domain.Enums;
 
 namespace TheShop.Application.Features.Products.DTOs;
@@ -17,4 +18,5 @@ public sealed record AdminProductCriteria(
     decimal? PriceMin,
     decimal? PriceMax,
     AdminProductSortOption Sort,
-    PaginationRequest Pagination);
+    PaginationRequest Pagination,
+    IReadOnlyList<AppliedFilterDto>? VariantFilters = null);

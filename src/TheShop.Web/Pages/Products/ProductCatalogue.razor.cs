@@ -9,6 +9,7 @@ using TheShop.Application.Features.Products;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Application.Features.Products.Queries.GetCatalogueFilters;
 using TheShop.Application.Features.Products.Queries.GetProductCataloguePage;
+using TheShop.Application.Features.Products.Queries.GetProductCatalogueListing;
 using TheShop.Domain.Enums;
 using TheShop.Web.Common;
 using TheShop.Web.Common.Sorting;
@@ -38,6 +39,9 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
 
     private CatalogueFiltersDto? _filters;
+    private string? _filtersErrorKey;
+    private string? _resultsErrorKey;
+    private bool LoadFailed => _filtersErrorKey is not null || _resultsErrorKey is not null;
     private Paginator<ProductSummaryDto> _products = default!;
 
     private IReadOnlyList<AppliedFilterDto> _selectedFilters = [];
@@ -70,23 +74,28 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
     private int ResultRangeEnd => _products.Items.Count == 0 ? 0 : ResultRangeStart + _products.Items.Count - 1;
 
     /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
+    protected override void OnPageInitialized()
     {
         Breadcrumbs.Set(BreadcrumbTrail.Storefront().Current(Strings.Nav_Products));
-
         _products = new Paginator<ProductSummaryDto>(FetchProductsAsync);
+    }
 
-        var filtersTask = BusyState.RunAsync(
-            BusyKeys.Products.Filters, () => Mediator.Send(new GetCatalogueFiltersQuery()));
-        var stateTask = base.OnInitializedAsync();
+    private Task LoadFiltersAsync(CancellationToken ct) =>
+        BusyState.RunAsync(BusyKeys.Products.Filters, async () =>
+        {
+            var result = await Mediator.Send(new GetCatalogueFiltersQuery(), ct);
+            ct.ThrowIfCancellationRequested();
+            _filtersErrorKey = result.Error;
+            if (result.IsSuccess)
+                _filters = result.Value;
+            else
+                Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
+        });
 
-        await Task.WhenAll(filtersTask, stateTask);
-
-        var filtersResult = await filtersTask;
-        if (filtersResult.IsSuccess)
-            _filters = filtersResult.Value;
-        else
-            Notifications.Show(Localizer[filtersResult.Error!], ShopNotificationKind.Error);
+    private Task RetryAsync()
+    {
+        _filters = null;
+        return ReloadStateAsync();
     }
 
     /// <summary>
@@ -101,7 +110,14 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
         _priceMax = state.PriceMax;
         _sort = state.Sort;
 
-        return BusyState.RunAsync(BusyKeys.Products.Catalogue, () => _products.GoToAsync(state.Page, ct));
+        return BusyState.RunAsync(BusyKeys.Products.Catalogue, async () =>
+        {
+            if (_filters is null || _filtersErrorKey is not null)
+                await LoadFiltersAsync(ct);
+            ct.ThrowIfCancellationRequested();
+            if (_filtersErrorKey is null)
+                await _products.GoToAsync(state.Page, ct);
+        });
     }
 
     private CatalogueQueryState BuildState() =>
@@ -113,10 +129,25 @@ public partial class ProductCatalogue : QueryStatePageBase<CatalogueQueryState>
         var query = new GetProductCataloguePageQuery(
             _selectedFilters, _priceMin, _priceMax, _sort, request);
 
-        var result = await Mediator.Send(query, ct);
-
+        var result = await Mediator.Send(new GetProductCatalogueListingQuery(query), ct);
+        ct.ThrowIfCancellationRequested();
+        _resultsErrorKey = result.Error;
         if (result.IsSuccess)
-            return result.Value;
+        {
+            var listing = result.Value;
+            _filters = new CatalogueFiltersDto(
+                [.. (_filters?.Groups ?? []).Where(group => !ProductFilterKeys.IsVariantKey(group.Key)),
+                    .. listing.VariantGroups]);
+            if (listing.RemovedVariantSelections)
+            {
+                _selectedFilters = [.. _selectedFilters.Where(filter => !ProductFilterKeys.IsVariantKey(filter.Key)),
+                    .. listing.EffectiveVariantFilters];
+                Notifications.Show(Strings.VariantFilters_SelectionsRemoved, ShopNotificationKind.Info);
+                await PushStateAsync(BuildState() with { Page = request.Page }, replace: true);
+                ct.ThrowIfCancellationRequested();
+            }
+            return listing.Page;
+        }
 
         Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
         return PagedResult<ProductSummaryDto>.Empty(request);

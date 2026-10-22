@@ -1875,4 +1875,16 @@
   <data name="ProductDetail_PriceRange" xml:space="preserve">
     <value>{0}–{1}</value>
   </data>
+  <data name="Filter_Variant" xml:space="preserve">
+    <value>Variant</value>
+  </data>
+  <data name="VariantFilters_SelectionsRemoved" xml:space="preserve">
+    <value>Some variant filters were removed because those options are no longer available.</value>
+  </data>
+  <data name="VariantFilters_LoadFailed" xml:space="preserve">
+    <value>Products or filters could not be loaded. Please try again.</value>
+  </data>
+  <data name="VariantFilters_Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
 </root>

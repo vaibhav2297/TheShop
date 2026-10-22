@@ -97,7 +97,7 @@ public sealed record CatalogueQueryState(
     public static CatalogueQueryState FromQuery(IReadOnlyDictionary<string, StringValues> query)
     {
         var filters = new List<AppliedFilterDto>();
-        foreach (var key in ProductFilterKeys.SelectableKeys)
+        foreach (var key in ProductFilterKeys.SelectableKeys.Concat(query.Keys.Where(ProductFilterKeys.IsVariantKey)))
         {
             if (!query.TryGetValue(key, out var raw))
                 continue;
