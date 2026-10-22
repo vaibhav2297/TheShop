@@ -4,6 +4,11 @@
     outline-offset: var(--shop-focus-offset);
 }
 
+// Route headings receive programmatic focus for screen-reader navigation.
+.shop-native h1[tabindex='-1']:focus {
+    outline: none;
+}
+
 .shop-visually-hidden {
     position: absolute;
     inline-size: 1px;

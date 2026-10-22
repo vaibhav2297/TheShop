@@ -1849,7 +1849,7 @@
     <value>Favourite</value>
   </data>
   <data name="ProductDetail_Description" xml:space="preserve">
-    <value>Product Description</value>
+    <value>Description</value>
   </data>
   <data name="ProductDetail_ShowMore" xml:space="preserve">
     <value>Show More</value>
