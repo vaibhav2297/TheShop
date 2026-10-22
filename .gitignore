@@ -387,6 +387,11 @@ tests/TheShop.E2E.Tests/.e2e-env
 tests/TheShop.E2E.Tests/.auth-states/
 **/playwright-traces/
 
+# Feature evidence stays local; regenerate it before visual gates on a fresh clone.
+/.specs/*/evidence/
+# Local visual-fixture helper depends on assets in ignored product-detail evidence.
+/tests/TheShop.E2E.Tests/tools/seed-product-detail.py
+
 # Portable SDD staging and isolated verification workspaces
 .sdd/.stage/
 .sdd/.test-work/

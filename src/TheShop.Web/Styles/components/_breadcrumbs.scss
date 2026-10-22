@@ -71,3 +71,13 @@ a.shop-breadcrumb-item:hover {
         display: flex;
     }
 }
+
+@media (width < bp.$tablet) {
+    .shop-breadcrumbs:not(.shop-breadcrumbs-expanded) .shop-breadcrumb-list {
+        flex-wrap: nowrap;
+    }
+
+    .shop-breadcrumbs:not(.shop-breadcrumbs-expanded) .shop-breadcrumb-entry:last-child {
+        flex: 1;
+    }
+}

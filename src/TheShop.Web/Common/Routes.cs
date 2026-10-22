@@ -10,6 +10,10 @@ public static class Routes
     public const string NotFound = "/not-found";
     public const string Cart = "/cart";
     public const string Products = "/products";
+    /// <summary>Public product detail route; authentication is not required.</summary>
+    public const string ProductDetailPattern = "/products/{id:guid}";
+    /// <summary>Builds a public product detail URL.</summary>
+    public static string ProductDetail(Guid id) => $"{Products}/{id:D}";
     public const string Categories = "/categories";
     public const string Brands = "/brands";
     public const string Deals = "/deals";

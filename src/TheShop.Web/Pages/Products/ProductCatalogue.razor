@@ -71,7 +71,7 @@
                     <div class="shop-catalogue-grid" data-testid="catalogue-grid">
                         @foreach (var product in _products.Items)
                         {
-                            <ProductCard @key="product.Id" Product="@product" />
+                            <ProductCard @key="product.Id" Product="@product" Href="@Routes.ProductDetail(product.Id)" />
                         }
                     </div>
                     <ShopPagination Page="@_products.Page" TotalPages="@_products.TotalPages"

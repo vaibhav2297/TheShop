@@ -4,6 +4,7 @@
 @use 'tokens/sizing' as sizing-tokens;
 @use 'tokens/theme';
 @use 'tokens/layers';
+@use 'base/fonts';
 @use 'base/reset';
 @use 'base/typography' as base-typography;
 @use 'base/accessibility';
@@ -24,6 +25,7 @@
 @use 'components/file-dropzone';
 @use 'components/image-tile';
 @use 'components/image';
+@use 'components/swipe-carousel';
 @use 'components/breadcrumbs';
 @use 'components/announcement-bar';
 @use 'components/appbar';
@@ -56,4 +58,5 @@
 @use 'layouts/categories';
 @use 'layouts/products';
 @use 'layouts/catalogue';
+@use 'layouts/product-detail';
 @use 'layouts/admin-console';

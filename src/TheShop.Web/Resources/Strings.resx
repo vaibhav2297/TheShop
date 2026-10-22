@@ -1833,4 +1833,46 @@
   <data name="ProductVariants_NewOption" xml:space="preserve"><value>New option</value></data>
   <data name="Products_BrandsFilter" xml:space="preserve"><value>Brands</value></data>
   <data name="Products_CategoriesFilter" xml:space="preserve"><value>Categories</value></data>
+  <data name="ProductDetail_Unavailable" xml:space="preserve">
+    <value>Product unavailable</value>
+  </data>
+  <data name="ProductDetail_UnavailableDescription" xml:space="preserve">
+    <value>This product can't be found or is no longer available.</value>
+  </data>
+  <data name="ProductDetail_BrowseProducts" xml:space="preserve">
+    <value>Browse Products</value>
+  </data>
+  <data name="ProductDetail_AddToBag" xml:space="preserve">
+    <value>Add to Bag</value>
+  </data>
+  <data name="ProductDetail_Favourite" xml:space="preserve">
+    <value>Favourite</value>
+  </data>
+  <data name="ProductDetail_Description" xml:space="preserve">
+    <value>Product Description</value>
+  </data>
+  <data name="ProductDetail_ShowMore" xml:space="preserve">
+    <value>Show More</value>
+  </data>
+  <data name="ProductDetail_ShowLess" xml:space="preserve">
+    <value>Show Less</value>
+  </data>
+  <data name="ProductDetail_Gallery" xml:space="preserve">
+    <value>Product images</value>
+  </data>
+  <data name="ProductDetail_ImageUnavailable" xml:space="preserve">
+    <value>Image unavailable</value>
+  </data>
+  <data name="ProductDetail_ImagePosition" xml:space="preserve">
+    <value>Image {0} of {1}</value>
+  </data>
+  <data name="ProductDetail_AllImagesShown" xml:space="preserve">
+    <value>All {0} images shown.</value>
+  </data>
+  <data name="ProductDetail_SelectVariant" xml:space="preserve">
+    <value>Select a variant before adding to bag.</value>
+  </data>
+  <data name="ProductDetail_PriceRange" xml:space="preserve">
+    <value>{0}–{1}</value>
+  </data>
 </root>

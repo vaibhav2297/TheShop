@@ -27,6 +27,8 @@ public static class BusyKeys
     /// <summary>Keys for product-catalogue and product-admin operations.</summary>
     public static class Products
     {
+        /// <summary>Loading one public product detail.</summary>
+        public const string Detail = "products.detail";
         public const string Catalogue = "products.catalogue";
         public const string Filters = "products.filters";
         public const string ManageList = "products.manage-list";

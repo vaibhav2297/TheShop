@@ -1,0 +1,188 @@
+{
+  "feature": "001_product-detail",
+  "trait": "001_product-detail",
+  "date": "2026-10-22",
+  "totalTests": 28,
+  "journeys": [
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.ProductDetailCustomerJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/ProductDetailCustomerJourneyTests.cs",
+      "tests": 1
+    },
+    {
+      "fqn": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests",
+      "file": "tests/TheShop.E2E.Tests/Journeys/ProductDetailJourneyTests.cs",
+      "tests": 27
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-25",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC25_BuyBoxScrollsNaturallyThenSticksWithClearanceAndReleasesAtBoundary",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-1",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC1_OpensWithUnselectedVariantsRangeAndPrimaryFirst",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-2",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailCustomerJourneyTests.AC2_GuestsAndCustomersHaveIdenticalPublicViewingAndSelection",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-3",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC3_DesktopInitiallyShowsFourPrimaryFirstWithShowMore",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-4",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC4_ManualNarrowScrollUpdatesIndicatorWithoutChangingSelectionOrPrice",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-5",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC5_GroupedSelectionUpdatesExactPriceAndImageOnlyWhenComplete",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-6",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC6_VariantWithoutImageFallsBackToProductPrimary",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-7",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC7_VariantFreeProductUsesOwnSalePriceAndBagIsNoOp",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-8",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC8_DisclosuresStartCollapsedAndExpandIndependently",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-9",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC9_BlankContentOmitsBothOptionalSections",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-10",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC10_ActionButtonsStayEnabledWithoutPersistenceOrSuccessFeedback",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-11",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC11_KeyboardControlsExposeNamesFocusAndState",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-12",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC12_SingleImageHasNoFalseNavigationAtAllBreakpoints",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-13",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC13_MissingPrimaryEmptyAndBrokenImagesUseNamedSubtitlePlaceholder",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-14",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC14_MissingUnpublishedAndPrivilegedRoutesShowUnavailableWithoutLeakingChildren",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-15",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC15_MissingSelectionFocusesRevealsAndBrieflyShakesWithoutVisibleError",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-16",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC16_CompleteSelectionClearsAttentionAndLaterBagDoesNothing",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-17",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC17_NarrowGalleryExposesEveryImageWithPrimaryAndPositionIndicator",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-18",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC18_ShowMoreAndShowLessPreserveSelectionOrderAndToggleFocus",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-19",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC19_VisibleDesktopVariantImageDoesNotScrollOrHighlight",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-20",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC20_HiddenDesktopTargetExpandsAndRevealsWithoutReordering",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-21",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC21_AtMostFourDesktopImagesHaveNoExpansionControl",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-22",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC22_EqualVariantPricesShowOneAmountWithNoInitialChoice",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-23",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC23_SelectionUsesSalePriceThenOriginalPrice",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-24",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC24_ReducedMotionUsesStaticOutlineAndFocusWithoutShake",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-26",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC26_LoadingSkeletonHasResponsiveStaticGalleryAndMeaningfulStatus",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-27",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC27_CatalogueUsesGalleryThumbnailAndDetailsUseBodyTypographyAndEightPixelGridGap",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    },
+    {
+      "id": "AC-28",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ProductDetailJourneyTests.AC28_TileTypographyHoverNativeNavigationAndIndependentActionsMatchContract",
+      "reason": "Real storefront navigation, data, native controls or responsive browser behavior."
+    }
+  ]
+}

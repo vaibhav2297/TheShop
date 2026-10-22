@@ -52,7 +52,7 @@ $image-ratios: (
     overflow-wrap: anywhere;
     overflow: hidden;
     color: var(--shop-color-text-secondary);
-    @include text-style.apply(caption);
+    @include text-style.apply(subtitle-1);
     text-align: center;
 }
 

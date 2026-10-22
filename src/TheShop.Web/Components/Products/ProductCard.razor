@@ -3,6 +3,24 @@
 @using TheShop.Web.Components.Common
 @inherits ShopComponentBase
 
+@{
+    RenderFragment content = @<text>
+        <span class="shop-product-card-brand">@Product.BrandName</span>
+        <span class="shop-product-card-title">@Product.Name</span>
+        <span class="shop-product-card-pricing">
+            @if (Product.IsDiscounted)
+            {
+                <span class="shop-product-card-price">@CurrencyFormatter.Format(Product.SalePrice!.Value, Product.Currency)</span>
+                <s class="shop-product-card-original-price">@CurrencyFormatter.Format(Product.OriginalPrice!.Value, Product.Currency)</s>
+            }
+            else
+            {
+                <span class="shop-product-card-price">@PriceLabel</span>
+            }
+        </span>
+    </text>;
+}
+
 <article @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
     <div class="shop-product-card-media">
         <ShopImage Src="@Product.ImageUrl"
@@ -27,19 +45,12 @@
                         OnClick="OnToggleWishlistAsync" />
     </div>
 
-    <button type="button" class="shop-product-card-content" @onclick="OnSelectAsync">
-        <span class="shop-product-card-brand">@Product.BrandName</span>
-        <span class="shop-product-card-title">@Product.Name</span>
-        <span class="shop-product-card-pricing">
-            @if (Product.IsDiscounted)
-            {
-                <span class="shop-product-card-price">@CurrencyFormatter.Format(Product.SalePrice!.Value, Product.Currency)</span>
-                <s class="shop-product-card-original-price">@CurrencyFormatter.Format(Product.OriginalPrice!.Value, Product.Currency)</s>
-            }
-            else
-            {
-                <span class="shop-product-card-price">@PriceLabel</span>
-            }
-        </span>
-    </button>
+    @if (Href is not null)
+    {
+        <a href="@Href" class="shop-product-card-content">@content</a>
+    }
+    else
+    {
+        <button type="button" class="shop-product-card-content" @onclick="OnSelectAsync">@content</button>
+    }
 </article>

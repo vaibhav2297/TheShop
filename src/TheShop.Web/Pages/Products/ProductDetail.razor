@@ -1,0 +1,162 @@
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@using TheShop.Application.Features.Products.DTOs
+
+<PageTitle>@(_product?.Name ?? Strings.ProductDetail_PageTitle)</PageTitle>
+
+<BusyFor Key="@BusyKeys.Products.Detail" Context="busy">
+    @if (busy)
+    {
+        <div class="shop-product-detail shop-product-detail-loading" role="status" aria-label="@Strings.Loading" aria-busy="true" data-testid="product-detail-loading">
+            <div class="shop-product-detail-gallery-area shop-product-detail-skeleton-gallery">
+                @for (var index = 0; index < 4; index++)
+                {
+                    <ShopSkeleton Class="shop-product-detail-skeleton-image" />
+                }
+            </div>
+            <div class="shop-product-detail-buybox">
+                <div class="shop-product-detail-name">
+                    <ShopSkeleton Class="shop-product-detail-skeleton-brand" />
+                    <div class="shop-product-detail-skeleton-heading">
+                        <ShopSkeleton /><ShopSkeleton /><ShopSkeleton />
+                    </div>
+                </div>
+                <div class="shop-product-detail-options">
+                    <div class="shop-product-detail-skeleton-options">
+                        <ShopSkeleton Class="shop-product-detail-skeleton-option-label" />
+                        <div class="shop-product-detail-choices shop-product-detail-skeleton-strength">
+                            @for (var index = 0; index < 5; index++) { <ShopSkeleton /> }
+                        </div>
+                    </div>
+                    <div class="shop-product-detail-skeleton-options">
+                        <ShopSkeleton Class="shop-product-detail-skeleton-flavour-label" />
+                        <div class="shop-product-detail-choices shop-product-detail-skeleton-flavours">
+                            @for (var index = 0; index < 4; index++) { <ShopSkeleton /> }
+                        </div>
+                    </div>
+                </div>
+                <ShopSkeleton Class="shop-product-detail-skeleton-price" />
+                <div class="shop-product-detail-actions shop-product-detail-skeleton-actions">
+                    <ShopSkeleton /><ShopSkeleton />
+                </div>
+            </div>
+            <div class="shop-product-detail-details">
+                <div class="shop-product-detail-skeleton-section"><ShopSkeleton /></div>
+                <div class="shop-product-detail-skeleton-section"><ShopSkeleton /></div>
+            </div>
+        </div>
+    }
+    else if (_product is { } product)
+    {
+        <article @ref="_root" @key="product.Id" class="@PageClass" data-testid="@ReadyTestId">
+            @{ var galleryGeneration = _generation; }
+            <div class="shop-product-detail-gallery-area">
+                @if (product.Images.Count > 0)
+                {
+                    <ShopSwipeCarousel TItem="ProductImageDto" @key="product.Id" Items="@product.Images"
+                                       ImageSource="@(image => image.Url)"
+                                       ImageAlt="@(_ => string.Format(Strings.Product_ImageAlt, product.Name))"
+                                       PlaceholderLabel="@product.Name"
+                                       ActiveIndex="@_activeIndex" ActiveIndexChanged="@((int index) => OnImageChanged(index, galleryGeneration))"
+                                       Enabled="@(!_desktop)" Label="@Strings.ProductDetail_Gallery"
+                                       PositionLabel="FormatPosition" Ready="@(() => OnCarouselReady(galleryGeneration))"
+                                       Class="shop-product-detail-gallery" ViewportClass="shop-product-detail-grid"
+                                       SlideClass="shop-product-detail-slide" data-testid="product-detail-gallery" />
+                }
+                else
+                {
+                    <ShopImage Class="shop-product-detail-no-image" Preset="ShopImagePreset.SquareContain"
+                               Alt="@string.Format(Strings.Product_ImageAlt, product.Name)"
+                               PlaceholderLabel="@product.Name" />
+                }
+                @if (product.Images.Count > 4)
+                {
+                    <div class="shop-product-detail-more">
+                        <ShopButton Variant="ShopVariant.Outlined" Size="ShopSize.Large"
+                                    EndIcon="@GalleryToggleIcon" OnClick="ToggleGallery"
+                                    aria-expanded="@_expanded.ToString().ToLowerInvariant()"
+                                    data-testid="@GalleryToggleTestId">@GalleryToggleLabel</ShopButton>
+                    </div>
+                }
+            </div>
+
+            <div class="shop-product-detail-buybox">
+                <div class="shop-product-detail-name">
+                    @if (product.BrandName is not null)
+                    {
+                        <p class="shop-product-detail-brand">@product.BrandName</p>
+                    }
+                    <h1 class="shop-product-detail-title" tabindex="-1">@product.Name</h1>
+                </div>
+                @if (product.HasVariants)
+                {
+                    <div class="@OptionsClass" data-testid="product-detail-options" data-attention="@_attention.ToString().ToLowerInvariant()">
+                        @foreach (var group in product.OptionTypes)
+                        {
+                            <fieldset class="shop-product-detail-option-group" data-option-group="@group.Id">
+                                <legend>@group.Name</legend>
+                                <div class="shop-product-detail-choices">
+                                    @foreach (var value in group.Values)
+                                    {
+                                        <ShopChip Size="ShopSize.Medium" Selected="@IsSelected(group.Id, value.Id)"
+                                                  SelectedChanged="@((bool _) => SelectValue(group.Id, value.Id))"
+                                                  data-testid="@OptionTestId(value.Id)">@value.Value</ShopChip>
+                                    }
+                                </div>
+                            </fieldset>
+                        }
+                    </div>
+                }
+                <div class="shop-product-detail-pricing" data-testid="product-detail-price" aria-live="polite" aria-atomic="true">
+                    <span class="shop-product-detail-price">@PriceLabel</span>
+                    @if (DiscountOriginal is { } original)
+                    {
+                        <s class="shop-product-detail-original">@CurrencyFormatter.Format(original, product.Currency)</s>
+                    }
+                </div>
+                <div class="shop-product-detail-actions">
+                    <ShopButton Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Shopping_Bag_01"
+                                OnClick="AddToBagAsync" data-testid="product-detail-add-to-bag">@Strings.ProductDetail_AddToBag</ShopButton>
+                    <ShopButton Size="ShopSize.Large" Variant="ShopVariant.Outlined" EndIcon="@ShopIcons.Outlined.Heart_01"
+                                data-testid="product-detail-favourite">@Strings.ProductDetail_Favourite</ShopButton>
+                </div>
+            </div>
+
+            <div class="shop-product-detail-details" data-testid="product-detail-details">
+                @if (product.DescriptionHtml is not null)
+                {
+                    <ShopExpander @key="product.Id" Expanded="@_descriptionExpanded" ExpandedChanged="@((bool value) => _descriptionExpanded = value)"
+                                  data-testid="product-detail-description">
+                        <TitleContent><h2 class="shop-product-detail-section-title">@Strings.ProductDetail_Description</h2></TitleContent>
+                        <ChildContent><div class="shop-product-detail-description">@((MarkupString)product.DescriptionHtml)</div></ChildContent>
+                    </ShopExpander>
+                }
+                @if (product.Specifications.Count > 0)
+                {
+                    <ShopExpander Expanded="@_specificationsExpanded" ExpandedChanged="@((bool value) => _specificationsExpanded = value)"
+                                  data-testid="product-detail-specifications">
+                        <TitleContent><h2 class="shop-product-detail-section-title">@Strings.ProductSpecifications_Heading</h2></TitleContent>
+                        <ChildContent>
+                            <dl class="shop-product-detail-specifications">
+                                @foreach (var row in product.Specifications)
+                                {
+                                    <div><dt>@row.Name</dt><dd>@row.Value</dd></div>
+                                }
+                            </dl>
+                        </ChildContent>
+                    </ShopExpander>
+                }
+            </div>
+            <span class="shop-visually-hidden" aria-live="polite" aria-atomic="true" data-detail-announcement></span>
+        </article>
+    }
+    else
+    {
+        <section class="shop-product-detail-unavailable" data-testid="product-detail-unavailable">
+            <h1 tabindex="-1">@Strings.ProductDetail_Unavailable</h1>
+            <p>@Strings.ProductDetail_UnavailableDescription</p>
+            <ShopButton Href="@Routes.Products" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD">@Strings.ProductDetail_BrowseProducts</ShopButton>
+        </section>
+    }
+</BusyFor>

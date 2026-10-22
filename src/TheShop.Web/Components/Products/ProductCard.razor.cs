@@ -10,8 +10,8 @@ namespace TheShop.Web.Components.Products;
 /// A single product tile on the catalogue grid. Renders the whole product image in a square
 /// frame (the product name stands in when the image is missing or fails), name, and price
 /// (sale + struck original when discounted).
-/// The Add-to-Cart / Wishlist actions and the card-body click are currently empty
-/// callbacks — wired up by the Cart, Wishlist, and product-detail features respectively.
+/// Optional Href gives the whole tile native link semantics; without it the selection callback remains.
+/// Add-to-Cart and Wishlist actions stay separate and caller-owned.
 /// </summary>
 public partial class ProductCard : ShopComponentBase
 {
@@ -21,6 +21,9 @@ public partial class ProductCard : ShopComponentBase
     /// <summary>The product to render.</summary>
     [Parameter, EditorRequired]
     public ProductSummaryDto Product { get; set; } = default!;
+
+    /// <summary>Destination for whole-tile native navigation, excluding action buttons; null retains the selection callback.</summary>
+    [Parameter] public string? Href { get; set; }
 
     /// <summary>
     /// Raised when the Add-to-Cart button is activated. Empty until the Cart feature wires it.
@@ -45,7 +48,7 @@ public partial class ProductCard : ShopComponentBase
     /// <summary>
     /// Returns the CSS class for the product card
     /// </summary>
-    private string ClassName => ShopCssClass.Join("shop-native", "shop-product-card", Class);
+    private string ClassName => ShopCssClass.Join("shop-native", "shop-product-card", "shop-product-card-interactive", Class);
 
     /// <summary>
     /// The headline price. A variant product's figure is the lowest of its variants, not a price
