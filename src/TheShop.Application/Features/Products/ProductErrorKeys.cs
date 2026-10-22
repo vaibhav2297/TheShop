@@ -8,6 +8,9 @@ namespace TheShop.Application.Features.Products;
 /// </summary>
 public static class ProductErrorKeys
 {
+    /// <summary>Public detail is missing or inaccessible without disclosing publication state.</summary>
+    public const string DetailUnavailable = "ProductDetail_Unavailable";
+
     public const string CataloguePageInvalid = "Catalogue_Page_Invalid";
     public const string CataloguePageSizeInvalid = "Catalogue_PageSize_Invalid";
     public const string CataloguePriceRangeInvalid = "Catalogue_PriceRange_Invalid";

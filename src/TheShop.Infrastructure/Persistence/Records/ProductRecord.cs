@@ -70,4 +70,7 @@ internal sealed class ProductRecord : BaseModel
 
     [Reference(typeof(BrandRecord))]
     public BrandRecord? Brand { get; set; }
+
+    [Reference(typeof(ProductImageRecord), ReferenceAttribute.JoinType.Left)]
+    public List<ProductImageRecord> Images { get; set; } = [];
 }

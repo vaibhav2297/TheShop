@@ -20,6 +20,9 @@ $text-styles: (
 );
 
 :root {
+    // Unbound SemiBold text in Figma (including product prices); named styles stay unchanged.
+    --shop-font-weight-semibold: 600;
+
     @each $style, $values in $text-styles {
         --shop-typography-#{$style}-font-family: #{list.nth($values, 1)}, sans-serif;
         --shop-typography-#{$style}-font-size: #{list.nth($values, 2)};

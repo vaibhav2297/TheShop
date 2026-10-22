@@ -13,8 +13,8 @@ internal static class ProductMapper
 {
     /// <summary>
     /// Maps a <see cref="ProductRecord"/> to a domain <see cref="Product"/>, resolving the
-    /// product image. When <see cref="ProductRecord.ImagePath"/> is set (an admin-uploaded
-    /// Supabase Storage object key) it is turned into a public URL via
+    /// product image. The primary embedded gallery image, or first by position, takes precedence
+    /// over legacy <see cref="ProductRecord.ImagePath"/>. Its object key becomes a public URL via
     /// <paramref name="resolvePublicUrl"/>; when it is absent a placeholder image URL is generated
     /// using the product name. When <paramref name="images"/>/<paramref name="optionTypes"/>/
     /// <paramref name="specifications"/>/<paramref name="variants"/> are supplied (the admin
@@ -46,8 +46,11 @@ internal static class ProductMapper
         var category = Category.Rehydrate(record.Category.Id, record.Category.Name);
         var brand = Brand.Rehydrate(record.Brand.Id, record.Brand.Name);
 
-        var imageUrl = !string.IsNullOrWhiteSpace(record.ImagePath)
-            ? resolvePublicUrl(record.ImagePath)
+        var imagePath = record.Images.OrderByDescending(i => i.IsPrimary)
+            .ThenBy(i => i.Position).ThenBy(i => i.Id).FirstOrDefault()?.ObjectKey
+            ?? record.ImagePath;
+        var imageUrl = !string.IsNullOrWhiteSpace(imagePath)
+            ? resolvePublicUrl(imagePath)
             : PlaceholderImage.For(record.Name);
 
         return Product.Rehydrate(

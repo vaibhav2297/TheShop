@@ -1,0 +1,23 @@
+@using TheShop.Web.Common.UI
+@typeparam TItem
+@inherits ShopComponentBase
+
+<div @attributes="AdditionalAttributes" class="@ClassName" style="@Style" role="region" aria-label="@Label"
+     data-active-image="@(SafeIndex + 1)" data-swipe-enabled="@Enabled.ToString().ToLowerInvariant()">
+    <div @ref="_viewport" class="@ViewportClassName" tabindex="@(CanNavigate ? 0 : (int?)null)">
+        @for (var index = 0; index < Items.Count; index++)
+        {
+            <div class="@SlideClassName" data-carousel-index="@index" tabindex="-1">
+                <ShopImage Src="@ImageSource(Items[index])" Alt="@ImageAlt(Items[index])"
+                           Preset="@ImagePreset" PlaceholderLabel="@PlaceholderLabel" />
+            </div>
+        }
+    </div>
+    @if (CanNavigate)
+    {
+        <div class="shop-swipe-carousel-indicator" aria-hidden="true" style="@IndicatorStyle">
+            <span class="shop-swipe-carousel-position"></span>
+        </div>
+        <span class="shop-visually-hidden" aria-live="polite" aria-atomic="true">@PositionLabel(SafeIndex + 1, Items.Count)</span>
+    }
+</div>

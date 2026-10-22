@@ -12,6 +12,9 @@ namespace TheShop.Application.Common.Interfaces;
 /// </summary>
 public interface IProductRepository
 {
+    /// <summary>Returns the full published aggregate, or null when missing or unpublished, regardless of caller privileges.</summary>
+    Task<Product?> GetPublishedDetailAsync(Guid id, CancellationToken ct);
+
     /// <summary>
     /// Returns a filtered, sorted, paged slice of published products matching
     /// <paramref name="criteria"/>, carrying the total number of matches (pre-pagination).

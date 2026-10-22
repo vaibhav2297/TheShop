@@ -1,0 +1,375 @@
+{
+  "feature": "001_product-detail",
+  "trait": "001_product-detail",
+  "writtenAt": "2026-10-22",
+  "testProjects": [
+    "tests/TheShop.Application.Tests/TheShop.Application.Tests.csproj",
+    "tests/TheShop.Infrastructure.Tests/TheShop.Infrastructure.Tests.csproj",
+    "tests/TheShop.Web.Tests/TheShop.Web.Tests.csproj"
+  ],
+  "totalTests": 70,
+  "classes": [
+    {
+      "fqn": "TheShop.Web.Tests.Pages.Products.ProductDetailTests",
+      "file": "tests/TheShop.Web.Tests/Pages/Products/ProductDetailTests.cs",
+      "tests": 19,
+      "methods": [
+        "Render_PublicProduct_StartsUnselectedWithRangeAndPrimaryFirst",
+        "Select_PartialThenCompleteCombination_KeepsRangeUntilExactPriceAndImageResolve",
+        "Browse_ManualImageChange_PreservesVariantPriceAndChoices",
+        "Select_DesktopHiddenTarget_ExpandsWithoutReorderingAndRequestsReveal",
+        "ToggleGallery_ExpandedThenCollapsed_PreservesSelectionAndPrice",
+        "Render_AtMostFourImages_OmitsGalleryToggle",
+        "Render_FailedGalleryImage_ShowsProductNamePlaceholder",
+        "Render_EqualVariantPrices_ShowsSingleAmountWithoutSelection",
+        "Render_UnpricedProduct_ShowsUnavailableInsteadOfZero",
+        "Disclosures_ExpandIndependently_AndStartCollapsed",
+        "Render_AbsentOptionalContent_OmitsOnlyEmptySection",
+        "AddToBag_IncompleteSelection_RequestsAttentionThenCompleteSelectionClearsIt",
+        "Actions_VariantFreeProduct_AreEnabledAndHaveNoSideEffects",
+        "Render_MissingProductAfterNavigation_ClearsDetailsAndVariants",
+        "Render_PendingRequest_ShowsNamedStaticSkeletonWithoutControls",
+        "Resize_ToNarrowGallery_UsesSelectedTargetAndIgnoresOldGeneration"
+      ]
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Components.Common.ShopSwipeCarouselTests",
+      "file": "tests/TheShop.Web.Tests/Components/Common/ShopSwipeCarouselTests.cs",
+      "tests": 12,
+      "methods": [
+        "Render_MultipleImages_UsesSharedImagesAndPerceivablePosition",
+        "Render_NoNavigation_OmitsIndicatorAndKeyboardStop",
+        "Render_OutOfRangeIndex_ClampsAndReportsBoundary",
+        "Navigate_ValidSettledIndex_ReportsOnlyIndexWithoutMutatingItems",
+        "Navigate_InvalidUnchangedOrStaticIndex_IgnoresCallback",
+        "Dispose_LateBrowserCallback_DoesNotNotifyCaller"
+      ]
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Components.Products.ProductDetailCardTests",
+      "file": "tests/TheShop.Web.Tests/Components/Products/ProductDetailCardTests.cs",
+      "tests": 2,
+      "methods": [
+        "Render_LinkedTile_PreservesNativeDestinationAndSeparateActions",
+        "Render_LoadingTile_HasNoNavigationOrActions"
+      ]
+    },
+    {
+      "fqn": "TheShop.Infrastructure.Tests.Persistence.ProductDetailImageMapperTests",
+      "file": "tests/TheShop.Infrastructure.Tests/Persistence/ProductDetailImageMapperTests.cs",
+      "tests": 4,
+      "methods": [
+        "ToDomain_GalleryPrimary_TakesPrecedenceOverPositionAndLegacy",
+        "ToDomain_GalleryWithoutPrimary_UsesPositionThenIdentity",
+        "ToDomain_NoGallery_RetainsLegacyThumbnail",
+        "ToDomain_NoImagesOrProductPrice_PreservesVariantProductWithoutInventingPrice"
+      ]
+    },
+    {
+      "fqn": "TheShop.Infrastructure.Tests.Persistence.ProductDetailVisibilityTests",
+      "file": "tests/TheShop.Infrastructure.Tests/Persistence/ProductDetailVisibilityTests.cs",
+      "tests": 3,
+      "methods": [
+        "Read_GuestOrCustomer_SeesOnlyPublishedProductAndEveryChild",
+        "Read_PrivilegedStaff_PublicationFilterStillExcludesUnpublishedParent"
+      ]
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Products.ProductDetailVariantResolverTests",
+      "file": "tests/TheShop.Application.Tests/Features/Products/ProductDetailVariantResolverTests.cs",
+      "tests": 10,
+      "methods": [
+        "Resolve_IncompleteDuplicateUnknownOrUnconfiguredChoices_DoesNotSelectVariant",
+        "Resolve_CompleteConfiguredChoices_ReturnsExactVariantRegardlessOfOrder",
+        "Resolve_ProductWithoutVariants_DoesNotSelectVariant"
+      ]
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Products.Mappers.ProductDetailDtoMapperTests",
+      "file": "tests/TheShop.Application.Tests/Features/Products/Mappers/ProductDetailDtoMapperTests.cs",
+      "tests": 14,
+      "methods": [
+        "ToDto_VariantProductWithoutOwnPrice_UsesEffectiveVariantRangeAndPinnedOrPrimaryImages",
+        "ToDto_NoVariants_UsesProductSalePrice",
+        "ToDto_NoPrimary_UsesFirstImageByPositionThenIdentity",
+        "ToDto_EmptyGallery_DoesNotInventImageOrVariantTarget",
+        "ToDto_StalePinnedImage_FallsBackToPrimary",
+        "ToDto_EmptyOrUnsafeLegacyDescription_OmitsContent",
+        "ToDto_PopulatedContent_PreservesSafeHtmlAndSpecificationOrder",
+        "ToDto_BlankBrand_OmitsBrandWithoutInventingText",
+        "ToDto_EqualEffectivePrices_ProvidesEqualRangeEndpoints",
+        "ToDto_UnpricedVariants_DoesNotInventRangeOrCurrency"
+      ]
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetProductDetailHandlerTests",
+      "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetProductDetailHandlerTests.cs",
+      "tests": 4,
+      "methods": [
+        "Handle_PublishedProduct_ReturnsPublicDetailAndPropagatesCancellation",
+        "Handle_MissingOrUnpublishedProduct_ReturnsSameUnavailableKey",
+        "Handle_RepositoryFailure_DoesNotInventProductData"
+      ]
+    },
+    {
+      "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetProductDetailQueryValidatorTests",
+      "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetProductDetailQueryValidatorTests.cs",
+      "tests": 2,
+      "methods": [
+        "Validate_EmptyId_ReturnsUnavailableFieldFailure",
+        "Validate_ValidId_AcceptsPublicRequest"
+      ]
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductDetailHandlerTests.Handle_PublishedProduct_ReturnsPublicDetailAndPropagatesCancellation",
+        "TheShop.Application.Tests.Features.Products.Mappers.ProductDetailDtoMapperTests.ToDto_VariantProductWithoutOwnPrice_UsesEffectiveVariantRangeAndPinnedOrPrimaryImages",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_PublicProduct_StartsUnselectedWithRangeAndPrimaryFirst"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Desktop/narrow visibility, geometry and primary image at real breakpoints."
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_PublicProduct_StartsUnselectedWithRangeAndPrimaryFirst",
+        "TheShop.Infrastructure.Tests.Persistence.ProductDetailVisibilityTests.Read_GuestOrCustomer_SeesOnlyPublishedProductAndEveryChild"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Guest/customer route and PostgREST session parity; unit page has no authentication dependency."
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_PublicProduct_StartsUnselectedWithRangeAndPrimaryFirst",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.ToggleGallery_ExpandedThenCollapsed_PreservesSelectionAndPrice"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "CSS first-four visibility and native focus behavior."
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Browse_ManualImageChange_PreservesVariantPriceAndChoices",
+        "TheShop.Web.Tests.Components.Common.ShopSwipeCarouselTests.Navigate_ValidSettledIndex_ReportsOnlyIndexWithoutMutatingItems"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Real swipe/scroll settling, indicator synchronization and keyboard navigation."
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.ProductDetailVariantResolverTests.Resolve_CompleteConfiguredChoices_ReturnsExactVariantRegardlessOfOrder",
+        "TheShop.Application.Tests.Features.Products.ProductDetailVariantResolverTests.Resolve_IncompleteDuplicateUnknownOrUnconfiguredChoices_DoesNotSelectVariant",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Select_PartialThenCompleteCombination_KeepsRangeUntilExactPriceAndImageResolve"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Real breakpoint response and viewport-dependent reveal; incomplete grouped selection preserves current image."
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.Mappers.ProductDetailDtoMapperTests.ToDto_StalePinnedImage_FallsBackToPrimary",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Select_PartialThenCompleteCombination_KeepsRangeUntilExactPriceAndImageResolve"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Actual viewport image navigation."
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.Mappers.ProductDetailDtoMapperTests.ToDto_NoVariants_UsesProductSalePrice",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Actions_VariantFreeProduct_AreEnabledAndHaveNoSideEffects"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Native pointer/keyboard activation and absence of persisted bag changes."
+    },
+    {
+      "id": "AC-8",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Disclosures_ExpandIndependently_AndStartCollapsed"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Keyboard activation and focus."
+    },
+    {
+      "id": "AC-9",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.Mappers.ProductDetailDtoMapperTests.ToDto_EmptyOrUnsafeLegacyDescription_OmitsContent",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_AbsentOptionalContent_OmitsOnlyEmptySection"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Browser layout after omitted sections."
+    },
+    {
+      "id": "AC-10",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Actions_VariantFreeProduct_AreEnabledAndHaveNoSideEffects",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.AddToBag_IncompleteSelection_RequestsAttentionThenCompleteSelectionClearsIt"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Favourite before/after selection; no persistence, navigation or success UI in a real session."
+    },
+    {
+      "id": "AC-11",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopSwipeCarouselTests.Render_MultipleImages_UsesSharedImagesAndPerceivablePosition",
+        "TheShop.Web.Tests.Components.Products.ProductDetailCardTests.Render_LinkedTile_PreservesNativeDestinationAndSeparateActions",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Disclosures_ExpandIndependently_AndStartCollapsed"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Visible focus, native keyboard operation, screen-reader announcement and all control names."
+    },
+    {
+      "id": "AC-12",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_AtMostFourImages_OmitsGalleryToggle",
+        "TheShop.Web.Tests.Components.Common.ShopSwipeCarouselTests.Render_NoNavigation_OmitsIndicatorAndKeyboardStop"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Real single-slide geometry and absence of scrollable overflow."
+    },
+    {
+      "id": "AC-13",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.Mappers.ProductDetailDtoMapperTests.ToDto_NoPrimary_UsesFirstImageByPositionThenIdentity",
+        "TheShop.Application.Tests.Features.Products.Mappers.ProductDetailDtoMapperTests.ToDto_EmptyGallery_DoesNotInventImageOrVariantTarget",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_FailedGalleryImage_ShowsProductNamePlaceholder"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Subtitle1 computed typography and native failed network image event."
+    },
+    {
+      "id": "AC-14",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductDetailHandlerTests.Handle_MissingOrUnpublishedProduct_ReturnsSameUnavailableKey",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductDetailQueryValidatorTests.Validate_EmptyId_ReturnsUnavailableFieldFailure",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_MissingProductAfterNavigation_ClearsDetailsAndVariants",
+        "TheShop.Infrastructure.Tests.Persistence.ProductDetailVisibilityTests.Read_GuestOrCustomer_SeesOnlyPublishedProductAndEveryChild",
+        "TheShop.Infrastructure.Tests.Persistence.ProductDetailVisibilityTests.Read_PrivilegedStaff_PublicationFilterStillExcludesUnpublishedParent"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Repository PostgREST publication predicate with staff/guest/customer sessions; route races and no stale responses."
+    },
+    {
+      "id": "AC-15",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.AddToBag_IncompleteSelection_RequestsAttentionThenCompleteSelectionClearsIt"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Focus, viewport reveal, 300ms repeated shake, announcement, no visible error."
+    },
+    {
+      "id": "AC-16",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.AddToBag_IncompleteSelection_RequestsAttentionThenCompleteSelectionClearsIt"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Browser removal of static outline and pending animation."
+    },
+    {
+      "id": "AC-17",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopSwipeCarouselTests.Render_MultipleImages_UsesSharedImagesAndPerceivablePosition",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_PublicProduct_StartsUnselectedWithRangeAndPrimaryFirst"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Horizontal reachability and responsive one-image layout."
+    },
+    {
+      "id": "AC-18",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.ToggleGallery_ExpandedThenCollapsed_PreservesSelectionAndPrice"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Real grid collapse, preserved keyboard focus and responsive visibility."
+    },
+    {
+      "id": "AC-19",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Select_DesktopHiddenTarget_ExpandsWithoutReorderingAndRequestsReveal"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Partially/fully visible target must not scroll or highlight; JS visibility is browser-owned."
+    },
+    {
+      "id": "AC-20",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Select_DesktopHiddenTarget_ExpandsWithoutReorderingAndRequestsReveal"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Hidden target reveal scrolling only when outside viewport; no highlight."
+    },
+    {
+      "id": "AC-21",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_AtMostFourImages_OmitsGalleryToggle"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Desktop CSS and no false navigation."
+    },
+    {
+      "id": "AC-22",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.Mappers.ProductDetailDtoMapperTests.ToDto_EqualEffectivePrices_ProvidesEqualRangeEndpoints",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_EqualVariantPrices_ShowsSingleAmountWithoutSelection"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Responsive display."
+    },
+    {
+      "id": "AC-23",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.Mappers.ProductDetailDtoMapperTests.ToDto_VariantProductWithoutOwnPrice_UsesEffectiveVariantRangeAndPinnedOrPrimaryImages",
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Select_PartialThenCompleteCombination_KeepsRangeUntilExactPriceAndImageResolve"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Responsive display and image targeting."
+    },
+    {
+      "id": "AC-24",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.AddToBag_IncompleteSelection_RequestsAttentionThenCompleteSelectionClearsIt"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "prefers-reduced-motion disables shake and applies focus/static outline."
+    },
+    {
+      "id": "AC-25",
+      "tests": [],
+      "coverage": "e2e",
+      "reason": "Entire criterion requires real layout: natural scrolling, end-of-content sticky offset, 24px clearance, header, containment, resizing and narrow static scrolling."
+    },
+    {
+      "id": "AC-26",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.ProductDetailTests.Render_PendingRequest_ShowsNamedStaticSkeletonWithoutControls"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Figma skeleton geometry across desktop/tablet/phone."
+    },
+    {
+      "id": "AC-27",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.ProductDetailImageMapperTests.ToDomain_GalleryPrimary_TakesPrecedenceOverPositionAndLegacy",
+        "TheShop.Infrastructure.Tests.Persistence.ProductDetailImageMapperTests.ToDomain_GalleryWithoutPrimary_UsesPositionThenIdentity",
+        "TheShop.Infrastructure.Tests.Persistence.ProductDetailImageMapperTests.ToDomain_NoGallery_RetainsLegacyThumbnail",
+        "TheShop.Application.Tests.Features.Products.Mappers.ProductDetailDtoMapperTests.ToDto_PopulatedContent_PreservesSafeHtmlAndSpecificationOrder"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Actual catalogue image rendering, body1 typography, text color, 8px desktop/0 narrow gap."
+    },
+    {
+      "id": "AC-28",
+      "tests": [
+        "TheShop.Web.Tests.Components.Products.ProductDetailCardTests.Render_LinkedTile_PreservesNativeDestinationAndSeparateActions",
+        "TheShop.Web.Tests.Components.Products.ProductDetailCardTests.Render_LoadingTile_HasNoNavigationOrActions"
+      ],
+      "coverage": "unit+e2e",
+      "reason": "Computed typography, 1px hover outline at 8px, hit testing across whole tile, native modified clicks, keyboard focus and touch."
+    }
+  ]
+}
