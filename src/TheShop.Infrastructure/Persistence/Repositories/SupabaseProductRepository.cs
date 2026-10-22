@@ -44,6 +44,7 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
     private const string VariantIdColumn = "variant_id";
     private const string SkuNormalizedColumn = "sku_normalized";
     private const string CatalogueFiltersRpc = "get_catalogue_filters";
+    private const string CatalogueProductsPageRpc = "catalogue_products_page";
     private const string SaveProductRpc = "save_product";
     private const string AdminProductsPageRpc = "admin_products_page";
     private const string AdminProductFiltersRpc = "get_admin_product_filters";
@@ -76,6 +77,29 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
     public async Task<PagedResult<Product>> GetPageAsync(
         ProductCatalogueCriteria criteria, CancellationToken ct)
     {
+        var variantFilters = VariantFilterArgs(criteria.SelectedFilters);
+        if (variantFilters.Count > 0)
+        {
+            ct.ThrowIfCancellationRequested();
+            var args = new
+            {
+                p_brand_ids = FilterIds(criteria.SelectedFilters, ProductFilterKeys.Brand),
+                p_category_ids = FilterIds(criteria.SelectedFilters, ProductFilterKeys.Category),
+                p_price_min = criteria.PriceMin,
+                p_price_max = criteria.PriceMax,
+                p_sort = CatalogueSortArg(criteria.Sort),
+                p_limit = criteria.Pagination.PageSize,
+                p_offset = criteria.Pagination.Skip,
+                p_variant_filters = variantFilters,
+            };
+            var page = await client.Rpc<CatalogueProductPageRecord>(CatalogueProductsPageRpc, args).WaitAsync(ct)
+                ?? throw new InvalidOperationException("Catalogue page RPC returned no response.");
+            ct.ThrowIfCancellationRequested();
+            return new PagedResult<Product>(
+                [.. page.Items.Select(row => row.ToDomain(ResolveImagePublicUrl))],
+                criteria.Pagination.Page, criteria.Pagination.PageSize, page.TotalCount);
+        }
+
         var recordPage = await PostgrestPaginationExtensions.GetPagedAsync(
             () => ApplyFilters(client.From<ProductRecord>(), criteria),
             query => ApplySort(query, criteria.Sort),
@@ -91,8 +115,10 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
         // One server-side aggregation (get_catalogue_filters) returns every filter group — the
         // category/brand lookups, the distinct flavour/nicotine facets, and the price range — in
         // a single round-trip, so the client never downloads the whole catalogue to compute them.
-        var facets = await client.Rpc<CatalogueFiltersRecord>(CatalogueFiltersRpc, EmptyRpcArgs)
-            ?? new CatalogueFiltersRecord();
+        ct.ThrowIfCancellationRequested();
+        var facets = await client.Rpc<CatalogueFiltersRecord>(CatalogueFiltersRpc, EmptyRpcArgs).WaitAsync(ct)
+            ?? throw new InvalidOperationException("Catalogue filters RPC returned no response.");
+        ct.ThrowIfCancellationRequested();
 
         var groups = ProductFilterDefinitions.All
             .Select(definition => new FilterGroupDto(
@@ -102,6 +128,8 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
         groups.Add(new FilterGroupDto(
             ProductFilterKeys.Price, ProductFilterDefinitions.PriceLabelKey, FilterKind.Range, [],
             new RangeFilterDto(facets.PriceMin, facets.PriceMax)));
+
+        groups.AddRange(facets.OptionTypes.ToVariantGroups());
 
         return groups;
     }
@@ -191,6 +219,7 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
     /// <inheritdoc/>
     public async Task<PagedResult<ProductListItemDto>> GetAdminPageAsync(AdminProductCriteria criteria, CancellationToken ct)
     {
+        ct.ThrowIfCancellationRequested();
         var args = new
         {
             p_search = criteria.Search,
@@ -202,9 +231,12 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
             p_sort = ResolveSortArg(criteria.Sort),
             p_limit = criteria.Pagination.PageSize,
             p_offset = criteria.Pagination.Skip,
+            p_variant_filters = VariantFilterArgs(criteria.VariantFilters ?? []),
         };
 
-        var rows = await client.Rpc<List<AdminProductRowRecord>>(AdminProductsPageRpc, args) ?? [];
+        var rows = await client.Rpc<List<AdminProductRowRecord>>(AdminProductsPageRpc, args).WaitAsync(ct)
+            ?? throw new InvalidOperationException("Management page RPC returned no response.");
+        ct.ThrowIfCancellationRequested();
         if (rows.Count == 0)
             return PagedResult<ProductListItemDto>.Empty(criteria.Pagination);
 
@@ -216,11 +248,36 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
     /// <inheritdoc/>
     public async Task<AdminProductFiltersDto> GetAdminFiltersAsync(CancellationToken ct)
     {
-        var record = await client.Rpc<AdminProductFiltersRecord>(AdminProductFiltersRpc, EmptyRpcArgs)
-            ?? new AdminProductFiltersRecord();
+        ct.ThrowIfCancellationRequested();
+        var record = await client.Rpc<AdminProductFiltersRecord>(AdminProductFiltersRpc, EmptyRpcArgs).WaitAsync(ct)
+            ?? throw new InvalidOperationException("Management filters RPC returned no response.");
+        ct.ThrowIfCancellationRequested();
 
         return record.ToDto();
     }
+
+    private static Dictionary<string, string[]> VariantFilterArgs(IReadOnlyList<AppliedFilterDto> filters) =>
+        filters.Where(filter => ProductFilterKeys.IsVariantKey(filter.Key) && filter.Values.Count > 0)
+            .GroupBy(filter => filter.Key, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key,
+                group => group.SelectMany(filter => filter.Values).Distinct(StringComparer.Ordinal).ToArray(),
+                StringComparer.Ordinal);
+
+    private static Guid[]? FilterIds(IReadOnlyList<AppliedFilterDto> filters, string key)
+    {
+        var values = filters.Where(filter => string.Equals(filter.Key, key, StringComparison.OrdinalIgnoreCase))
+            .SelectMany(filter => filter.Values).Select(Guid.Parse).Distinct().ToArray();
+        return values.Length == 0 ? null : values;
+    }
+
+    private static string CatalogueSortArg(ProductSortOption sort) => sort switch
+    {
+        ProductSortOption.PriceLowToHigh => "price-asc",
+        ProductSortOption.PriceHighToLow => "price-desc",
+        ProductSortOption.NameAToZ => "name-asc",
+        ProductSortOption.NameZToA => "name-desc",
+        _ => "newest",
+    };
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<Product>> GetManyWithVariantsAsync(IReadOnlyList<Guid> ids, CancellationToken ct)

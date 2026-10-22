@@ -12,6 +12,7 @@ using TheShop.Application.Features.Products.Commands.SetProductStatus;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Application.Features.Products.Queries.GetAdminProductFilters;
 using TheShop.Application.Features.Products.Queries.GetAdminProductsPage;
+using TheShop.Application.Features.Products.Queries.GetAdminProductListing;
 using TheShop.Domain.Enums;
 using TheShop.Web.Auth;
 using TheShop.Web.Common;
@@ -84,6 +85,9 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
 
     private Paginator<ProductListItemDto> _products = default!;
     private AdminProductFiltersDto? _filters;
+    private string? _filtersErrorKey;
+    private string? _resultsErrorKey;
+    private bool LoadFailed => _filtersErrorKey is not null || _resultsErrorKey is not null;
 
     private string? _search;
     private ProductStatusFilter? _status;
@@ -120,6 +124,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
         new FilterGroupDto(ProductFilterKeys.Brand, nameof(Strings.Products_BrandsFilter), FilterKind.MultiSelect, _filters?.Brands ?? [], null),
         new FilterGroupDto(ProductFilterKeys.Category, nameof(Strings.Products_CategoriesFilter), FilterKind.MultiSelect, _filters?.Categories ?? [], null),
         new FilterGroupDto(ProductFilterKeys.Price, nameof(Strings.Filter_Price), FilterKind.Range, [], PriceRange),
+        .. _filters?.VariantGroups ?? [],
     ];
 
     private RangeFilterDto? PriceRange => _filters?.PriceRange;
@@ -144,7 +149,7 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     /// pagination, and bulk bar entirely rather than showing them empty. A criteria-narrowed zero
     /// result instead renders the in-grid no-match message so the filter panel stays available.
     /// </summary>
-    private bool ShowEmptyState => _products.HasLoaded && _products.Items.Count == 0 && !HasActiveCriteria;
+    private bool ShowEmptyState => !LoadFailed && _products.HasLoaded && _products.Items.Count == 0 && !HasActiveCriteria;
 
     private bool IsRowPending(Guid id, RowMutation mutation) =>
         _pendingMutation == mutation && _pendingIds.Contains(id);
@@ -172,20 +177,22 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
         _products = new Paginator<ProductListItemDto>(FetchProductsAsync, PageSize);
     }
 
-    /// <inheritdoc/>
-    protected override async Task OnInitializedAsync()
+    private Task LoadFiltersAsync(CancellationToken ct) =>
+        BusyState.RunAsync(BusyKeys.Products.Filters, async () =>
+        {
+            var result = await Mediator.Send(new GetAdminProductFiltersQuery(), ct);
+            ct.ThrowIfCancellationRequested();
+            _filtersErrorKey = result.Error;
+            if (result.IsSuccess)
+                _filters = result.Value;
+            else
+                Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
+        });
+
+    private Task RetryAsync()
     {
-        var filtersTask = BusyState.RunAsync(
-            BusyKeys.Products.Filters, () => Mediator.Send(new GetAdminProductFiltersQuery()));
-        var stateTask = base.OnInitializedAsync();
-
-        await Task.WhenAll(filtersTask, stateTask);
-
-        var filtersResult = await filtersTask;
-        if (filtersResult.IsSuccess)
-            _filters = filtersResult.Value;
-        else
-            Notifications.Show(Localizer[filtersResult.Error!], ShopNotificationKind.Error);
+        _filters = null;
+        return ReloadStateAsync();
     }
 
     /// <summary>
@@ -203,7 +210,14 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
         _priceMax = state.PriceMax;
         _sort = state.Sort;
 
-        return BusyState.RunAsync(BusyKeys.Products.ManageList, () => _products.GoToAsync(state.Page, ct));
+        return BusyState.RunAsync(BusyKeys.Products.ManageList, async () =>
+        {
+            if (_filters is null || _filtersErrorKey is not null)
+                await LoadFiltersAsync(ct);
+            ct.ThrowIfCancellationRequested();
+            if (_filtersErrorKey is null)
+                await _products.GoToAsync(state.Page, ct);
+        });
     }
 
     private ProductQueryState BuildState() =>
@@ -212,14 +226,32 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
     private async Task<PagedResult<ProductListItemDto>> FetchProductsAsync(
         PaginationRequest request, CancellationToken ct)
     {
+        if (!ct.CanBeCanceled)
+            ct = QueryCancellationToken;
+        ct.ThrowIfCancellationRequested();
         var query = new GetAdminProductsPageQuery(
             _search, _status, ResolveIds(ProductFilterKeys.Brand), ResolveIds(ProductFilterKeys.Category),
-            _priceMin, _priceMax, _sort, request);
+            _priceMin, _priceMax, _sort, request,
+            [.. _selectedFilters.Where(filter => ProductFilterKeys.IsVariantKey(filter.Key))]);
 
-        var result = await Mediator.Send(query, ct);
-
+        var result = await Mediator.Send(new GetAdminProductListingQuery(query), ct);
+        ct.ThrowIfCancellationRequested();
+        _resultsErrorKey = result.Error;
         if (result.IsSuccess)
-            return result.Value;
+        {
+            var listing = result.Value;
+            if (_filters is not null)
+                _filters = _filters with { VariantGroups = listing.VariantGroups };
+            if (listing.RemovedVariantSelections)
+            {
+                _selectedFilters = [.. _selectedFilters.Where(filter => !ProductFilterKeys.IsVariantKey(filter.Key)),
+                    .. listing.EffectiveVariantFilters];
+                Notifications.Show(Strings.VariantFilters_SelectionsRemoved, ShopNotificationKind.Info);
+                await PushStateAsync(BuildState() with { Page = request.Page }, replace: true);
+                ct.ThrowIfCancellationRequested();
+            }
+            return listing.Page;
+        }
 
         Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
         return PagedResult<ProductListItemDto>.Empty(request);
@@ -394,8 +426,9 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
 
                 _selectedItems.Clear();
                 _referencedIds.Clear();
-                await _products.LoadAsync();
+                await _products.LoadAsync(QueryCancellationToken);
             }
+            catch (OperationCanceledException) { }
             finally
             {
                 EndRowMutation();
@@ -454,16 +487,17 @@ public partial class ManageProducts : QueryStatePageBase<ProductQueryState>
                 else
                     HandleBulkDeleteOutcome(ids.Count, outcome);
 
-                await _products.LoadAsync();
+                await _products.LoadAsync(QueryCancellationToken);
 
                 // AC-22: a deletion that empties the current page recovers to the new last page
                 // (or the empty state when nothing remains) rather than showing a stranded page.
                 if (_products.Page > _products.TotalPages)
                 {
-                    await _products.LastAsync();
+                    await _products.LastAsync(QueryCancellationToken);
                     await PushStateAsync(BuildState() with { Page = _products.Page }, replace: true);
                 }
             }
+            catch (OperationCanceledException) { }
             finally
             {
                 EndRowMutation();

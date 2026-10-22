@@ -14,6 +14,20 @@ public static class ProductFilterKeys
     public const string Brand = "brand";
     public const string Price = "price";
 
+    /// <summary>Namespace for database-issued variant option group keys.</summary>
+    public const string VariantPrefix = "variant:";
+
+    /// <summary>Resource fallback for a configured variant group label.</summary>
+    public const string VariantLabelKey = "Filter_Variant";
+
+    /// <summary>Identifies dynamic keys without interpreting merchant-entered names.</summary>
+    public static bool IsVariantKey(string? key) =>
+        key?.StartsWith(VariantPrefix, StringComparison.Ordinal) == true;
+
+    /// <summary>Accepts fixed selectable keys and the dynamic variant namespace.</summary>
+    public static bool IsSelectableKey(string? key) =>
+        key is not null && (SelectableKeys.Contains(key) || IsVariantKey(key));
+
     /// <summary>
     /// Keys valid on an incoming <c>AppliedFilterDto.Key</c> — the multi-select groups only.
     /// <see cref="Price"/> is not selectable this way; it arrives via the query's explicit

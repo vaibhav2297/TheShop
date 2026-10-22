@@ -41,9 +41,15 @@ internal sealed class FilterLookupRecord
 /// <summary>An <c>{ name, values[] }</c> option type row from <c>get_catalogue_filters()</c>.</summary>
 internal sealed class OptionTypeLookupRecord
 {
+    [JsonProperty("key")]
+    public string Key { get; set; } = string.Empty;
+
     [JsonProperty("name")]
     public string Name { get; set; } = string.Empty;
 
     [JsonProperty("values")]
     public IReadOnlyList<string> Values { get; set; } = [];
+
+    [JsonProperty("options")]
+    public IReadOnlyList<VariantFilterOptionRecord> Options { get; set; } = [];
 }

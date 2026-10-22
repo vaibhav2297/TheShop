@@ -10,7 +10,7 @@
             {
                 <ShopExpander @key="group.Key" Expanded="@(InitiallyExpandedGroups?.Contains(group.Key) ?? InitiallyExpanded)">
                     <TitleContent>
-                        <h3 class="shop-filter-title">@Localizer[group.LabelKey]</h3>
+                        <h3 class="shop-filter-title" id="@GroupLabelId(group.Key)">@GroupLabel(group)</h3>
                     </TitleContent>
                     <OverviewContent>
                         @if (group.Kind is FilterKind.MultiSelect or FilterKind.SingleSelect && CountSelected(group.Key) is var count && count > 0)
@@ -25,7 +25,7 @@
                     <ChildContent>
                         @if (group.Kind == FilterKind.MultiSelect)
                         {
-                            <div class="shop-filter-options">
+                            <div class="shop-filter-options" role="group" aria-labelledby="@GroupLabelId(group.Key)" data-testid="filter-group" data-filter-key="@group.Key">
                                 @foreach (var option in group.Options)
                                 {
                                     var isChecked = IsSelected(group.Key, option.Value);
@@ -38,7 +38,7 @@
                         else if (group.Kind == FilterKind.SingleSelect)
                         {
                             var selectedValue = SelectedSingleValue(group.Key);
-                            <div class="shop-filter-options">
+                            <div class="shop-filter-options" role="group" aria-labelledby="@GroupLabelId(group.Key)" data-testid="filter-group" data-filter-key="@group.Key">
                                 @foreach (var option in group.Options)
                                 {
                                     var isChecked = option.Value == selectedValue;
@@ -51,7 +51,7 @@
                         else if (group.Range is { } range)
                         {
                             var thumbs = Thumbs(group.Key);
-                            <ShopRangeSlider Label="@Localizer[group.LabelKey]" Min="@range.Min" Max="@range.Max"
+                            <ShopRangeSlider Label="@GroupLabel(group)" Min="@range.Min" Max="@range.Max"
                                              CompactEditors="@CompactRangeEditors"
                                              Step="@RangeStep(group.Key)" Value="@(new ShopRangeValue(thumbs.Min, thumbs.Max))"
                                              MinimumLabel="@RangeMinimumLabel(group.Key)" MaximumLabel="@RangeMaximumLabel(group.Key)"

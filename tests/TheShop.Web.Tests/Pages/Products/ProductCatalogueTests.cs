@@ -11,6 +11,7 @@ using TheShop.Application.Features.Products;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Application.Features.Products.Queries.GetCatalogueFilters;
 using TheShop.Application.Features.Products.Queries.GetProductCataloguePage;
+using TheShop.Application.Features.Products.Queries.GetProductCatalogueListing;
 using TheShop.Domain.Enums;
 using TheShop.Web.Common;
 using TheShop.Web.Common.UI;
@@ -58,6 +59,16 @@ public class ProductCatalogueTests : TestContext
         _mediator.Send(Arg.Any<GetCatalogueFiltersQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Ok(new CatalogueFiltersDto([CategoryGroup()])));
 
+        // Preserve existing page-result fixtures while exercising the new listing dispatch.
+        _mediator.Send(Arg.Any<GetProductCatalogueListingQuery>(), Arg.Any<CancellationToken>())
+            .Returns(async call =>
+            {
+                var result = await _mediator.Send(call.Arg<GetProductCatalogueListingQuery>().PageQuery, call.Arg<CancellationToken>());
+                return result.IsSuccess
+                    ? Result.Ok(new ProductListingPageDto<ProductSummaryDto>(result.Value, [], [], false))
+                    : Result.Fail<ProductListingPageDto<ProductSummaryDto>>(result.Error!, result.ErrorArgs, result.ValidationErrors);
+            });
+
         _mediator.Send(Arg.Any<GetProductCataloguePageQuery>(), Arg.Any<CancellationToken>())
             .Returns(call =>
             {
@@ -86,6 +97,7 @@ public class ProductCatalogueTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task Render_OnInitialize_DispatchesFiltersAndPageQueries()
     {
@@ -97,6 +109,7 @@ public class ProductCatalogueTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task Render_WithProducts_RendersAProductCardPerItem()
     {
@@ -111,6 +124,7 @@ public class ProductCatalogueTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public void Render_WithoutAnyAuthenticationContextRegistered_RendersSuccessfully()
     {
@@ -123,6 +137,7 @@ public class ProductCatalogueTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task Render_OnInitialize_DefaultsToNewestFirstSortAndPageOne()
     {
@@ -139,6 +154,7 @@ public class ProductCatalogueTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task Render_WhenNoProductsMatch_ShowsEmptyStateMessage()
     {
@@ -162,6 +178,7 @@ public class ProductCatalogueTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task ChangeSort_WhenUserSelectsADifferentOption_ResetsToPageOneAndSendsNewSort()
     {
@@ -182,6 +199,7 @@ public class ProductCatalogueTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task ApplyFilter_WhenUserSelectsAFilterOption_ResetsToPageOneWithTheFilterApplied()
     {
@@ -202,6 +220,7 @@ public class ProductCatalogueTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     public async Task DrawerFilter_WhenToggled_UpdatesUrlAndTheDesktopPanel()
     {
         var cut = Render<ProductCatalogue>();
@@ -225,6 +244,7 @@ public class ProductCatalogueTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task ApplyFilters_WhenTwoOptionsAreToggledInRapidSuccession_BothSurviveInTheQuery()
     {
@@ -249,6 +269,7 @@ public class ProductCatalogueTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task ClearFilters_AfterNarrowingThePriceRange_ResetsPriceBoundsToNull()
     {
@@ -271,6 +292,7 @@ public class ProductCatalogueTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task NarrowPriceRange_WhenBothBoundsSettle_SendsOnePageQueryCarryingBoth()
     {
@@ -296,6 +318,7 @@ public class ProductCatalogueTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task ChangePage_WhenUserNavigatesToPage2_PreservesTheActiveSort()
     {
@@ -320,6 +343,7 @@ public class ProductCatalogueTests : TestContext
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public void Render_WhileQueriesAreInFlight_ShowsTwelveProductSkeletonsAndFiveFilterSkeletons()
     {
@@ -338,6 +362,7 @@ public class ProductCatalogueTests : TestContext
     }
 
     [Fact]
+    [Trait("Feature", "002_variant-filters")]
     [Trait("Feature", "product-catalogue")]
     public async Task Render_AfterFiltersLoad_ReplacesTheFilterSkeletonWithThePanelAndDoesNotReskeletonOnLaterBusyToggles()
     {

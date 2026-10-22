@@ -33,5 +33,8 @@ internal static class AdminProductMapper
         new(
             [.. record.Brands.Select(b => new FilterOptionDto(b.Id.ToString(), b.Name, null))],
             [.. record.Categories.Select(c => new FilterOptionDto(c.Id.ToString(), c.Name, null))],
-            new RangeFilterDto(record.PriceMin, record.PriceMax));
+            new RangeFilterDto(record.PriceMin, record.PriceMax))
+        {
+            VariantGroups = record.OptionTypes.ToVariantGroups(),
+        };
 }

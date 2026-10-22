@@ -29,7 +29,8 @@ public sealed class GetAdminProductsPageHandler(IProductRepository products)
             request.PriceMin,
             request.PriceMax,
             request.Sort,
-            pagination);
+            pagination,
+            request.VariantFilters);
 
         var page = await products.GetAdminPageAsync(criteria, cancellationToken);
 
