@@ -18,6 +18,25 @@ namespace TheShop.E2E.Tests.Journeys;
 [Trait("Feature", "native-ui")]
 public sealed class NativeShellJourneyTests(PlaywrightFixture playwright) : E2ETestBase(playwright)
 {
+    [Fact]
+    public async Task Shell_InitialHeadingFocus_KeepsControlKeyboardOutlinesWithoutHeadingOutline()
+    {
+        await Page.GotoAsync(WebRoutes.NotFound);
+        var heading = Page.Locator("main h1");
+        await Assertions.Expect(heading).ToBeFocusedAsync();
+        await Assertions.Expect(heading).ToHaveCSSAsync("outline-style", "none");
+
+        await Page.Keyboard.PressAsync("Tab");
+        var home = Page.GetByRole(AriaRole.Link, new() { Name = Strings.NotFound_GoHome, Exact = true });
+        await Assertions.Expect(home).ToBeFocusedAsync();
+        await Assertions.Expect(home).ToHaveCSSAsync("outline-style", "solid");
+
+        await Page.Keyboard.PressAsync("Enter");
+        await Assertions.Expect(heading).ToHaveTextAsync(Strings.Stay_Tuned);
+        await Assertions.Expect(heading).ToBeFocusedAsync();
+        await Assertions.Expect(heading).ToHaveCSSAsync("outline-style", "none");
+    }
+
     [Theory]
     [InlineData(390, true)]
     [InlineData(390, false)]

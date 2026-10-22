@@ -119,7 +119,7 @@
 
 .shop-product-detail-section-title {
     margin: 0;
-    @include text-style.apply(h4);
+    @include text-style.apply(h5);
     text-transform: uppercase;
 }
 
