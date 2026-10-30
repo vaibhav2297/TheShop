@@ -18,6 +18,12 @@ public sealed class SupabaseAdminDashboardRepository(Supabase.Client client) : I
         // token before making the call rather than silently ignoring it.
         cancellationToken.ThrowIfCancellationRequested();
 
+        if (module == AdminModule.Homepage)
+        {
+            var count = await client.Rpc("count_hero_banner_admin", null);
+            return int.Parse(count.Content!, System.Globalization.CultureInfo.InvariantCulture);
+        }
+
         var parameters = new Dictionary<string, object> { ["p_module"] = ToRpcModule(module) };
         var response = await client.Rpc("admin_module_count", parameters);
 

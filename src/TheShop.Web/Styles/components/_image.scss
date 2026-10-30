@@ -71,8 +71,8 @@ $image-ratios: (
 }
 
 @media (width < bp.$tablet) {
-    .shop-image-banner,
-    .shop-image-hero {
+    .shop-image-banner:not(.shop-image-static),
+    .shop-image-hero:not(.shop-image-static) {
         aspect-ratio: 4 / 5;
 
         .shop-image-branch-mobile.shop-image-media {

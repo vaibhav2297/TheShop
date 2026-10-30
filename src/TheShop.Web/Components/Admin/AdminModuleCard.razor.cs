@@ -24,6 +24,7 @@ public partial class AdminModuleCard : ShopComponentBase
 
     private string Href => Module switch
     {
+        AdminModule.Homepage => Routes.Admin.ManageHomepage,
         AdminModule.Products => Routes.Admin.ManageProducts,
         AdminModule.Categories => Routes.Admin.ManageCategories,
         AdminModule.Brands => Routes.Admin.ManageBrands,
@@ -34,6 +35,7 @@ public partial class AdminModuleCard : ShopComponentBase
 
     private string Label => Module switch
     {
+        AdminModule.Homepage => Strings.AdminConsole_Module_Homepage,
         AdminModule.Products => Strings.AdminConsole_Module_Products,
         AdminModule.Categories => Strings.AdminConsole_Module_Categories,
         AdminModule.Brands => Strings.AdminConsole_Module_Brands,

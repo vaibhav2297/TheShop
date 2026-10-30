@@ -13,5 +13,5 @@ namespace TheShop.Application.Features.Brands.Commands.CreateBrand;
 public sealed record CreateBrandCommand(
     string Name,
     string? Description,
-    BrandLogoUpload? Logo,
+    ImageUpload? Logo,
     bool IsActive) : IRequest<Result<BrandDto>>;

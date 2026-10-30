@@ -22,7 +22,16 @@ public interface IFileStorage
     Task DeleteAsync(StorageArea area, string objectKey, CancellationToken ct);
 
     /// <summary>
-    /// Resolves a stored object key to its public URL.
+    /// Creates an expiring read URL without making the storage area public.
     /// </summary>
+    /// <param name="expiresInSeconds">Positive lifetime in seconds.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The lifetime is not positive.</exception>
+    Task<string> CreateSignedUrlAsync(
+        StorageArea area, string objectKey, int expiresInSeconds, CancellationToken ct);
+
+    /// <summary>
+    /// Resolves a stored object key to its public URL. Private areas reject this operation.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The selected area is private.</exception>
     string GetPublicUrl(StorageArea area, string objectKey);
 }

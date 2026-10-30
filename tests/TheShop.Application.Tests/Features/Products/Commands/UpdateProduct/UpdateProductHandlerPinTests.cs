@@ -119,7 +119,7 @@ public class UpdateProductHandlerPinTests
             Command(
                 [
                     new ProductGalleryEntry(_storedImageId, null, 0, true, _storedImageId),
-                    new ProductGalleryEntry(null, new ProductImageUpload([1, 2, 3], "new.png", "image/png"), 1, false, newImageClientId),
+                    new ProductGalleryEntry(null, new ImageUpload([1, 2, 3], "new.png", "image/png"), 1, false, newImageClientId),
                 ],
                 optionTypes,
                 [Variant(mangoValueId, "ELF-BC5000-MANGO", newImageClientId)]),
@@ -144,7 +144,7 @@ public class UpdateProductHandlerPinTests
             Command(
                 [
                     new ProductGalleryEntry(_storedImageId, null, 0, true, _storedImageId),
-                    new ProductGalleryEntry(null, new ProductImageUpload([1, 2, 3], "new.png", "image/png"), 1, false, newImageClientId),
+                    new ProductGalleryEntry(null, new ImageUpload([1, 2, 3], "new.png", "image/png"), 1, false, newImageClientId),
                 ],
                 optionTypes,
                 [
@@ -170,7 +170,7 @@ public class UpdateProductHandlerPinTests
         // nothing — RULE-13's "removing a pinned image leaves those variants unpinned".
         await CreateSut().Handle(
             Command(
-                [new ProductGalleryEntry(null, new ProductImageUpload([1, 2, 3], "new.png", "image/png"), 0, true, newImageClientId)],
+                [new ProductGalleryEntry(null, new ImageUpload([1, 2, 3], "new.png", "image/png"), 0, true, newImageClientId)],
                 optionTypes,
                 [Variant(mangoValueId, "ELF-BC5000-MANGO", _storedImageId)]),
             CancellationToken.None);

@@ -2,7 +2,8 @@
 @using TheShop.Web.Components.Common
 @inherits ShopComponentBase
 
-<article @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+<article @attributes="AdditionalAttributes" class="@ClassName" style="@Style"
+         data-testid="@(Module == TheShop.Application.Features.Admin.AdminModule.Homepage ? "admin-module-homepage" : null)">
     <div class="shop-admin-module-card-content">
         <h2 class="shop-admin-module-card-label">@Label</h2>
         <p class="shop-admin-module-card-count">@CountText</p>

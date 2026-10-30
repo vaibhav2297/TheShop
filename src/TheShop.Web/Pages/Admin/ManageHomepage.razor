@@ -1,0 +1,13 @@
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Common.UI
+
+<PageTitle>@Strings.Homepage_Heading</PageTitle>
+<section class="shop-native shop-admin-console" data-testid="manage-homepage">
+    <h1>@Strings.Homepage_Heading</h1>
+    <div>
+        <ShopButton Href="@Routes.Admin.ManageHeroBanner" data-testid="manage-hero-banner">
+            @Strings.Homepage_HeroBanner
+        </ShopButton>
+    </div>
+</section>
+

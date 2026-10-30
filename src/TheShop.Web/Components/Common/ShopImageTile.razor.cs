@@ -15,6 +15,10 @@ public partial class ShopImageTile : ShopComponentBase
     [Parameter, EditorRequired] public string Alt { get; set; } = string.Empty;
     /// <summary>Image fitting inside the square tile; defaults to whole-image display.</summary>
     [Parameter] public ShopImagePreset Preset { get; set; } = ShopImagePreset.SquareContain;
+    /// <summary>Opt-in frame following the image preset; square remains the default.</summary>
+    [Parameter] public ShopImageTileFrame Frame { get; set; } = ShopImageTileFrame.Square;
+    /// <summary>Passes responsive source/ratio selection to the image.</summary>
+    [Parameter] public bool ResponsivePreview { get; set; } = true;
     /// <summary>Shows the filled badge; grid placement remains caller-owned.</summary>
     [Parameter] public bool Primary { get; set; }
     /// <summary>Resource-backed badge text.</summary>
@@ -47,7 +51,8 @@ public partial class ShopImageTile : ShopComponentBase
     private bool EffectiveDisabled => Disabled || Loading;
     private string? Pressed => Selected?.ToString().ToLowerInvariant();
     private string ClassName => ShopCssClass.Join("shop-image-tile", Selected == true ? "shop-image-tile-selected" : null,
-        Loading ? "shop-image-tile-loading" : null, ErrorText is not null ? "shop-image-tile-error" : null, Class);
+        Loading ? "shop-image-tile-loading" : null, ErrorText is not null ? "shop-image-tile-error" : null,
+        Frame == ShopImageTileFrame.Image ? "shop-image-tile-frame-image" : null, Class);
     private Task ActivateAsync() => EffectiveDisabled ? Task.CompletedTask : OnClick.InvokeAsync();
     private Task FocusAsync() => EffectiveDisabled ? Task.CompletedTask : OnFocus.InvokeAsync();
     private Task RemoveAsync() => EffectiveDisabled || !Removable ? Task.CompletedTask : OnRemove.InvokeAsync();

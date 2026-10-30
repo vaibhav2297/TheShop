@@ -8,6 +8,17 @@ namespace TheShop.Domain.ValueObjects;
 public static class PermissionCatalogue
 {
 
+    /// <summary>Permissions for homepage administration.</summary>
+    public static class Homepage
+    {
+        public const string ViewCode = "homepage.view";
+        public const string CreateCode = "homepage.create";
+        public const string EditCode = "homepage.edit";
+        public static readonly Permission View = Permission.Create(ViewCode);
+        public static readonly Permission Create = Permission.Create(CreateCode);
+        public static readonly Permission Edit = Permission.Create(EditCode);
+    }
+
     public static class Products
     {
         public static readonly Permission View = Permission.Create("products.view");
@@ -114,7 +125,7 @@ public static class PermissionCatalogue
     }
 
     /// <summary>
-    /// Every permission defined by the catalogue, across all twelve modules. This is the
+    /// Every permission defined by the catalogue. This is the
     /// generation source for the <c>permissions</c> table seed (FR-3).
     /// </summary>
     public static readonly IReadOnlyList<Permission> All =
@@ -131,6 +142,7 @@ public static class PermissionCatalogue
         Roles.View, Roles.Create, Roles.Edit, Roles.Delete,
         Brands.View, Brands.Create, Brands.Edit, Brands.Delete,
         Dashboard.View,
+        Homepage.View, Homepage.Create, Homepage.Edit,
     ];
 
     private static readonly HashSet<string> KnownPermissions =

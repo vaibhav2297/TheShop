@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Interfaces;
 using TheShop.Application.Common.Interfaces;
+using TheShop.Application.Features.Homepage.Interfaces;
 using TheShop.Infrastructure.Auth;
 using TheShop.Infrastructure.Persistence;
 using TheShop.Infrastructure.Persistence.Repositories;
@@ -38,6 +39,8 @@ public static class DependencyInjection
         services.AddScoped<ICategoryRepository, SupabaseCategoryRepository>();
         services.AddScoped<IAdminDashboardRepository, SupabaseAdminDashboardRepository>();
         services.AddScoped<IFileStorage, SupabaseFileStorage>();
+        services.AddScoped<IHeroBannerRepository, SupabaseHeroBannerRepository>();
+        services.AddScoped<IHeroBannerImageInspector, BrowserHeroBannerImageInspector>();
 
         return services;
     }

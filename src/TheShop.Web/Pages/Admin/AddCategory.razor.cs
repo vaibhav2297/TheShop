@@ -1,12 +1,13 @@
-using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using TheShop.Web.Components.Categories;
+using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Categories.Commands.CreateCategory;
 using TheShop.Application.Features.Categories.DTOs;
 using TheShop.Web.Auth;
+using TheShop.Web.Common.Notifications;
 using TheShop.Web.Common;
+using TheShop.Web.Components.Categories;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
@@ -55,7 +56,7 @@ public partial class AddCategory : ComponentBase
             // A row still showing a validation error (wrong type / too large) never leaves the client.
             var validCategoryImages = _categoryImages.Where(image => image.Error is null).ToList();
             var image = validCategoryImages.Count > 0
-                ? new CategoryImageUpload(validCategoryImages[0].Bytes, validCategoryImages[0].FileName, validCategoryImages[0].ContentType)
+                ? new ImageUpload(validCategoryImages[0].Bytes, validCategoryImages[0].FileName, validCategoryImages[0].ContentType)
                 : null;
 
             var result = await Mediator.Send(new CreateCategoryCommand(

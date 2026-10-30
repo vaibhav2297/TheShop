@@ -28,6 +28,8 @@ public partial class ShopImageUpload : ShopComponentBase, IAsyncDisposable
     [Parameter] public long MaxFileSize { get; set; } = 2 * 1024 * 1024;
     /// <summary>Optional localized empty picker text.</summary>
     [Parameter] public string? UploadText { get; set; }
+    /// <summary>Optional localized browsing/drop guidance, preserving the default type hint when omitted.</summary>
+    [Parameter] public string? UploadHint { get; set; }
     /// <summary>Optional removal label, supplemented by the image name.</summary>
     [Parameter] public string? RemoveLabel { get; set; }
     /// <summary>Group label and description for persisted images without filenames.</summary>
@@ -44,6 +46,12 @@ public partial class ShopImageUpload : ShopComponentBase, IAsyncDisposable
     [Parameter] public ShopImagePreset PreviewPreset { get; set; } = ShopImagePreset.SquareContain;
     /// <summary>Prevents selection, removal, and ordering.</summary>
     [Parameter] public bool Disabled { get; set; }
+    /// <summary>Opt-in single preview; existing callers retain the grid layout.</summary>
+    [Parameter] public ShopImageUploadLayout Layout { get; set; } = ShopImageUploadLayout.Grid;
+    /// <summary>Controls responsive preview geometry independently of the upload layout.</summary>
+    [Parameter] public bool ResponsivePreview { get; set; } = true;
+    /// <summary>Optional awaited validation; returns localized rejection text or null to accept.</summary>
+    [Parameter] public Func<ShopUploadedImage, CancellationToken, Task<string?>>? ValidateFileAsync { get; set; }
 
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
@@ -64,9 +72,12 @@ public partial class ShopImageUpload : ShopComponentBase, IAsyncDisposable
     private bool Blocked => Disabled || _disposed || BusyState.IsBusy(_busyKey);
     private bool AtCapacity => Multiple && Files.Count >= MaxFileCount;
     private int ActiveIndex => Files.ToList().FindIndex(image => image.ClientId == _activeId);
-    private IReadOnlyList<ShopUploadedImage> DisplayedImages => _pending.Count == 0 ? Files : [.. _batchBase, .. _pending];
-    private string ClassName => ShopCssClass.Join("shop-image-upload shop-native", Class);
-    private string Hint => string.Format(Strings.ImageUpload_TypesHint,
+    private IReadOnlyList<ShopUploadedImage> DisplayedImages => Layout == ShopImageUploadLayout.SinglePreview || _pending.Count == 0 ? Files : [.. _batchBase, .. _pending];
+    private string ClassName => ShopCssClass.Join("shop-image-upload shop-native",
+        Layout == ShopImageUploadLayout.SinglePreview ? "shop-image-upload-single" : null,
+        Layout == ShopImageUploadLayout.SinglePreview && PreviewPreset == ShopImagePreset.PortraitCover
+            ? "shop-image-upload-single-portrait" : null, Class);
+    private string Hint => UploadHint ?? string.Format(Strings.ImageUpload_TypesHint,
         Accept == ".png,.jpg,.jpeg,.webp" ? Strings.ImageUpload_DefaultFormats : Accept,
         (MaxFileSize / 1048576d).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture));
     private string Instructions => Multiple && Files.Count > 0 ? Strings.ImageUpload_ReorderHint : ShowPrimaryBadge ? Strings.ImageUpload_PrimaryHint : Strings.ImageUpload_PickHint;
@@ -141,8 +152,28 @@ public partial class ShopImageUpload : ShopComponentBase, IAsyncDisposable
                         {
                             using var stream = file.OpenReadStream(MaxFileSize, _lifetime.Token);
                             using var buffer = new MemoryStream();
-                            await stream.CopyToAsync(buffer, _lifetime.Token);
+                            var chunk = new byte[65_536];
+                            int count;
+                            while ((count = await stream.ReadAsync(chunk.AsMemory(), _lifetime.Token)) > 0)
+                            {
+                                if (buffer.Length + count > MaxFileSize)
+                                {
+                                    error = MaxFileSizeError ?? string.Format(Strings.ImageUpload_SizeError, MaxFileSize / 1048576d);
+                                    throw new IOException("Image exceeds the bounded read limit.");
+                                }
+                                await buffer.WriteAsync(chunk.AsMemory(0, count), _lifetime.Token);
+                            }
                             var bytes = buffer.ToArray();
+                            if (bytes.LongLength > MaxFileSize)
+                                throw new IOException("Image exceeds the bounded read limit.");
+                            item = item with { Bytes = bytes };
+                            if (ValidateFileAsync is not null)
+                                error = await ValidateFileAsync(item, _lifetime.Token);
+                            if (error is not null)
+                            {
+                                _pending[index] = item with { Error = error };
+                                continue;
+                            }
                             var module = await ModuleAsync();
                             _lifetime.Token.ThrowIfCancellationRequested();
                             using var reference = new DotNetStreamReference(new MemoryStream(bytes));
@@ -152,7 +183,7 @@ public partial class ShopImageUpload : ShopComponentBase, IAsyncDisposable
                         }
                         catch (Exception exception) when (exception is IOException or JSException)
                         {
-                            error = Strings.ImageUpload_ReadError;
+                            error ??= Strings.ImageUpload_ReadError;
                         }
                     }
                     _pending[index] = item with { Error = error };
@@ -161,6 +192,11 @@ public partial class ShopImageUpload : ShopComponentBase, IAsyncDisposable
                 }
                 // An external reset during preparation takes precedence over this batch.
                 if (!Files.SequenceEqual(prior)) return;
+                if (Layout == ShopImageUploadLayout.SinglePreview && _pending.Any(image => image.Error is not null))
+                {
+                    _selectionError = _pending.First(image => image.Error is not null).Error;
+                    return;
+                }
                 IReadOnlyList<ShopUploadedImage> updated = Multiple ? [.. prior, .. _pending] : [.. _pending];
                 await FilesChanged.InvokeAsync(updated);
                 committed = true;

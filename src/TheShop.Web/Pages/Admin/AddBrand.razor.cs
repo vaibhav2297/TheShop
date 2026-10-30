@@ -1,12 +1,13 @@
-using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using TheShop.Web.Components.Brands;
+using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.Commands.CreateBrand;
 using TheShop.Application.Features.Brands.DTOs;
 using TheShop.Web.Auth;
+using TheShop.Web.Common.Notifications;
 using TheShop.Web.Common;
+using TheShop.Web.Components.Brands;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
@@ -59,7 +60,7 @@ public partial class AddBrand : ComponentBase
             // A row still showing a validation error (wrong type / too large) never leaves the client.
             var validLogoImages = _logoImages.Where(image => image.Error is null).ToList();
             var logo = validLogoImages.Count > 0
-                ? new BrandLogoUpload(validLogoImages[0].Bytes, validLogoImages[0].FileName, validLogoImages[0].ContentType)
+                ? new ImageUpload(validLogoImages[0].Bytes, validLogoImages[0].FileName, validLogoImages[0].ContentType)
                 : null;
 
             var result = await Mediator.Send(new CreateBrandCommand(

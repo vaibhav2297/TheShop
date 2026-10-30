@@ -1,6 +1,7 @@
 @using TheShop.Web.Common
 @using TheShop.Web.Components.Admin
 @using TheShop.Web.Components.Common
+@using TheShop.Application.Features.Admin
 
 <PageTitle>@Strings.AdminConsole_PageTitle</PageTitle>
 
@@ -12,7 +13,7 @@
         <div class="shop-admin-console-grid" aria-busy="@busy.ToString().ToLowerInvariant()">
             @if (busy)
             {
-                @for (var i = 0; i < 5; i++)
+                @for (var i = 0; i < AdminDashboardCatalogue.Modules.Count; i++)
                 {
                     <AdminModuleCardSkeleton />
                 }

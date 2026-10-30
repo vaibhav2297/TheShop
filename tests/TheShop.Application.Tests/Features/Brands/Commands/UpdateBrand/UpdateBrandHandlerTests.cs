@@ -1,12 +1,12 @@
 using FluentAssertions;
-using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Common.Storage;
-using TheShop.Application.Features.Brands;
 using TheShop.Application.Features.Brands.Commands.UpdateBrand;
 using TheShop.Application.Features.Brands.DTOs;
+using TheShop.Application.Features.Brands;
 using TheShop.Domain.Entities;
 using Xunit;
 
@@ -32,11 +32,11 @@ public class UpdateBrandHandlerTests
         string name = "Elf Bar",
         string? description = null,
         bool isActive = true,
-        BrandLogoUpload? newLogo = null,
+        ImageUpload? newLogo = null,
         bool removeLogo = false) =>
         new(id, name, description, isActive, newLogo, removeLogo);
 
-    private static BrandLogoUpload Logo() => new([1, 2, 3], "logo.png", "image/png");
+    private static ImageUpload Logo() => new([1, 2, 3], "logo.png", "image/png");
 
     private Brand SetUpExistingBrand(
         string name = "Elf Bar", string? description = null, bool isActive = true, string? logoPath = null)

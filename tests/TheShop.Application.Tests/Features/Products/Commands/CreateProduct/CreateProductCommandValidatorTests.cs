@@ -1,7 +1,8 @@
 using FluentAssertions;
-using TheShop.Application.Features.Products;
+using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Products.Commands.CreateProduct;
 using TheShop.Application.Features.Products.DTOs;
+using TheShop.Application.Features.Products;
 using Xunit;
 
 namespace TheShop.Application.Tests.Features.Products.Commands.CreateProduct;
@@ -284,7 +285,7 @@ public class CreateProductCommandValidatorTests
     public void Validate_WithAnImageOfAnUnacceptedType_HasImageInvalidTypeError()
     {
         var result = _validator.Validate(ValidCommand(gallery: [
-            new ProductGalleryEntry(null, new ProductImageUpload([1, 2, 3], "photo.gif", "image/gif"), 0, true, Guid.NewGuid()),
+            new ProductGalleryEntry(null, new ImageUpload([1, 2, 3], "photo.gif", "image/gif"), 0, true, Guid.NewGuid()),
         ]));
 
         result.Errors.Should().Contain(e => e.ErrorMessage == ProductErrorKeys.ImageInvalidType);
@@ -296,7 +297,7 @@ public class CreateProductCommandValidatorTests
     {
         var oversized = new byte[(2 * 1024 * 1024) + 1];
         var result = _validator.Validate(ValidCommand(gallery: [
-            new ProductGalleryEntry(null, new ProductImageUpload(oversized, "photo.png", "image/png"), 0, true, Guid.NewGuid()),
+            new ProductGalleryEntry(null, new ImageUpload(oversized, "photo.png", "image/png"), 0, true, Guid.NewGuid()),
         ]));
 
         result.Errors.Should().Contain(e => e.ErrorMessage == ProductErrorKeys.ImageTooLarge);
@@ -310,7 +311,7 @@ public class CreateProductCommandValidatorTests
     public void Validate_WithAnAcceptedImageType_IsValid(string contentType)
     {
         var result = _validator.Validate(ValidCommand(gallery: [
-            new ProductGalleryEntry(null, new ProductImageUpload([1, 2, 3], "photo.png", contentType), 0, true, Guid.NewGuid()),
+            new ProductGalleryEntry(null, new ImageUpload([1, 2, 3], "photo.png", contentType), 0, true, Guid.NewGuid()),
         ]));
 
         result.IsValid.Should().BeTrue();
@@ -321,8 +322,8 @@ public class CreateProductCommandValidatorTests
     public void Validate_WithMoreThanOneImageMarkedPrimary_HasPrimaryImageRequiredError()
     {
         var result = _validator.Validate(ValidCommand(gallery: [
-            new ProductGalleryEntry(null, new ProductImageUpload([1, 2, 3], "a.png", "image/png"), 0, true, Guid.NewGuid()),
-            new ProductGalleryEntry(null, new ProductImageUpload([1, 2, 3], "b.png", "image/png"), 1, true, Guid.NewGuid()),
+            new ProductGalleryEntry(null, new ImageUpload([1, 2, 3], "a.png", "image/png"), 0, true, Guid.NewGuid()),
+            new ProductGalleryEntry(null, new ImageUpload([1, 2, 3], "b.png", "image/png"), 1, true, Guid.NewGuid()),
         ]));
 
         result.Errors.Should().Contain(e => e.ErrorMessage == ProductErrorKeys.PrimaryImageRequired);

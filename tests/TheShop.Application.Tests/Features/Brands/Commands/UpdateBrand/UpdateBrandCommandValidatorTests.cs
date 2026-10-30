@@ -1,7 +1,8 @@
 using FluentAssertions;
-using TheShop.Application.Features.Brands;
+using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.Commands.UpdateBrand;
 using TheShop.Application.Features.Brands.DTOs;
+using TheShop.Application.Features.Brands;
 using Xunit;
 
 namespace TheShop.Application.Tests.Features.Brands.Commands.UpdateBrand;
@@ -21,11 +22,11 @@ public class UpdateBrandCommandValidatorTests
         string name = "Elf Bar",
         string? description = null,
         bool isActive = true,
-        BrandLogoUpload? newLogo = null,
+        ImageUpload? newLogo = null,
         bool removeLogo = false) =>
         new(id ?? Guid.NewGuid(), name, description, isActive, newLogo, removeLogo);
 
-    private static BrandLogoUpload Logo(string contentType = "image/png", int sizeBytes = 1024) =>
+    private static ImageUpload Logo(string contentType = "image/png", int sizeBytes = 1024) =>
         new(new byte[sizeBytes], "logo.png", contentType);
 
     // =========================================================================

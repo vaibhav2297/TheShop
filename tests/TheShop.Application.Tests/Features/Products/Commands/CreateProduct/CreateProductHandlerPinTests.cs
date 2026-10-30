@@ -59,7 +59,7 @@ public class CreateProductHandlerPinTests
     private CreateProductHandler CreateSut() => new(_products, _categories, _brands, _fileStorage);
 
     private static ProductGalleryEntry NewImage(Guid clientId, int position) =>
-        new(null, new ProductImageUpload([1, 2, 3], $"{position}.png", "image/png"), position, position == 0, clientId);
+        new(null, new ImageUpload([1, 2, 3], $"{position}.png", "image/png"), position, position == 0, clientId);
 
     private CreateProductCommand Command(
         IReadOnlyList<ProductGalleryEntry> gallery,

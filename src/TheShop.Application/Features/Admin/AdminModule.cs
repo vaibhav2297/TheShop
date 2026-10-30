@@ -12,4 +12,5 @@ public enum AdminModule
     Brands,
     Users,
     Roles,
+    Homepage,
 }

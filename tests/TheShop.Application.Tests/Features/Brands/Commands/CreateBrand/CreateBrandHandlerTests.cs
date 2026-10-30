@@ -1,12 +1,12 @@
 using FluentAssertions;
-using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Common.Storage;
-using TheShop.Application.Features.Brands;
 using TheShop.Application.Features.Brands.Commands.CreateBrand;
 using TheShop.Application.Features.Brands.DTOs;
+using TheShop.Application.Features.Brands;
 using TheShop.Domain.Entities;
 using Xunit;
 
@@ -29,7 +29,7 @@ public class CreateBrandHandlerTests
     private static CreateBrandCommand Command(
         string name = "Elf Bar",
         string? description = null,
-        BrandLogoUpload? logo = null,
+        ImageUpload? logo = null,
         bool isActive = true) =>
         new(name, description, logo, isActive);
 
@@ -44,7 +44,7 @@ public class CreateBrandHandlerTests
             StorageArea.BrandLogos, Arg.Any<Guid>(), Arg.Any<Stream>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(key);
 
-    private static BrandLogoUpload Logo() => new([1, 2, 3], "logo.png", "image/png");
+    private static ImageUpload Logo() => new([1, 2, 3], "logo.png", "image/png");
 
     // =========================================================================
     // Happy path (AC-1, AC-6)

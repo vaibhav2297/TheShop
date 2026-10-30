@@ -41,6 +41,7 @@ if ($StartApp) { $arguments += '--start-app' }
 if ($LocalE2E) { $arguments += '--local-e2e' }
 if ($StorageState) { $arguments += @('--storage-state', (Resolve-Path -LiteralPath $StorageState).Path) }
 if ($Crop) { $arguments += @('--crop', $Crop) }
+if ($target.State -match 'inferred state') { $arguments += '--inferred-state' }
 $arguments += $BrowserArguments
 & dotnet @arguments
 if ($LASTEXITCODE -ne 0) { throw 'Browser capture failed. Evidence remains incomplete.' }

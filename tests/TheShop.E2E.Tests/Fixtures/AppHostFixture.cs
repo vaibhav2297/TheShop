@@ -21,7 +21,8 @@ public sealed class AppHostFixture : IAsyncLifetime
             _app = Process.Start(new ProcessStartInfo
             {
                 FileName = "dotnet",
-                Arguments = "run --project src/TheShop.Web --launch-profile http",
+                // The E2E static gate builds Web first; avoid a second restore against user NuGet config.
+                Arguments = "run --project src/TheShop.Web --launch-profile http --no-build",
                 WorkingDirectory = E2EEnvironment.RepoRoot,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,

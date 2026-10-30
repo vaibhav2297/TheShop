@@ -9,7 +9,10 @@
                           ErrorText="@_selectionError" Accept="@Accept" Multiple="@Multiple"
                           Disabled="@(Disabled || processing)" FilesSelected="SelectAsync"
                           ChildContent="@GridContent" />
-        <p id="@_helpId" class="shop-image-upload-hint">@Instructions</p>
+        @if (Layout == ShopImageUploadLayout.Grid)
+        {
+            <p id="@_helpId" class="shop-image-upload-hint">@Instructions</p>
+        }
         @if (_selectionError is not null && DisplayedImages.Count > 0)
         {
             <p class="shop-image-upload-error" role="alert">@_selectionError</p>
@@ -28,7 +31,9 @@
 </div>
 
 @code {
-    private RenderFragment? GridContent => DisplayedImages.Count == 0 ? null : @<div class="shop-image-upload-grid" role="list" aria-label="@(PreviewAlt ?? Strings.ImageUpload_Label)">
+    private RenderFragment? GridContent => DisplayedImages.Count == 0 ? null
+        : Layout == ShopImageUploadLayout.SinglePreview ? SingleContent
+        : @<div class="shop-image-upload-grid" role="list" aria-label="@(PreviewAlt ?? Strings.ImageUpload_Label)">
         @foreach (var image in DisplayedImages)
         {
             <div @key="image.ClientId" role="listitem" class="@ItemClass(image)" data-upload-id="@image.ClientId">
@@ -48,5 +53,18 @@
                 <span>@(Multiple ? Strings.ImageUpload_Add : Strings.ImageUpload_Replace)</span>
             </button>
         </div>
+    </div>;
+
+    private RenderFragment SingleContent => @<div class="shop-image-upload-single-content">
+        @foreach (var image in DisplayedImages)
+        {
+            <ShopImageTile @key="image.ClientId" Src="@image.PreviewUrl" Alt="@ImageName(image)"
+                           Preset="@PreviewPreset" Frame="ShopImageTileFrame.Image"
+                           ResponsivePreview="@ResponsivePreview" Disabled="@Blocked"
+                           RemoveLabel="@RemoveName(image)" OnRemove="@(() => RemoveAsync(image.ClientId))" />
+        }
+        <ShopButton Variant="ShopVariant.Outlined" Disabled="@Blocked" data-file-picker>
+            @Strings.ImageUpload_Replace
+        </ShopButton>
     </div>;
 }

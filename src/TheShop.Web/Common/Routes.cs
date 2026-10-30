@@ -50,6 +50,10 @@ public static class Routes
     public static class Admin
     {
         public const string Console = "/admin";
+        /// <summary>Homepage administration entry point.</summary>
+        public const string ManageHomepage = "/admin/homepage";
+        /// <summary>The singleton hero banner Add/Edit route.</summary>
+        public const string ManageHeroBanner = "/admin/homepage/hero-banner";
 
         /// <summary>
         /// The Manage Products admin harness shell. Requires a signed-in user via

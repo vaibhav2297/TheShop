@@ -16,10 +16,11 @@ public static class AdminDashboardCatalogue
     public sealed record ModuleEntry(AdminModule Module, string ViewPermissionCode);
 
     /// <summary>
-    /// The five governed modules, in display order.
+    /// The governed modules, in display order.
     /// </summary>
     public static readonly IReadOnlyList<ModuleEntry> Modules =
     [
+        new(AdminModule.Homepage, PermissionCatalogue.Homepage.ViewCode),
         new(AdminModule.Products, PermissionCatalogue.Products.View.Code),
         new(AdminModule.Categories, PermissionCatalogue.Categories.View.Code),
         new(AdminModule.Brands, PermissionCatalogue.Brands.View.Code),

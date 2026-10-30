@@ -1887,4 +1887,121 @@
   <data name="VariantFilters_Retry" xml:space="preserve">
     <value>Retry</value>
   </data>
+  <data name="HeroBanner_HeadingRequired" xml:space="preserve">
+    <value>Enter a heading.</value>
+  </data>
+  <data name="HeroBanner_DesktopImageRequired" xml:space="preserve">
+    <value>Add a desktop image before saving.</value>
+  </data>
+  <data name="HeroBanner_ButtonPairRequired" xml:space="preserve">
+    <value>Enter both a button label and link, or leave both blank.</value>
+  </data>
+  <data name="HeroBanner_ButtonLinkInvalid" xml:space="preserve">
+    <value>Enter a site path beginning with / or a valid HTTP or HTTPS URL.</value>
+  </data>
+  <data name="HeroBanner_ImageInvalidType" xml:space="preserve">
+    <value>Select a PNG, JPG, or WebP image.</value>
+  </data>
+  <data name="HeroBanner_ImageTooLarge" xml:space="preserve">
+    <value>Each image must be 5 MB or smaller.</value>
+  </data>
+  <data name="HeroBanner_ImageUnreadable" xml:space="preserve">
+    <value>This image could not be read. Select a valid image.</value>
+  </data>
+  <data name="HeroBanner_DesktopDimensionsInvalid" xml:space="preserve">
+    <value>Use a 16:9 image at least 1920 × 1080 pixels.</value>
+  </data>
+  <data name="HeroBanner_MobileDimensionsInvalid" xml:space="preserve">
+    <value>Use a mobile image with 4:5 proportions.</value>
+  </data>
+  <data name="HeroBanner_AlreadyExists" xml:space="preserve">
+    <value>A hero banner already exists. Reload to edit it.</value>
+  </data>
+  <data name="HeroBanner_NotFound" xml:space="preserve">
+    <value>The hero banner is no longer available. Reload to continue.</value>
+  </data>
+  <data name="HeroBanner_ImageUnavailable" xml:space="preserve">
+    <value>An image is no longer available. Select it again or reload.</value>
+  </data>
+  <data name="HeroBanner_LoadFailed" xml:space="preserve">
+    <value>Could not load the hero banner. Try again.</value>
+  </data>
+  <data name="HeroBanner_UploadFailed" xml:space="preserve">
+    <value>Could not upload the image. Your draft is still available.</value>
+  </data>
+  <data name="HeroBanner_SaveFailed" xml:space="preserve">
+    <value>Could not save the hero banner. Your draft is still available.</value>
+  </data>
+  <data name="HeroBanner_SaveUnconfirmed" xml:space="preserve">
+    <value>Save could not be confirmed. Reload to check the saved banner before retrying.</value>
+  </data>
+  <data name="Homepage_Heading" xml:space="preserve">
+    <value>Homepage</value>
+  </data>
+  <data name="Homepage_HeroBanner" xml:space="preserve">
+    <value>Hero Banner</value>
+  </data>
+  <data name="AdminConsole_Module_Homepage" xml:space="preserve">
+    <value>Homepage</value>
+  </data>
+  <data name="HeroBanner_AddHeading" xml:space="preserve">
+    <value>Add Hero Banner</value>
+  </data>
+  <data name="HeroBanner_EditHeading" xml:space="preserve">
+    <value>Edit Hero Banner</value>
+  </data>
+  <data name="HeroBanner_Absent" xml:space="preserve">
+    <value>No hero banner has been added.</value>
+  </data>
+  <data name="HeroBanner_DesktopImage" xml:space="preserve">
+    <value>Desktop image</value>
+  </data>
+  <data name="HeroBanner_MobileImage" xml:space="preserve">
+    <value>Mobile image (optional)</value>
+  </data>
+  <data name="HeroBanner_Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="HeroBanner_Heading" xml:space="preserve">
+    <value>Heading</value>
+  </data>
+  <data name="HeroBanner_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="HeroBanner_ButtonLabel" xml:space="preserve">
+    <value>Button label</value>
+  </data>
+  <data name="HeroBanner_ButtonLink" xml:space="preserve">
+    <value>Button link</value>
+  </data>
+  <data name="HeroBanner_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="HeroBanner_Visible" xml:space="preserve">
+    <value>Visible</value>
+  </data>
+  <data name="HeroBanner_Hidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="HeroBanner_Reload" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  <data name="HeroBanner_Saved" xml:space="preserve">
+    <value>Hero banner saved.</value>
+  </data>
+  <data name="HeroBanner_RemoveDesktop" xml:space="preserve">
+    <value>Remove desktop image</value>
+  </data>
+  <data name="HeroBanner_RemoveMobile" xml:space="preserve">
+    <value>Remove mobile image</value>
+  </data>
+  <data name="HeroBanner_DesktopHint" xml:space="preserve">
+    <value>16:9. At least 1920 × 1080. PNG, JPG or WebP up to 5 MB. Keep the left third clear for text.</value>
+  </data>
+  <data name="HeroBanner_MobileHint" xml:space="preserve">
+    <value>4:5, shown below 600px. Without one, phones show a centre crop of the desktop image.</value>
+  </data>
+  <data name="HeroBanner_AddImage" xml:space="preserve"><value>Add image</value></data>
+  <data name="HeroBanner_UploadHint" xml:space="preserve"><value>Drag and drop, or click to browse. PNG, JPG or WebP up to 5 MB.</value></data>
+  <data name="HeroBanner_MobileUploadHint" xml:space="preserve"><value>Drag and drop, or click to browse.</value></data>
 </root>

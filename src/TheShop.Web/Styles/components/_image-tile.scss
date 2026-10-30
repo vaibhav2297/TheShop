@@ -21,6 +21,13 @@
     &:focus-within .shop-image-tile-remove { opacity: 1; pointer-events: auto; }
 }
 .shop-image-tile-image { inline-size: 100%; block-size: 100%; }
+.shop-image-tile-frame-image {
+    aspect-ratio: auto;
+    background: transparent;
+    .shop-image-tile-image { block-size: auto; }
+    .shop-image-tile-remove { opacity: 1; pointer-events: auto; }
+    &::after { display: none; }
+}
 .shop-image-tile-image img { -webkit-user-drag: none; user-select: none; }
 .shop-image-tile-surface {
     position: absolute;

@@ -101,6 +101,12 @@
         outline: none;
     }
 }
+textarea.shop-field-input {
+    display: block;
+    field-sizing: content;
+    min-block-size: 1lh;
+    resize: vertical;
+}
 
 @media (forced-colors: active) {
     .shop-field-control {

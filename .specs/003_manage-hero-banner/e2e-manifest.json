@@ -1,0 +1,151 @@
+{
+  "feature": "003_manage-hero-banner",
+  "trait": "003_manage-hero-banner",
+  "date": "2026-10-29",
+  "journeys": [
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageHeroBannerJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageHeroBannerJourneyTests",
+      "tests": 6,
+      "methods": [
+        {
+          "name": "AC1_ConsoleCardOpensEmptyAddForm",
+          "ac": 1
+        },
+        {
+          "name": "AC5_ImageSelectionAndReplacementStayInDraft",
+          "ac": 5
+        },
+        {
+          "name": "AC6_InvalidImageSizeAndDimensionsShowFeedback",
+          "ac": 6
+        },
+        {
+          "name": "AC10_SaveNavigatesHomeAndReopenPersistsContent",
+          "ac": 10
+        },
+        {
+          "name": "AC12_CancelDiscardsUnsavedDraft",
+          "ac": 12
+        },
+        {
+          "name": "AC16_NarrowAndWideFormsRemainUsableByKeyboard",
+          "ac": 16
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageHeroBannerAnonymousJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageHeroBannerAnonymousJourneyTests",
+      "tests": 1,
+      "methods": [
+        {
+          "name": "AC3_AnonymousUserCannotOpenHomepageManagement",
+          "ac": 3
+        }
+      ]
+    }
+  ],
+  "totalTests": 7,
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHeroBannerJourneyTests.AC1_ConsoleCardOpensEmptyAddForm",
+      "reason": "Real admin navigation, browser file handling, persistence, or layout."
+    },
+    {
+      "id": "AC-2",
+      "coverage": "unit",
+      "evidence": "TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Render_ExistingAndEditPermission_LoadsValuesAndHiddenStatus",
+      "reason": "Pure rule or isolated component and data behavior proved below browser."
+    },
+    {
+      "id": "AC-3",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHeroBannerAnonymousJourneyTests.AC3_AnonymousUserCannotOpenHomepageManagement",
+      "reason": "Real admin navigation, browser file handling, persistence, or layout."
+    },
+    {
+      "id": "AC-4",
+      "coverage": "unit",
+      "evidence": "TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Render_ViewOnly_ShowsReadOnlyBannerWithoutSave",
+      "reason": "Pure rule or isolated component and data behavior proved below browser."
+    },
+    {
+      "id": "AC-5",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHeroBannerJourneyTests.AC5_ImageSelectionAndReplacementStayInDraft",
+      "reason": "Real admin navigation, browser file handling, persistence, or layout."
+    },
+    {
+      "id": "AC-6",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHeroBannerJourneyTests.AC6_InvalidImageSizeAndDimensionsShowFeedback",
+      "reason": "Real admin navigation, browser file handling, persistence, or layout."
+    },
+    {
+      "id": "AC-7",
+      "coverage": "unit",
+      "evidence": "TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Create_MissingHeadingAndDesktop_ReturnsBothFieldErrors",
+      "reason": "Pure rule or isolated component and data behavior proved below browser."
+    },
+    {
+      "id": "AC-8",
+      "coverage": "unit",
+      "evidence": "TheShop.Domain.Tests.Entities.HeroBannerTests.ChangeContent_IncompleteButtonPair_PreservesPreviousValues",
+      "reason": "Pure rule or isolated component and data behavior proved below browser."
+    },
+    {
+      "id": "AC-9",
+      "coverage": "unit",
+      "evidence": "TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Create_UnsafeDestinationsAndIncompleteButtonPair_RejectsFields",
+      "reason": "Pure rule or isolated component and data behavior proved below browser."
+    },
+    {
+      "id": "AC-10",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHeroBannerJourneyTests.AC10_SaveNavigatesHomeAndReopenPersistsContent",
+      "reason": "Real admin navigation, browser file handling, persistence, or layout."
+    },
+    {
+      "id": "AC-11",
+      "coverage": "unit",
+      "evidence": "TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Update_RemoveMobile_PreservesDesktopAndSavesHidden",
+      "reason": "Pure rule or isolated component and data behavior proved below browser."
+    },
+    {
+      "id": "AC-12",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHeroBannerJourneyTests.AC12_CancelDiscardsUnsavedDraft",
+      "reason": "Real admin navigation, browser file handling, persistence, or layout."
+    },
+    {
+      "id": "AC-13",
+      "coverage": "unit",
+      "evidence": "TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Update_RemoveDesktopWithoutReplacementRejected_ReplacementAccepted",
+      "reason": "Pure rule or isolated component and data behavior proved below browser."
+    },
+    {
+      "id": "AC-14",
+      "coverage": "unit",
+      "evidence": "TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Create_UnconfirmedPersistence_KeepsUploadForReconciliation",
+      "reason": "Pure rule or isolated component and data behavior proved below browser."
+    },
+    {
+      "id": "AC-15",
+      "coverage": "unit",
+      "evidence": "TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Create_ExistingHiddenBanner_ReturnsConflictWithoutUploading",
+      "reason": "Pure rule or isolated component and data behavior proved below browser."
+    },
+    {
+      "id": "AC-16",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHeroBannerJourneyTests.AC16_NarrowAndWideFormsRemainUsableByKeyboard",
+      "reason": "Real admin navigation, browser file handling, persistence, or layout."
+    }
+  ],
+  "pageObjects": [
+    "tests/TheShop.E2E.Tests/Pages/Admin/ManageHeroBannerPage.cs"
+  ]
+}

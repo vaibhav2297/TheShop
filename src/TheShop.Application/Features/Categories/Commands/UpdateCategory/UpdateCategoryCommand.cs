@@ -15,5 +15,5 @@ public sealed record UpdateCategoryCommand(
     string Name,
     string? Description,
     bool IsActive,
-    CategoryImageUpload? NewImage,
+    ImageUpload? NewImage,
     bool RemoveImage) : IRequest<Result<CategoryDto>>;

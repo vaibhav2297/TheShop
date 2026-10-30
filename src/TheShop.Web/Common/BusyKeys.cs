@@ -6,6 +6,12 @@ namespace TheShop.Web.Common;
 /// </summary>
 public static class BusyKeys
 {
+    /// <summary>Homepage administration operations.</summary>
+    public static class Homepage
+    {
+        public const string LoadHeroBanner = "homepage.hero.load";
+        public const string SaveHeroBanner = "homepage.hero.save";
+    }
     /// <summary>Prefix for per-instance local image preparation.</summary>
     public const string ImageSelection = "images.selection";
 

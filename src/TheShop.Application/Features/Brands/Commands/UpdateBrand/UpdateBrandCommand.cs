@@ -15,5 +15,5 @@ public sealed record UpdateBrandCommand(
     string Name,
     string? Description,
     bool IsActive,
-    BrandLogoUpload? NewLogo,
+    ImageUpload? NewLogo,
     bool RemoveLogo) : IRequest<Result<BrandDto>>;

@@ -1,0 +1,162 @@
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Common.UI
+
+<PageTitle>@Heading</PageTitle>
+<section class="shop-native shop-hero-banner" data-testid="hero-banner-admin" data-state="@State">
+    <h1>@Heading</h1>
+    <BusyFor Key="@BusyKeys.Homepage.LoadHeroBanner" Context="loading">
+        @if (loading && !_loaded)
+        {
+            <div class="shop-hero-banner-grid" role="status" aria-label="@Strings.Loading" data-testid="hero-banner-skeleton">
+                <div class="shop-hero-banner-artwork">
+                    <div class="shop-hero-banner-slot">
+                        <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-hero-banner-skeleton-desktop-label" />
+                        <ShopSkeleton Class="shop-hero-banner-skeleton-desktop" />
+                        <ShopSkeleton Class="shop-hero-banner-skeleton-replace" />
+                        <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-hero-banner-skeleton-hint" />
+                    </div>
+                    <div class="shop-hero-banner-slot">
+                        <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-hero-banner-skeleton-mobile-label" />
+                        <div class="shop-hero-banner-skeleton-mobile-row">
+                            <ShopSkeleton Class="shop-hero-banner-skeleton-mobile" />
+                            <ShopSkeleton Class="shop-hero-banner-skeleton-replace" />
+                        </div>
+                        <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-hero-banner-skeleton-hint" />
+                    </div>
+                </div>
+                <div class="shop-hero-banner-settings">
+                    <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-hero-banner-skeleton-content-label" />
+                    <ShopSkeleton Class="shop-hero-banner-skeleton-field" />
+                    <ShopSkeleton Class="shop-hero-banner-skeleton-description" />
+                    <ShopSkeleton Class="shop-hero-banner-skeleton-field" />
+                    <ShopSkeleton Class="shop-hero-banner-skeleton-field" />
+                    <div class="shop-hero-banner-skeleton-status">
+                        <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-hero-banner-skeleton-status-label" />
+                        <div class="shop-hero-banner-skeleton-options">
+                            <ShopSkeleton Class="shop-hero-banner-skeleton-visible" />
+                            <ShopSkeleton Class="shop-hero-banner-skeleton-hidden" />
+                        </div>
+                    </div>
+                    <div class="shop-hero-banner-actions shop-hero-banner-skeleton-actions">
+                        <ShopSkeleton Class="shop-hero-banner-skeleton-save" />
+                        <ShopSkeleton Class="shop-hero-banner-skeleton-cancel" />
+                    </div>
+                </div>
+            </div>
+        }
+        @if (_loadError is not null)
+        {
+            <div role="alert" class="shop-hero-banner-load-error">
+                <p>@Localizer[_loadError]</p>
+                <ShopButton OnClick="LoadAsync" Disabled="@loading" data-testid="hero-reload">@Strings.HeroBanner_Reload</ShopButton>
+            </div>
+        }
+        @if (_loaded && CanMutate)
+        {
+            <EditForm @key="_editContext" EditContext="@_editContext" OnSubmit="SaveAsync" novalidate>
+                <ShopCommandValidation @ref="_validation" FieldMap="@FieldMap" />
+                <BusyFor Key="@BusyKeys.Homepage.SaveHeroBanner" Context="saving">
+                    <div class="shop-hero-banner-grid">
+                        <div class="shop-hero-banner-artwork">
+                            <section class="shop-hero-banner-slot">
+                                <h2>@Strings.HeroBanner_DesktopImage</h2>
+                                <ShopImageUpload @ref="_desktopUpload" Files="@_model.DesktopImage" FilesChanged="DesktopChanged"
+                                                 Layout="ShopImageUploadLayout.SinglePreview" ResponsivePreview="false"
+                                                 PreviewPreset="ShopImagePreset.Hero" MaxFileSize="5242880"
+                                                 UploadText="@Strings.HeroBanner_AddImage" UploadHint="@Strings.HeroBanner_UploadHint"
+                                                 ValidateFileAsync="ValidateDesktopAsync" Disabled="@(saving || loading)"
+                                                 PreviewAlt="@Strings.HeroBanner_DesktopImage" RemoveLabel="@Strings.HeroBanner_RemoveDesktop"
+                                                 InvalidTypeError="@Strings.HeroBanner_ImageInvalidType" MaxFileSizeError="@Strings.HeroBanner_ImageTooLarge"
+                                                 data-testid="hero-desktop-image" role="group" aria-label="@Strings.HeroBanner_DesktopImage"
+                                                 aria-describedby="hero-desktop-hint hero-desktop-error" />
+                                <p id="hero-desktop-hint" class="shop-hero-banner-hint"><ShopIcon Icon="@ShopIcons.Outlined.Info" />@Strings.HeroBanner_DesktopHint</p>
+                                <div id="hero-desktop-error" class="shop-hero-banner-errors" aria-live="polite"><ValidationMessage For="@(() => _model.DesktopImage)" /></div>
+                            </section>
+                            <section class="shop-hero-banner-slot">
+                                <h2>@Strings.HeroBanner_MobileImage</h2>
+                                <ShopImageUpload @ref="_mobileUpload" Files="@_model.MobileImage" FilesChanged="MobileChanged"
+                                                 Layout="ShopImageUploadLayout.SinglePreview" ResponsivePreview="false"
+                                                 PreviewPreset="ShopImagePreset.PortraitCover" MaxFileSize="5242880"
+                                                 UploadText="@Strings.HeroBanner_AddImage" UploadHint="@Strings.HeroBanner_MobileUploadHint"
+                                                 ValidateFileAsync="ValidateMobileAsync" Disabled="@(saving || loading)"
+                                                 PreviewAlt="@Strings.HeroBanner_MobileImage" RemoveLabel="@Strings.HeroBanner_RemoveMobile"
+                                                 InvalidTypeError="@Strings.HeroBanner_ImageInvalidType" MaxFileSizeError="@Strings.HeroBanner_ImageTooLarge"
+                                                 data-testid="hero-mobile-image" role="group" aria-label="@Strings.HeroBanner_MobileImage"
+                                                 aria-describedby="hero-mobile-hint hero-mobile-error" />
+                                <p id="hero-mobile-hint" class="shop-hero-banner-hint"><ShopIcon Icon="@ShopIcons.Outlined.Info" />@Strings.HeroBanner_MobileHint</p>
+                                <div id="hero-mobile-error" class="shop-hero-banner-errors" aria-live="polite"><ValidationMessage For="@(() => _model.MobileImage)" /></div>
+                            </section>
+                        </div>
+                        <div class="shop-hero-banner-settings">
+                            <section class="shop-hero-banner-content">
+                                <h2>@Strings.HeroBanner_Content</h2>
+                                <ShopTextField id="hero-heading" data-testid="hero-heading" Label="@Strings.HeroBanner_Heading"
+                                               @bind-Value="_model.Heading" Disabled="@(saving || loading)" required />
+                                <ShopTextField id="hero-description" data-testid="hero-description" Label="@Strings.HeroBanner_Description"
+                                               Lines="2" @bind-Value="_model.Description" Disabled="@(saving || loading)" />
+                                <ShopTextField id="hero-button-label" data-testid="hero-button-label" Label="@Strings.HeroBanner_ButtonLabel"
+                                               @bind-Value="_model.ButtonLabel" Disabled="@(saving || loading)" />
+                                <ShopTextField id="hero-button-link" data-testid="hero-button-link" type="text" Label="@Strings.HeroBanner_ButtonLink"
+                                               @bind-Value="_model.ButtonLink" Disabled="@(saving || loading)" />
+                            </section>
+                            <fieldset class="shop-hero-banner-status" disabled="@(saving || loading)">
+                                <legend>@Strings.HeroBanner_Status</legend>
+                                <div>
+                                    <ShopChip Selected="@_model.IsVisible" SelectedChanged="@(_ => SetVisible(true))" Size="ShopSize.Medium" Disabled="@(saving || loading)" data-testid="hero-visible">@Strings.HeroBanner_Visible</ShopChip>
+                                    <ShopChip Selected="@(!_model.IsVisible)" SelectedChanged="@(_ => SetVisible(false))" Size="ShopSize.Medium" Disabled="@(saving || loading)" data-testid="hero-hidden">@Strings.HeroBanner_Hidden</ShopChip>
+                                </div>
+                            </fieldset>
+                            <div class="shop-hero-banner-actions">
+                                <ShopButton Type="submit" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
+                                            Loading="@saving" Disabled="@(loading || _requiresReload)" data-testid="hero-save">@Strings.Save</ShopButton>
+                                <ShopButton Href="@Routes.Admin.ManageHomepage" Variant="ShopVariant.Outlined" Size="ShopSize.Large"
+                                            Disabled="@saving" data-testid="hero-cancel">@Strings.Cancel</ShopButton>
+                                @if (_requiresReload && _loadError is null)
+                                {
+                                    <ShopButton OnClick="LoadAsync" Variant="ShopVariant.Outlined" Disabled="@(saving || loading)" data-testid="hero-reload">@Strings.HeroBanner_Reload</ShopButton>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </BusyFor>
+            </EditForm>
+        }
+        else if (_loaded && _hasBanner)
+        {
+            <div class="shop-hero-banner-grid">
+                <div class="shop-hero-banner-artwork">
+                    <section class="shop-hero-banner-slot">
+                        <h2>@Strings.HeroBanner_DesktopImage</h2>
+                        <ShopImage Src="@_model.DesktopImage.FirstOrDefault()?.PreviewUrl" Preset="ShopImagePreset.Hero" Responsive="false"
+                                   Alt="@Strings.HeroBanner_DesktopImage" PlaceholderLabel="@Strings.HeroBanner_DesktopImage" />
+                        <p class="shop-hero-banner-hint">@Strings.HeroBanner_DesktopHint</p>
+                    </section>
+                    <section class="shop-hero-banner-slot">
+                        <h2>@Strings.HeroBanner_MobileImage</h2>
+                        @if (_model.MobileImage.Count > 0)
+                        {
+                            <ShopImage Class="shop-hero-banner-read-mobile" Src="@_model.MobileImage[0].PreviewUrl" Preset="ShopImagePreset.PortraitCover"
+                                       Alt="@Strings.HeroBanner_MobileImage" PlaceholderLabel="@Strings.HeroBanner_MobileImage" />
+                        }
+                        <p class="shop-hero-banner-hint">@Strings.HeroBanner_MobileHint</p>
+                    </section>
+                </div>
+                <section class="shop-hero-banner-content">
+                    <h2>@Strings.HeroBanner_Content</h2>
+                    <dl class="shop-hero-banner-read-content">
+                        <dt>@Strings.HeroBanner_Heading</dt><dd>@_model.Heading</dd>
+                        <dt>@Strings.HeroBanner_Description</dt><dd>@_model.Description</dd>
+                        <dt>@Strings.HeroBanner_ButtonLabel</dt><dd>@_model.ButtonLabel</dd>
+                        <dt>@Strings.HeroBanner_ButtonLink</dt><dd>@_model.ButtonLink</dd>
+                        <dt>@Strings.HeroBanner_Status</dt><dd>@(_model.IsVisible ? Strings.HeroBanner_Visible : Strings.HeroBanner_Hidden)</dd>
+                    </dl>
+                </section>
+            </div>
+            <ShopButton OnClick="LoadAsync" Variant="ShopVariant.Outlined" Disabled="@loading" data-testid="hero-reload">@Strings.HeroBanner_Reload</ShopButton>
+        }
+        else if (_loaded)
+        {
+            <p>@Strings.HeroBanner_Absent</p>
+        }
+    </BusyFor>
+</section>

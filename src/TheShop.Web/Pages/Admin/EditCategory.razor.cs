@@ -1,13 +1,14 @@
-using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using TheShop.Web.Components.Categories;
+using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Categories.Commands.UpdateCategory;
 using TheShop.Application.Features.Categories.DTOs;
 using TheShop.Application.Features.Categories.Queries.GetCategoryById;
 using TheShop.Web.Auth;
+using TheShop.Web.Common.Notifications;
 using TheShop.Web.Common;
+using TheShop.Web.Components.Categories;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
@@ -103,7 +104,7 @@ public partial class EditCategory : ComponentBase
             // A row still showing a validation error (wrong type / too large) never leaves the client.
             var validNewCategoryImages = _newCategoryImages.Where(image => image.Error is null).ToList();
             var newImage = validNewCategoryImages.Count > 0
-                ? new CategoryImageUpload(validNewCategoryImages[0].Bytes, validNewCategoryImages[0].FileName, validNewCategoryImages[0].ContentType)
+                ? new ImageUpload(validNewCategoryImages[0].Bytes, validNewCategoryImages[0].FileName, validNewCategoryImages[0].ContentType)
                 : null;
 
             // The user removed the existing image and did not pick a replacement in this save.
