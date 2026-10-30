@@ -14,5 +14,5 @@ namespace TheShop.Application.Features.Categories.Commands.CreateCategory;
 public sealed record CreateCategoryCommand(
     string Name,
     string? Description,
-    CategoryImageUpload? Image,
+    ImageUpload? Image,
     bool IsActive) : IRequest<Result<CategoryDto>>;

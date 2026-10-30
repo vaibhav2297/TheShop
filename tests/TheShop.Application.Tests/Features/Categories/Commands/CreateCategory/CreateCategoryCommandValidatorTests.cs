@@ -1,7 +1,8 @@
 using FluentAssertions;
-using TheShop.Application.Features.Categories;
+using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Categories.Commands.CreateCategory;
 using TheShop.Application.Features.Categories.DTOs;
+using TheShop.Application.Features.Categories;
 using Xunit;
 
 namespace TheShop.Application.Tests.Features.Categories.Commands.CreateCategory;
@@ -18,11 +19,11 @@ public class CreateCategoryCommandValidatorTests
     private static CreateCategoryCommand ValidCommand(
         string name = "Disposables",
         string? description = null,
-        CategoryImageUpload? image = null,
+        ImageUpload? image = null,
         bool isActive = true) =>
         new(name, description, image, isActive);
 
-    private static CategoryImageUpload Image(string contentType = "image/png", int sizeBytes = 1024) =>
+    private static ImageUpload Image(string contentType = "image/png", int sizeBytes = 1024) =>
         new(new byte[sizeBytes], "image.png", contentType);
 
     // =========================================================================

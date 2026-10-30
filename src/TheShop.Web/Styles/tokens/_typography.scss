@@ -20,6 +20,9 @@ $text-styles: (
 );
 
 :root {
+    // Figma banner field and helper line boxes: 20px at 16px, and 15px at 12px.
+    --shop-typography-body-1-field-line-height: 1.25;
+    --shop-typography-caption-helper-line-height: 1.25;
     // Unbound SemiBold text in Figma (including product prices); named styles stay unchanged.
     --shop-font-weight-semibold: 600;
 

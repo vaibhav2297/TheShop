@@ -1,7 +1,8 @@
 using FluentAssertions;
-using TheShop.Application.Features.Categories;
+using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Categories.Commands.UpdateCategory;
 using TheShop.Application.Features.Categories.DTOs;
+using TheShop.Application.Features.Categories;
 using Xunit;
 
 namespace TheShop.Application.Tests.Features.Categories.Commands.UpdateCategory;
@@ -21,11 +22,11 @@ public class UpdateCategoryCommandValidatorTests
         string name = "Disposables",
         string? description = null,
         bool isActive = true,
-        CategoryImageUpload? newImage = null,
+        ImageUpload? newImage = null,
         bool removeImage = false) =>
         new(id ?? Guid.NewGuid(), name, description, isActive, newImage, removeImage);
 
-    private static CategoryImageUpload Image(string contentType = "image/png", int sizeBytes = 1024) =>
+    private static ImageUpload Image(string contentType = "image/png", int sizeBytes = 1024) =>
         new(new byte[sizeBytes], "image.png", contentType);
 
     // =========================================================================

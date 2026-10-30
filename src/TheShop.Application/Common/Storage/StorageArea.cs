@@ -7,7 +7,23 @@ namespace TheShop.Application.Common.Storage;
 /// </summary>
 public enum StorageArea
 {
+    /// <summary>
+    /// Public product images, namespaced by product ID. Each product can have multiple images.
+    /// </summary>
     ProductImages,
+
+    /// <summary>
+    /// Public brand logos, namespaced by brand ID. Each brand can have one logo.
+    /// </summary>
     BrandLogos,
+
+    /// <summary>
+    /// Public category images, namespaced by category ID. Each category can have one image.
+    /// </summary>
     CategoryImages,
+
+    /// <summary>
+    /// Private homepage artwork with authenticated uploads and signed previews.
+    /// </summary>
+    HeroBannerImages,
 }

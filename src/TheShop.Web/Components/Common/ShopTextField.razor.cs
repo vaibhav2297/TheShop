@@ -40,6 +40,8 @@ public partial class ShopTextField : InputBase<string?>
     /// Prevents native editing and input-event updates. Supply a BusyFor value when an operation disables the field.
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
+    /// <summary>One renders a text input; larger values render an immediately bound textarea.</summary>
+    [Parameter] public int Lines { get; set; } = 1;
 
     private bool HasLabel => !string.IsNullOrWhiteSpace(Label);
     private string InputId => string.IsNullOrWhiteSpace(AttributeText("id")) ? _generatedId : AttributeText("id")!;

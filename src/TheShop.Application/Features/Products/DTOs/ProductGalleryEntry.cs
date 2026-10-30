@@ -1,3 +1,5 @@
+using TheShop.Application.Common.Models;
+
 namespace TheShop.Application.Features.Products.DTOs;
 
 /// <summary>
@@ -19,4 +21,4 @@ namespace TheShop.Application.Features.Products.DTOs;
 /// never becomes an image's identity.
 /// </param>
 public sealed record ProductGalleryEntry(
-    Guid? ImageId, ProductImageUpload? Upload, int Position, bool IsPrimary, Guid ClientId);
+    Guid? ImageId, ImageUpload? Upload, int Position, bool IsPrimary, Guid ClientId);

@@ -11,7 +11,7 @@
     }
     else if (!Loading || !string.IsNullOrWhiteSpace(Src))
     {
-        <ShopImage Src="@Src" Preset="@Preset" Alt="@Alt" PlaceholderLabel="@Alt" Class="shop-image-tile-image" />
+        <ShopImage Src="@Src" Preset="@Preset" Responsive="@ResponsivePreview" Alt="@Alt" PlaceholderLabel="@Alt" Class="shop-image-tile-image" />
     }
     @if (OnClick.HasDelegate || OnFocus.HasDelegate)
     {

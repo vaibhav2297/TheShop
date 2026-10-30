@@ -1,20 +1,20 @@
-using TheShop.Web.Common.Notifications;
 using MediatR;
-using Microsoft.AspNetCore.Components;
-using TheShop.Web.Common.Dialogs;
-using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Components.Forms;
-using TheShop.Web.Common.UI;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.DTOs;
 using TheShop.Application.Features.Categories.DTOs;
-using TheShop.Application.Features.Products;
 using TheShop.Application.Features.Products.Commands.CreateProduct;
 using TheShop.Application.Features.Products.Commands.UpdateProduct;
 using TheShop.Application.Features.Products.DTOs;
+using TheShop.Application.Features.Products;
 using TheShop.Domain.Exceptions;
 using TheShop.Domain.ValueObjects;
+using TheShop.Web.Common.Dialogs;
+using TheShop.Web.Common.Notifications;
+using TheShop.Web.Common.UI;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
@@ -250,7 +250,7 @@ public partial class ProductForm : ShopComponentBase
 
         _gallery = [.. validImages.Select((image, position) => new ProductGalleryEntry(
             image.ExistingId,
-            image.IsExisting ? null : new ProductImageUpload(image.Bytes, image.FileName, image.ContentType),
+            image.IsExisting ? null : new ImageUpload(image.Bytes, image.FileName, image.ContentType),
             position,
             position == 0,
             image.ClientId))];

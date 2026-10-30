@@ -11,19 +11,20 @@ namespace TheShop.Infrastructure.Storage;
 /// </summary>
 public sealed class SupabaseFileStorage(Supabase.Client client) : IFileStorage
 {
-    private static readonly IReadOnlyDictionary<StorageArea, (string Bucket, string KeyPrefix)> Areas =
-        new Dictionary<StorageArea, (string Bucket, string KeyPrefix)>
+    private static readonly IReadOnlyDictionary<StorageArea, (string Bucket, string KeyPrefix, bool IsPublic)> Areas =
+        new Dictionary<StorageArea, (string Bucket, string KeyPrefix, bool IsPublic)>
         {
-            [StorageArea.ProductImages] = ("product-images", "products"),
-            [StorageArea.BrandLogos] = ("brand-logos", "brands"),
-            [StorageArea.CategoryImages] = ("category-images", "categories"),
+            [StorageArea.ProductImages] = ("product-images", "products", true),
+            [StorageArea.BrandLogos] = ("brand-logos", "brands", true),
+            [StorageArea.CategoryImages] = ("category-images", "categories", true),
+            [StorageArea.HeroBannerImages] = ("hero-banner-images", "hero", false),
         };
 
     /// <inheritdoc/>
     public async Task<string> UploadAsync(
         StorageArea area, Guid ownerId, Stream content, string fileName, string contentType, CancellationToken ct)
     {
-        var (bucket, keyPrefix) = Areas[area];
+        var (bucket, keyPrefix, _) = Areas[area];
 
         using var buffer = new MemoryStream();
         await content.CopyToAsync(buffer, ct);
@@ -31,6 +32,7 @@ public sealed class SupabaseFileStorage(Supabase.Client client) : IFileStorage
         var key = BuildObjectKey(keyPrefix, ownerId, fileName);
         var options = new FileOptions { ContentType = contentType, Upsert = false };
 
+        ct.ThrowIfCancellationRequested();
         await client.Storage.From(bucket).Upload(buffer.ToArray(), key, options);
         return key;
     }
@@ -38,14 +40,27 @@ public sealed class SupabaseFileStorage(Supabase.Client client) : IFileStorage
     /// <inheritdoc/>
     public async Task DeleteAsync(StorageArea area, string objectKey, CancellationToken ct)
     {
-        var (bucket, _) = Areas[area];
+        ct.ThrowIfCancellationRequested();
+        var (bucket, _, _) = Areas[area];
         await client.Storage.From(bucket).Remove([objectKey]);
+    }
+
+    /// <inheritdoc/>
+    public async Task<string> CreateSignedUrlAsync(
+        StorageArea area, string objectKey, int expiresInSeconds, CancellationToken ct)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(expiresInSeconds);
+        ct.ThrowIfCancellationRequested();
+        var (bucket, _, _) = Areas[area];
+        return await client.Storage.From(bucket).CreateSignedUrl(objectKey, expiresInSeconds);
     }
 
     /// <inheritdoc/>
     public string GetPublicUrl(StorageArea area, string objectKey)
     {
-        var (bucket, _) = Areas[area];
+        var (bucket, _, isPublic) = Areas[area];
+        if (!isPublic)
+            throw new InvalidOperationException("Public URLs are unavailable for private storage areas.");
         return client.Storage.From(bucket).GetPublicUrl(objectKey);
     }
 

@@ -1,7 +1,8 @@
 using FluentAssertions;
-using TheShop.Application.Features.Brands;
+using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.Commands.CreateBrand;
 using TheShop.Application.Features.Brands.DTOs;
+using TheShop.Application.Features.Brands;
 using Xunit;
 
 namespace TheShop.Application.Tests.Features.Brands.Commands.CreateBrand;
@@ -18,11 +19,11 @@ public class CreateBrandCommandValidatorTests
     private static CreateBrandCommand ValidCommand(
         string name = "Elf Bar",
         string? description = null,
-        BrandLogoUpload? logo = null,
+        ImageUpload? logo = null,
         bool isActive = true) =>
         new(name, description, logo, isActive);
 
-    private static BrandLogoUpload Logo(string contentType = "image/png", int sizeBytes = 1024) =>
+    private static ImageUpload Logo(string contentType = "image/png", int sizeBytes = 1024) =>
         new(new byte[sizeBytes], "logo.png", contentType);
 
     // =========================================================================

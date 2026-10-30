@@ -1,12 +1,12 @@
 using FluentAssertions;
-using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Common.Storage;
-using TheShop.Application.Features.Categories;
 using TheShop.Application.Features.Categories.Commands.CreateCategory;
 using TheShop.Application.Features.Categories.DTOs;
+using TheShop.Application.Features.Categories;
 using TheShop.Domain.Entities;
 using Xunit;
 
@@ -29,7 +29,7 @@ public class CreateCategoryHandlerTests
     private static CreateCategoryCommand Command(
         string name = "Disposables",
         string? description = null,
-        CategoryImageUpload? image = null,
+        ImageUpload? image = null,
         bool isActive = true) =>
         new(name, description, image, isActive);
 
@@ -44,7 +44,7 @@ public class CreateCategoryHandlerTests
             StorageArea.CategoryImages, Arg.Any<Guid>(), Arg.Any<Stream>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(key);
 
-    private static CategoryImageUpload Image() => new([1, 2, 3], "image.png", "image/png");
+    private static ImageUpload Image() => new([1, 2, 3], "image.png", "image/png");
 
     // =========================================================================
     // Happy path (AC-6, AC-7)

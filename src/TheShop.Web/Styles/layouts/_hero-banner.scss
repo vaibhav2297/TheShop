@@ -1,0 +1,126 @@
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/text-style';
+
+.shop-hero-banner {
+    display: grid;
+    gap: 4rem;
+    min-inline-size: 0;
+    padding: 4rem 2rem;
+    > h1 {
+        margin: 0;
+        @include text-style.apply(h2);
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+    }
+}
+.shop-hero-banner-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--shop-space-8);
+    align-items: start;
+}
+.shop-hero-banner-artwork,
+.shop-hero-banner-settings {
+    display: grid;
+    gap: var(--shop-space-8);
+    min-inline-size: 0;
+}
+.shop-hero-banner-artwork { gap: var(--shop-space-6); }
+.shop-hero-banner-settings { gap: var(--shop-space-4); }
+.shop-hero-banner-slot,
+.shop-hero-banner-content {
+    display: grid;
+    gap: var(--shop-space-4);
+    min-inline-size: 0;
+    > h2 {
+        margin: 0;
+        @include text-style.apply(h5);
+    }
+}
+.shop-hero-banner-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--shop-space-1);
+    margin: 0;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(caption);
+    line-height: var(--shop-typography-caption-helper-line-height);
+    > .shop-icon { flex: none; inline-size: 1rem; block-size: 1rem; }
+}
+.shop-hero-banner-status {
+    display: grid;
+    gap: var(--shop-space-4);
+    margin: 0;
+    padding: var(--shop-space-6) 0;
+    border: 0;
+    border-block-start: 1px solid var(--shop-color-lines-default);
+    border-block-end: 1px solid var(--shop-color-lines-default);
+    > legend {
+        float: inline-start;
+        inline-size: 100%;
+        padding: 0;
+        color: var(--shop-color-text-secondary);
+        @include text-style.apply(body-1);
+        line-height: var(--shop-typography-body-1-field-line-height);
+    }
+    > div { display: flex; gap: var(--shop-space-2); }
+}
+.shop-hero-banner-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--shop-space-6);
+    padding-block-start: var(--shop-space-3);
+}
+.shop-hero-banner-read-mobile { max-inline-size: 13.5rem; }
+.shop-hero-banner-skeleton-desktop-label { inline-size: 9.5625rem; block-size: 1rem; }
+.shop-hero-banner-skeleton-mobile-label { inline-size: 15.5rem; max-inline-size: 100%; block-size: 1rem; }
+.shop-hero-banner-skeleton-content-label { inline-size: 5rem; block-size: 1rem; }
+.shop-hero-banner-skeleton-status-label { inline-size: 3.3125rem; block-size: 1rem; }
+.shop-hero-banner-skeleton-desktop { aspect-ratio: 16 / 9; }
+.shop-hero-banner-skeleton-replace { inline-size: 8.25rem; block-size: 2.25rem; }
+.shop-hero-banner-skeleton-hint { inline-size: 60%; block-size: 1rem; }
+.shop-hero-banner-skeleton-mobile-row {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--shop-space-6);
+    > .shop-skeleton { flex: none; }
+}
+.shop-hero-banner-skeleton-mobile { inline-size: 13.5rem; max-inline-size: 100%; aspect-ratio: 4 / 5; }
+.shop-hero-banner-skeleton-field { block-size: 3.5625rem; }
+.shop-hero-banner-skeleton-description { block-size: 4.8125rem; }
+.shop-hero-banner-skeleton-status {
+    display: grid;
+    gap: var(--shop-space-4);
+    padding-block: var(--shop-space-6);
+    border-block: 1px solid var(--shop-color-lines-default);
+}
+.shop-hero-banner-skeleton-options { display: flex; gap: var(--shop-space-2); }
+.shop-hero-banner-skeleton-visible { inline-size: 4.375rem; block-size: 2rem; }
+.shop-hero-banner-skeleton-hidden { inline-size: 4.5625rem; block-size: 2rem; }
+.shop-hero-banner-skeleton-actions { align-items: flex-start; }
+.shop-hero-banner-skeleton-save { inline-size: 6.9375rem; block-size: 2.875rem; }
+.shop-hero-banner-skeleton-cancel { inline-size: 5.5625rem; block-size: 2.5rem; }
+.shop-hero-banner-errors:empty { display: none; }
+.shop-hero-banner-read-content {
+    margin: 0;
+    overflow-wrap: anywhere;
+    dd { margin: 0 0 var(--shop-space-4); white-space: pre-wrap; }
+    dt { color: var(--shop-color-text-secondary); }
+}
+@media (width < bp.$desktop) {
+    .shop-hero-banner { gap: 3rem; padding-block: 3rem; }
+    .shop-hero-banner-grid { grid-template-columns: minmax(0, 1fr); gap: 3rem; }
+    .shop-hero-banner-skeleton-description { block-size: 3.5625rem; }
+}
+@media (width < bp.$tablet) {
+    .shop-hero-banner {
+        gap: 2rem;
+        padding: 2rem 1rem;
+        > h1 { @include text-style.apply(h4); }
+    }
+    .shop-hero-banner-grid { gap: 2rem; }
+    .shop-hero-banner > h1 { text-transform: uppercase; }
+    .shop-hero-banner-skeleton-mobile-row { flex-direction: column; align-items: flex-start; }
+    .shop-hero-banner-skeleton-description { block-size: 6.0625rem; }
+}

@@ -1,12 +1,12 @@
 using FluentAssertions;
-using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Common.Storage;
-using TheShop.Application.Features.Products;
 using TheShop.Application.Features.Products.Commands.CreateProduct;
 using TheShop.Application.Features.Products.DTOs;
+using TheShop.Application.Features.Products;
 using TheShop.Domain.Entities;
 using Xunit;
 
@@ -96,7 +96,7 @@ public class CreateProductHandlerTests
             .Returns("products/photo.png");
         var gallery = new[]
         {
-            new ProductGalleryEntry(null, new ProductImageUpload([1, 2, 3], "photo.png", "image/png"), 0, true, Guid.NewGuid()),
+            new ProductGalleryEntry(null, new ImageUpload([1, 2, 3], "photo.png", "image/png"), 0, true, Guid.NewGuid()),
         };
 
         var result = await CreateSut().Handle(Command(gallery: gallery), CancellationToken.None);
@@ -224,7 +224,7 @@ public class CreateProductHandlerTests
             .Returns(Result.Fail<string>(ProductErrorKeys.CreateFailed));
         var gallery = new[]
         {
-            new ProductGalleryEntry(null, new ProductImageUpload([1, 2, 3], "photo.png", "image/png"), 0, true, Guid.NewGuid()),
+            new ProductGalleryEntry(null, new ImageUpload([1, 2, 3], "photo.png", "image/png"), 0, true, Guid.NewGuid()),
         };
 
         var result = await CreateSut().Handle(Command(gallery: gallery), CancellationToken.None);

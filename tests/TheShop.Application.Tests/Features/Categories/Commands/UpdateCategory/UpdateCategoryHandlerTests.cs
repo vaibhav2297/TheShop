@@ -1,12 +1,12 @@
 using FluentAssertions;
-using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Common.Models;
 using TheShop.Application.Common.Storage;
-using TheShop.Application.Features.Categories;
 using TheShop.Application.Features.Categories.Commands.UpdateCategory;
 using TheShop.Application.Features.Categories.DTOs;
+using TheShop.Application.Features.Categories;
 using TheShop.Domain.Entities;
 using Xunit;
 
@@ -31,11 +31,11 @@ public class UpdateCategoryHandlerTests
         string name = "Disposables",
         string? description = null,
         bool isActive = true,
-        CategoryImageUpload? newImage = null,
+        ImageUpload? newImage = null,
         bool removeImage = false) =>
         new(id, name, description, isActive, newImage, removeImage);
 
-    private static CategoryImageUpload Image() => new([1, 2, 3], "image.png", "image/png");
+    private static ImageUpload Image() => new([1, 2, 3], "image.png", "image/png");
 
     private Category SetUpExistingCategory(
         string name = "Disposables", string? description = null, bool isActive = true, string? imagePath = null)

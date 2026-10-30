@@ -1,13 +1,14 @@
-using TheShop.Web.Common.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using TheShop.Web.Components.Brands;
+using TheShop.Application.Common.Models;
 using TheShop.Application.Features.Brands.Commands.UpdateBrand;
 using TheShop.Application.Features.Brands.DTOs;
 using TheShop.Application.Features.Brands.Queries.GetBrandById;
 using TheShop.Web.Auth;
+using TheShop.Web.Common.Notifications;
 using TheShop.Web.Common;
+using TheShop.Web.Components.Brands;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using TheShop.Web.State;
@@ -106,7 +107,7 @@ public partial class EditBrand : ComponentBase
             // A row still showing a validation error (wrong type / too large) never leaves the client.
             var validNewLogoImages = _newLogoImages.Where(image => image.Error is null).ToList();
             var newLogo = validNewLogoImages.Count > 0
-                ? new BrandLogoUpload(validNewLogoImages[0].Bytes, validNewLogoImages[0].FileName, validNewLogoImages[0].ContentType)
+                ? new ImageUpload(validNewLogoImages[0].Bytes, validNewLogoImages[0].FileName, validNewLogoImages[0].ContentType)
                 : null;
 
             // The user removed the existing logo and did not pick a replacement in this save.

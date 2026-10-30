@@ -109,6 +109,17 @@ static async Task<int> RunAsync(string[] arguments)
             }
         }
         await page.AddStyleTagAsync(new() { Content = "*,*::before,*::after { animation:none!important; transition:none!important; caret-color:transparent!important; }" });
+        if (options.Crop is not null)
+        {
+            await page.Locator(options.Crop).EvaluateAsync("""
+                element => {
+                  for (let ancestor = element.parentElement; ancestor; ancestor = ancestor.parentElement) {
+                    const style = getComputedStyle(ancestor);
+                    if (['auto', 'scroll', 'hidden', 'clip'].includes(style.overflowY)) ancestor.style.overflow = 'visible';
+                  }
+                }
+                """);
+        }
         await page.WaitForFunctionAsync("() => document.fonts.status === 'loaded'");
         await page.WaitForFunctionAsync("() => [...document.images].filter(i => { const r = i.getBoundingClientRect(); return r.width && r.height && r.bottom > 0 && r.top < innerHeight; }).every(i => i.complete && i.naturalWidth > 0)");
 
@@ -145,33 +156,37 @@ static async Task<int> RunAsync(string[] arguments)
             var reference = await File.ReadAllBytesAsync(options.Reference);
             var comparison = await context.NewPageAsync();
             var result = await comparison.EvaluateAsync<JsonElement>("""
-                async ({reference, actual}) => {
+                async ({reference, actual, inferredState}) => {
                   const load = async data => { const i = new Image(); i.src = 'data:image/png;base64,' + data; await i.decode(); return i; };
                   const a = await load(reference), b = await load(actual);
-                  if (a.width !== b.width || a.height !== b.height) throw new Error(`Reference ${a.width}x${a.height} differs from capture ${b.width}x${b.height}. Export at 1x or correct crop; never stretch.`);
-                  const canvas = document.createElement('canvas'); canvas.width = a.width; canvas.height = a.height;
+                  if (!inferredState && (a.width !== b.width || a.height !== b.height)) throw new Error(`Reference ${a.width}x${a.height} differs from capture ${b.width}x${b.height}. Export at 1x or correct crop; never stretch.`);
+                  const canvas = document.createElement('canvas'); canvas.width = Math.max(a.width,b.width); canvas.height = Math.max(a.height,b.height);
                   const c = canvas.getContext('2d');
-                  c.fillStyle = 'white'; c.fillRect(0,0,a.width,a.height); c.drawImage(a,0,0);
-                  const x = c.getImageData(0,0,a.width,a.height);
-                  c.fillStyle = 'white'; c.fillRect(0,0,a.width,a.height); c.drawImage(b,0,0);
-                  const y = c.getImageData(0,0,a.width,a.height);
+                  c.fillStyle = 'white'; c.fillRect(0,0,canvas.width,canvas.height); c.drawImage(a,0,0);
+                  const x = c.getImageData(0,0,canvas.width,canvas.height);
+                  c.fillStyle = 'white'; c.fillRect(0,0,canvas.width,canvas.height); c.drawImage(b,0,0);
+                  const y = c.getImageData(0,0,canvas.width,canvas.height);
                   c.globalAlpha = 0.5; c.drawImage(a,0,0); c.globalAlpha = 1;
                   const overlay = canvas.toDataURL('image/png').split(',')[1];
                   let changed = 0;
-                  const d = c.createImageData(a.width,a.height);
+                  const d = c.createImageData(canvas.width,canvas.height);
                   for(let i=0;i<x.data.length;i+=4) {
                     const delta = Math.max(...[0,1,2].map(k => Math.abs(x.data[i+k]-y.data[i+k])));
                     if(delta > 0) changed++;
                     d.data[i]=delta; d.data[i+1]=0; d.data[i+2]=delta; d.data[i+3]=255;
                   }
                   c.putImageData(d,0,0);
-                  return { Overlay: overlay, Difference: canvas.toDataURL('image/png').split(',')[1], Changed: changed, Total: a.width*a.height };
+                  return { Overlay: overlay, Difference: canvas.toDataURL('image/png').split(',')[1], Changed: changed, Total: canvas.width*canvas.height,
+                    ReferenceWidth:a.width, ReferenceHeight:a.height, ActualWidth:b.width, ActualHeight:b.height };
                 }
-                """, new { reference = Convert.ToBase64String(reference), actual = Convert.ToBase64String(actual) });
+                """, new { reference = Convert.ToBase64String(reference), actual = Convert.ToBase64String(actual), inferredState = options.InferredState });
             await File.WriteAllBytesAsync(Path.Combine(options.Output, "reference.png"), reference);
             await File.WriteAllBytesAsync(Path.Combine(options.Output, "overlay.png"), Convert.FromBase64String(result.GetProperty("Overlay").GetString()!));
             await File.WriteAllBytesAsync(Path.Combine(options.Output, "difference.png"), Convert.FromBase64String(result.GetProperty("Difference").GetString()!));
             report.AppendLine($"**Changed pixels:** {result.GetProperty("Changed").GetInt32()}/{result.GetProperty("Total").GetInt32()} (diagnostic only; no automatic fidelity verdict)\n");
+            report.AppendLine($"**Comparison geometry:** reference {result.GetProperty("ReferenceWidth")}x{result.GetProperty("ReferenceHeight")}; actual {result.GetProperty("ActualWidth")}x{result.GetProperty("ActualHeight")}.\n");
+            if (options.InferredState)
+                report.AppendLine("**Inferred state:** Base Figma reference retained unchanged. Comparison canvases use white padding without stretching; inspect the complete actual state and its expected geometry changes. No independent Figma parity claim.\n");
         }
         report.AppendLine("| Element | X | Y | Width | Height | Font | Size | Weight | Line height | Padding | Gap | Color | Background | Object fit |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|");
         report.AppendLine(geometry);
@@ -208,6 +223,7 @@ internal sealed class Options
     internal int Height;
     internal bool StartApp;
     internal bool LocalE2E;
+    internal bool InferredState;
     internal bool Help;
     internal List<ActionStep> Actions = [];
 
@@ -231,6 +247,7 @@ internal sealed class Options
                 case "--height": result.Height = int.Parse(Next()); break;
                 case "--start-app": result.StartApp = true; break;
                 case "--local-e2e": result.LocalE2E = true; break;
+                case "--inferred-state": result.InferredState = true; break;
                 case "--click": case "--hover": case "--wait-for": case "--scroll":
                     result.Actions.Add(new(option, Next(), null)); break;
                 case "--fill": case "--press": result.Actions.Add(new(option, Next(), Next())); break;

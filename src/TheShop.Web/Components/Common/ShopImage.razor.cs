@@ -40,6 +40,11 @@ public partial class ShopImage : ShopComponentBase, IAsyncDisposable
     [Parameter] public ShopImagePreset Preset { get; set; } = ShopImagePreset.SquareContain;
 
     /// <summary>
+    /// Allows Hero/Banner to switch source and aspect ratio on narrow viewports.
+    /// </summary>
+    [Parameter] public bool Responsive { get; set; } = true;
+
+    /// <summary>
     /// Localized description of a meaningful image. Leave empty for a decorative image; assistive
     /// technology then ignores both the image and its placeholder.
     /// </summary>
@@ -67,7 +72,7 @@ public partial class ShopImage : ShopComponentBase, IAsyncDisposable
     private string? _failedDesktopSrc;
     private string? _failedMobileSrc;
 
-    private bool HasMobileBranch => Preset is ShopImagePreset.Hero or ShopImagePreset.Banner;
+    private bool HasMobileBranch => Responsive && Preset is ShopImagePreset.Hero or ShopImagePreset.Banner;
 
     private string? DesktopSrc => string.IsNullOrWhiteSpace(Src) ? null : Src;
 
@@ -91,7 +96,7 @@ public partial class ShopImage : ShopComponentBase, IAsyncDisposable
 
     #region CSS Forwarding
 
-    private string Classname => ShopCssClass.Join("shop-image", PresetClass, Class);
+    private string Classname => ShopCssClass.Join("shop-image", PresetClass, !Responsive ? "shop-image-static" : null, Class);
 
     private string PresetClass => Preset switch
     {

@@ -1,4 +1,5 @@
 @use '../abstracts/text-style';
+@use '../abstracts/breakpoints' as bp;
 
 .shop-image-upload { display: grid; gap: var(--shop-space-2); min-inline-size: 0; }
 .shop-image-upload-hint,
@@ -29,6 +30,29 @@
 }
 .shop-image-upload-item[data-drop-target='true'] { outline: 2px dashed var(--shop-color-primary); }
 .shop-image-upload-move { display: flex; flex-wrap: wrap; gap: var(--shop-space-2); }
+.shop-image-upload-single-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--shop-space-4) var(--shop-space-6);
+    > .shop-image-tile { flex: 1 0 100%; }
+    > .shop-button { justify-self: start; }
+}
+.shop-image-upload-single .shop-file-dropzone-trigger {
+    min-block-size: 0;
+    aspect-ratio: 16 / 9;
+}
+.shop-image-upload-single-portrait {
+    .shop-file-dropzone-trigger { inline-size: 13.5rem; aspect-ratio: 4 / 5; }
+    .shop-image-upload-single-content > .shop-image-tile { flex: 0 0 13.5rem; }
+}
+@media (width < bp.$tablet) {
+    .shop-image-upload-single-portrait {
+        .shop-file-dropzone-trigger { max-inline-size: 100%; }
+        .shop-image-upload-single-content { row-gap: var(--shop-space-6); }
+        .shop-image-upload-single-content > .shop-image-tile { flex: 0 1 13.5rem; max-inline-size: 100%; }
+    }
+}
 @media (forced-colors: active) {
     .shop-image-upload-add { border-color: ButtonText; }
 }
