@@ -168,18 +168,8 @@ satisfies the frozen interface · no Infrastructure type leaks inward.
 
 **Depends on:** Application contract checkpoint. Infrastructure work completes first in same session.
 
-{Include visual scope, targets and Figma references below only when user supplied Figma URL. Otherwise omit all three and use normal Web tasks/gates.}
-
-**Visual scope:** required
-
-### Visual targets
-
-| Surface | Route | Viewport | State | Reference |
-|---|---|---|---|---|
-| {unique-surface-id} | /{route} | 1440x900 | {data and visible state} | {exact supplied Figma frame URL} |
-
-{Record reference revision/capture date, responsive decisions, assets, readiness selector and required browser actions.
-Follow ../theshop-execute/references/visual-loop.md. No design JSON.}
+{Include Figma references only when user supplied URL. Record component mappings, responsive/state decisions and assets.
+Visual acceptance is manual. Do not add capture targets, screenshot evidence tasks or visual gates.}
 
 **Figma references** *(only when URL supplied — re-fetched by `$theshop-execute` at implementation time; otherwise omit without logging a gap)*
 
@@ -193,7 +183,7 @@ Follow ../theshop-execute/references/visual-loop.md. No design JSON.}
 - [ ] **TASK-014** — {`Routes.{…}` constants, `BusyKeys.{…}`, resource strings from Section 9.}
 - [ ] **TASK-015** — {bUnit component tests.}
 
-**Completion gate:** {Figma URL supplied: browser captures inspected against references and visual gate passes; otherwise omit visual requirement} · MudBlazor-only, no hardcoded strings or design tokens
+**Completion gate:** Web build and scope checks pass · project components/SCSS, no hardcoded strings or design tokens
 · consumes only frozen contracts · unauthorized users see the specified
 denied experience.
 

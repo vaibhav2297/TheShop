@@ -57,4 +57,4 @@ Native controls use project-owned SCSS and require no vendor providers, styleshe
 
 ## Verification references
 
-`ShopButtonTests.cs`, `ShopIconButtonTests.cs`, `ShopIconTests.cs`, and `ProductCardTests.cs` under `tests/TheShop.Web.Tests/Components/` cover native semantics, event callbacks, attribute precedence, resource-backed names, sizes, and content behavior. `Common/UI/ShopCssClassTests.cs` covers the reusable enum modifier helper. Verify focus, forced colors, Figma sizing, and responsive presentation in a browser; markup assertions alone do not prove appearance.
+`ShopButtonTests.cs`, `ShopIconButtonTests.cs`, `ShopIconTests.cs`, and `ProductCardTests.cs` under `tests/TheShop.Web.Tests/Components/` cover native semantics, event callbacks, attribute precedence, resource-backed names, sizes, and content behavior. `Common/UI/ShopCssClassTests.cs` covers the reusable enum modifier helper. Keep focus and forced-colors accessibility checks. User manually reviews Figma sizing and responsive appearance; markup assertions do not prove visual acceptance.

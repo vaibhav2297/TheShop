@@ -24,10 +24,9 @@ Read the full plan. Collect:
 
 Map each item to its destination in Sections 1–10: model/schema, design, flow, validation, RLS, AC mapping, or phase task.
 
-Only when plan contains supplied Figma URL, load [browser visual loop](../theshop-execute/references/visual-loop.md).
-Validate targets, reference access, responsive/state decisions and MudBlazor conflicts. Replace legacy design-JSON requirements with direct reference capture.
-If no open item exists or footer is already `Resolved`, still run plan gate. Missing visual scope/targets require upgrade only for Figma-driven plans.
-Without Figma URL, normal resolution; no visual scope, screenshot reference, evidence or waiver required.
+With supplied Figma URL, resolve reference access, component mappings, responsive/state decisions and design-rule conflicts.
+Visual acceptance is manual; no capture targets, screenshot evidence or visual gate required. Existing automated visual-proof tasks are superseded by `.sdd/README.md`.
+If no open item exists or footer is already `Resolved`, still run plan gate.
 
 ## Resolve
 
