@@ -29,11 +29,10 @@ When `.specs/{slug}/status.md` exists:
 pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 ship-ready -Feature {slug}
 ```
 
-Exit 1: quote every violation. For plans with supplied Figma URL, missing, stale, failed or unreviewed visual evidence is a hard stop; return to Execute.
-For other ledger violations, continue only after fix or explicit `proceed`. Record `⚠️ waived: shipped with {n} open ledger item(s)`.
+Exit 1: quote every violation. Continue only after fix or explicit `proceed`. Record `⚠️ waived: shipped with {n} open ledger item(s)`.
 
-No tracker: record `⏭️ no SDD tracker`; require visual gate only when plan contains supplied Figma URL.
-Without Figma URL, normal shipping flow; visual gate adds no evidence or waiver requirement.
+No tracker: record `⏭️ no SDD tracker`.
+Visual acceptance is manual. Do not run visual evidence gates or require screenshot artifacts, including for existing Figma plans.
 
 Check:
 

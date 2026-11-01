@@ -10,5 +10,5 @@ namespace TheShop.Application.Features.Brands.Queries.GetBrandById;
 /// page's <c>brands.edit</c> gate is what denies a view-only admin's direct link (plan §5
 /// Decision 11).
 /// </summary>
-[RequiresPermission("brands.view")]
+[RequiresAllPermissions("brands.view")]
 public sealed record GetBrandByIdQuery(Guid Id) : IRequest<Result<BrandDto>>;

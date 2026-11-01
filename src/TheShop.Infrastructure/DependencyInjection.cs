@@ -40,6 +40,8 @@ public static class DependencyInjection
         services.AddScoped<IAdminDashboardRepository, SupabaseAdminDashboardRepository>();
         services.AddScoped<IFileStorage, SupabaseFileStorage>();
         services.AddScoped<IHeroBannerRepository, SupabaseHeroBannerRepository>();
+        services.AddScoped<IFreshDropsRepository, SupabaseFreshDropsRepository>();
+        services.AddScoped<IFreshDropsProductReader, SupabaseFreshDropsProductReader>();
         services.AddScoped<IHeroBannerImageInspector, BrowserHeroBannerImageInspector>();
 
         return services;

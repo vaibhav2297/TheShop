@@ -20,10 +20,10 @@ public class SetProductStatusCommandTests
     [Trait("Feature", "manage-product")]
     public void SetProductStatusCommand_Always_IsDecoratedWithTheProductsEditPermissionRequirement()
     {
-        var attribute = typeof(SetProductStatusCommand).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(SetProductStatusCommand).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Products.Edit.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Products.Edit.Code);
     }
 }
 

@@ -54,6 +54,8 @@ public static class Routes
         public const string ManageHomepage = "/admin/homepage";
         /// <summary>The singleton hero banner Add/Edit route.</summary>
         public const string ManageHeroBanner = "/admin/homepage/hero-banner";
+        /// <summary>The singleton Fresh Drops Add/Edit route.</summary>
+        public const string ManageFreshDrops = "/admin/homepage/fresh-drops";
 
         /// <summary>
         /// The Manage Products admin harness shell. Requires a signed-in user via

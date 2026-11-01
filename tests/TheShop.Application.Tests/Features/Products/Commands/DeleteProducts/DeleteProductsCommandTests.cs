@@ -20,10 +20,10 @@ public class DeleteProductsCommandTests
     [Trait("Feature", "manage-product")]
     public void DeleteProductsCommand_Always_IsDecoratedWithTheProductsDeletePermissionRequirement()
     {
-        var attribute = typeof(DeleteProductsCommand).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(DeleteProductsCommand).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Products.Delete.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Products.Delete.Code);
     }
 }
 

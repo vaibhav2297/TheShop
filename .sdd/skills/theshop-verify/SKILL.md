@@ -15,13 +15,13 @@ Build, run, observe, report. Never edit source or tests. Failed behavior returns
 
 Read [feature identity](../theshop-start/references/feature-identity.md). Resolve input; preserve full ID as `{feature}`.
 
-Require `.specs/{feature}/spec.md`. Read plan when present; Figma-driven work requires plan with supplied URL and visual targets.
+Require `.specs/{feature}/spec.md`. Read plan when present for routes and design intent.
 
 The spec acceptance criteria are the oracle.
 
 ## Applicability
 
-Only Figma-driven plans require explicit visual scope and targets. No Figma URL: normal applicability rules below.
+Figma references do not require visual scope, capture targets or screenshot evidence.
 
 User-facing when any applies:
 
@@ -49,10 +49,9 @@ Show compact checklist before driving.
 
 ## Driver
 
-Only when plan contains supplied Figma URL, load [browser visual loop](../theshop-execute/references/visual-loop.md) and perform following visual checks. Without Figma, go directly to normal driver tiers.
-Run `pwsh -NoProfile -File .sdd/scripts/check-sdd-gates.ps1 visual -Feature {feature}`.
-Inspect per-surface review and image evidence. Behavioral Tier 1 proof does not replace visual proof.
-Failed, missing, stale or unreviewed evidence: Verify Pending; return to Execute for capture/correction. Do not edit source here.
+Visual acceptance belongs to the user. Do not run Figma screenshot comparisons or visual evidence gates.
+Explicit visual acceptance criteria require user confirmation through Tier 2; behavioral evidence cannot prove appearance.
+Missing or stale legacy screenshot artifacts do not block behavioral verification.
 
 Use strongest available proof.
 

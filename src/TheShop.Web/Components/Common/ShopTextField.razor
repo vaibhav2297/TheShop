@@ -1,6 +1,7 @@
 @inherits InputBase<string?>
+@using TheShop.Web.Common.UI
 
-<div class="shop-field">
+<div class="@FieldClass">
     <div class="shop-field-control">
         @if (!string.IsNullOrEmpty(StartIcon))
         {
@@ -26,6 +27,11 @@
                @bind:get="CurrentValueAsString"
                @bind:set="SetValue"
                @bind:event="oninput" />
+        }
+        @if (ShowClear)
+        {
+            <ShopIconButton Icon="@ShopIcons.Outlined.Close_MD" Label="@(ClearLabel!)" Variant="ShopVariant.Text"
+                            Size="ShopSize.Small" Class="shop-field-clear" OnClick="ClearValue" />
         }
         @if (HasLabel)
         {

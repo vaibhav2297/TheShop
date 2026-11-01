@@ -19,10 +19,10 @@ public class GetCategoriesPageQueryTests
     [Trait("Feature", "manage-categories")]
     public void GetCategoriesPageQuery_Always_IsDecoratedWithTheCategoriesViewPermissionRequirement()
     {
-        var attribute = typeof(GetCategoriesPageQuery).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(GetCategoriesPageQuery).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Categories.View.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Categories.View.Code);
     }
 }
 

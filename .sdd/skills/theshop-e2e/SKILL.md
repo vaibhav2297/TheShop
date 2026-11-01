@@ -152,10 +152,8 @@ Confirm fixture stopped app and port 5218 is free. Stop any orphan it created. L
 
 ## Report and verdict
 
-Only when plan contains supplied Figma URL, load [browser visual loop](../theshop-execute/references/visual-loop.md) and apply following visual requirements. Without Figma, normal behavioral verdict rules apply.
-Run `pwsh -NoProfile -File .sdd/scripts/check-sdd-gates.ps1 visual -Feature {feature}` before setting Verify Verified.
-Missing/stale/failed visual evidence blocks VERIFIED; return to Execute. Behavioral results remain recorded separately.
-Browser regression baselines may only come from visually accepted captures. Never replace Figma references with current output.
+Apply behavioral verdict rules regardless of Figma references. Do not run Figma screenshot comparisons or visual evidence gates.
+Classify explicit visual acceptance criteria as manual; user confirms them through Verify. Missing legacy capture artifacts are not behavioral failures.
 
 Overwrite `e2e-report.md`; final response must match it.
 

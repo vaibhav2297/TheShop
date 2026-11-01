@@ -11,7 +11,7 @@ namespace TheShop.Application.Tests.Common.Behaviors;
 
 /// <summary>
 /// Tests for <see cref="AuthorizationBehavior{TRequest, TResponse}"/> — the MediatR pipeline
-/// behavior that enforces <see cref="RequiresPermissionAttribute"/> on every command and query
+/// behavior that enforces <see cref="RequiresAllPermissionsAttribute"/> on every command and query
 /// by reading the current principal's permission claims via
 /// <see cref="ICurrentUserService.HasPermission"/>. Claims are minted into the access token by
 /// the database's custom access token hook, so the check is local and its staleness is bounded
@@ -25,10 +25,10 @@ public class AuthorizationBehaviorTests
     // Test doubles — fake MediatR requests
     // =========================================================================
 
-    [RequiresPermission("orders.refund")]
+    [RequiresAllPermissions("orders.refund")]
     private sealed record ProtectedCommand : IRequest<Result>;
 
-    [RequiresPermission("orders.view")]
+    [RequiresAllPermissions("orders.view")]
     private sealed record ProtectedQuery : IRequest<Result<string>>;
 
     private sealed record UnprotectedCommand : IRequest<Result>;
@@ -130,12 +130,12 @@ public class AuthorizationBehaviorTests
     }
 
     // =========================================================================
-    // Requests with no [RequiresPermission] attribute skip the check entirely
+    // Requests with no [RequiresAllPermissions] attribute skip the check entirely
     // =========================================================================
 
     [Fact]
     [Trait("Feature", "role-based-access-control")]
-    public async Task Handle_WhenRequestHasNoRequiresPermissionAttribute_SkipsTheCheckAndDelegates()
+    public async Task Handle_WhenRequestHasNoPermissionAttributes_SkipsTheCheckAndDelegates()
     {
         var behavior = new AuthorizationBehavior<UnprotectedCommand, Result>(_currentUser);
 

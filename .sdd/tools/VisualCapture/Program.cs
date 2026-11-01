@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Playwright;
+using TheShop.E2E.Tests.Auth;
 using TheShop.E2E.Tests.Fixtures;
 
 return await RunAsync(args);
@@ -63,6 +64,13 @@ static async Task<int> RunAsync(string[] arguments)
             Headless = Environment.GetEnvironmentVariable("E2E_HEADLESS") != "0",
             Args = ["--force-device-scale-factor=1"]
         });
+        if (options.AuthEmail is not null)
+        {
+            // Each capture is a separate browser process; the local auth stack rotates refresh tokens.
+            // Re-mint the disposable test persona state before navigating.
+            File.Delete(AuthStateFactory.StatePath(options.AuthEmail));
+            options.StorageState = await AuthStateFactory.EnsureSignedInAsync(browser, options.AuthEmail);
+        }
         var contextOptions = new BrowserNewContextOptions
             {
                 StorageStatePath = options.StorageState,
@@ -95,17 +103,30 @@ static async Task<int> RunAsync(string[] arguments)
                 $"# Capture readiness failure\n\nURL: {page.Url}\nSelector: {options.Ready}\n\n" + string.Join("\n", errors));
             throw;
         }
+        if (options.StorageState is not null)
+            await context.StorageStateAsync(new() { Path = options.StorageState });
         foreach (var action in options.Actions)
         {
-            var locator = page.Locator(action.Selector);
-            switch (action.Kind)
+            try
             {
-                case "--click": await locator.ClickAsync(); break;
-                case "--fill": await locator.FillAsync(action.Value!); break;
-                case "--hover": await locator.HoverAsync(); break;
-                case "--press": await locator.PressAsync(action.Value!); break;
-                case "--wait-for": await locator.WaitForAsync(new() { State = WaitForSelectorState.Visible }); break;
-                case "--scroll": await locator.ScrollIntoViewIfNeededAsync(); break;
+                var locator = page.Locator(action.Selector);
+                switch (action.Kind)
+                {
+                    case "--click": await locator.ClickAsync(); break;
+                    case "--fill": await locator.FillAsync(action.Value!); break;
+                    case "--hover": await locator.HoverAsync(); break;
+                    case "--press": await locator.PressAsync(action.Value!); break;
+                    case "--wait-for": await locator.WaitForAsync(new() { State = WaitForSelectorState.Visible }); break;
+                    case "--scroll": await locator.ScrollIntoViewIfNeededAsync(); break;
+                }
+            }
+            catch
+            {
+                Directory.CreateDirectory(options.Output);
+                await page.ScreenshotAsync(new() { Path = Path.Combine(options.Output, "failure.png") });
+                await File.WriteAllTextAsync(Path.Combine(options.Output, "failure.md"),
+                    $"# Capture action failure\n\nURL: {page.Url}\nAction: {action.Kind} {action.Selector}\n\n" + string.Join("\n", errors));
+                throw;
             }
         }
         await page.AddStyleTagAsync(new() { Content = "*,*::before,*::after { animation:none!important; transition:none!important; caret-color:transparent!important; }" });
@@ -191,6 +212,8 @@ static async Task<int> RunAsync(string[] arguments)
         report.AppendLine("| Element | X | Y | Width | Height | Font | Size | Weight | Line height | Padding | Gap | Color | Background | Object fit |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|");
         report.AppendLine(geometry);
         await File.WriteAllTextAsync(Path.Combine(options.Output, "browser.md"), report.ToString());
+        if (options.StorageState is not null)
+            await context.StorageStateAsync(new() { Path = options.StorageState });
         Console.WriteLine($"Captured {options.Output}. Images require visual review; no PASS assigned.");
         return 0;
     }
@@ -219,6 +242,7 @@ internal sealed class Options
     internal string? Reference;
     internal string? Crop;
     internal string? StorageState;
+    internal string? AuthEmail;
     internal int Width;
     internal int Height;
     internal bool StartApp;
@@ -243,6 +267,7 @@ internal sealed class Options
                 case "--reference": result.Reference = Path.GetFullPath(Next()); break;
                 case "--crop": result.Crop = Next(); break;
                 case "--storage-state": result.StorageState = Path.GetFullPath(Next()); break;
+                case "--auth-email": result.AuthEmail = Next(); break;
                 case "--width": result.Width = int.Parse(Next()); break;
                 case "--height": result.Height = int.Parse(Next()); break;
                 case "--start-app": result.StartApp = true; break;

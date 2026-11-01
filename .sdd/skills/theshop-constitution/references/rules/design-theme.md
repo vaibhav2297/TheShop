@@ -4,7 +4,7 @@ Implementation guide for Rules 15, 16, 18, 19. For token ownership and icon regi
 
 ## Design source
 
-Use the supplied [Figma component foundations](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=197-2570) for inspected visual values, variants, and geometry. Record the specific node and evidence when verifying a component. Do not copy generated Figma CSS or claim visual parity without rendering and comparison.
+Use the supplied [Figma component foundations](https://www.figma.com/design/63Ieb8AduwMHoVHwzZ7UO3/The-Vape-Shop?node-id=197-2570) for inspected visual values, variants, and geometry. Record specific nodes and component mappings during implementation. Do not copy generated Figma CSS. User performs manual visual comparison; do not claim visual acceptance without confirmation.
 
 Preserve native semantics, keyboard access, visible focus, text resizing, and accessible names. If Figma omits hover, disabled, loading, validation, or focus states, record the chosen treatment as an implementation decision—not a Figma measurement. Flag unresolved design conflicts rather than silently inventing variants.
 

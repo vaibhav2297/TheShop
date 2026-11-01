@@ -12,7 +12,7 @@ namespace TheShop.Application.Features.Categories.Queries.GetCategoriesPage;
 /// Both narrowing criteria are optional: a <see langword="null"/> <paramref name="Status"/>
 /// returns categories of every status.
 /// </summary>
-[RequiresPermission("categories.view")]
+[RequiresAllPermissions("categories.view")]
 public sealed record GetCategoriesPageQuery(
     string? Search,
     CategoryStatusFilter? Status,

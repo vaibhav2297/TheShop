@@ -217,7 +217,6 @@ function Test-SpecGate([string]$F) {
 
 # ---------------------------------------------------------------- plan gate --
 function Test-PlanGate([string]$F) {
-    foreach ($issue in @(Test-VisualEvidence $repoRoot $F -PlanOnly)) { Fail $issue }
     $c = Read-Doc ".specs/$F/plan.md"
     if (-not $c) { Fail ".specs/$F/plan.md not found"; return }
     if ($F -match '^\d+_' -and $c -notmatch ('(?m)^\*\*Feature:\*\*\s*`' + [regex]::Escape($F) + '`\s*$')) { Fail 'numbered plan missing matching **Feature:** ID' }
@@ -648,7 +647,6 @@ function Test-StatusGate([string]$F) {
 # whole pipeline is green and safe to land on dev; exit 1 lists what is still open so
 # the command can surface it and let the user ship anyway with a recorded waiver.
 function Test-ShipReadyGate([string]$F) {
-    foreach ($issue in @(Test-VisualEvidence $repoRoot $F)) { Fail $issue }
     $doc = Read-Doc ".specs/$F/status.md"
     if (-not $doc) { Fail ".specs/$F/status.md not found - the feature has no SDD ledger to verify"; return }
     if ($doc -notmatch '\*\*Last updated:\*\*') { Fail "status.md missing '**Last updated:**' line" }

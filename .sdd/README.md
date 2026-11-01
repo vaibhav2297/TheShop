@@ -35,10 +35,10 @@ Style affects prose only. Preserve templates, headings, IDs, keywords, status va
 
 ## UI fidelity
 
-[Browser visual loop](skills/theshop-execute/references/visual-loop.md) activates only when a Figma design URL is supplied and recorded in feature plan.
-With Figma: context + screenshots replace maintained design JSON; Execute renders, inspects and corrects; Verify/Ship require reviewed evidence.
-Without Figma: normal SDD flow, including ordinary build, design-rule and behavioral checks. No visual scope, target table, screenshot evidence or waiver required.
-Legacy plans with Figma URLs need visual scope and targets before next gate. Legacy plans without Figma remain valid.
+[Manual visual review](skills/theshop-execute/references/visual-loop.md) belongs to the user. Figma remains implementation input through MCP, node references, assets and component mappings.
+Do not run automatic Figma screenshot comparisons, capture/correction loops or visual evidence gates during SDD stages.
+No visual scope, target table, screenshot evidence or waiver required, including existing Figma plans. This policy supersedes their automated visual-proof tasks.
+Build, design-rule, behavioral and accessibility checks remain. Explicit visual acceptance criteria use user confirmation; never infer visual approval from passing tests. Legacy plans without Figma remain valid.
 
 ## Agent adapters
 

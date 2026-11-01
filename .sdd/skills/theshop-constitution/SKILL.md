@@ -77,7 +77,7 @@ Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*)
 
 ### Design component reuse
 
-35. [components] Map supplied Figma component instances to existing code components before implementation. Inspect source components, variants, properties, and overrides; reuse matching components through supported parameters. Do not recreate existing controls with page-owned markup or CSS. Resolve missing component capabilities explicitly and record the decision. Preserve native action/navigation semantics; visual similarity never justifies changing behavior. Verify component reuse in source as well as appearance in browser.
+35. [components] Map supplied Figma component instances to existing code components before implementation. Inspect source components, variants, properties, and overrides; reuse matching components through supported parameters. Do not recreate existing controls with page-owned markup or CSS. Resolve missing component capabilities explicitly and record the decision. Preserve native action/navigation semantics; visual similarity never justifies changing behavior. Verify component reuse in source. Appearance is reviewed manually by the user; do not run automated Figma comparison loops or require screenshot evidence. Behavioral and accessibility checks remain.
 
 ### Native dependency boundary
 

@@ -7,7 +7,7 @@ namespace TheShop.Web.Tests.Auth;
 
 /// <summary>
 /// Tests for <see cref="AuthorizePermissionAttribute"/> — the route-level twin of the
-/// Application layer's <c>[RequiresPermission]</c>, which must compose exactly the same
+/// Application layer's <c>[RequiresAllPermissions(code)]</c> with one permission, which must compose exactly the same
 /// <c>perm:{code}</c> policy name that <c>ShopAuthorizationPolicyProvider</c> synthesizes.
 /// </summary>
 public class AuthorizePermissionAttributeTests

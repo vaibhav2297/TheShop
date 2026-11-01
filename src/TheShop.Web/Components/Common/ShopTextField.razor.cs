@@ -26,6 +26,12 @@ public partial class ShopTextField : InputBase<string?>
     /// </summary>
     [Parameter] public string? StartIcon { get; set; }
 
+    /// <summary>Shows a trailing clear action for a nonempty, enabled single-line field.</summary>
+    [Parameter] public bool Clearable { get; set; }
+
+    /// <summary>Resource-backed accessible name for the optional clear action.</summary>
+    [Parameter] public string? ClearLabel { get; set; }
+
     /// <summary>
     /// Optional resource-backed hint, displayed below the field and associated with its input.
     /// </summary>
@@ -44,6 +50,8 @@ public partial class ShopTextField : InputBase<string?>
     [Parameter] public int Lines { get; set; } = 1;
 
     private bool HasLabel => !string.IsNullOrWhiteSpace(Label);
+    private string FieldClass => ShopCssClass.Join("shop-field", Clearable ? "shop-field-clearable" : null);
+    private bool ShowClear => Clearable && Lines == 1 && !Disabled && !string.IsNullOrEmpty(Value);
     private string InputId => string.IsNullOrWhiteSpace(AttributeText("id")) ? _generatedId : AttributeText("id")!;
     private string HelperId => $"{InputId}-hint";
     private string ErrorId => $"{InputId}-error";
@@ -93,6 +101,8 @@ public partial class ShopTextField : InputBase<string?>
             && string.IsNullOrWhiteSpace(AttributeText("aria-label"))
             && string.IsNullOrWhiteSpace(AttributeText("aria-labelledby")))
             throw new ArgumentException("A label or ARIA accessible name is required.", nameof(Label));
+        if (Clearable)
+            ArgumentException.ThrowIfNullOrWhiteSpace(ClearLabel);
     }
 
     private void SetValue(string? value)
@@ -100,6 +110,8 @@ public partial class ShopTextField : InputBase<string?>
         if (!Disabled)
             CurrentValueAsString = value;
     }
+
+    private void ClearValue() => SetValue(string.Empty);
 
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, out string? result,

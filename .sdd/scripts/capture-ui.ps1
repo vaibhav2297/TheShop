@@ -8,6 +8,7 @@ param(
     [Parameter(Mandatory)][string]$Ready,
     [string]$BaseUrl = 'http://localhost:5218',
     [string]$StorageState,
+    [string]$AuthEmail,
     [string]$Crop,
     [string[]]$BrowserArguments = @(),
     [switch]$StartApp,
@@ -40,6 +41,7 @@ $arguments = @('run', '--project', "$root/.sdd/tools/VisualCapture", '--', '--ur
 if ($StartApp) { $arguments += '--start-app' }
 if ($LocalE2E) { $arguments += '--local-e2e' }
 if ($StorageState) { $arguments += @('--storage-state', (Resolve-Path -LiteralPath $StorageState).Path) }
+if ($AuthEmail) { $arguments += @('--auth-email', $AuthEmail) }
 if ($Crop) { $arguments += @('--crop', $Crop) }
 if ($target.State -match 'inferred state') { $arguments += '--inferred-state' }
 $arguments += $BrowserArguments

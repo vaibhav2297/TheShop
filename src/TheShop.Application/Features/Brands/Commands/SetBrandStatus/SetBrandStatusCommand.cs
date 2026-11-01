@@ -10,7 +10,7 @@ namespace TheShop.Application.Features.Brands.Commands.SetBrandStatus;
 /// single-row toggle and the bulk action (plan §5 Decision 1) — a one-element list is the
 /// single-row case.
 /// </summary>
-[RequiresPermission("brands.edit")]
+[RequiresAllPermissions("brands.edit")]
 public sealed record SetBrandStatusCommand(
     IReadOnlyList<Guid> BrandIds,
     bool IsActive) : IRequest<Result<BrandStatusChangeDto>>;

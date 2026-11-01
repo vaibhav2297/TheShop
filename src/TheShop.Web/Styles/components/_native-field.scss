@@ -76,6 +76,14 @@
     block-size: var(--shop-field-icon-size);
 }
 
+.shop-field-clear {
+    flex: none;
+}
+
+.shop-field-clearable .shop-field-input[type='search']::-webkit-search-cancel-button {
+    display: none;
+}
+
 .shop-field-input {
     inline-size: 100%;
     min-inline-size: 0;

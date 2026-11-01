@@ -1,6 +1,8 @@
 using FluentAssertions;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using TheShop.Application.Common.Behaviors;
 using TheShop.Application.Features.Auth;
 using TheShop.Application.Features.Auth.Commands.VerifySignInOtp;
 using Xunit;
@@ -9,6 +11,19 @@ namespace TheShop.Application.Tests;
 
 public class DependencyInjectionTests
 {
+    [Fact]
+    public void AddApplication_Authorization_RunsBeforeValidation()
+    {
+        var services = new ServiceCollection().AddApplication();
+        var behaviors = services.Where(descriptor => descriptor.ServiceType == typeof(IPipelineBehavior<,>))
+            .Select(descriptor => descriptor.ImplementationType).ToList();
+
+        behaviors.Should().Contain(typeof(AuthorizationBehavior<,>));
+        behaviors.Should().Contain(typeof(ValidationBehavior<,>));
+        behaviors.IndexOf(typeof(AuthorizationBehavior<,>)).Should()
+            .BeLessThan(behaviors.IndexOf(typeof(ValidationBehavior<,>)));
+    }
+
     [Fact]
     public void AddApplication_ValidationDefaults_StopWithinRulesAndContinueAcrossFields()
     {

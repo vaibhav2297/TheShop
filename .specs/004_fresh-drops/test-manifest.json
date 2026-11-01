@@ -1,0 +1,38 @@
+{
+  "feature": "004_fresh-drops",
+  "trait": "004_fresh-drops",
+  "testProjects": [
+    "tests/TheShop.Domain.Tests/TheShop.Domain.Tests.csproj",
+    "tests/TheShop.Application.Tests/TheShop.Application.Tests.csproj",
+    "tests/TheShop.Infrastructure.Tests/TheShop.Infrastructure.Tests.csproj",
+    "tests/TheShop.Web.Tests/TheShop.Web.Tests.csproj"
+  ],
+  "classes": [
+    { "file": "tests/TheShop.Domain.Tests/Entities/FreshDropsTests.cs", "fqn": "TheShop.Domain.Tests.Entities.FreshDropsTests", "tests": 7 },
+    { "file": "tests/TheShop.Application.Tests/Features/Homepage/FreshDropsAuthorizationTests.cs", "fqn": "TheShop.Application.Tests.Features.Homepage.FreshDropsAuthorizationTests", "tests": 16 },
+    { "file": "tests/TheShop.Application.Tests/Features/Homepage/FreshDropsHandlerTests.cs", "fqn": "TheShop.Application.Tests.Features.Homepage.FreshDropsHandlerTests", "tests": 9 },
+    { "file": "tests/TheShop.Application.Tests/Features/Homepage/FreshDropsValidationTests.cs", "fqn": "TheShop.Application.Tests.Features.Homepage.FreshDropsValidationTests", "tests": 4 },
+    { "file": "tests/TheShop.Infrastructure.Tests/Persistence/FreshDropsSchemaTests.cs", "fqn": "TheShop.Infrastructure.Tests.Persistence.FreshDropsSchemaTests", "tests": 3 },
+    { "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageFreshDropsTests.cs", "fqn": "TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests", "tests": 8 },
+    { "file": "tests/TheShop.Web.Tests/Components/Admin/FreshDropsProductDialogTests.cs", "fqn": "TheShop.Web.Tests.Components.Admin.FreshDropsProductDialogTests", "tests": 4 }
+  ],
+  "totalTests": 51,
+  "acceptanceCriteria": [
+    { "id": "AC-1", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Render_AbsentCreator_ShowsNewestAndFigmaDefaults", "TheShop.Infrastructure.Tests.Persistence.FreshDropsSchemaTests.ProductCards_OnlyPublishedNewestAndSearchableByBrand"] },
+    { "id": "AC-2", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Render_EditAndTitleChange_UpdatesHeadingAndManualTable"] },
+    { "id": "AC-3", "tests": ["TheShop.Application.Tests.Features.Homepage.FreshDropsAuthorizationTests.Handle_ValidCommand_OnlyViewAndMatchingActionCanSave"], "boundary": "e2e", "reason": "Guest redirect and direct route denial require browser authentication state." },
+    { "id": "AC-4", "tests": ["TheShop.Application.Tests.Features.Homepage.FreshDropsAuthorizationTests.Handle_ValidCommand_OnlyViewAndMatchingActionCanSave", "TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Render_ViewOnly_HidesMutationControls", "TheShop.Infrastructure.Tests.Persistence.FreshDropsSchemaTests.Rpc_CreateRequiresViewAndCreate_EditRequiresViewAndEdit"] },
+    { "id": "AC-5", "tests": ["TheShop.Infrastructure.Tests.Persistence.FreshDropsSchemaTests.ProductCards_OnlyPublishedNewestAndSearchableByBrand", "TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Render_AbsentCreator_ShowsNewestAndFigmaDefaults"] },
+    { "id": "AC-6", "tests": ["TheShop.Web.Tests.Components.Admin.FreshDropsProductDialogTests.Confirm_SelectedProducts_ReturnsDistinctIdsAndCards", "TheShop.Web.Tests.Components.Admin.FreshDropsProductDialogTests.Cancel_AfterSelection_ReturnsNullOnce", "TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Mode_UnsavedSwitch_RestoresManualChoices"] },
+    { "id": "AC-7", "tests": ["TheShop.Domain.Tests.Entities.FreshDropsTests.ChangeSelection_DuplicateFourthEmptyOrInvalidMode_PreservesPriorOrder", "TheShop.Web.Tests.Components.Admin.FreshDropsProductDialogTests.Select_ThirdProduct_DisablesFourthAndNeverDuplicatesSelection", "TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Manual_MoveAndRemove_SendsRemainingIdsInNewOrder"], "boundary": "e2e", "reason": "Pointer drag ordering needs a real browser." },
+    { "id": "AC-8", "tests": ["TheShop.Web.Tests.Components.Admin.FreshDropsProductDialogTests.Search_NoMatches_ShowsGuidanceWithoutLosingSelection"] },
+    { "id": "AC-9", "tests": ["TheShop.Domain.Tests.Entities.FreshDropsTests.ChangeContent_BlankTitleOrIncompleteButton_RejectsWithoutMutation", "TheShop.Domain.Tests.Entities.FreshDropsTests.ChangeContent_BlankButtonPair_ClearsButtonAndTrimsTitle", "TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Render_EditAndTitleChange_UpdatesHeadingAndManualTable"] },
+    { "id": "AC-10", "tests": ["TheShop.Domain.Tests.Entities.FreshDropsTests.ChangeContent_SafeAndUnsafeLinks_EnforcesDestinationRules", "TheShop.Application.Tests.Features.Homepage.FreshDropsValidationTests.Create_UnsafeLinkDuplicateAndFourthManualChoice_AreRejected"] },
+    { "id": "AC-11", "tests": ["TheShop.Application.Tests.Features.Homepage.FreshDropsHandlerTests.Update_ManualHidden_PreservesExplicitOrder", "TheShop.Application.Tests.Features.Homepage.FreshDropsHandlerTests.Update_RepositoryConflict_PropagatesFailure"], "boundary": "e2e", "reason": "Reopen after Save requires browser and local database." },
+    { "id": "AC-12", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Cancel_UnsavedAdd_IsNavigationWithoutSave", "TheShop.Web.Tests.Components.Admin.FreshDropsProductDialogTests.Cancel_AfterSelection_ReturnsNullOnce"], "boundary": "e2e", "reason": "Browser navigation and persisted Edit cancellation require E2E." },
+    { "id": "AC-13", "tests": ["TheShop.Infrastructure.Tests.Persistence.FreshDropsSchemaTests.Schema_HiddenSingletonAndInvalidManualIds_RejectSecondOrInvalidRows", "TheShop.Infrastructure.Tests.Persistence.FreshDropsSchemaTests.Rpc_CreateRequiresViewAndCreate_EditRequiresViewAndEdit"] },
+    { "id": "AC-14", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Render_LoadFailure_ShowsRetryWithoutAddForm", "TheShop.Application.Tests.Features.Homepage.FreshDropsHandlerTests.Read_DeniedRepositoryCall_DoesNotPretendConfigurationAbsent"] },
+    { "id": "AC-15", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Render_EditAndTitleChange_UpdatesHeadingAndManualTable"], "boundary": "e2e", "reason": "Viewport overflow, keyboard focus and assistive behavior need browser inspection." }
+  ],
+  "scope": "Feature-scoped Domain, Application, Testcontainers PostgreSQL, and bUnit checks. Browser journeys and Figma visual proof belong to theshop-e2e."
+}

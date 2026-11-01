@@ -20,10 +20,10 @@ public class DeleteCategoriesCommandTests
     [Trait("Feature", "manage-categories")]
     public void DeleteCategoriesCommand_Always_IsDecoratedWithTheCategoriesDeletePermissionRequirement()
     {
-        var attribute = typeof(DeleteCategoriesCommand).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(DeleteCategoriesCommand).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Categories.Delete.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Categories.Delete.Code);
     }
 }
 

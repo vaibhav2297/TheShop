@@ -23,7 +23,7 @@ Require `.specs/{slug}/spec.md`. Missing: stop. Send user to `$theshop-spec`.
 
 `--desc`: technical direction. Use it only if spec scope and constitution allow it. Product-scope change: stop; send user to `$theshop-spec` or `$theshop-clarify`.
 
-`--figma`: full Figma design URL. Use only for UI work. Preserve supplied URL in plan for downstream activation.
+`--figma`: full Figma design URL. Use only for UI work. Preserve supplied URL as implementation reference.
 
 ## Before write
 
@@ -35,12 +35,10 @@ Load `$theshop-constitution`. Read only routed references matching planned layer
 
 Inspect existing code only for reuse, naming, and layer placement. Do not invent types, routes, or UI primitives.
 
-UI work with supplied Figma URL: preserve URL in plan and activate visual flow. No URL: normal planning; do not ask for Figma or create a design-gap blocker. Backend work: skip Figma.
-
-Only with supplied Figma URL, load [browser visual loop](../theshop-execute/references/visual-loop.md). Record visual scope and target table in Web step.
-Use direct Figma context plus screenshots. Do not create `design-contract.json`.
-Without Figma URL, omit visual scope, target table and screenshot evidence requirements. `skip` without a previously supplied URL means normal flow.
-Include desktop/mobile and relevant states, deterministic data, readiness selectors and design-rule conflicts.
+UI work with supplied Figma URL: inspect design through MCP; preserve node references, assets, component mappings and responsive/state decisions.
+No URL: normal planning; do not ask for Figma or create a design-gap blocker. Backend work: skip Figma.
+Visual acceptance is manual. Do not create visual scope, capture target tables, screenshot evidence tasks or `design-contract.json`.
+Keep behavioral test data and readiness selectors in planned E2E work. Resolve design-rule conflicts before implementation.
 
 ## Write
 

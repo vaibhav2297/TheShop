@@ -9,7 +9,7 @@ namespace TheShop.Application.Features.Brands.Commands.UpdateBrand;
 /// Updates an existing brand's name, description, status, and logo. <see cref="RemoveLogo"/>
 /// takes precedence when both it and <see cref="NewLogo"/> are supplied.
 /// </summary>
-[RequiresPermission("brands.edit")]
+[RequiresAllPermissions("brands.edit")]
 public sealed record UpdateBrandCommand(
     Guid Id,
     string Name,

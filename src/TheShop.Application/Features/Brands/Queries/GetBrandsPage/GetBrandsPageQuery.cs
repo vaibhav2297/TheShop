@@ -11,7 +11,7 @@ namespace TheShop.Application.Features.Brands.Queries.GetBrandsPage;
 /// <paramref name="Status"/>, ordered by <paramref name="Sort"/>. Both narrowing criteria are
 /// optional: a <see langword="null"/> <paramref name="Status"/> returns brands of every status.
 /// </summary>
-[RequiresPermission("brands.view")]
+[RequiresAllPermissions("brands.view")]
 public sealed record GetBrandsPageQuery(
     string? Search,
     BrandStatusFilter? Status,
