@@ -1,7 +1,7 @@
 # Manage Fresh Drops — SDD Status
 
 **Feature:** `004_fresh-drops`
-**Last updated:** 2026-10-31
+**Last updated:** 2026-11-01
 
 | Stage | State | Gate | Evidence | Date |
 |---|---|---|---|---|
@@ -13,6 +13,10 @@
 | 6. Document (optional) | — | — | — | — |
 
 **Next step:** `$theshop-execute 004_fresh-drops`
+
+**Shipped:** 2026-11-01 → dev (via PR)
+
+⚠️ waived: shipped with 2 open ledger item(s)
 
 Each skill reads upstream rows. Each skill updates only its row: State, Gate, Evidence, Date, Last updated, Next step.
 
