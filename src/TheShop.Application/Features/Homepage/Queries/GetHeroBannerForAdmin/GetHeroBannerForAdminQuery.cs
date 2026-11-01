@@ -7,6 +7,6 @@ using TheShop.Domain.ValueObjects;
 namespace TheShop.Application.Features.Homepage.Queries.GetHeroBannerForAdmin;
 
 /// <summary>Reads the admin configuration; successful null confirms no saved banner.</summary>
-[RequiresPermission(PermissionCatalogue.Homepage.ViewCode)]
+[RequiresAllPermissions(PermissionCatalogue.Homepage.ViewCode)]
 public sealed record GetHeroBannerForAdminQuery : IRequest<Result<HeroBannerDto?>>;
 

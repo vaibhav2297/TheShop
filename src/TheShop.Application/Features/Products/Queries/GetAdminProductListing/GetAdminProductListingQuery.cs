@@ -7,6 +7,6 @@ using TheShop.Application.Features.Products.Queries.GetAdminProductsPage;
 namespace TheShop.Application.Features.Products.Queries.GetAdminProductListing;
 
 /// <summary>Loads a management page with all authorized variant choices and selection cleanup.</summary>
-[RequiresPermission("products.view")]
+[RequiresAllPermissions("products.view")]
 public sealed record GetAdminProductListingQuery(GetAdminProductsPageQuery PageQuery)
     : IRequest<Result<ProductListingPageDto<ProductListItemDto>>>;

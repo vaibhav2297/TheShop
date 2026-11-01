@@ -23,10 +23,10 @@ public class CreateBrandCommandTests
     [Trait("Feature", "add-brand")]
     public void CreateBrandCommand_Always_IsDecoratedWithTheBrandsCreatePermissionRequirement()
     {
-        var attribute = typeof(CreateBrandCommand).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(CreateBrandCommand).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Brands.Create.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Brands.Create.Code);
     }
 }
 

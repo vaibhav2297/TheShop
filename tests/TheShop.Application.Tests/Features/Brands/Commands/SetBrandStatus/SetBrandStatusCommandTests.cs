@@ -20,10 +20,10 @@ public class SetBrandStatusCommandTests
     [Trait("Feature", "manage-brands")]
     public void SetBrandStatusCommand_Always_IsDecoratedWithTheBrandsEditPermissionRequirement()
     {
-        var attribute = typeof(SetBrandStatusCommand).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(SetBrandStatusCommand).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Brands.Edit.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Brands.Edit.Code);
     }
 }
 

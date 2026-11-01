@@ -1,0 +1,130 @@
+@using TheShop.Domain.Enums
+@using TheShop.Application.Features.Homepage.DTOs
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Components.Admin
+
+<PageTitle>@Heading</PageTitle>
+<section class="shop-native shop-fresh-drops" data-testid="fresh-drops-editor" data-state="@State">
+    <h1>@Heading</h1>
+    <BusyFor Key="@BusyKeys.Homepage.LoadFreshDrops" Context="loading">
+        @if (loading && !_loaded)
+        {
+            <div class="shop-fresh-drops-grid" role="status" aria-label="@Strings.Loading" data-testid="fresh-drops-skeleton">
+                <div class="shop-fresh-drops-products"><ShopSkeleton Class="shop-fresh-drops-skeleton-card" /><ShopSkeleton Class="shop-fresh-drops-skeleton-card" /><ShopSkeleton Class="shop-fresh-drops-skeleton-card" /></div>
+                <div class="shop-fresh-drops-settings"><ShopSkeleton Class="shop-fresh-drops-skeleton-field" /><ShopSkeleton Class="shop-fresh-drops-skeleton-field" /><ShopSkeleton Class="shop-fresh-drops-skeleton-field" /></div>
+            </div>
+        }
+        else if (_loadError is not null)
+        {
+            <div class="shop-fresh-drops-error" role="alert">
+                <p>@Localizer[_loadError]</p>
+                <ShopButton OnClick="LoadAsync" data-testid="fresh-drops-reload">@Strings.FreshDrops_Reload</ShopButton>
+            </div>
+        }
+        else if (_loaded && !_hasDrops && !CanMutate)
+        {
+            <p>@Strings.FreshDrops_Absent</p>
+        }
+        else if (_loaded)
+        {
+            <EditForm @key="_editContext" EditContext="@_editContext" OnSubmit="SaveAsync" novalidate>
+                <ShopCommandValidation @ref="_validation" />
+                <BusyFor Key="@BusyKeys.Homepage.SaveFreshDrops" Context="saving">
+                    <div class="shop-fresh-drops-grid">
+                        <section class="shop-fresh-drops-products" aria-labelledby="fresh-drops-products-title">
+                            <div class="shop-fresh-drops-chooser">
+                            <h2 id="fresh-drops-products-title">@Strings.FreshDrops_ChooseProducts</h2>
+                            @if (CanMutate)
+                            {
+                                <fieldset class="shop-fresh-drops-mode" disabled="@saving">
+                                    <legend class="shop-visually-hidden">@Strings.FreshDrops_ChooseProducts</legend>
+                                    <ShopChip Selected="@(!IsManual)" SelectedChanged="@(_ => SetModeAsync(FreshDropsSelectionMode.Newest))" Disabled="@saving" data-testid="fresh-drops-newest">@Strings.FreshDrops_NewestAutomatically</ShopChip>
+                                    <ShopChip Selected="@IsManual" SelectedChanged="@(_ => SetModeAsync(FreshDropsSelectionMode.Manual))" Disabled="@saving" data-testid="fresh-drops-manual">@Strings.FreshDrops_PickManually</ShopChip>
+                                </fieldset>
+                            }
+                            else
+                            {
+                                <p>@(IsManual ? Strings.FreshDrops_PickManually : Strings.FreshDrops_NewestAutomatically)</p>
+                            }
+                            </div>
+                            @if (IsManual)
+                            {
+                                <div class="shop-fresh-drops-table-toolbar">
+                                    <p>@string.Format(Strings.FreshDrops_SelectedCount, _model.ManualProductIds.Count)</p>
+                                    @if (CanMutate)
+                                    {
+                                        <ShopButton OnClick="OpenDialogAsync" Variant="ShopVariant.Outlined" StartIcon="@ShopIcons.Outlined.Add_Plus" Disabled="@(saving || _model.ManualProductIds.Count >= 3)" data-testid="fresh-drops-open-picker">@Strings.FreshDrops_AddProduct</ShopButton>
+                                    }
+                                </div>
+                                <ShopTable TItem="Guid" Class="shop-fresh-drops-table shop-fresh-drops-manual-table" Items="@SelectedIds" ItemKey="@(id => id)" Caption="@Strings.FreshDrops_ChooseProducts" ColumnCount="3" data-testid="fresh-drops-manual-list">
+                                    <HeaderContent><th scope="col" class="shop-fresh-drops-drag-cell"><span class="shop-visually-hidden">@Strings.FreshDrops_Reorder</span></th><th scope="col">@Strings.FreshDrops_Product</th><th scope="col" class="shop-table-column-compact">@Strings.FreshDrops_Actions</th></HeaderContent>
+                                    <RowTemplate Context="id">
+                                        <td class="shop-fresh-drops-drag-cell" draggable="@CanMutate.ToString().ToLowerInvariant()" @ondragstart="@(() => StartDrag(id))" @ondragover:preventDefault="true" @ondrop="@(() => DropOn(id))"><ShopIcon Icon="@ShopIcons.Outlined.Drag_Vertical" /></td>
+                                        <td><div class="shop-fresh-drops-product" @ondragover:preventDefault="true" @ondrop="@(() => DropOn(id))">
+                                            @if (_cards.TryGetValue(id, out var card))
+                                            {
+                                                <ShopImage Src="@card.ImageUrl" Preset="ShopImagePreset.SquareContain" Alt="@card.Name" PlaceholderLabel="@card.Name" />
+                                                <div><strong>@card.Name</strong><span>@card.BrandName · @card.DisplayPrice.ToString("C")</span></div>
+                                            }
+                                            else { <span>@Strings.FreshDrops_UnavailableProduct</span> }
+                                        </div></td>
+                                        <td class="shop-table-column-compact">
+                                            @if (CanMutate)
+                                            {
+                                                <div class="shop-fresh-drops-row-actions">
+                                                    <ShopIconButton Icon="@ShopIcons.Outlined.Arrow_Up_MD" Label="@Strings.FreshDrops_MoveUp" Variant="ShopVariant.Text" Size="ShopSize.Medium" Disabled="@(saving || _model.ManualProductIds.IndexOf(id) == 0)" OnClick="@(() => Move(id, -1))" />
+                                                    <ShopIconButton Icon="@ShopIcons.Outlined.Arrow_Down_MD" Label="@Strings.FreshDrops_MoveDown" Variant="ShopVariant.Text" Size="ShopSize.Medium" Disabled="@(saving || _model.ManualProductIds.IndexOf(id) == _model.ManualProductIds.Count - 1)" OnClick="@(() => Move(id, 1))" />
+                                                    <ShopIconButton Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.FreshDrops_Remove" Variant="ShopVariant.Text" Color="ShopColor.Error" Size="ShopSize.Medium" Disabled="@saving" OnClick="@(() => Remove(id))" />
+                                                </div>
+                                            }
+                                        </td>
+                                    </RowTemplate>
+                                    <EmptyContent><div class="shop-fresh-drops-empty"><strong>@Strings.FreshDrops_EmptyTitle</strong><span>@Strings.FreshDrops_EmptyHint</span></div></EmptyContent>
+                                </ShopTable>
+                                <p class="shop-fresh-drops-hint"><ShopIcon Icon="@ShopIcons.Outlined.Info" />@Strings.FreshDrops_ManualHint</p>
+                            }
+                            else
+                            {
+                                <p class="shop-fresh-drops-count">@string.Format(Strings.FreshDrops_AutomaticCount, _automatic.Count)</p>
+                                <ShopTable TItem="FreshDropsProductDto" Class="shop-fresh-drops-table" Items="@_automatic" ItemKey="@(card => card.Id)" Caption="@Strings.FreshDrops_ChooseProducts" ColumnCount="1" data-testid="fresh-drops-automatic-list">
+                                    <HeaderContent><th scope="col">@Strings.FreshDrops_Product</th></HeaderContent>
+                                    <RowTemplate Context="card"><td><div class="shop-fresh-drops-product">
+                                        <ShopImage Src="@card.ImageUrl" Preset="ShopImagePreset.SquareContain" Alt="@card.Name" PlaceholderLabel="@card.Name" />
+                                        <div><strong>@card.Name</strong><span>@card.BrandName · @card.DisplayPrice.ToString("C")</span></div>
+                                    </div></td></RowTemplate>
+                                </ShopTable>
+                                <p class="shop-fresh-drops-hint"><ShopIcon Icon="@ShopIcons.Outlined.Info" />@Strings.FreshDrops_AutomaticHint</p>
+                                @if (_automatic.Count == 0) { <p>@Strings.FreshDrops_NoProducts</p> }
+                            }
+                            @if (_productError is not null) { <p role="alert">@Localizer[_productError]</p> }
+                        </section>
+                        <div class="shop-fresh-drops-settings">
+                            <section>
+                                <ShopTextField id="fresh-drops-title" Label="@Strings.FreshDrops_Title" @bind-Value="_model.Title" Disabled="@(!CanMutate || saving)" required data-testid="fresh-drops-title" />
+                                <ShopTextField id="fresh-drops-button-label" Label="@Strings.FreshDrops_ButtonLabel" @bind-Value="_model.ButtonLabel" Disabled="@(!CanMutate || saving)" data-testid="fresh-drops-button-label" />
+                                <ShopTextField id="fresh-drops-button-link" Label="@Strings.FreshDrops_ButtonLink" @bind-Value="_model.ButtonLink" Disabled="@(!CanMutate || saving)" data-testid="fresh-drops-button-link" />
+                            </section>
+                            <div class="shop-fresh-drops-status" role="group" aria-labelledby="fresh-drops-status-label">
+                                <p id="fresh-drops-status-label">@Strings.FreshDrops_Status</p>
+                                <div class="shop-fresh-drops-status-options">
+                                    <ShopChip Selected="@_model.IsVisible" SelectedChanged="@(_ => SetVisible(true))" Disabled="@(!CanMutate || saving)">@Strings.FreshDrops_Visible</ShopChip>
+                                    <ShopChip Selected="@(!_model.IsVisible)" SelectedChanged="@(_ => SetVisible(false))" Disabled="@(!CanMutate || saving)">@Strings.FreshDrops_Hidden</ShopChip>
+                                </div>
+                            </div>
+                            <div class="shop-fresh-drops-actions">
+                                @if (CanMutate) { <ShopButton Type="submit" Size="ShopSize.Large" Loading="@saving" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD" data-testid="fresh-drops-save">@Strings.Save</ShopButton> }
+                                <ShopButton Href="@Routes.Admin.ManageHomepage" Variant="ShopVariant.Outlined" Disabled="@saving">@Strings.Cancel</ShopButton>
+                            </div>
+                        </div>
+                    </div>
+                </BusyFor>
+            </EditForm>
+        }
+    </BusyFor>
+</section>
+
+@if (_dialogOpen)
+{
+    <FreshDropsProductDialog InitialSelectedIds="@SelectedIds" OnCompleted="DialogCompletedAsync" />
+}

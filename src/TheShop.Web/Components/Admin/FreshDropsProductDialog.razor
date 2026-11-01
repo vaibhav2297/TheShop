@@ -1,0 +1,37 @@
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<ShopDialog MaxWidth="ShopMaxWidth.Medium" OnDismiss="CancelAsync">
+    <TitleContent><h2 class="shop-fresh-drops-dialog-title">@Strings.FreshDrops_AddProducts</h2></TitleContent>
+    <DialogContent>
+        <div data-testid="fresh-drops-product-dialog" class="shop-fresh-drops-picker">
+            <ShopTextField id="fresh-drops-search" type="search" Label="@Strings.FreshDrops_SearchProducts" StartIcon="@ShopIcons.Outlined.Search_Magnifying_Glass"
+                           Clearable="true" ClearLabel="@Strings.FreshDrops_ClearSearch"
+                           Value="@_search" ValueChanged="SearchChangedAsync" ValueExpression="@(() => _search)" data-testid="fresh-drops-search" />
+            <p class="shop-fresh-drops-picker-count">@string.Format(Strings.FreshDrops_SelectedCount, _selectedIds.Count)</p>
+            <BusyFor Key="@BusyKeys.Homepage.SearchFreshDrops" Context="searching">
+                @if (searching) { <ShopSkeleton Class="shop-fresh-drops-skeleton-card" /> }
+                else if (_searchError is not null) { <p role="alert">@Localizer[_searchError]</p> }
+                else if (_results.Count == 0) { <p>@Strings.FreshDrops_NoResults</p><p>@Strings.FreshDrops_NoResultsHint</p> }
+                else
+                {
+                    <ul class="shop-fresh-drops-picker-grid">
+                        @foreach (var product in _results)
+                        {
+                            <li>
+                                <ShopImageTile Src="@product.ImageUrl" Alt="@product.Name" Selected="@_selectedIds.Contains(product.Id)" Removable="false" Disabled="@(_selectedIds.Count >= 3 && !_selectedIds.Contains(product.Id))" OnClick="@(() => ToggleProduct(product.Id))" />
+                                <strong>@product.Name</strong><span>@product.BrandName · @product.DisplayPrice.ToString("C")</span>
+                            </li>
+                        }
+                    </ul>
+                    @if (_hasMoreResults) { <ShopButton Variant="ShopVariant.Outlined" OnClick="LoadMoreAsync" data-testid="fresh-drops-load-more">@Strings.FreshDrops_LoadMore</ShopButton> }
+                }
+            </BusyFor>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <ShopButton OnClick="ConfirmAsync" data-testid="fresh-drops-confirm-picker">@Strings.FreshDrops_AddProducts</ShopButton>
+        <ShopButton Variant="ShopVariant.Outlined" OnClick="CancelAsync" data-dialog-initial-focus>@Strings.Cancel</ShopButton>
+    </DialogActions>
+</ShopDialog>

@@ -9,5 +9,5 @@ namespace TheShop.Application.Features.Products.Queries.GetAdminProductFilters;
 /// Requests the filter options for the admin manage-products page: the brands and categories
 /// that own a product, plus the variant-aware price bounds (plan §5 Decision 7).
 /// </summary>
-[RequiresPermission("products.view")]
+[RequiresAllPermissions("products.view")]
 public sealed record GetAdminProductFiltersQuery : IRequest<Result<AdminProductFiltersDto>>;

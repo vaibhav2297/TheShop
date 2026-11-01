@@ -11,5 +11,5 @@ namespace TheShop.Application.Features.Admin.Queries.GetAdminDashboard;
 /// gated by <see cref="Common.Interfaces.ICurrentUserService.HasPermission"/> inside the
 /// handler (spec FR-5 / RULE-2).
 /// </summary>
-[RequiresPermission("dashboard.view")]
+[RequiresAllPermissions("dashboard.view")]
 public sealed record GetAdminDashboardQuery : IRequest<Result<AdminDashboardDto>>;

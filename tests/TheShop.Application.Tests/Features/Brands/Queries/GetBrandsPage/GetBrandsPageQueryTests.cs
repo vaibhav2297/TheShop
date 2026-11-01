@@ -22,10 +22,10 @@ public class GetBrandsPageQueryTests
     [Trait("Feature", "manage-brands")]
     public void GetBrandsPageQuery_Always_IsDecoratedWithTheBrandsViewPermissionRequirement()
     {
-        var attribute = typeof(GetBrandsPageQuery).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(GetBrandsPageQuery).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Brands.View.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Brands.View.Code);
     }
 }
 

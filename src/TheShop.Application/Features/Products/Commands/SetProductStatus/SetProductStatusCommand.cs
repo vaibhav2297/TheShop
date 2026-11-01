@@ -10,7 +10,7 @@ namespace TheShop.Application.Features.Products.Commands.SetProductStatus;
 /// inline single-row toggle and the bulk action (plan §5 Decision 2) — a one-element list is the
 /// single-row case.
 /// </summary>
-[RequiresPermission("products.edit")]
+[RequiresAllPermissions("products.edit")]
 public sealed record SetProductStatusCommand(
     IReadOnlyList<Guid> ProductIds,
     bool IsActive) : IRequest<Result<ProductStatusChangeDto>>;

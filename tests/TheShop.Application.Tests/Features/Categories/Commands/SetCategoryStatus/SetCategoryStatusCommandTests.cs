@@ -19,10 +19,10 @@ public class SetCategoryStatusCommandTests
     [Trait("Feature", "manage-categories")]
     public void SetCategoryStatusCommand_Always_IsDecoratedWithTheCategoriesEditPermissionRequirement()
     {
-        var attribute = typeof(SetCategoryStatusCommand).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(SetCategoryStatusCommand).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Categories.Edit.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Categories.Edit.Code);
     }
 }
 

@@ -8,7 +8,7 @@ using TheShop.Domain.ValueObjects;
 namespace TheShop.Application.Features.Homepage.Commands.UpdateHeroBanner;
 
 /// <summary>Updates the saved singleton with normalized text and staged artwork.</summary>
-[RequiresPermission(PermissionCatalogue.Homepage.EditCode)]
+[RequiresAllPermissions(PermissionCatalogue.Homepage.EditCode)]
 public sealed record UpdateHeroBannerCommand(string Heading, string? Description, string? ButtonLabel,
     string? ButtonLink, ImageUpload? NewDesktopImage, ImageUpload? NewMobileImage,
     bool RemoveDesktopImage, bool RemoveMobileImage, bool IsVisible) : IRequest<Result>

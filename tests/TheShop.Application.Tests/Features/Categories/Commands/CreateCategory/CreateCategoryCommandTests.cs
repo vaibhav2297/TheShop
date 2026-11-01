@@ -19,10 +19,10 @@ public class CreateCategoryCommandTests
     [Trait("Feature", "manage-categories")]
     public void CreateCategoryCommand_Always_IsDecoratedWithTheCategoriesCreatePermissionRequirement()
     {
-        var attribute = typeof(CreateCategoryCommand).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(CreateCategoryCommand).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Categories.Create.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Categories.Create.Code);
     }
 }
 

@@ -9,5 +9,8 @@
     <PackageReference Include="Microsoft.Playwright" Version="1.63.0" />
     <Compile Include="../../../tests/TheShop.E2E.Tests/Fixtures/E2EEnvironment.cs" Link="E2EEnvironment.cs" />
     <Compile Include="../../../tests/TheShop.E2E.Tests/Fixtures/ShopBrowser.cs" Link="ShopBrowser.cs" />
+    <Compile Include="../../../tests/TheShop.E2E.Tests/Auth/AuthStateFactory.cs" Link="AuthStateFactory.cs" />
+    <Compile Include="../../../tests/TheShop.E2E.Tests/Auth/OtpInbox.cs" Link="OtpInbox.cs" />
+    <Compile Include="../../../src/TheShop.Web/Common/Routes.cs" Link="Routes.cs" />
   </ItemGroup>
 </Project>

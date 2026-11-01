@@ -5,7 +5,7 @@ namespace TheShop.Web.Auth;
 
 /// <summary>
 /// Route-level authorization on a single fine-grained permission code — the Web twin of the
-/// Application layer's <c>[RequiresPermission]</c>. Equivalent to
+/// Application layer's <c>[RequiresAllPermissions(code)]</c> with one permission. Equivalent to
 /// <c>[Authorize(Policy = PolicyNames.Permission(code))]</c>, which cannot be written directly
 /// because attribute arguments must be compile-time constants; this attribute composes the
 /// <c>perm:{code}</c> policy name at construction instead. The router's

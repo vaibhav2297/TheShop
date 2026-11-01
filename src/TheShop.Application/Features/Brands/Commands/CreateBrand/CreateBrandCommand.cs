@@ -9,7 +9,7 @@ namespace TheShop.Application.Features.Brands.Commands.CreateBrand;
 /// Creates a new brand. Only the name is required; description, logo, and status are optional
 /// (status defaults to Active at the Web layer per FR-5).
 /// </summary>
-[RequiresPermission("brands.create")]
+[RequiresAllPermissions("brands.create")]
 public sealed record CreateBrandCommand(
     string Name,
     string? Description,

@@ -10,5 +10,5 @@ namespace TheShop.Application.Features.Categories.Queries.GetCategoryById;
 /// the edit page's <c>categories.edit</c> gate is what denies a view-only admin's direct link
 /// (plan §5 Decision 9).
 /// </summary>
-[RequiresPermission("categories.view")]
+[RequiresAllPermissions("categories.view")]
 public sealed record GetCategoryByIdQuery(Guid Id) : IRequest<Result<CategoryDto>>;

@@ -10,5 +10,5 @@ namespace TheShop.Application.Features.Products.Commands.DeleteProducts;
 /// (FR-12, RULE-3). Covers both the single-row delete and the bulk action (plan §5 Decision 2) —
 /// a one-element list is the single-row case.
 /// </summary>
-[RequiresPermission("products.delete")]
+[RequiresAllPermissions("products.delete")]
 public sealed record DeleteProductsCommand(IReadOnlyList<Guid> ProductIds) : IRequest<Result<ProductDeletionOutcomeDto>>;

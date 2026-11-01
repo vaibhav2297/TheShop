@@ -11,6 +11,9 @@ public static class BusyKeys
     {
         public const string LoadHeroBanner = "homepage.hero.load";
         public const string SaveHeroBanner = "homepage.hero.save";
+        public const string LoadFreshDrops = "homepage.fresh-drops.load";
+        public const string SaveFreshDrops = "homepage.fresh-drops.save";
+        public const string SearchFreshDrops = "homepage.fresh-drops.search";
     }
     /// <summary>Prefix for per-instance local image preparation.</summary>
     public const string ImageSelection = "images.selection";

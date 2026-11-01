@@ -20,10 +20,10 @@ public class DeleteBrandsCommandTests
     [Trait("Feature", "manage-brands")]
     public void DeleteBrandsCommand_Always_IsDecoratedWithTheBrandsDeletePermissionRequirement()
     {
-        var attribute = typeof(DeleteBrandsCommand).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(DeleteBrandsCommand).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Brands.Delete.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Brands.Delete.Code);
     }
 }
 

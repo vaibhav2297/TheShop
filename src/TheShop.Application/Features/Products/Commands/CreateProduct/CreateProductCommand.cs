@@ -10,7 +10,7 @@ namespace TheShop.Application.Features.Products.Commands.CreateProduct;
 /// variants — as one aggregate write (plan Section 3). <see cref="Sku"/> is required on every
 /// save, complete or not (RULE-8, RULE-15).
 /// </summary>
-[RequiresPermission("products.create")]
+[RequiresAllPermissions("products.create")]
 public sealed record CreateProductCommand(
     string Name,
     string? Description,

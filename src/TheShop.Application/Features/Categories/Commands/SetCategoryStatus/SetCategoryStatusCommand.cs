@@ -10,7 +10,7 @@ namespace TheShop.Application.Features.Categories.Commands.SetCategoryStatus;
 /// inline single-row toggle and the bulk action (plan §5 Decision 4) — a one-element list is the
 /// single-row case.
 /// </summary>
-[RequiresPermission("categories.edit")]
+[RequiresAllPermissions("categories.edit")]
 public sealed record SetCategoryStatusCommand(
     IReadOnlyList<Guid> CategoryIds,
     bool IsActive) : IRequest<Result<CategoryStatusChangeDto>>;

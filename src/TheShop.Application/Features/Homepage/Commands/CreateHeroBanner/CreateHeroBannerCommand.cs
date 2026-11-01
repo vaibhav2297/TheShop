@@ -8,7 +8,7 @@ using TheShop.Domain.ValueObjects;
 namespace TheShop.Application.Features.Homepage.Commands.CreateHeroBanner;
 
 /// <summary>Creates the singleton with normalized text and staged artwork.</summary>
-[RequiresPermission(PermissionCatalogue.Homepage.CreateCode)]
+[RequiresAllPermissions(PermissionCatalogue.Homepage.CreateCode)]
 public sealed record CreateHeroBannerCommand(string Heading, string? Description, string? ButtonLabel,
     string? ButtonLink, ImageUpload? DesktopImage, ImageUpload? MobileImage, bool IsVisible) : IRequest<Result>
 {

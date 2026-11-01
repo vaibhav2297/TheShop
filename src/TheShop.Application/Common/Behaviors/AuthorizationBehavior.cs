@@ -7,8 +7,10 @@ using TheShop.Application.Features.Roles;
 namespace TheShop.Application.Common.Behaviors;
 
 /// <summary>
-/// MediatR pipeline behavior that enforces <see cref="RequiresPermissionAttribute"/> on every
-/// command and query. Requests with no attribute pass through unchecked. For a decorated
+/// MediatR pipeline behavior that enforces <see cref="RequiresAllPermissionsAttribute"/>
+/// and <see cref="RequiresAnyPermissionAttribute"/>
+/// on every command and query. Every declared requirement must pass; requests with no permission
+/// attributes pass through unchecked. For a decorated
 /// request, the check reads the current user's permission claims via
 /// <see cref="ICurrentUserService.HasPermission"/> — claims are minted into the access token by
 /// the database's custom access token hook, so staleness is bounded by the token TTL and no
@@ -21,11 +23,14 @@ public sealed class AuthorizationBehavior<TRequest, TResponse>(ICurrentUserServi
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    private static readonly RequiresPermissionAttribute? Requirement =
-        typeof(TRequest).GetCustomAttribute<RequiresPermissionAttribute>();
+    private static readonly RequiresAllPermissionsAttribute? AllRequirement =
+        typeof(TRequest).GetCustomAttribute<RequiresAllPermissionsAttribute>();
+
+    private static readonly RequiresAnyPermissionAttribute? AnyRequirement =
+        typeof(TRequest).GetCustomAttribute<RequiresAnyPermissionAttribute>();
 
     /// <summary>
-    /// Checks the required permission, if any, and either delegates to the next handler in the
+    /// Checks all declared permission requirements and either delegates to the next handler in the
     /// pipeline or short-circuits with an access-denied failure result.
     /// </summary>
     public async Task<TResponse> Handle(
@@ -33,17 +38,15 @@ public sealed class AuthorizationBehavior<TRequest, TResponse>(ICurrentUserServi
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (Requirement is null)
-            return await next(cancellationToken);
-
-        if (currentUser.HasPermission(Requirement.PermissionCode))
+        if ((AllRequirement is null || AllRequirement.PermissionCodes.All(currentUser.HasPermission)) &&
+            (AnyRequirement is null || AnyRequirement.PermissionCodes.Any(currentUser.HasPermission)))
             return await next(cancellationToken);
 
         if (TryBuildFailureResult(RbacErrorKeys.AccessDenied, out var failure))
             return (TResponse)failure!;
 
         throw new InvalidOperationException(
-            $"{typeof(TRequest).Name} is decorated with [RequiresPermission] but its response " +
+            $"{typeof(TRequest).Name} declares permission requirements but its response " +
             $"type {typeof(TResponse)} is neither Result nor Result<T>.");
     }
 

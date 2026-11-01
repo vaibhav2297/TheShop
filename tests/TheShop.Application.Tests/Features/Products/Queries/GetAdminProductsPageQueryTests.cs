@@ -18,10 +18,10 @@ public class GetAdminProductsPageQueryTests
     [Trait("Feature", "manage-product")]
     public void GetAdminProductsPageQuery_Always_IsDecoratedWithTheProductsViewPermissionRequirement()
     {
-        var attribute = typeof(GetAdminProductsPageQuery).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(GetAdminProductsPageQuery).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Products.View.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Products.View.Code);
     }
 }
 

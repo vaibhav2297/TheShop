@@ -14,7 +14,7 @@ namespace TheShop.Application.Features.Products.Queries.GetAdminProductsPage;
 /// Every narrowing criterion is optional: a <see langword="null"/> value applies no narrowing on
 /// that criterion (AC-1..AC-5).
 /// </summary>
-[RequiresPermission("products.view")]
+[RequiresAllPermissions("products.view")]
 public sealed record GetAdminProductsPageQuery(
     string? Search,
     ProductStatusFilter? Status,

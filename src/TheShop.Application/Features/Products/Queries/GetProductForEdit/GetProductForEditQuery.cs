@@ -9,5 +9,5 @@ namespace TheShop.Application.Features.Products.Queries.GetProductForEdit;
 /// Requests the full edit payload — details, gallery, option types, and variants — for one
 /// product, by id.
 /// </summary>
-[RequiresPermission("products.view")]
+[RequiresAllPermissions("products.view")]
 public sealed record GetProductForEditQuery(Guid Id) : IRequest<Result<AdminProductDto>>;

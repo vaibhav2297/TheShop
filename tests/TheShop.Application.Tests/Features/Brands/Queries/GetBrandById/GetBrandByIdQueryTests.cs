@@ -21,10 +21,10 @@ public class GetBrandByIdQueryTests
     [Trait("Feature", "manage-brands")]
     public void GetBrandByIdQuery_Always_IsDecoratedWithTheBrandsViewPermissionRequirement()
     {
-        var attribute = typeof(GetBrandByIdQuery).GetCustomAttribute<RequiresPermissionAttribute>();
+        var attribute = typeof(GetBrandByIdQuery).GetCustomAttribute<RequiresAllPermissionsAttribute>();
 
         attribute.Should().NotBeNull();
-        attribute!.PermissionCode.Should().Be(PermissionCatalogue.Brands.View.Code);
+        attribute!.PermissionCodes.Should().Equal(PermissionCatalogue.Brands.View.Code);
     }
 }
 

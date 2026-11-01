@@ -35,7 +35,8 @@
 ## Admin (only if the change touches admin)
 
 - [ ] Admin pages live under `Pages/Admin/`, inheriting `[Authorize(Policy = PolicyNames.AdminArea)]` from `_Imports.razor`?
-- [ ] Every admin capability is gated on its specific `PermissionCatalogue` permission (never a role name): `AuthorizeView Policy="@PolicyNames.Permission(...)"` in UI, `[RequiresPermission]` on the command/query, `(SELECT public.authorize('module.action'))` in RLS?
+- [ ] Every admin capability is gated on its specific `PermissionCatalogue` permissions (never a role name): `AuthorizeView Policy="@PolicyNames.Permission(...)"` in UI, `RequiresAllPermissions` / `RequiresAnyPermission` on the command/query, and matching permissions in RLS?
+- [ ] Static permission requirements run in the authorization pipeline before validation, with All/Any semantics matching the authoritative policy and every declared group required to pass?
 - [ ] Every Supabase table holding admin-only or user-scoped data has an RLS policy? Sensitive operations (role management, refunds, customer export) use `authorize_fresh()`?
 - [ ] Customer-scoped tables filter by `auth.uid()`?
 - [ ] New capabilities introduce their own catalogue permission — no "is an Admin" shortcuts or ungated features?

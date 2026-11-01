@@ -9,7 +9,7 @@ namespace TheShop.Application.Features.Categories.Commands.UpdateCategory;
 /// Updates an existing category's name, description, status, and image. <see cref="RemoveImage"/>
 /// takes precedence when both it and <see cref="NewImage"/> are supplied.
 /// </summary>
-[RequiresPermission("categories.edit")]
+[RequiresAllPermissions("categories.edit")]
 public sealed record UpdateCategoryCommand(
     Guid Id,
     string Name,

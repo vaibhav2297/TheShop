@@ -11,7 +11,7 @@ namespace TheShop.Application.Features.Products.Commands.UpdateProduct;
 /// concurrency token the edit form loaded with (Decision 11); a save since then fails with
 /// <see cref="Features.Products.ProductErrorKeys.ModifiedElsewhere"/> rather than overwriting it.
 /// </summary>
-[RequiresPermission("products.edit")]
+[RequiresAllPermissions("products.edit")]
 public sealed record UpdateProductCommand(
     Guid Id,
     string RowVersion,

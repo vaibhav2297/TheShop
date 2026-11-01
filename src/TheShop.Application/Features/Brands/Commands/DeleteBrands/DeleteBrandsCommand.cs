@@ -10,5 +10,5 @@ namespace TheShop.Application.Features.Brands.Commands.DeleteBrands;
 /// (RULE-6/RULE-13). Covers both the single-row delete and the bulk action (plan §5 Decision 1) —
 /// a one-element list is the single-row case.
 /// </summary>
-[RequiresPermission("brands.delete")]
+[RequiresAllPermissions("brands.delete")]
 public sealed record DeleteBrandsCommand(IReadOnlyList<Guid> BrandIds) : IRequest<Result<BrandDeletionOutcomeDto>>;
