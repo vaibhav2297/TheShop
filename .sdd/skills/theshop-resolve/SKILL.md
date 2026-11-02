@@ -25,7 +25,6 @@ Read the full plan. Collect:
 Map each item to its destination in Sections 1–10: model/schema, design, flow, validation, RLS, AC mapping, or phase task.
 
 With supplied Figma URL, resolve reference access, component mappings, responsive/state decisions and design-rule conflicts.
-Visual acceptance is manual; no capture targets, screenshot evidence or visual gate required. Existing automated visual-proof tasks are superseded by `.sdd/README.md`.
 If no open item exists or footer is already `Resolved`, still run plan gate.
 
 ## Resolve

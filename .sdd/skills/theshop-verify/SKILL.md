@@ -21,8 +21,6 @@ The spec acceptance criteria are the oracle.
 
 ## Applicability
 
-Figma references do not require visual scope, capture targets or screenshot evidence.
-
 User-facing when any applies:
 
 - plan Web phase has tasks
@@ -48,10 +46,6 @@ Extract:
 Show compact checklist before driving.
 
 ## Driver
-
-Visual acceptance belongs to the user. Do not run Figma screenshot comparisons or visual evidence gates.
-Explicit visual acceptance criteria require user confirmation through Tier 2; behavioral evidence cannot prove appearance.
-Missing or stale legacy screenshot artifacts do not block behavioral verification.
 
 Use strongest available proof.
 

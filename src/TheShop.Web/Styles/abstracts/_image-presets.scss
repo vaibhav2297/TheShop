@@ -1,0 +1,32 @@
+@use 'sass:list';
+@use 'breakpoints' as bp;
+
+$ratios: (
+    'square-contain': (1, 1),
+    'square-cover': (1, 1),
+    'banner': (16, 5),
+    'hero': (16, 9),
+    'portrait-cover': (4, 5),
+    'editorial': (4, 3),
+    'social-sharing': (40, 21),
+    'brand-logo': null
+);
+
+@mixin geometry($prefix, $unconstrained-ratio: auto) {
+    @each $preset, $ratio in $ratios {
+        .#{$prefix}-#{$preset} {
+            @if $ratio == null {
+                --shop-image-aspect-ratio: #{$unconstrained-ratio};
+            } @else {
+                --shop-image-aspect-ratio: #{list.nth($ratio, 1)} / #{list.nth($ratio, 2)};
+            }
+        }
+    }
+
+    @media (width < bp.$tablet) {
+        .#{$prefix}-banner:not(.#{$prefix}-static),
+        .#{$prefix}-hero:not(.#{$prefix}-static) {
+            --shop-image-aspect-ratio: 4 / 5;
+        }
+    }
+}

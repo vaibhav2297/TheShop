@@ -33,13 +33,6 @@ Style affects prose only. Preserve templates, headings, IDs, keywords, status va
 
 `theshop-clarify`, `theshop-constitution`, `theshop-document`, `theshop-e2e`, `theshop-execute`, `theshop-plan`, `theshop-resolve`, `theshop-ship`, `theshop-spec`, `theshop-start`, `theshop-test`, `theshop-verify`.
 
-## UI fidelity
-
-[Manual visual review](skills/theshop-execute/references/visual-loop.md) belongs to the user. Figma remains implementation input through MCP, node references, assets and component mappings.
-Do not run automatic Figma screenshot comparisons, capture/correction loops or visual evidence gates during SDD stages.
-No visual scope, target table, screenshot evidence or waiver required, including existing Figma plans. This policy supersedes their automated visual-proof tasks.
-Build, design-rule, behavioral and accessibility checks remain. Explicit visual acceptance criteria use user confirmation; never infer visual approval from passing tests. Legacy plans without Figma remain valid.
-
 ## Agent adapters
 
 Codex: `.agents/skills/theshop-*/SKILL.md`. Claude: `.claude/skills/theshop-*/SKILL.md`.

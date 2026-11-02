@@ -83,7 +83,6 @@ If a later phase exposes an upstream gap, reopen the owning phase once. Re-run i
 ### Web
 
 - With supplied Figma URL, inspect exact nodes, measurements, variants and assets through MCP. Apply constitution Rule 35 component mappings.
-- Follow [manual visual review](references/visual-loop.md); use ordinary implementation/build/scope checks for Web completion.
 - Follow planned routes, component boundaries, resources, and Figma intent.
 - Reuse project components and MudBlazor conventions.
 - Do not invent design values when a design source exists.
@@ -101,8 +100,6 @@ dotnet build TheShop.slnx --nologo
 If red, assign failure to one owning phase and reopen it once. Re-run that phase gates, then the solution build. Still red: halt.
 
 Do not write or run feature tests here; `$theshop-test` and `$theshop-e2e` own them.
-Visual acceptance belongs to the user. Do not run Figma capture/correction loops or visual evidence gates.
-Existing visual-proof tasks do not block Implement Done. Report routes and known design deviations for manual review; do not claim visual approval.
 
 ## Tracker
 
@@ -110,7 +107,7 @@ Only after full success, update `.specs/{feature}/status.md`:
 
 - `Implement`: `Done`
 - Gate: `✅ solution build + layer scope gates`
-- Evidence: compact phase/build summary; routes for manual visual review; include any waiver
+- Evidence: compact phase/build summary; include any waiver
 - Date: today
 - Refresh `Last updated`
 - Next: `$theshop-test {feature}`

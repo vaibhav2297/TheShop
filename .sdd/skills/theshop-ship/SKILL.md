@@ -32,7 +32,6 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 s
 Exit 1: quote every violation. Continue only after fix or explicit `proceed`. Record `⚠️ waived: shipped with {n} open ledger item(s)`.
 
 No tracker: record `⏭️ no SDD tracker`.
-Visual acceptance is manual. Do not run visual evidence gates or require screenshot artifacts, including for existing Figma plans.
 
 Check:
 

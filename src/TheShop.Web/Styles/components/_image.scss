@@ -1,18 +1,13 @@
-@use 'sass:list';
 @use '../abstracts/breakpoints' as bp;
+@use '../abstracts/image-presets';
 @use '../abstracts/text-style';
-
-// Presets reserve geometry independently of successful loading.
-$image-ratios: (
-    'square-contain': (1, 1), 'square-cover': (1, 1), 'banner': (16, 5), 'hero': (16, 9),
-    'portrait-cover': (4, 5), 'editorial': (4, 3), 'social-sharing': (40, 21)
-);
 
 .shop-image {
     position: relative;
     inline-size: 100%;
     max-inline-size: 100%;
     min-inline-size: 0;
+    aspect-ratio: var(--shop-image-aspect-ratio);
     overflow: hidden;
 }
 
@@ -56,11 +51,7 @@ $image-ratios: (
     text-align: center;
 }
 
-@each $preset, $ratio in $image-ratios {
-    .shop-image-#{$preset} {
-        aspect-ratio: #{list.nth($ratio, 1)} / #{list.nth($ratio, 2)};
-    }
-}
+@include image-presets.geometry('shop-image');
 
 .shop-image-brand-logo {
     block-size: 100%;
@@ -73,8 +64,6 @@ $image-ratios: (
 @media (width < bp.$tablet) {
     .shop-image-banner:not(.shop-image-static),
     .shop-image-hero:not(.shop-image-static) {
-        aspect-ratio: 4 / 5;
-
         .shop-image-branch-mobile.shop-image-media {
             display: block;
         }

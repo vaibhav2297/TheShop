@@ -58,7 +58,7 @@ Visual source: [The Vape Shop component foundations](https://www.figma.com/desig
 
 Inspect the relevant component node before assigning measured values. Preserve existing rendered behavior where the supplied design does not specify a replacement. Record missing or ambiguous states and chosen treatments separately from measured design values. Accessibility requirements still apply: do not suppress focus, remove labels, or assume a bright status swatch has sufficient text contrast.
 
-User manually reviews component appearance and responsive presentation. Keep behavioral and accessibility browser checks. Token extraction alone is not proof of Figma parity.
+Keep behavioral and accessibility browser checks.
 
 ## Base styles and dependency independence
 

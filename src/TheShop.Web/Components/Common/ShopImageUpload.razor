@@ -38,6 +38,7 @@
         {
             <div @key="image.ClientId" role="listitem" class="@ItemClass(image)" data-upload-id="@image.ClientId">
                 <ShopImageTile Src="@image.PreviewUrl" Alt="@ImageName(image)" Preset="@PreviewPreset"
+                               ResponsivePreview="@ResponsivePreview"
                                Primary="@IsPrimary(image)" PrimaryLabel="@(PrimaryLabel ?? Strings.ImageUpload_Primary)"
                                Loading="@_pending.Any(p => p.ClientId == image.ClientId)"
                                ErrorText="@image.Error" Disabled="@Blocked"

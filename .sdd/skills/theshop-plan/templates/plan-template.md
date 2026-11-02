@@ -168,8 +168,7 @@ satisfies the frozen interface · no Infrastructure type leaks inward.
 
 **Depends on:** Application contract checkpoint. Infrastructure work completes first in same session.
 
-{Include Figma references only when user supplied URL. Record component mappings, responsive/state decisions and assets.
-Visual acceptance is manual. Do not add capture targets, screenshot evidence tasks or visual gates.}
+{Include Figma references only when user supplied URL. Record component mappings, responsive/state decisions and assets.}
 
 **Figma references** *(only when URL supplied — re-fetched by `$theshop-execute` at implementation time; otherwise omit without logging a gap)*
 

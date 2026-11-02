@@ -53,7 +53,7 @@ Verification checklist for the canonical constitution. Apply native requirements
 - [ ] Behavioral tests target native controls and preserved outcomes, not removed Mud internals.
 - [ ] Converted controls render correctly without vendor CSS.
 - [ ] Desktop/mobile, zoom, long content, keyboard focus, and validation states are checked.
-- [ ] Supplied Figma nodes inform implementation; visual comparison belongs to the user. No automatic capture or evidence gate.
+- [ ] Supplied Figma nodes inform implementation.
 - [ ] Inferred states and accessibility deviations are recorded, not claimed as exact Figma parity.
 - [ ] Existing consumers work against package-free published output.
 - [ ] Unavailable checks are reported honestly, not treated as passed.
