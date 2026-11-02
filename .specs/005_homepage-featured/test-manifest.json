@@ -1,0 +1,454 @@
+{
+  "feature": "005_homepage-featured",
+  "trait": "005_homepage-featured",
+  "testProjects": [
+    "tests/TheShop.Domain.Tests/TheShop.Domain.Tests.csproj",
+    "tests/TheShop.Application.Tests/TheShop.Application.Tests.csproj",
+    "tests/TheShop.Infrastructure.Tests/TheShop.Infrastructure.Tests.csproj",
+    "tests/TheShop.Web.Tests/TheShop.Web.Tests.csproj"
+  ],
+  "classes": [
+    {
+      "file": "tests/TheShop.Domain.Tests/Entities/FeaturedSectionTests.cs",
+      "fqn": "TheShop.Domain.Tests.Entities.FeaturedSectionTests",
+      "tests": 6,
+      "methods": [
+        {
+          "name": "CreateAndRehydrate_PreserveFixedTileOrderAndHiddenSingleton",
+          "count": 1
+        },
+        {
+          "name": "Update_InvalidReplacementLeavesEntireSavedConfigurationUnchanged",
+          "count": 1
+        },
+        {
+          "name": "Update_ValidReplacementChangesBothTilesAndVisibilityTogether",
+          "count": 1
+        },
+        {
+          "name": "Tile_RequiredTitleAndImageRejectBlankValues",
+          "count": 1
+        },
+        {
+          "name": "Tile_OptionalLabelAndButtonPairAllowBothAbsentAndRejectHalfPair",
+          "count": 1
+        },
+        {
+          "name": "Tile_ValueEqualityIncludesArtworkAndEveryContentField",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Application.Tests/Features/Homepage/FeaturedValidationTests.cs",
+      "fqn": "TheShop.Application.Tests.Features.Homepage.FeaturedValidationTests",
+      "tests": 9,
+      "methods": [
+        {
+          "name": "Create_MissingRequiredFieldsReportsBothTilePathsAndSectionTitle",
+          "count": 1
+        },
+        {
+          "name": "Selection_ThreeSupportedTypesAcceptMinimumAndLargerSquare",
+          "count": 1
+        },
+        {
+          "name": "Selection_ExactFiveMegabytesAcceptsAndLargerRejectsBeforeDecoding",
+          "count": 1
+        },
+        {
+          "name": "Selection_EmptyUnsupportedMismatchedAndCorruptImagesReject",
+          "count": 1
+        },
+        {
+          "name": "Selection_UndersizedOrNonSquareRejectsWithoutRoundingTolerance",
+          "count": 1
+        },
+        {
+          "name": "Update_ExistingImagesMayRemainButRemovedImageRequiresReplacement",
+          "count": 1
+        },
+        {
+          "name": "Buttons_BlankPairsOptionalAndEachIncompletePairTargetsMissingField",
+          "count": 1
+        },
+        {
+          "name": "Links_AllowRootRelativeOrHttpAndRejectUnsafeOrMalformedDestinations",
+          "count": 1
+        },
+        {
+          "name": "Commands_TrimRequiredAndOptionalTextWithoutInventingDefaults",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Application.Tests/Features/Homepage/FeaturedHandlerTests.cs",
+      "fqn": "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests",
+      "tests": 12,
+      "methods": [
+        {
+          "name": "Create_UploadsBothCanonicalImagesBeforeOneCompleteCommit",
+          "count": 1
+        },
+        {
+          "name": "Create_ExistingHiddenSectionRejectsDuplicateBeforeUpload",
+          "count": 1
+        },
+        {
+          "name": "Update_MissingSectionRejectsBeforeWriting",
+          "count": 1
+        },
+        {
+          "name": "Update_OnlyChangedImageUploadsAndSavedAggregateRemainsUntouchedUntilCommit",
+          "count": 1
+        },
+        {
+          "name": "Update_SecondUploadFailureLeavesSavedRowAndRetainsFirstUpload",
+          "count": 1
+        },
+        {
+          "name": "Create_DefiniteAndUncertainSaveFailuresNeverDeleteUploads",
+          "count": 1
+        },
+        {
+          "name": "Update_RemovalWithoutReplacementDoesNotPersistOrDeleteSavedImage",
+          "count": 1
+        },
+        {
+          "name": "Read_AbsentSuccessfulNullAndHiddenRowSignsBothPrivatePreviews",
+          "count": 1
+        },
+        {
+          "name": "LoadFailuresAndPermissionLossReturnLocalizedKeysWithoutWrites",
+          "count": 1
+        },
+        {
+          "name": "CancellationPropagatesAndMissingIdentityCannotUpload",
+          "count": 1
+        },
+        {
+          "name": "Authorization_CreateAndEditRequireViewAndMatchingActionBeforeValidation",
+          "count": 1
+        },
+        {
+          "name": "Authorization_ReadAndImageSelectionRequireViewEvenForCreateOrEditStaff",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Infrastructure.Tests/Persistence/FeaturedSchemaTests.cs",
+      "fqn": "TheShop.Infrastructure.Tests.Persistence.FeaturedSchemaTests",
+      "tests": 10,
+      "methods": [
+        {
+          "name": "Bucket_IsPrivateWithExactSizeAndThreeAllowedTypes",
+          "count": 1
+        },
+        {
+          "name": "Schema_RequiredContentPairsAndSingletonRejectInvalidRows",
+          "count": 1
+        },
+        {
+          "name": "Rpc_CreateAndEditRequireViewPlusMatchingAction",
+          "count": 1
+        },
+        {
+          "name": "ViewOnly_CanReadAbsentAndHiddenButCannotRpcOrDirectlyMutate",
+          "count": 1
+        },
+        {
+          "name": "AnonymousCannotReadOrWriteConfigurationOrPrivateObjects",
+          "count": 1
+        },
+        {
+          "name": "CompleteSave_RoundTripsPlainTextBothTilesAndVisibility",
+          "count": 1
+        },
+        {
+          "name": "MissingSecondImageRejectsWholeSaveAndPreservesSavedRow",
+          "count": 1
+        },
+        {
+          "name": "DuplicateAddAndMissingEditReturnConflictAndLastSuccessfulCompleteSaveWins",
+          "count": 1
+        },
+        {
+          "name": "Storage_OnlyOwnerUploadsWithViewAndActionAndObjectsRemainImmutable",
+          "count": 1
+        },
+        {
+          "name": "DirectTableWritesCannotBypassCombinedPermissions",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Infrastructure.Tests/Persistence/FeaturedRepositoryTests.cs",
+      "fqn": "TheShop.Infrastructure.Tests.Persistence.FeaturedRepositoryTests",
+      "tests": 3,
+      "methods": [
+        {
+          "name": "Save_UsesOneParameterizedRpcContainingEntireOrderedConfiguration",
+          "count": 1
+        },
+        {
+          "name": "Save_MapsDatabaseFailuresAndUnknownCommitToDistinctResourceKeys",
+          "count": 1
+        },
+        {
+          "name": "CancellationBeforeReadOrSaveNeverCallsRpc",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageFeaturedTests.cs",
+      "fqn": "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests",
+      "tests": 15,
+      "methods": [
+        {
+          "name": "Add_DefaultsToFeaturedVisibleAndExactlyTwoDistinctAccessibleTiles",
+          "count": 1
+        },
+        {
+          "name": "Heading_UsesTrimmedLiveTitleAndBlankFallbackWithoutChangingInput",
+          "count": 1
+        },
+        {
+          "name": "Edit_HydratesEveryFieldAndHiddenStatusAndUsesLiveEditHeading",
+          "count": 1
+        },
+        {
+          "name": "ViewOnly_SavedContentHasNoMutationControlsAndAbsentHasNoAddForm",
+          "count": 1
+        },
+        {
+          "name": "Loading_ShowsSkeletonAndNoEditableAddUntilReadCompletes",
+          "count": 1
+        },
+        {
+          "name": "LoadFailure_ShowsLocalizedAlertAndRetryRestoresSavedEdit",
+          "count": 1
+        },
+        {
+          "name": "ImageReplacementAndRemovalOnlyChangeTheSelectedTile",
+          "count": 1
+        },
+        {
+          "name": "RejectedImagePreservesPriorPreviewAndDisplaysLocalizedError",
+          "count": 1
+        },
+        {
+          "name": "Save_WaitsForAcceptedImageAndCommitBeforeSuccessAndSuppressesDuplicateSubmit",
+          "count": 1
+        },
+        {
+          "name": "Save_AddDispatchesBothDraftTilesAndSelectedVisibility",
+          "count": 1
+        },
+        {
+          "name": "FieldErrors_MapToNestedImageAndTextFieldsAndClearOnlyChangedField",
+          "count": 1
+        },
+        {
+          "name": "SaveFailureOrPermissionLossRetainsTextImagesAndStatusWithoutSuccess",
+          "count": 1
+        },
+        {
+          "name": "ConflictOrUnconfirmedSaveBlocksRetryUntilExplicitReload",
+          "count": 1
+        },
+        {
+          "name": "Cancel_AddAndEditProvideHomepageNavigationWithoutSaveOrUploadCommand",
+          "count": 1
+        },
+        {
+          "name": "ScrollLifecycle_MountsOnceRefreshesAfterEditsAndDisposesOnNavigation",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "totalTests": 55,
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Add_DefaultsToFeaturedVisibleAndExactlyTwoDistinctAccessibleTiles",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Heading_UsesTrimmedLiveTitleAndBlankFallbackWithoutChangingInput"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Edit_HydratesEveryFieldAndHiddenStatusAndUsesLiveEditHeading",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.Read_AbsentSuccessfulNullAndHiddenRowSignsBothPrivatePreviews"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.Authorization_ReadAndImageSelectionRequireViewEvenForCreateOrEditStaff",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedSchemaTests.Rpc_CreateAndEditRequireViewPlusMatchingAction",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedSchemaTests.AnonymousCannotReadOrWriteConfigurationOrPrivateObjects"
+      ],
+      "boundary": "e2e",
+      "reason": "Guest redirect and authenticated route denial require browser routing/authentication."
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.ViewOnly_SavedContentHasNoMutationControlsAndAbsentHasNoAddForm",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedSchemaTests.ViewOnly_CanReadAbsentAndHiddenButCannotRpcOrDirectlyMutate",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedSchemaTests.DirectTableWritesCannotBypassCombinedPermissions",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.Authorization_CreateAndEditRequireViewAndMatchingActionBeforeValidation"
+      ]
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.ImageReplacementAndRemovalOnlyChangeTheSelectedTile",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.RejectedImagePreservesPriorPreviewAndDisplaysLocalizedError"
+      ],
+      "boundary": "e2e",
+      "reason": "OS picker cancellation and drag/drop require browser checks; empty selection, tile isolation and rejection are covered here."
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Application.Tests.Features.Homepage.FeaturedValidationTests.Selection_ThreeSupportedTypesAcceptMinimumAndLargerSquare",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedValidationTests.Selection_ExactFiveMegabytesAcceptsAndLargerRejectsBeforeDecoding",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Add_DefaultsToFeaturedVisibleAndExactlyTwoDistinctAccessibleTiles"
+      ],
+      "boundary": "e2e",
+      "reason": "Browser decoder integration, proportional rendering and guidance appearance require E2E; inspector contract decisions are covered here."
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Application.Tests.Features.Homepage.FeaturedValidationTests.Selection_ExactFiveMegabytesAcceptsAndLargerRejectsBeforeDecoding",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedValidationTests.Selection_EmptyUnsupportedMismatchedAndCorruptImagesReject",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedValidationTests.Selection_UndersizedOrNonSquareRejectsWithoutRoundingTolerance",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.RejectedImagePreservesPriorPreviewAndDisplaysLocalizedError"
+      ],
+      "boundary": "e2e",
+      "reason": "Actual PNG/JPEG/WebP and corrupt-byte decoding require browser runtime; validator errors and preserved preview are covered here."
+    },
+    {
+      "id": "AC-8",
+      "tests": [
+        "TheShop.Application.Tests.Features.Homepage.FeaturedValidationTests.Create_MissingRequiredFieldsReportsBothTilePathsAndSectionTitle",
+        "TheShop.Domain.Tests.Entities.FeaturedSectionTests.Tile_RequiredTitleAndImageRejectBlankValues",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Heading_UsesTrimmedLiveTitleAndBlankFallbackWithoutChangingInput",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.FieldErrors_MapToNestedImageAndTextFieldsAndClearOnlyChangedField"
+      ]
+    },
+    {
+      "id": "AC-9",
+      "tests": [
+        "TheShop.Application.Tests.Features.Homepage.FeaturedValidationTests.Buttons_BlankPairsOptionalAndEachIncompletePairTargetsMissingField",
+        "TheShop.Domain.Tests.Entities.FeaturedSectionTests.Tile_OptionalLabelAndButtonPairAllowBothAbsentAndRejectHalfPair"
+      ]
+    },
+    {
+      "id": "AC-10",
+      "tests": [
+        "TheShop.Application.Tests.Features.Homepage.FeaturedValidationTests.Links_AllowRootRelativeOrHttpAndRejectUnsafeOrMalformedDestinations",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedValidationTests.Commands_TrimRequiredAndOptionalTextWithoutInventingDefaults",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedSchemaTests.CompleteSave_RoundTripsPlainTextBothTilesAndVisibility"
+      ]
+    },
+    {
+      "id": "AC-11",
+      "tests": [
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.Create_UploadsBothCanonicalImagesBeforeOneCompleteCommit",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.Update_OnlyChangedImageUploadsAndSavedAggregateRemainsUntouchedUntilCommit",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Save_WaitsForAcceptedImageAndCommitBeforeSuccessAndSuppressesDuplicateSubmit",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Save_AddDispatchesBothDraftTilesAndSelectedVisibility",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedSchemaTests.CompleteSave_RoundTripsPlainTextBothTilesAndVisibility",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedSchemaTests.MissingSecondImageRejectsWholeSaveAndPreservesSavedRow",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedRepositoryTests.Save_UsesOneParameterizedRpcContainingEntireOrderedConfiguration"
+      ],
+      "boundary": "e2e",
+      "reason": "Reopen after navigation with real API/storage requires E2E; database roundtrip and notification timing are covered here."
+    },
+    {
+      "id": "AC-12",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Cancel_AddAndEditProvideHomepageNavigationWithoutSaveOrUploadCommand"
+      ],
+      "boundary": "e2e",
+      "reason": "Actual Cancel navigation and reopening unchanged saved state require E2E; href and absence of mutation dispatch are covered here."
+    },
+    {
+      "id": "AC-13",
+      "tests": [
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.Create_ExistingHiddenSectionRejectsDuplicateBeforeUpload",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.Update_MissingSectionRejectsBeforeWriting",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedSchemaTests.DuplicateAddAndMissingEditReturnConflictAndLastSuccessfulCompleteSaveWins",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.ConflictOrUnconfirmedSaveBlocksRetryUntilExplicitReload",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Save_WaitsForAcceptedImageAndCommitBeforeSuccessAndSuppressesDuplicateSubmit",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedRepositoryTests.Save_MapsDatabaseFailuresAndUnknownCommitToDistinctResourceKeys"
+      ],
+      "boundary": "e2e",
+      "reason": "Simultaneous browser sessions require E2E; singleton conflicts, complete-row last-save-wins and duplicate-submit guard are covered here."
+    },
+    {
+      "id": "AC-14",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Loading_ShowsSkeletonAndNoEditableAddUntilReadCompletes",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.LoadFailure_ShowsLocalizedAlertAndRetryRestoresSavedEdit",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.LoadFailuresAndPermissionLossReturnLocalizedKeysWithoutWrites"
+      ]
+    },
+    {
+      "id": "AC-15",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.SaveFailureOrPermissionLossRetainsTextImagesAndStatusWithoutSuccess",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.Update_SecondUploadFailureLeavesSavedRowAndRetainsFirstUpload",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.Create_DefiniteAndUncertainSaveFailuresNeverDeleteUploads",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedSchemaTests.MissingSecondImageRejectsWholeSaveAndPreservesSavedRow",
+        "TheShop.Application.Tests.Features.Homepage.FeaturedHandlerTests.LoadFailuresAndPermissionLossReturnLocalizedKeysWithoutWrites",
+        "TheShop.Infrastructure.Tests.Persistence.FeaturedRepositoryTests.Save_MapsDatabaseFailuresAndUnknownCommitToDistinctResourceKeys"
+      ]
+    },
+    {
+      "id": "AC-16",
+      "tests": [],
+      "boundary": "e2e",
+      "reason": "Tall Section scrolling to its bottom, stopping with 24px gap, continued left scrolling and editor containment require real layout."
+    },
+    {
+      "id": "AC-17",
+      "tests": [],
+      "boundary": "e2e",
+      "reason": "Short Section stickiness and lower action accessibility require real layout."
+    },
+    {
+      "id": "AC-18",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.ScrollLifecycle_MountsOnceRefreshesAfterEditsAndDisposesOnNavigation"
+      ],
+      "boundary": "e2e",
+      "reason": "Reverse scroll, resize, zoom, validation height changes and focus without draft loss require real layout; JS mount/refresh/dispose lifecycle is covered here."
+    },
+    {
+      "id": "AC-19",
+      "tests": [],
+      "boundary": "e2e",
+      "reason": "Tablet tile pair with Section below, phone stacking and normal scrolling require real viewports."
+    },
+    {
+      "id": "AC-20",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.Add_DefaultsToFeaturedVisibleAndExactlyTwoDistinctAccessibleTiles",
+        "TheShop.Web.Tests.Pages.Admin.ManageFeaturedTests.FieldErrors_MapToNestedImageAndTextFieldsAndClearOnlyChangedField"
+      ],
+      "boundary": "e2e",
+      "reason": "Keyboard traversal, visible focus, assistive announcements and English overflow require browser checks; IDs, labels, hints and field errors are covered here."
+    }
+  ],
+  "scope": "Feature-only Domain, Application, SDK adapter, Testcontainers PostgreSQL and bUnit checks. No production edits. Browser journeys and Figma/layout proof belong to theshop-e2e."
+}

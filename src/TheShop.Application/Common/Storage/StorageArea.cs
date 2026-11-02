@@ -26,4 +26,7 @@ public enum StorageArea
     /// Private homepage artwork with authenticated uploads and signed previews.
     /// </summary>
     HeroBannerImages,
+
+    /// <summary>Private Featured tile artwork with immutable uploads and signed previews.</summary>
+    FeaturedImages,
 }

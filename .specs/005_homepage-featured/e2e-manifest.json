@@ -1,0 +1,235 @@
+{
+  "feature": "005_homepage-featured",
+  "trait": "005_homepage-featured",
+  "date": "2026-11-02",
+  "journeys": [
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageFeaturedJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests",
+      "tests": 18,
+      "methods": [
+        {
+          "name": "AC1_HomepageNavigationShowsDefaultsAndLiveAddHeading",
+          "ac": 1
+        },
+        {
+          "name": "AC2_HiddenEditHydratesBothTilesAndLiveHeading",
+          "ac": 2
+        },
+        {
+          "name": "AC5_PickDropReplaceRemoveAndCancelledPickerPreserveOtherTileAndSavedState",
+          "ac": 5
+        },
+        {
+          "name": "AC6_RealPngJpegWebpAndExactFiveMegabytesDecodeInSquareFrames",
+          "ac": 6
+        },
+        {
+          "name": "AC7_InvalidSelectionsKeepAcceptedArtworkAndShowSpecificFeedback",
+          "ac": 7
+        },
+        {
+          "name": "AC8_MissingRequiredFieldsShowErrorsWithoutSavingOrFillingHeadingFallback",
+          "ac": 8
+        },
+        {
+          "name": "AC9_IncompleteButtonPairsTargetMissingFieldsAndBlankPairsSave",
+          "ac": 9
+        },
+        {
+          "name": "AC10_UnsafeLinksFailAndRootRelativeAndHttpLinksPersist",
+          "ac": 10
+        },
+        {
+          "name": "AC11_SuccessWaitsForCompleteCommitAndReopenPreservesHiddenThenVisibleContent",
+          "ac": 11
+        },
+        {
+          "name": "AC12_CancelAddAndEditDiscardsTextImageReplacementRemovalAndStatus",
+          "ac": 12
+        },
+        {
+          "name": "AC13_TwoCreatorsAndRepeatedSaveNeverDuplicateAndConflictRequiresReload",
+          "ac": 13
+        },
+        {
+          "name": "AC14_ResponsiveLoadingSkeletonAndFailedReadRetryNeverExposeFalseAdd",
+          "ac": 14
+        },
+        {
+          "name": "AC15_SecondUploadFailurePermissionDenialAndUncertainSaveRetainDraftAndSavedRow",
+          "ac": 15
+        },
+        {
+          "name": "AC16_TallSettingsScrollThenStopWith24PixelsClearanceAndReleaseWithinEditor",
+          "ac": 16
+        },
+        {
+          "name": "AC17_ShortSettingsStayBelowHeaderWithAccessibleActionsAndEditorContainment",
+          "ac": 17
+        },
+        {
+          "name": "AC18_ReverseScrollErrorsResizeTextZoomAndFocusKeepPanelReachableAndDraftIntact",
+          "ac": 18
+        },
+        {
+          "name": "AC19_TabletAndPhoneUseNormalScrollingAndPreserveDraftAcrossLayouts",
+          "ac": 19
+        },
+        {
+          "name": "AC20_KeyboardLabelsErrorsImageActionsAndEnglishControlsRemainUsableWithoutOverflow",
+          "ac": 20
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageFeaturedAnonymousJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageFeaturedAnonymousJourneyTests",
+      "tests": 1,
+      "methods": [
+        {
+          "name": "AC3_GuestRedirectsAndCustomerOrActionOnlyStaffCannotReadManagement",
+          "ac": 3
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageFeaturedViewOnlyJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageFeaturedViewOnlyJourneyTests",
+      "tests": 1,
+      "methods": [
+        {
+          "name": "AC4_ViewOnlyAbsentAndHiddenStatesHaveNoMutationAndDirectRpcIsDenied",
+          "ac": 4
+        }
+      ]
+    }
+  ],
+  "totalTests": 20,
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC1_HomepageNavigationShowsDefaultsAndLiveAddHeading",
+      "reason": "Real Homepage navigation, defaults and live heading."
+    },
+    {
+      "id": "AC-2",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC2_HiddenEditHydratesBothTilesAndLiveHeading",
+      "reason": "Hidden saved configuration and signed artwork hydration."
+    },
+    {
+      "id": "AC-3",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedAnonymousJourneyTests.AC3_GuestRedirectsAndCustomerOrActionOnlyStaffCannotReadManagement",
+      "reason": "Guest routing, missing View and Create/Edit-only personas."
+    },
+    {
+      "id": "AC-4",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedViewOnlyJourneyTests.AC4_ViewOnlyAbsentAndHiddenStatesHaveNoMutationAndDirectRpcIsDenied",
+      "reason": "View-only rendering and real denied staff RPC."
+    },
+    {
+      "id": "AC-5",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC5_PickDropReplaceRemoveAndCancelledPickerPreserveOtherTileAndSavedState",
+      "reason": "File chooser, drop, isolated replacement/removal and draft preservation."
+    },
+    {
+      "id": "AC-6",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC6_RealPngJpegWebpAndExactFiveMegabytesDecodeInSquareFrames",
+      "reason": "Actual PNG/JPEG/WebP decoding, inclusive size and proportional frame."
+    },
+    {
+      "id": "AC-7",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC7_InvalidSelectionsKeepAcceptedArtworkAndShowSpecificFeedback",
+      "reason": "Browser rejection and accepted-preview retention."
+    },
+    {
+      "id": "AC-8",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC8_MissingRequiredFieldsShowErrorsWithoutSavingOrFillingHeadingFallback",
+      "reason": "Field errors and unchanged persisted data."
+    },
+    {
+      "id": "AC-9",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC9_IncompleteButtonPairsTargetMissingFieldsAndBlankPairsSave",
+      "reason": "Incomplete button field guidance and saved blank pairs."
+    },
+    {
+      "id": "AC-10",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC10_UnsafeLinksFailAndRootRelativeAndHttpLinksPersist",
+      "reason": "Link validation and real persisted destinations."
+    },
+    {
+      "id": "AC-11",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC11_SuccessWaitsForCompleteCommitAndReopenPreservesHiddenThenVisibleContent",
+      "reason": "Delayed commit, notification/navigation and complete saved state."
+    },
+    {
+      "id": "AC-12",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC12_CancelAddAndEditDiscardsTextImageReplacementRemovalAndStatus",
+      "reason": "Cancelled Add/Edit navigation and unchanged saved state."
+    },
+    {
+      "id": "AC-13",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC13_TwoCreatorsAndRepeatedSaveNeverDuplicateAndConflictRequiresReload",
+      "reason": "Two creators, repeated submission, reload conflict and last-save-wins."
+    },
+    {
+      "id": "AC-14",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC14_ResponsiveLoadingSkeletonAndFailedReadRetryNeverExposeFalseAdd",
+      "reason": "Responsive pending read, failure and explicit retry."
+    },
+    {
+      "id": "AC-15",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC15_SecondUploadFailurePermissionDenialAndUncertainSaveRetainDraftAndSavedRow",
+      "reason": "Failed upload, denied read and unconfirmed save keep draft/saved row."
+    },
+    {
+      "id": "AC-16",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC16_TallSettingsScrollThenStopWith24PixelsClearanceAndReleaseWithinEditor",
+      "reason": "Tall panel natural scroll, stop, 24px clearance and containment."
+    },
+    {
+      "id": "AC-17",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC17_ShortSettingsStayBelowHeaderWithAccessibleActionsAndEditorContainment",
+      "reason": "Short panel sticky position and reachable actions."
+    },
+    {
+      "id": "AC-18",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC18_ReverseScrollErrorsResizeTextZoomAndFocusKeepPanelReachableAndDraftIntact",
+      "reason": "Reverse scroll, errors, resize, 200% text zoom and focus preserve draft."
+    },
+    {
+      "id": "AC-19",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC19_TabletAndPhoneUseNormalScrollingAndPreserveDraftAcrossLayouts",
+      "reason": "Tablet/phone geometry, normal scroll and retained values."
+    },
+    {
+      "id": "AC-20",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageFeaturedJourneyTests.AC20_KeyboardLabelsErrorsImageActionsAndEnglishControlsRemainUsableWithoutOverflow",
+      "reason": "Keyboard file chooser, names/errors/focus and overflow."
+    }
+  ],
+  "pageObjects": [
+    "tests/TheShop.E2E.Tests/Pages/Admin/ManageFeaturedPage.cs",
+    "tests/TheShop.E2E.Tests/Pages/Admin/FeaturedData.cs"
+  ]
+}

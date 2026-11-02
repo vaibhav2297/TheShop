@@ -2052,4 +2052,39 @@
   <data name="FreshDrops_LoadFailed" xml:space="preserve"><value>Fresh Drops could not load. Try again.</value></data>
   <data name="FreshDrops_SaveFailed" xml:space="preserve"><value>Fresh Drops could not save. Try again.</value></data>
   <data name="FreshDrops_SearchFailed" xml:space="preserve"><value>Products could not load. Try again.</value></data>
+  <data name="Homepage_Featured" xml:space="preserve"><value>Featured</value></data>
+  <data name="Featured_AddHeading" xml:space="preserve"><value>Add {0}</value></data>
+  <data name="Featured_EditHeading" xml:space="preserve"><value>Edit {0}</value></data>
+  <data name="Featured_Tiles" xml:space="preserve"><value>Tiles</value></data>
+  <data name="Featured_Tile" xml:space="preserve"><value>Tile {0}</value></data>
+  <data name="Featured_Section" xml:space="preserve"><value>Section</value></data>
+  <data name="Featured_Title" xml:space="preserve"><value>Title</value></data>
+  <data name="Featured_Label" xml:space="preserve"><value>Label</value></data>
+  <data name="Featured_ButtonLabel" xml:space="preserve"><value>Button label</value></data>
+  <data name="Featured_ButtonLink" xml:space="preserve"><value>Button link</value></data>
+  <data name="Featured_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Featured_Visible" xml:space="preserve"><value>Visible</value></data>
+  <data name="Featured_Hidden" xml:space="preserve"><value>Hidden</value></data>
+  <data name="Featured_RemoveImage" xml:space="preserve"><value>Remove image from Tile {0}</value></data>
+  <data name="Featured_UploadHint" xml:space="preserve"><value>Drag and drop, or click to browse. PNG, JPG or WebP up to 5 MB.</value></data>
+  <data name="Featured_ImageHint" xml:space="preserve"><value>Square images, at least 1200 × 1200. Show products only, no people or lifestyle scenes. Text sits on the bottom-left.</value></data>
+  <data name="Featured_Absent" xml:space="preserve"><value>No Featured configuration exists.</value></data>
+  <data name="Featured_Reload" xml:space="preserve"><value>Reload Featured</value></data>
+  <data name="Featured_Saved" xml:space="preserve"><value>Featured saved.</value></data>
+  <data name="Featured_SectionTitleRequired" xml:space="preserve"><value>Enter a section title.</value></data>
+  <data name="Featured_TileTitleRequired" xml:space="preserve"><value>Enter a tile title.</value></data>
+  <data name="Featured_ImageRequired" xml:space="preserve"><value>Add an image for this tile.</value></data>
+  <data name="Featured_ButtonPairRequired" xml:space="preserve"><value>Enter both button label and button link, or leave both blank.</value></data>
+  <data name="Featured_ButtonLinkInvalid" xml:space="preserve"><value>Enter a site-relative path starting with / or an HTTP/HTTPS URL.</value></data>
+  <data name="Featured_ImageInvalidType" xml:space="preserve"><value>Choose a valid PNG, JPG or WebP image.</value></data>
+  <data name="Featured_ImageTooLarge" xml:space="preserve"><value>Choose an image no larger than 5 MB.</value></data>
+  <data name="Featured_ImageUnreadable" xml:space="preserve"><value>This image cannot be read. Choose another image.</value></data>
+  <data name="Featured_ImageDimensionsInvalid" xml:space="preserve"><value>Choose a square image at least 1200 × 1200.</value></data>
+  <data name="Featured_AlreadyExists" xml:space="preserve"><value>Featured already exists. Reload to edit it.</value></data>
+  <data name="Featured_NotFound" xml:space="preserve"><value>Featured no longer exists. Reload to continue.</value></data>
+  <data name="Featured_ImageUnavailable" xml:space="preserve"><value>A selected image is unavailable. Reload or choose another image.</value></data>
+  <data name="Featured_LoadFailed" xml:space="preserve"><value>Featured could not be loaded. Retry.</value></data>
+  <data name="Featured_UploadFailed" xml:space="preserve"><value>Images could not be uploaded. Your changes remain available.</value></data>
+  <data name="Featured_SaveFailed" xml:space="preserve"><value>Featured could not be saved. Your changes remain available.</value></data>
+  <data name="Featured_SaveUnconfirmed" xml:space="preserve"><value>Save could not be confirmed. Reload before saving again.</value></data>
 </root>

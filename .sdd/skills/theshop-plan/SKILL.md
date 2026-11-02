@@ -37,7 +37,6 @@ Inspect existing code only for reuse, naming, and layer placement. Do not invent
 
 UI work with supplied Figma URL: inspect design through MCP; preserve node references, assets, component mappings and responsive/state decisions.
 No URL: normal planning; do not ask for Figma or create a design-gap blocker. Backend work: skip Figma.
-Visual acceptance is manual. Do not create visual scope, capture target tables, screenshot evidence tasks or `design-contract.json`.
 Keep behavioral test data and readiness selectors in planned E2E work. Resolve design-rule conflicts before implementation.
 
 ## Write

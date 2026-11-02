@@ -74,15 +74,17 @@
                             </section>
                             <section class="shop-hero-banner-slot">
                                 <h2>@Strings.HeroBanner_MobileImage</h2>
-                                <ShopImageUpload @ref="_mobileUpload" Files="@_model.MobileImage" FilesChanged="MobileChanged"
-                                                 Layout="ShopImageUploadLayout.SinglePreview" ResponsivePreview="false"
-                                                 PreviewPreset="ShopImagePreset.PortraitCover" MaxFileSize="5242880"
-                                                 UploadText="@Strings.HeroBanner_AddImage" UploadHint="@Strings.HeroBanner_MobileUploadHint"
-                                                 ValidateFileAsync="ValidateMobileAsync" Disabled="@(saving || loading)"
-                                                 PreviewAlt="@Strings.HeroBanner_MobileImage" RemoveLabel="@Strings.HeroBanner_RemoveMobile"
-                                                 InvalidTypeError="@Strings.HeroBanner_ImageInvalidType" MaxFileSizeError="@Strings.HeroBanner_ImageTooLarge"
-                                                 data-testid="hero-mobile-image" role="group" aria-label="@Strings.HeroBanner_MobileImage"
-                                                 aria-describedby="hero-mobile-hint hero-mobile-error" />
+                                <div class="shop-hero-banner-mobile-upload">
+                                    <ShopImageUpload @ref="_mobileUpload" Files="@_model.MobileImage" FilesChanged="MobileChanged"
+                                                     Layout="ShopImageUploadLayout.SinglePreview" ResponsivePreview="false"
+                                                     PreviewPreset="ShopImagePreset.PortraitCover" MaxFileSize="5242880"
+                                                     UploadText="@Strings.HeroBanner_AddImage" UploadHint="@Strings.HeroBanner_MobileUploadHint"
+                                                     ValidateFileAsync="ValidateMobileAsync" Disabled="@(saving || loading)"
+                                                     PreviewAlt="@Strings.HeroBanner_MobileImage" RemoveLabel="@Strings.HeroBanner_RemoveMobile"
+                                                     InvalidTypeError="@Strings.HeroBanner_ImageInvalidType" MaxFileSizeError="@Strings.HeroBanner_ImageTooLarge"
+                                                     data-testid="hero-mobile-image" role="group" aria-label="@Strings.HeroBanner_MobileImage"
+                                                     aria-describedby="hero-mobile-hint hero-mobile-error" />
+                                </div>
                                 <p id="hero-mobile-hint" class="shop-hero-banner-hint"><ShopIcon Icon="@ShopIcons.Outlined.Info" />@Strings.HeroBanner_MobileHint</p>
                                 <div id="hero-mobile-error" class="shop-hero-banner-errors" aria-live="polite"><ValidationMessage For="@(() => _model.MobileImage)" /></div>
                             </section>

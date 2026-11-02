@@ -42,7 +42,7 @@ public partial class ShopImageUpload : ShopComponentBase, IAsyncDisposable
     [Parameter] public string? InvalidTypeError { get; set; }
     /// <summary>Optional localized size rejection message.</summary>
     [Parameter] public string? MaxFileSizeError { get; set; }
-    /// <summary>Preview fitting; logo inputs can retain BrandLogo.</summary>
+    /// <summary>Shared frame ratio for the drop zone and previews; BrandLogo retains the reserved square upload frame.</summary>
     [Parameter] public ShopImagePreset PreviewPreset { get; set; } = ShopImagePreset.SquareContain;
     /// <summary>Prevents selection, removal, and ordering.</summary>
     [Parameter] public bool Disabled { get; set; }
@@ -74,9 +74,10 @@ public partial class ShopImageUpload : ShopComponentBase, IAsyncDisposable
     private int ActiveIndex => Files.ToList().FindIndex(image => image.ClientId == _activeId);
     private IReadOnlyList<ShopUploadedImage> DisplayedImages => Layout == ShopImageUploadLayout.SinglePreview || _pending.Count == 0 ? Files : [.. _batchBase, .. _pending];
     private string ClassName => ShopCssClass.Join("shop-image-upload shop-native",
+        ShopCssClass.Modifier("shop-image-upload", PreviewPreset),
+        !ResponsivePreview ? "shop-image-upload-static" : null,
         Layout == ShopImageUploadLayout.SinglePreview ? "shop-image-upload-single" : null,
-        Layout == ShopImageUploadLayout.SinglePreview && PreviewPreset == ShopImagePreset.PortraitCover
-            ? "shop-image-upload-single-portrait" : null, Class);
+        Class);
     private string Hint => UploadHint ?? string.Format(Strings.ImageUpload_TypesHint,
         Accept == ".png,.jpg,.jpeg,.webp" ? Strings.ImageUpload_DefaultFormats : Accept,
         (MaxFileSize / 1048576d).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture));

@@ -60,8 +60,7 @@
         inline-size: 100%;
         padding: 0;
         color: var(--shop-color-text-secondary);
-        @include text-style.apply(body-1);
-        line-height: var(--shop-typography-body-1-field-line-height);
+        @include text-style.apply(subtitle-1);
     }
     > div { display: flex; gap: var(--shop-space-2); }
 }
@@ -73,6 +72,11 @@
     padding-block-start: var(--shop-space-3);
 }
 .shop-hero-banner-read-mobile { max-inline-size: 13.5rem; }
+.shop-hero-banner-mobile-upload {
+    inline-size: 100%;
+    max-inline-size: 13.5rem;
+    min-inline-size: 0;
+}
 .shop-hero-banner-skeleton-desktop-label { inline-size: 9.5625rem; block-size: 1rem; }
 .shop-hero-banner-skeleton-mobile-label { inline-size: 15.5rem; max-inline-size: 100%; block-size: 1rem; }
 .shop-hero-banner-skeleton-content-label { inline-size: 5rem; block-size: 1rem; }

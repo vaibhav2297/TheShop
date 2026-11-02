@@ -152,9 +152,6 @@ Confirm fixture stopped app and port 5218 is free. Stop any orphan it created. L
 
 ## Report and verdict
 
-Apply behavioral verdict rules regardless of Figma references. Do not run Figma screenshot comparisons or visual evidence gates.
-Classify explicit visual acceptance criteria as manual; user confirms them through Verify. Missing legacy capture artifacts are not behavioral failures.
-
 Overwrite `e2e-report.md`; final response must match it.
 
 Include:
