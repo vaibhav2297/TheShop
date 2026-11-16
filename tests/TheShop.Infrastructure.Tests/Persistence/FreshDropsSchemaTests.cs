@@ -19,8 +19,6 @@ public sealed class FreshDropsSchemaFixture : IAsyncLifetime
         await RbacTestSchema.ApplyRbacCoreAsync(conn);
         await RbacTestSchema.CreateRlsTestRolesAsync(conn);
         await ExecuteAsync(conn, """
-            INSERT INTO permissions(code,module) VALUES
-                ('homepage.view','homepage'),('homepage.create','homepage'),('homepage.edit','homepage');
             CREATE TABLE brands(id uuid PRIMARY KEY, name text NOT NULL);
             CREATE TABLE products(id uuid PRIMARY KEY, name text NOT NULL, brand_id uuid NOT NULL REFERENCES brands(id),
                 display_price numeric NOT NULL, currency text NOT NULL, is_published boolean NOT NULL,

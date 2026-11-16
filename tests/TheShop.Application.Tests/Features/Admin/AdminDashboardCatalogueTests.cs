@@ -6,7 +6,7 @@ using Xunit;
 namespace TheShop.Application.Tests.Features.Admin;
 
 /// <summary>
-/// Structural tests for <see cref="AdminDashboardCatalogue"/> — the fixed set of five governed
+/// Structural tests for <see cref="AdminDashboardCatalogue"/> — the fixed set of six governed
 /// modules, in display order (spec FR-2), each paired with the exact permission code that gates
 /// its card (spec FR-5 / RULE-2; plan §4/§10 table: Products→products.view,
 /// Categories→categories.view, Brands→brands.view, Users→admin_users.view, Roles→roles.view).
@@ -18,13 +18,14 @@ public class AdminDashboardCatalogueTests
 {
     [Fact]
     [Trait("Feature", "admin-console")]
-    public void Modules_Always_ContainsExactlyTheFiveGovernedModulesInDisplayOrder()
+    public void Modules_Always_ContainsExactlyTheSixGovernedModulesInDisplayOrder()
     {
         AdminDashboardCatalogue.Modules.Select(m => m.Module).Should().Equal(
-            AdminModule.Products, AdminModule.Categories, AdminModule.Brands, AdminModule.Users, AdminModule.Roles);
+            AdminModule.Homepage, AdminModule.Products, AdminModule.Categories, AdminModule.Brands, AdminModule.Users, AdminModule.Roles);
     }
 
     [Theory]
+    [InlineData(AdminModule.Homepage)]
     [InlineData(AdminModule.Products)]
     [InlineData(AdminModule.Categories)]
     [InlineData(AdminModule.Brands)]
@@ -42,6 +43,7 @@ public class AdminDashboardCatalogueTests
     {
         var byModule = AdminDashboardCatalogue.Modules.ToDictionary(m => m.Module, m => m.ViewPermissionCode);
 
+        byModule[AdminModule.Homepage].Should().Be(PermissionCatalogue.Homepage.ViewCode);
         byModule[AdminModule.Products].Should().Be(PermissionCatalogue.Products.View.Code);
         byModule[AdminModule.Categories].Should().Be(PermissionCatalogue.Categories.View.Code);
         byModule[AdminModule.Brands].Should().Be(PermissionCatalogue.Brands.View.Code);
@@ -54,6 +56,6 @@ public class AdminDashboardCatalogueTests
 // =============================================================================
 // AC → Test mapping
 // =============================================================================
-// AC-1 (supports): Modules_Always_ContainsExactlyTheFiveGovernedModulesInDisplayOrder,
+// AC-1 (supports): Modules_Always_ContainsExactlyTheSixGovernedModulesInDisplayOrder,
 //                   Modules_Always_ContainsExactlyOneEntryPerModule
 // AC-3 (supports): Modules_Always_PairsEachModuleWithItsCataloguePermissionCode

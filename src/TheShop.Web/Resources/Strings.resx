@@ -997,6 +997,15 @@
   <data name="Permission_Dashboard_View" xml:space="preserve">
     <value>View Dashboard</value>
   </data>
+  <data name="Permission_Homepage_View" xml:space="preserve">
+    <value>View Homepage</value>
+  </data>
+  <data name="Permission_Homepage_Create" xml:space="preserve">
+    <value>Create Homepage Content</value>
+  </data>
+  <data name="Permission_Homepage_Edit" xml:space="preserve">
+    <value>Edit Homepage Content</value>
+  </data>
   <data name="Permission_Products_View" xml:space="preserve">
     <value>View Products</value>
   </data>

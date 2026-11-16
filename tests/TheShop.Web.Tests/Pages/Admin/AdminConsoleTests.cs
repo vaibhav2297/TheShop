@@ -149,14 +149,14 @@ public class AdminConsoleTests : TestContext
 
     [Fact]
     [Trait("Feature", "admin-console")]
-    public void Render_WhileTheQueryIsInFlight_ShowsFiveSkeletonPlaceholdersAndNoCards()
+    public void Render_WhileTheQueryIsInFlight_ShowsSixSkeletonPlaceholdersAndNoCards()
     {
         var tcs = new TaskCompletionSource<Result<AdminDashboardDto>>();
         _mediator.Send(Arg.Any<GetAdminDashboardQuery>(), Arg.Any<CancellationToken>()).Returns(tcs.Task);
 
         var cut = Render<AdminConsole>();
 
-        cut.FindComponents<AdminModuleCardSkeleton>().Should().HaveCount(5);
+        cut.FindComponents<AdminModuleCardSkeleton>().Should().HaveCount(6);
         cut.FindComponents<AdminModuleCard>().Should().BeEmpty();
         cut.Find("h1").TextContent.Should().Be(Strings.AdminConsole_Heading);
         cut.Find("[role=status]").TextContent.Should().Be(Strings.Loading);
