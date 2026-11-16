@@ -1,0 +1,163 @@
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Components.Admin
+
+<PageTitle>@Heading</PageTitle>
+<section class="shop-native shop-homepage-category-editor" data-testid="homepage-category-editor" data-state="@State">
+    <h1>@Heading</h1>
+    <BusyFor Key="@BusyKeys.Homepage.LoadCategorySection" Context="loading">
+        @if (loading && !_loaded)
+        {
+            <div class="shop-homepage-category-grid" role="status" aria-label="@Strings.Loading" data-testid="homepage-category-skeleton">
+                <div><ShopSkeleton Class="shop-homepage-category-skeleton-card" /><ShopSkeleton Class="shop-homepage-category-skeleton-card" /><ShopSkeleton Class="shop-homepage-category-skeleton-card" /></div>
+                <div><ShopSkeleton Class="shop-homepage-category-skeleton-field" /><ShopSkeleton Class="shop-homepage-category-skeleton-field" /><ShopSkeleton Class="shop-homepage-category-skeleton-field" /></div>
+            </div>
+        }
+        else if (_loadError is not null)
+        {
+            <div role="alert">
+                <p>@Localizer[_loadError]</p>
+                <ShopButton OnClick="LoadAsync" data-testid="homepage-category-reload">@Strings.HomepageCategory_Reload</ShopButton>
+            </div>
+        }
+        else if (_loaded && !_hasSection && !CanMutate)
+        {
+            <p>@Strings.HomepageCategory_Absent</p>
+        }
+        else if (_loaded)
+        {
+            <EditForm @key="_editContext" EditContext="@_editContext" OnSubmit="SaveAsync" novalidate>
+                <ShopCommandValidation @ref="_validation" />
+                <BusyFor Key="@BusyKeys.Homepage.SaveCategorySection" Context="saving">
+                    <div class="shop-homepage-category-grid">
+                        <section class="shop-homepage-category-categories" aria-label="@Strings.HomepageCategory_Categories">
+                            <div class="shop-homepage-category-toolbar">
+                                <p aria-live="polite">
+                                    @string.Format(Strings.HomepageCategory_SelectedCount, _model.CategoryIds.Count)
+                                </p>
+                                @if (CanMutate)
+                                {
+                                    <ShopButton OnClick="OpenPickerAsync" Variant="ShopVariant.Outlined" StartIcon="@ShopIcons.Outlined.Add_Plus"
+                                                Disabled="@(saving || _model.CategoryIds.Count >= 3)" data-testid="homepage-category-open-picker">
+                                        @Strings.HomepageCategory_AddCategory
+                                    </ShopButton>
+                                }
+                            </div>
+                            <ShopTable TItem="Guid" Class="shop-homepage-category-table" Items="@SelectedIds" ItemKey="@(id => id)"
+                                       Caption="@Strings.HomepageCategory_Categories" ColumnCount="3" data-testid="homepage-category-selected">
+                                <HeaderContent>
+                                    <th scope="col" class="shop-homepage-category-drag"><span class="shop-visually-hidden">@Strings.HomepageCategory_Actions</span></th>
+                                    <th scope="col">@Strings.HomepageCategory_Category</th>
+                                    <th scope="col" class="shop-table-column-compact">@Strings.HomepageCategory_Actions</th>
+                                </HeaderContent>
+                                <RowTemplate Context="id">
+                                    <td class="shop-homepage-category-drag" draggable="@CanMutate.ToString().ToLowerInvariant()"
+                                        @ondragstart="@(() => StartDrag(id))" @ondragover:preventDefault="true" @ondrop="@(() => DropOn(id))">
+                                        <ShopIcon Icon="@ShopIcons.Outlined.Drag_Vertical" />
+                                    </td>
+                                    <td>
+                                        @if (_cards.TryGetValue(id, out var category))
+                                        {
+                                            <div class="shop-homepage-category-row" @ondragover:preventDefault="true" @ondrop="@(() => DropOn(id))">
+                                                <ShopImage Src="@category.ImageUrl" Preset="ShopImagePreset.SquareContain" Alt="@category.Name" PlaceholderLabel="@category.Name" />
+                                                <strong>@category.Name</strong>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span>@Strings.HomepageCategory_UnavailableCategory</span>
+                                        }
+                                    </td>
+                                    <td class="shop-table-column-compact">
+                                        @if (CanMutate)
+                                        {
+                                            <div class="shop-homepage-category-row-actions">
+                                                <ShopIconButton Icon="@ShopIcons.Outlined.Arrow_Up_MD" Label="@Strings.HomepageCategory_MoveUp"
+                                                                Variant="ShopVariant.Text" Size="ShopSize.Medium" Disabled="@(saving || _model.CategoryIds.IndexOf(id) == 0)" OnClick="@(() => Move(id, -1))" />
+                                                <ShopIconButton Icon="@ShopIcons.Outlined.Arrow_Down_MD" Label="@Strings.HomepageCategory_MoveDown"
+                                                                Variant="ShopVariant.Text" Size="ShopSize.Medium" Disabled="@(saving || _model.CategoryIds.IndexOf(id) == _model.CategoryIds.Count - 1)" OnClick="@(() => Move(id, 1))" />
+                                                <ShopIconButton Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.HomepageCategory_Remove"
+                                                                Variant="ShopVariant.Text" Color="ShopColor.Error" Size="ShopSize.Medium" Disabled="@saving" OnClick="@(() => Remove(id))" />
+                                            </div>
+                                        }
+                                    </td>
+                                </RowTemplate>
+                                <EmptyContent>
+                                    <div class="shop-homepage-category-empty">
+                                        <strong>@Strings.HomepageCategory_EmptyTitle</strong>
+                                        <span>@Strings.HomepageCategory_EmptyHint</span>
+                                    </div>
+                                </EmptyContent>
+                            </ShopTable>
+                            <p class="shop-homepage-category-hint" aria-live="polite">
+                                <ShopIcon Icon="@ShopIcons.Outlined.Info" />
+                                @((CanMutate && _model.CategoryIds.Count >= 3)
+                                    ? Strings.HomepageCategory_RemoveFirst
+                                    : Strings.HomepageCategory_SelectionHint)
+                            </p>
+                            <div class="shop-field-error" aria-live="polite">
+                                <ValidationMessage For="@(() => _model.CategoryIds)" />
+                            </div>
+                        </section>
+                        <div class="shop-homepage-category-settings">
+                            <section aria-label="@Strings.HomepageCategory_Section">
+                                <ShopTextField id="homepage-category-title" Label="@Strings.HomepageCategory_Title" @bind-Value="_model.Title"
+                                               Disabled="@(!CanMutate || saving)" data-testid="homepage-category-title" />
+                                <ShopTextField id="homepage-category-button-label" Label="@Strings.HomepageCategory_ButtonLabel" @bind-Value="_model.ButtonLabel"
+                                               Disabled="@(!CanMutate || saving)" data-testid="homepage-category-button-label" />
+                                <ShopTextField id="homepage-category-button-link" Label="@Strings.HomepageCategory_ButtonLink" @bind-Value="_model.ButtonLink"
+                                               Disabled="@(!CanMutate || saving)" data-testid="homepage-category-button-link" />
+                            </section>
+                            <div class="shop-homepage-category-status" role="group" aria-labelledby="homepage-category-status-label">
+                                <p id="homepage-category-status-label">@Strings.HomepageCategory_Status</p>
+                                <div>
+                                    <ShopChip Selected="@_model.IsVisible" SelectedChanged="@(_ => SetVisible(true))" Disabled="@(!CanMutate || saving)">@Strings.HomepageCategory_Visible</ShopChip>
+                                    <ShopChip Selected="@(!_model.IsVisible)" SelectedChanged="@(_ => SetVisible(false))" Disabled="@(!CanMutate || saving)">@Strings.HomepageCategory_Hidden</ShopChip>
+                                </div>
+                            </div>
+                            <div class="shop-homepage-category-actions">
+                                @if (CanMutate)
+                                {
+                                    <ShopButton Type="submit" Size="ShopSize.Large" Loading="@saving" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
+                                                data-testid="homepage-category-save">@Strings.Save</ShopButton>
+                                }
+                                <ShopButton Href="@Routes.Admin.ManageHomepage" Variant="ShopVariant.Outlined" Disabled="@saving">@Strings.Cancel</ShopButton>
+                            </div>
+                        </div>
+                    </div>
+                </BusyFor>
+            </EditForm>
+        }
+    </BusyFor>
+</section>
+
+@if (_pickerOpen)
+{
+    <ShopDialog MaxWidth="ShopMaxWidth.Medium" OnDismiss="CancelPickerAsync">
+        <TitleContent><h2>@Strings.HomepageCategory_PickerTitle</h2></TitleContent>
+        <DialogContent>
+            <div class="shop-homepage-category-picker" data-testid="homepage-category-picker">
+                <p>@string.Format(Strings.HomepageCategory_SelectedCount, _pickerIds.Count)</p>
+                @if (_choices.Count == 0) { <p>@Strings.HomepageCategory_NoChoices</p> }
+                else
+                {
+                    <ul>
+                        @foreach (var choice in _choices)
+                        {
+                            <li>
+                                <ShopImageTile Src="@choice.ImageUrl" Alt="@choice.Name" Selected="@_pickerIds.Contains(choice.Id)"
+                                               Removable="false" Disabled="@(_pickerIds.Count >= 3 && !_pickerIds.Contains(choice.Id))"
+                                               OnClick="@(() => TogglePickerChoice(choice.Id))" />
+                                <strong>@choice.Name</strong>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </DialogContent>
+        <DialogActions>
+            <ShopButton OnClick="ConfirmPickerAsync" data-testid="homepage-category-confirm-picker">@Strings.HomepageCategory_AddCategory</ShopButton>
+            <ShopButton Variant="ShopVariant.Outlined" OnClick="CancelPickerAsync" data-dialog-initial-focus>@Strings.Cancel</ShopButton>
+        </DialogActions>
+    </ShopDialog>
+}

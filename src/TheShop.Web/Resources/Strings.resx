@@ -2087,4 +2087,44 @@
   <data name="Featured_UploadFailed" xml:space="preserve"><value>Images could not be uploaded. Your changes remain available.</value></data>
   <data name="Featured_SaveFailed" xml:space="preserve"><value>Featured could not be saved. Your changes remain available.</value></data>
   <data name="Featured_SaveUnconfirmed" xml:space="preserve"><value>Save could not be confirmed. Reload before saving again.</value></data>
+  <data name="HomepageCategory_DefaultTitle" xml:space="preserve"><value>Discover by Category</value></data>
+  <data name="HomepageCategory_ViewAllCategories" xml:space="preserve"><value>View All Categories</value></data>
+  <data name="HomepageCategory_AddHeading" xml:space="preserve"><value>Add {0}</value></data>
+  <data name="HomepageCategory_EditHeading" xml:space="preserve"><value>Edit {0}</value></data>
+  <data name="HomepageCategory_Categories" xml:space="preserve"><value>Categories</value></data>
+  <data name="HomepageCategory_Category" xml:space="preserve"><value>Category</value></data>
+  <data name="HomepageCategory_Actions" xml:space="preserve"><value>Actions</value></data>
+  <data name="HomepageCategory_Section" xml:space="preserve"><value>Section</value></data>
+  <data name="HomepageCategory_Title" xml:space="preserve"><value>Title</value></data>
+  <data name="HomepageCategory_ButtonLabel" xml:space="preserve"><value>Button label</value></data>
+  <data name="HomepageCategory_ButtonLink" xml:space="preserve"><value>Button link</value></data>
+  <data name="HomepageCategory_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="HomepageCategory_Visible" xml:space="preserve"><value>Visible</value></data>
+  <data name="HomepageCategory_Hidden" xml:space="preserve"><value>Hidden</value></data>
+  <data name="HomepageCategory_SelectedCount" xml:space="preserve"><value>{0} of 3 selected</value></data>
+  <data name="HomepageCategory_RemoveFirst" xml:space="preserve"><value>Shows exactly 3 categories with their category image. Remove one to add another.</value></data>
+  <data name="HomepageCategory_SelectionHint" xml:space="preserve"><value>Choose exactly 3 categories with their category image. Drag or use the arrows to change their order.</value></data>
+  <data name="HomepageCategory_AddCategory" xml:space="preserve"><value>Add category</value></data>
+  <data name="HomepageCategory_EmptyTitle" xml:space="preserve"><value>No categories added yet</value></data>
+  <data name="HomepageCategory_EmptyHint" xml:space="preserve"><value>Add exactly 3 categories to show in Discover by Category.</value></data>
+  <data name="HomepageCategory_MoveUp" xml:space="preserve"><value>Move up</value></data>
+  <data name="HomepageCategory_MoveDown" xml:space="preserve"><value>Move down</value></data>
+  <data name="HomepageCategory_Remove" xml:space="preserve"><value>Remove category</value></data>
+  <data name="HomepageCategory_UnavailableCategory" xml:space="preserve"><value>Category unavailable</value></data>
+  <data name="HomepageCategory_Absent" xml:space="preserve"><value>This section has not been added yet.</value></data>
+  <data name="HomepageCategory_Reload" xml:space="preserve"><value>Reload category section</value></data>
+  <data name="HomepageCategory_PickerTitle" xml:space="preserve"><value>Choose categories</value></data>
+  <data name="HomepageCategory_NoChoices" xml:space="preserve"><value>No active categories available.</value></data>
+  <data name="HomepageCategory_Saved" xml:space="preserve"><value>Category section saved.</value></data>
+  <data name="HomepageCategory_TitleRequired" xml:space="preserve"><value>Enter a section title.</value></data>
+  <data name="HomepageCategory_ButtonLabelRequired" xml:space="preserve"><value>Enter a button label.</value></data>
+  <data name="HomepageCategory_ButtonLinkRequired" xml:space="preserve"><value>Enter a button link.</value></data>
+  <data name="HomepageCategory_ButtonLinkInvalid" xml:space="preserve"><value>Enter a site path or HTTP/HTTPS URL.</value></data>
+  <data name="HomepageCategory_SelectionInvalid" xml:space="preserve"><value>Choose exactly three different categories.</value></data>
+  <data name="HomepageCategory_CategoryUnavailable" xml:space="preserve"><value>A selected category is unavailable. Choose another category.</value></data>
+  <data name="HomepageCategory_AlreadyExists" xml:space="preserve"><value>This section already exists. Reload to edit it.</value></data>
+  <data name="HomepageCategory_NotFound" xml:space="preserve"><value>This section no longer exists. Reload to add it.</value></data>
+  <data name="HomepageCategory_LoadFailed" xml:space="preserve"><value>The category section could not load. Try again.</value></data>
+  <data name="HomepageCategory_SaveFailed" xml:space="preserve"><value>The category section could not save. Try again.</value></data>
+  <data name="HomepageCategory_ChoicesLoadFailed" xml:space="preserve"><value>Categories could not load. Try again.</value></data>
 </root>

@@ -1,0 +1,120 @@
+{
+  "feature": "006_homepage-category",
+  "trait": "006_homepage-category",
+  "date": "2026-11-16",
+  "journeys": [
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageHomepageCategoryJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageHomepageCategoryJourneyTests",
+      "tests": 7,
+      "methods": [
+        {
+          "name": "AC1_AddPrefillsFieldsButNotCategories",
+          "ac": 1
+        },
+        {
+          "name": "AC6_SelectedOrderAndCategoryMediaSurviveSave",
+          "ac": 6
+        },
+        {
+          "name": "AC8_ChangedFieldsSurviveSaveAndReopen",
+          "ac": 8
+        },
+        {
+          "name": "AC9_HiddenStatusSurvivesSaveAndRemainsEditable",
+          "ac": 9
+        },
+        {
+          "name": "AC10_CancelDiscardsUnsavedEdits",
+          "ac": 10
+        },
+        {
+          "name": "AC11_ExistingSectionOpensEditInsteadOfSecondAdd",
+          "ac": 11
+        },
+        {
+          "name": "AC12_ResponsiveKeyboardControlsRemainOperable",
+          "ac": 12
+        }
+      ]
+    }
+  ],
+  "totalTests": 7,
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageCategoryJourneyTests.AC1_AddPrefillsFieldsButNotCategories",
+      "reason": "Real admin navigation and rendered defaults."
+    },
+    {
+      "id": "AC-2",
+      "coverage": "unit",
+      "evidence": "TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Heading_TracksTitleAndUsesFallbackInAddAndEdit",
+      "reason": "Live heading binding is covered in the mapped component test."
+    },
+    {
+      "id": "AC-3",
+      "coverage": "unit",
+      "evidence": "TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Heading_TracksTitleAndUsesFallbackInAddAndEdit",
+      "reason": "Blank-title heading fallback is covered in the mapped component test."
+    },
+    {
+      "id": "AC-4",
+      "coverage": "unit",
+      "evidence": "TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.FullSelection_DisablesAddAndExplainsRemoveFirst",
+      "reason": "Selection-limit control and guidance are covered in the mapped component test."
+    },
+    {
+      "id": "AC-5",
+      "coverage": "unit",
+      "evidence": "TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Save_ValidationErrorsRemainInlineAndDoNotNavigate",
+      "reason": "Inline validation and no navigation are covered in the mapped component test."
+    },
+    {
+      "id": "AC-6",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageCategoryJourneyTests.AC6_SelectedOrderAndCategoryMediaSurviveSave",
+      "reason": "Browser selection, ordering, database save, and reopened media."
+    },
+    {
+      "id": "AC-7",
+      "coverage": "unit",
+      "evidence": "TheShop.Application.Tests.Features.Homepage.HomepageCategoryValidationTests.Create_BlankFieldsAndUnderfilledSelection_ReportsEachField",
+      "reason": "Required button fields are covered in the mapped validator test."
+    },
+    {
+      "id": "AC-8",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageCategoryJourneyTests.AC8_ChangedFieldsSurviveSaveAndReopen",
+      "reason": "Changed fields persist through browser navigation and database save."
+    },
+    {
+      "id": "AC-9",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageCategoryJourneyTests.AC9_HiddenStatusSurvivesSaveAndRemainsEditable",
+      "reason": "Hidden state persists through browser navigation and stays editable."
+    },
+    {
+      "id": "AC-10",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageCategoryJourneyTests.AC10_CancelDiscardsUnsavedEdits",
+      "reason": "Cancel navigation preserves database values and order."
+    },
+    {
+      "id": "AC-11",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageCategoryJourneyTests.AC11_ExistingSectionOpensEditInsteadOfSecondAdd",
+      "reason": "Existing singleton renders Edit on a fresh browser navigation."
+    },
+    {
+      "id": "AC-12",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageCategoryJourneyTests.AC12_ResponsiveKeyboardControlsRemainOperable",
+      "reason": "Viewport widths and keyboard focus/action require a browser."
+    }
+  ],
+  "pageObjects": [
+    "tests/TheShop.E2E.Tests/Pages/Admin/ManageHomepageCategoryPage.cs"
+  ]
+}

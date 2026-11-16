@@ -57,6 +57,8 @@ public static class Routes
         /// <summary>The singleton Fresh Drops Add/Edit route.</summary>
         public const string ManageFreshDrops = "/admin/homepage/fresh-drops";
         public const string ManageFeatured = "/admin/homepage/featured";
+        /// <summary>The singleton homepage category Add/Edit route.</summary>
+        public const string ManageHomepageCategory = "/admin/homepage/category";
 
         /// <summary>
         /// The Manage Products admin harness shell. Requires a signed-in user via
