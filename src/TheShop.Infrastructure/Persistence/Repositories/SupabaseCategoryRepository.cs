@@ -163,6 +163,16 @@ public sealed class SupabaseCategoryRepository(Supabase.Client client, IFileStor
         return [.. response.Models.Select(r => new CategoryLookupDto(r.Id, r.Name))];
     }
 
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<Category>> GetActiveForHomepageAsync(CancellationToken ct)
+    {
+        var query = client.From<CategoryRecord>();
+        query.Filter(IsActiveColumn, Operator.Equals, "true");
+        query.Order(NameColumn, Ordering.Ascending);
+        var response = await query.Get(ct);
+        return [.. response.Models.Select(r => r.ToDomain())];
+    }
+
     private string ResolveImagePublicUrl(string? imagePath, string name) =>
         imagePath is { } path ? fileStorage.GetPublicUrl(StorageArea.CategoryImages, path) : PlaceholderImage.For(name);
 

@@ -1,0 +1,35 @@
+{
+  "feature": "006_homepage-category",
+  "trait": "006_homepage-category",
+  "testProjects": [
+    "tests/TheShop.Domain.Tests/TheShop.Domain.Tests.csproj",
+    "tests/TheShop.Application.Tests/TheShop.Application.Tests.csproj",
+    "tests/TheShop.Infrastructure.Tests/TheShop.Infrastructure.Tests.csproj",
+    "tests/TheShop.Web.Tests/TheShop.Web.Tests.csproj"
+  ],
+  "classes": [
+    { "file": "tests/TheShop.Domain.Tests/Entities/HomepageCategorySectionTests.cs", "fqn": "TheShop.Domain.Tests.Entities.HomepageCategorySectionTests", "tests": 5 },
+    { "file": "tests/TheShop.Application.Tests/Features/Homepage/HomepageCategoryAuthorizationTests.cs", "fqn": "TheShop.Application.Tests.Features.Homepage.HomepageCategoryAuthorizationTests", "tests": 2 },
+    { "file": "tests/TheShop.Application.Tests/Features/Homepage/HomepageCategoryHandlerTests.cs", "fqn": "TheShop.Application.Tests.Features.Homepage.HomepageCategoryHandlerTests", "tests": 6 },
+    { "file": "tests/TheShop.Application.Tests/Features/Homepage/HomepageCategoryValidationTests.cs", "fqn": "TheShop.Application.Tests.Features.Homepage.HomepageCategoryValidationTests", "tests": 3 },
+    { "file": "tests/TheShop.Infrastructure.Tests/Persistence/HomepageCategoryRepositoryTests.cs", "fqn": "TheShop.Infrastructure.Tests.Persistence.HomepageCategoryRepositoryTests", "tests": 3 },
+    { "file": "tests/TheShop.Infrastructure.Tests/Persistence/HomepageCategorySchemaTests.cs", "fqn": "TheShop.Infrastructure.Tests.Persistence.HomepageCategorySchemaTests", "tests": 3 },
+    { "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageHomepageCategoryTests.cs", "fqn": "TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests", "tests": 10 }
+  ],
+  "totalTests": 32,
+  "acceptanceCriteria": [
+    { "id": "AC-1", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Add_OpensWithPrefilledFieldsAndEmptySelection"] },
+    { "id": "AC-2", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Heading_TracksTitleAndUsesFallbackInAddAndEdit"] },
+    { "id": "AC-3", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Heading_TracksTitleAndUsesFallbackInAddAndEdit"] },
+    { "id": "AC-4", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.FullSelection_DisablesAddAndExplainsRemoveFirst", "TheShop.Domain.Tests.Entities.HomepageCategorySectionTests.Create_FewerFourthDuplicateOrEmptyCategory_Rejects"] },
+    { "id": "AC-5", "tests": ["TheShop.Application.Tests.Features.Homepage.HomepageCategoryValidationTests.Create_BlankFieldsAndUnderfilledSelection_ReportsEachField", "TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Save_ValidationErrorsRemainInlineAndDoNotNavigate"] },
+    { "id": "AC-6", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Picker_ChoosesThreeFromEmpty_DisablesFourthAndShowsNames", "TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Edit_MoveAndRemove_UpdatesOrderedSelectionBeforeSave", "TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Edit_RestoresSavedFieldsOrderImagesAndHiddenStatus", "TheShop.Infrastructure.Tests.Persistence.HomepageCategoryRepositoryTests.Save_UsesOneParameterizedRpcWithOrderedCategoriesAndVisibility"], "boundary": "e2e", "reason": "Reopen after Save and pointer drag ordering require a browser and backing database." },
+    { "id": "AC-7", "tests": ["TheShop.Application.Tests.Features.Homepage.HomepageCategoryValidationTests.Create_BlankFieldsAndUnderfilledSelection_ReportsEachField", "TheShop.Domain.Tests.Entities.HomepageCategorySectionTests.Create_MissingRequiredFieldsAndUnsafeLink_Rejects"] },
+    { "id": "AC-8", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Save_ValidEdit_SendsChangedDetailsOrderAndVisibility", "TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Edit_RestoresSavedFieldsOrderImagesAndHiddenStatus"], "boundary": "e2e", "reason": "Reopen after Save requires a browser and backing database." },
+    { "id": "AC-9", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Edit_RestoresSavedFieldsOrderImagesAndHiddenStatus", "TheShop.Infrastructure.Tests.Persistence.HomepageCategorySchemaTests.Rpc_CreateAndEditRequireViewPlusMatchingAction_AndRestoreHiddenOrder"], "boundary": "e2e", "reason": "Reopen after Save requires a browser and backing database." },
+    { "id": "AC-10", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Cancel_UnsavedChanges_IsNavigationWithoutSave"], "boundary": "e2e", "reason": "Navigation and persisted Edit cancellation require a browser." },
+    { "id": "AC-11", "tests": ["TheShop.Infrastructure.Tests.Persistence.HomepageCategorySchemaTests.AnonymousCannotReadSection_AndCreateConflictOrMissingEditReturnExpectedStates", "TheShop.Infrastructure.Tests.Persistence.HomepageCategoryRepositoryTests.Save_MapsPermissionConflictMissingAndUnavailableFailures"], "boundary": "e2e", "reason": "The admin redirect from conflicting Add to Edit needs a browser." },
+    { "id": "AC-12", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Edit_MoveAndRemove_UpdatesOrderedSelectionBeforeSave", "TheShop.Web.Tests.Pages.Admin.ManageHomepageCategoryTests.Edit_RestoresSavedFieldsOrderImagesAndHiddenStatus"], "boundary": "e2e", "reason": "Responsive widths, keyboard focus and assistive behavior need browser inspection." }
+  ],
+  "scope": "Admin-only Domain, Application, repository, PostgreSQL schema and bUnit coverage. Public homepage display is out of scope. Browser journeys and Figma visual proof belong to theshop-e2e."
+}

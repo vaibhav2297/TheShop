@@ -72,4 +72,7 @@ public interface ICategoryRepository
     /// picker controls (AC-23). Unpaginated — category counts are small reference data.
     /// </summary>
     Task<IReadOnlyList<CategoryLookupDto>> GetActiveLookupAsync(CancellationToken ct);
+
+    /// <summary>Returns active categories with image paths for the homepage picker.</summary>
+    Task<IReadOnlyList<Category>> GetActiveForHomepageAsync(CancellationToken ct);
 }
