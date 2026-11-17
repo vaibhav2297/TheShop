@@ -205,9 +205,9 @@ public sealed class ShopImageJourneyTests(PlaywrightFixture playwright) : E2ETes
     {
         await Context.RouteAsync(ShopImageArtwork.SeededPlaceholderGlob, route => ShopImageArtwork.FulfillAsync(route, 400, 400));
 
-        // Phone, tablet, desktop, both sides of the 600px breakpoint, and a phone rotated to landscape.
+        // Phone, tablet, desktop, both sides of the 768px breakpoint, and a phone rotated to landscape.
         var viewports = ShopImageExpectations.Widths.Select(w => (w, 900))
-            .Concat([(599, 900), (600, 900), (812, 375)]);
+            .Concat([(599, 900), (600, 900), (767, 900), (768, 900), (812, 375)]);
 
         var composition = new ShopImageCompositionPage(Page);
         await composition.GotoAsync();

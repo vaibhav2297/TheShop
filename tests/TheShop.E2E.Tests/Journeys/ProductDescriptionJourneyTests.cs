@@ -175,7 +175,7 @@ public sealed class ProductDescriptionJourneyTests(PlaywrightFixture playwright)
         await Assertions.Expect(reopened.Form.SpecificationNameField(1)).ToHaveValueAsync("Capacity", new() { Timeout = 15_000 });
         await Assertions.Expect(reopened.Form.SpecificationValueField(1)).ToHaveValueAsync("750 ml", new() { Timeout = 15_000 });
         // Unrelated saved detail (price) survives a content-only edit unchanged (FR-5).
-        await Assertions.Expect(reopened.Form.PriceField).ToHaveValueAsync("24.99", new() { Timeout = 15_000 });
+        await Assertions.Expect(reopened.Form.PriceField).ToHaveValueAsync("$24.99", new() { Timeout = 15_000 });
     }
 
     [Fact]

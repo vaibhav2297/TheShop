@@ -13,12 +13,12 @@ public class PermissionCatalogueTests
 {
     // The ten modules the spec requires (AC-3), plus the Brands module added by the
     // add-brand feature (its Decision 2), plus the single-action Dashboard module that
-    // gates the admin console shell itself.
+    // gates the admin console shell itself, and the Homepage management module.
     private static readonly string[] ExpectedModules =
     [
         "products", "categories", "orders", "customers", "coupons",
         "promotions", "reports", "settings", "admin_users", "roles", "brands",
-        "dashboard",
+        "dashboard", "homepage",
     ];
 
     // =========================================================================
@@ -89,11 +89,11 @@ public class PermissionCatalogueTests
 
     [Fact]
     [Trait("Feature", "role-based-access-control")]
-    public void All_Always_ContainsExactlyFortySevenPermissions()
+    public void All_Always_ContainsExactlyFiftyPermissions()
     {
         // 11 modules x 4 actions (view/create/edit/delete) + Orders.Refund + Customers.Export
-        // + the single-action Dashboard module (dashboard.view only)
-        PermissionCatalogue.All.Should().HaveCount(47);
+        // + Dashboard.view + Homepage.view/create/edit.
+        PermissionCatalogue.All.Should().HaveCount(50);
     }
 
     // =========================================================================

@@ -42,6 +42,13 @@ public sealed class ProductDetailPage(IPage page, Guid id) : ShopPage(page)
     {
         await Choice(first).ClickAsync(); await Choice(second).ClickAsync();
     }
+    public async Task FocusCarouselAsync()
+    {
+        await Assertions.Expect(Gallery).ToHaveAttributeAsync("data-swipe-enabled", "true");
+        await Assertions.Expect(Viewport).ToHaveAttributeAsync("tabindex", "0");
+        await Viewport.FocusAsync();
+        await Assertions.Expect(Viewport).ToBeFocusedAsync();
+    }
     public async Task PositionAsync(int oneBased)
     {
         await Assertions.Expect(Gallery).ToHaveAttributeAsync("data-active-image", oneBased.ToString());

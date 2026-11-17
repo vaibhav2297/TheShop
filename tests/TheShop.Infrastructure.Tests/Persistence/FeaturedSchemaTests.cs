@@ -18,8 +18,6 @@ public sealed class FeaturedSchemaFixture : IAsyncLifetime
         await RbacTestSchema.ApplyRbacCoreAsync(conn);
         await RbacTestSchema.CreateRlsTestRolesAsync(conn);
         await ExecuteAsync(conn, """
-            INSERT INTO permissions(code,module) VALUES
-                ('homepage.view','homepage'),('homepage.create','homepage'),('homepage.edit','homepage');
             CREATE SCHEMA storage;
             CREATE TABLE storage.buckets(id text PRIMARY KEY,name text NOT NULL,public boolean NOT NULL,
                 file_size_limit bigint,allowed_mime_types text[]);

@@ -689,7 +689,7 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
                 .Should().Be(expected.Name == "button" ? "capitalize" : "none");
         }
 
-        // Exercise real owned selectors, including the unbound product-title exception and <s> semantics.
+        // Exercise owned selectors using the approved product-detail tile and placeholder refinements.
         await host.EvaluateAsync("""
             host => host.insertAdjacentHTML('beforeend', `
                 <div class="shop-product-card-brand">PUFFCO</div>
@@ -704,9 +704,9 @@ public sealed class NativeUiJourneyTests(PlaywrightFixture playwright) : E2ETest
             """);
         (string Class, int Size, int Weight)[] consumers =
         [
-            ("shop-product-card-brand", 16, 500), ("shop-product-card-title", 20, 400),
+            ("shop-product-card-brand", 14, 500), ("shop-product-card-title", 16, 400),
             ("shop-product-card-price", 20, 500), ("shop-product-card-original-price", 16, 500),
-            ("shop-field-label", 16, 400), ("shop-image-label", 12, 400)
+            ("shop-field-label", 16, 400), ("shop-image-label", 16, 500)
         ];
         foreach (var expected in consumers)
         {

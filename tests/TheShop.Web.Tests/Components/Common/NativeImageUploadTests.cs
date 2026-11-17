@@ -208,11 +208,11 @@ public class NativeImageUploadTests : TestContext
 
     private sealed class GatedStream(Task release, bool fail) : MemoryStream([1, 2])
     {
-        public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
             await release.WaitAsync(cancellationToken);
             if (fail) throw new IOException();
-            await base.CopyToAsync(destination, bufferSize, cancellationToken);
+            return await base.ReadAsync(buffer, cancellationToken);
         }
     }
 

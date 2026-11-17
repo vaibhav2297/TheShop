@@ -841,10 +841,10 @@ public class ProductFormTests : TestContext
 
     private sealed class GatedStream(Task release) : MemoryStream([1, 2])
     {
-        public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
             await release.WaitAsync(cancellationToken);
-            await base.CopyToAsync(destination, bufferSize, cancellationToken);
+            return await base.ReadAsync(buffer, cancellationToken);
         }
     }
 }

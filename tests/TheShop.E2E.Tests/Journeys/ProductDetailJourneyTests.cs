@@ -141,7 +141,7 @@ public sealed class ProductDetailJourneyTests(PlaywrightFixture playwright) : E2
         await detail.Description.GetByRole(AriaRole.Button).FocusAsync(); await Page.Keyboard.PressAsync("Enter");
         await Assertions.Expect(detail.Description.GetByRole(AriaRole.Button)).ToHaveAttributeAsync("aria-expanded", "true");
         await Page.SetViewportSizeAsync(390, 844);
-        await detail.Viewport.FocusAsync(); await Page.Keyboard.PressAsync("End"); await detail.PositionAsync(8);
+        await detail.FocusCarouselAsync(); await Page.Keyboard.PressAsync("End"); await detail.PositionAsync(8);
         await Page.Keyboard.PressAsync("Home"); await detail.PositionAsync(1);
         await detail.Favourite.FocusAsync(); await Page.Keyboard.PressAsync("Space"); await Assertions.Expect(detail.Favourite).ToBeEnabledAsync();
         await Assertions.Expect(detail.Gallery).ToHaveAttributeAsync("aria-label", Strings.ProductDetail_Gallery);

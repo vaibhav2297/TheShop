@@ -1,0 +1,119 @@
+name: TheShop - Tests
+
+on:
+  workflow_call:
+    inputs:
+      full-e2e:
+        description: Run all browser journeys instead of the critical PR suite.
+        type: boolean
+        default: false
+  workflow_dispatch:
+  schedule:
+    - cron: '30 20 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  layer_tests:
+    name: ${{ matrix.layer }} tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        layer: [Domain, Application, Infrastructure, Web]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+      - name: Verify result guard
+        shell: pwsh
+        run: ./.github/scripts/test-result-guard.ps1
+      - name: Run unit, component, and database tests
+        run: >-
+          dotnet test tests/TheShop.${{ matrix.layer }}.Tests/TheShop.${{ matrix.layer }}.Tests.csproj
+          --configuration Release
+          --logger "trx;LogFileName=tests.trx"
+          --results-directory TestResults/${{ matrix.layer }}
+      - name: Require executed, passing tests
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: ./.github/scripts/assert-test-results.ps1 -Path TestResults/${{ matrix.layer }}/tests.trx
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-${{ matrix.layer }}
+          path: TestResults/${{ matrix.layer }}/
+          if-no-files-found: warn
+          retention-days: 7
+
+  e2e:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      E2E_HEADLESS: '1'
+      FULL_E2E: ${{ inputs.full-e2e || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+      - uses: supabase/setup-cli@v3
+        with:
+          version: '2.101.0'
+      # AppHostFixture launches the Debug build with --no-build.
+      - name: Build browser tests and app
+        run: dotnet build tests/TheShop.E2E.Tests/TheShop.E2E.Tests.csproj --configuration Debug
+      - name: Install Chromium and Linux dependencies
+        shell: pwsh
+        run: ./tests/TheShop.E2E.Tests/bin/Debug/net10.0/playwright.ps1 install --with-deps chromium
+      - name: Start isolated Supabase and apply migrations and seed
+        shell: pwsh
+        run: ./tests/TheShop.E2E.Tests/tools/start-e2e-env.ps1
+      - name: Run browser journeys
+        shell: pwsh
+        run: |
+          $testArguments = @(
+            'test', 'tests/TheShop.E2E.Tests/TheShop.E2E.Tests.csproj',
+            '--configuration', 'Debug', '--no-build',
+            '--logger', 'trx;LogFileName=tests.trx',
+            '--results-directory', 'TestResults/E2E'
+          )
+          if ($env:FULL_E2E -ne 'true') {
+            $testArguments += @('--filter', 'Suite=Smoke|Feature=auth|Feature=create-product|Feature=001_product-detail')
+          }
+          & dotnet @testArguments
+          exit $LASTEXITCODE
+      - name: Reject missing, skipped, or failed E2E results
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: ./.github/scripts/assert-test-results.ps1 -Path TestResults/E2E/tests.trx
+      - name: Upload browser results and failure traces
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-E2E
+          path: |
+            TestResults/E2E/
+            tests/TheShop.E2E.Tests/bin/Debug/net10.0/playwright-traces/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Stop isolated Supabase
+        if: ${{ always() }}
+        run: supabase stop --no-backup
+
+  checks:
+    name: Required tests
+    if: ${{ always() }}
+    needs: [layer_tests, e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every test job to pass
+        env:
+          LAYER_RESULT: ${{ needs.layer_tests.result }}
+          E2E_RESULT: ${{ needs.e2e.result }}
+        run: test "$LAYER_RESULT" = success && test "$E2E_RESULT" = success

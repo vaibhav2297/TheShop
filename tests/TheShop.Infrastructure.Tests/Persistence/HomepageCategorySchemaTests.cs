@@ -18,8 +18,6 @@ public sealed class HomepageCategorySchemaFixture : IAsyncLifetime
         await RbacTestSchema.ApplyRbacCoreAsync(connection);
         await RbacTestSchema.CreateRlsTestRolesAsync(connection);
         await ExecuteAsync(connection, """
-            INSERT INTO permissions(code,module) VALUES
-                ('homepage.view','homepage'),('homepage.create','homepage'),('homepage.edit','homepage');
             CREATE TABLE public.categories(id uuid PRIMARY KEY, name text NOT NULL,
                 image_path text, is_active boolean NOT NULL);
             GRANT SELECT ON public.categories TO anon, authenticated;
