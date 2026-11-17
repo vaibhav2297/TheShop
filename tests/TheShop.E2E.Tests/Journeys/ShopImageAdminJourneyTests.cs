@@ -37,7 +37,7 @@ public sealed class ShopImageAdminJourneyTests(PlaywrightFixture playwright)
                 : ShopImageArtwork.FulfillAsync(route, 900, 300));
 
         var categories = new ManageCategoriesPage(Page);
-        await categories.GotoAsync();
+        await categories.GotoOldestFirstAsync();
         foreach (var width in ShopImageExpectations.Widths)
         {
             await Page.SetViewportSizeAsync(width, 900);

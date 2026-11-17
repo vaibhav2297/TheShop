@@ -17,6 +17,7 @@ public sealed class ManageFreshDropsPage(IPage page) : ShopPage(page)
     public ILocator Manual => Page.GetByTestId("fresh-drops-manual");
     public ILocator AutomaticList => Page.GetByTestId("fresh-drops-automatic-list");
     public ILocator ManualList => Page.GetByTestId("fresh-drops-manual-list");
+    public ILocator ManualRows => ManualList.Locator("tbody tr").Filter(new() { Has = Page.Locator(".shop-fresh-drops-product") });
     public ILocator Save => Page.GetByTestId("fresh-drops-save");
     public ILocator Cancel => Page.GetByRole(AriaRole.Link, new() { Name = Strings.Cancel });
     public ILocator OpenPicker => Page.GetByTestId("fresh-drops-open-picker");

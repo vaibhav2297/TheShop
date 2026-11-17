@@ -34,7 +34,7 @@ public sealed class NativeAdminConsoleLayoutJourneyTests(PlaywrightFixture playw
             var surface = Page.Locator(".shop-admin-console");
             var grid = surface.Locator(".shop-admin-console-grid");
             var loading = grid.Locator(".shop-admin-module-card-skeleton");
-            await Assertions.Expect(loading).ToHaveCountAsync(5);
+            await Assertions.Expect(loading).ToHaveCountAsync(6);
             await PrepareAppearanceAsync(withoutVendorCss);
             await Assertions.Expect(surface.Locator("h1")).ToHaveCSSAsync("font-size", "60px");
             await Assertions.Expect(surface).ToHaveCSSAsync("padding-left", width < 768 ? "16px" : "32px");

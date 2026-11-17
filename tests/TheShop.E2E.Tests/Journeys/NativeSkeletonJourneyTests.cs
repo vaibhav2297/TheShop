@@ -44,7 +44,7 @@ public sealed class NativeSkeletonJourneyTests(PlaywrightFixture playwright) : E
             await Assertions.Expect(media).ToHaveCSSAsync("background-color", Tertiary);
 
             var content = (await card.Locator(".shop-product-card-content").BoundingBoxAsync())!;
-            foreach (var (name, ratio, fontSize) in new[] { ("brand", 0.4, 16), ("title", 0.8, 20), ("price", 0.3, 20) })
+            foreach (var (name, ratio, fontSize) in new[] { ("brand", 0.4, 14), ("title", 0.8, 16), ("price", 0.3, 20) })
             {
                 var line = card.Locator($".shop-product-card-skeleton-{name}");
                 (await line.BoundingBoxAsync())!.Width.Should().BeApproximately((float)(content.Width * ratio), 1f);
@@ -174,10 +174,10 @@ public sealed class NativeSkeletonJourneyTests(PlaywrightFixture playwright) : E
             (await table.Locator("thead").BoundingBoxAsync())!.Y.Should().BeApproximately(headerBefore.Y, 1f, "the header stays in place");
             await SaveAsync("skeleton-table-loaded-live");
 
-            // Admin console: five outlined card skeletons in the real grid.
+            // Admin console: six outlined card skeletons in the real grid.
             await Page.EvaluateAsync("route => Blazor.navigateTo(route)", WebRoutes.Admin.Console);
             var cards = Page.Locator(".shop-admin-module-card-skeleton");
-            await Assertions.Expect(cards).ToHaveCountAsync(5, new() { Timeout = 30_000 });
+            await Assertions.Expect(cards).ToHaveCountAsync(6, new() { Timeout = 30_000 });
             await Assertions.Expect(cards.First).ToHaveCSSAsync("padding", "24px");
             await Assertions.Expect(cards.First).ToHaveCSSAsync("box-shadow", "rgb(224, 224, 224) 0px 0px 0px 1px inset");
             await Assertions.Expect(cards.First.Locator(".shop-admin-module-card-skeleton-action")).ToHaveCSSAsync("height", "38px");

@@ -27,8 +27,8 @@ public sealed class ProductFormPage(IPage page)
     public ILocator CancelButton => Page.GetByRole(AriaRole.Link, new() { Name = Strings.AddProduct_CancelButton });
 
     public Task FillNameAsync(string name) => NameField.FillAsync(name);
-    public Task SetPriceAsync(decimal amount) => FillAndBlurAsync(PriceField, amount.ToString("0.00"));
-    public Task SetSalePriceAsync(decimal amount) => FillAndBlurAsync(SalePriceField, amount.ToString("0.00"));
+    public Task SetPriceAsync(decimal amount) => FillMoneyAndBlurAsync(PriceField, amount);
+    public Task SetSalePriceAsync(decimal amount) => FillMoneyAndBlurAsync(SalePriceField, amount);
     public Task SaveAsync() => SaveButton.ClickAsync();
 
     /// <summary>
@@ -39,6 +39,13 @@ public sealed class ProductFormPage(IPage page)
     {
         await field.FillAsync(value);
         await field.EvaluateAsync("el => el.blur()");
+    }
+
+    private static async Task FillMoneyAndBlurAsync(ILocator field, decimal amount)
+    {
+        await field.FocusAsync();
+        await Assertions.Expect(field).ToHaveValueAsync(new System.Text.RegularExpressions.Regex(@"^-?\d*(?:\.\d*)?$"));
+        await FillAndBlurAsync(field, amount.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture));
     }
 
     public async Task SelectCategoryAsync(string categoryName)
@@ -139,8 +146,8 @@ public sealed class ProductFormPage(IPage page)
     public ILocator VariantCount(int count) =>
         Page.GetByText(string.Format(Strings.ProductVariants_With_Args, count), new() { Exact = true });
 
-    public ILocator MissingPriceAlert(int missing, int total) =>
-        Page.GetByText(string.Format(Strings.ProductVariants_MissingPrice, missing, total), new() { Exact = true });
+    public ILocator VariantPriceError(string label) =>
+        VariantRow(label).GetByText(Strings.Product_PriceRequired, new() { Exact = true });
 
     /// <summary>A generated variant's row, located by its label (e.g. "Mango / 20mg").</summary>
     public ILocator VariantRow(string label) =>
@@ -155,9 +162,9 @@ public sealed class ProductFormPage(IPage page)
     public ILocator VariantSalePriceInput(string label) => VariantRow(label).Locator("input").Nth(1);
 
     public Task SetVariantPriceAsync(string label, decimal amount) =>
-        FillAndBlurAsync(VariantPriceInput(label), amount.ToString("0.00"));
+        FillMoneyAndBlurAsync(VariantPriceInput(label), amount);
     public Task SetVariantSalePriceAsync(string label, decimal amount) =>
-        FillAndBlurAsync(VariantSalePriceInput(label), amount.ToString("0.00"));
+        FillMoneyAndBlurAsync(VariantSalePriceInput(label), amount);
 
     public ILocator VariantAvailabilityChip(string label, bool available) =>
         VariantRow(label).GetByText(

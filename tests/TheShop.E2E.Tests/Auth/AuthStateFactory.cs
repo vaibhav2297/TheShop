@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Playwright;
 using TheShop.E2E.Tests.Fixtures;
 using WebRoutes = TheShop.Web.Common.Routes;
@@ -16,6 +17,7 @@ public static class AuthStateFactory
     public const string CustomerEmail = "e2e-customer@theshop.test";
 
     private static readonly SemaphoreSlim Gate = new(1, 1);
+    private static readonly HashSet<string> SignedInThisRun = [];
 
     public static string StatePath(string email) =>
         Path.Combine(E2EEnvironment.RepoRoot, "tests", "TheShop.E2E.Tests", ".auth-states",
@@ -28,7 +30,7 @@ public static class AuthStateFactory
         await Gate.WaitAsync();
         try
         {
-            if (File.Exists(path)) return path; // minted earlier in this run
+            if (SignedInThisRun.Contains(email) && File.Exists(path) && HasUsableSession(path)) return path;
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
             var context = await ShopBrowser.NewContextAsync(browser);
@@ -56,8 +58,32 @@ public static class AuthStateFactory
 
             await context.StorageStateAsync(new() { Path = path });
             await context.DisposeAsync();
+            SignedInThisRun.Add(email);
             return path;
         }
         finally { Gate.Release(); }
+    }
+
+    internal static bool HasUsableSession(string path)
+    {
+        try
+        {
+            using var state = JsonDocument.Parse(File.ReadAllText(path));
+            var stored = state.RootElement.GetProperty("origins").EnumerateArray()
+                .SelectMany(origin => origin.GetProperty("localStorage").EnumerateArray())
+                .FirstOrDefault(item => item.GetProperty("name").GetString() == "shop.auth.session");
+            if (stored.ValueKind == JsonValueKind.Undefined) return false;
+            using var session = JsonDocument.Parse(stored.GetProperty("value").GetString()!);
+            var token = session.RootElement.GetProperty("AccessToken").GetString()?.Split('.');
+            if (token is not { Length: 3 }) return false;
+            var payload = token[1].Replace('-', '+').Replace('_', '/');
+            payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+            using var claims = JsonDocument.Parse(Convert.FromBase64String(payload));
+            return claims.RootElement.GetProperty("exp").GetInt64() > DateTimeOffset.UtcNow.AddMinutes(2).ToUnixTimeSeconds();
+        }
+        catch (Exception ex) when (ex is JsonException or FormatException or KeyNotFoundException or InvalidOperationException)
+        {
+            return false;
+        }
     }
 }

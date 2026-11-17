@@ -96,18 +96,19 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
     {
         var manageProducts = new ManageProductsPage(Page);
         await manageProducts.GotoAsync();
-        await Page.Locator("tbody tr").First.WaitForAsync(new() { Timeout = 15_000 });
-
-        var pageOneNames = await Page.Locator("tbody tr td:nth-child(2)").AllTextContentsAsync();
+        var names = Page.Locator(".shop-products-name > div:last-child");
+        await Assertions.Expect(names).ToHaveCountAsync(10);
+        await Assertions.Expect(Page.Locator("table.shop-products-table")).Not.ToHaveAttributeAsync("aria-busy", "true");
+        var pageOneNames = await names.AllInnerTextsAsync();
         pageOneNames.Should().HaveCount(10, "the list is fixed at ten rows per page (FR-2)");
 
         await manageProducts.GotoPageAsync(2);
-        // Auto-retrying assertion for the paged re-fetch, rather than a fixed sleep: the first
-        // row's own leaving proves the new page has landed.
-        await Assertions.Expect(Page.Locator("tbody tr").First)
-            .Not.ToContainTextAsync(pageOneNames[0], new() { Timeout = 15_000 });
+        await Page.WaitForURLAsync(url => new Uri(url).Query.Contains("page=2", StringComparison.Ordinal));
+        await Assertions.Expect(names.First).ToBeVisibleAsync();
+        await Assertions.Expect(names.First).Not.ToHaveTextAsync(pageOneNames[0]);
+        await Assertions.Expect(Page.Locator("table.shop-products-table")).Not.ToHaveAttributeAsync("aria-busy", "true");
 
-        var pageTwoNames = await Page.Locator("tbody tr td:nth-child(2)").AllTextContentsAsync();
+        var pageTwoNames = await names.AllInnerTextsAsync();
         pageTwoNames.Should().NotBeEmpty();
         pageTwoNames.Should().NotIntersectWith(pageOneNames,
             "the second page must show the next set of products, not repeat the first page's rows");
@@ -134,6 +135,7 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
 
         await WaitForReturnToListAsync(WebRoutes.Admin.AddProduct);
         var manageProducts = new ManageProductsPage(Page);
+        await manageProducts.SearchAsync(name);
         await Assertions.Expect(manageProducts.Row(name)).ToHaveCountAsync(1, new() { Timeout = 15_000 });
         await manageProducts.StatusChip(name, active: true).WaitForAsync(new() { Timeout = 15_000 });
 
@@ -178,7 +180,7 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         await edit.Form.ImageRows.First.GetByText(Strings.AddProduct_ImagePrimary, new() { Exact = true })
             .WaitForAsync(new() { Timeout = 15_000 });
         await Assertions.Expect(edit.Form.OptionTypeNameField(0)).ToHaveValueAsync(optionType, new() { Timeout = 15_000 });
-        await Assertions.Expect(edit.Form.VariantPriceInput(label)).ToHaveValueAsync("24.99", new() { Timeout = 15_000 });
+        await Assertions.Expect(edit.Form.VariantPriceInput(label)).ToHaveValueAsync("$24.99", new() { Timeout = 15_000 });
     }
 
     [Fact]
@@ -313,8 +315,8 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         // AC-10: price, sale price, pin, and unavailable all render on their own row.
         await add.Form.SetVariantPriceAsync("Mango / 20mg", 19.99m);
         await add.Form.SetVariantSalePriceAsync("Mango / 20mg", 14.99m);
-        await Assertions.Expect(add.Form.VariantPriceInput("Mango / 20mg")).ToHaveValueAsync("19.99", new() { Timeout = 15_000 });
-        await Assertions.Expect(add.Form.VariantSalePriceInput("Mango / 20mg")).ToHaveValueAsync("14.99", new() { Timeout = 15_000 });
+        await Assertions.Expect(add.Form.VariantPriceInput("Mango / 20mg")).ToHaveValueAsync("$19.99", new() { Timeout = 15_000 });
+        await Assertions.Expect(add.Form.VariantSalePriceInput("Mango / 20mg")).ToHaveValueAsync("$14.99", new() { Timeout = 15_000 });
 
         await add.Form.ToggleVariantAvailabilityAsync("Mint / 20mg", currentlyAvailable: true);
         await add.Form.VariantAvailabilityChip("Mint / 20mg", available: false).WaitForAsync(new() { Timeout = 15_000 });
@@ -492,7 +494,7 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         await manageProducts.GotoEditProductAsync(name);
         var edit = new EditProductPage(Page);
         await Assertions.Expect(edit.Form.NameField).ToHaveValueAsync(name, new() { Timeout = 15_000 });
-        await Assertions.Expect(edit.Form.PriceField).ToHaveValueAsync("19.99", new() { Timeout = 15_000 });
+        await Assertions.Expect(edit.Form.PriceField).ToHaveValueAsync("$19.99", new() { Timeout = 15_000 });
     }
 
     [Fact]
@@ -514,21 +516,22 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         await add.Form.SetVariantPriceAsync("Mango", 19.99m); // "Mint" is left unpriced
 
         await add.Form.SetPublishedAsync();
-        await add.Form.MissingPriceAlert(1, 2).WaitForAsync(new() { Timeout = 15_000 });
+        await Assertions.Expect(add.Form.VariantPriceError("Mint")).ToBeVisibleAsync();
+        await Assertions.Expect(add.Form.VariantPriceInput("Mango")).Not.ToHaveAttributeAsync("aria-invalid", "true");
         // aria-invalid rather than a MudBlazor CSS class (which lands on a wrapper div, not the
         // <input> itself) — accessible-attribute assertions don't depend on internal markup shape.
         await Assertions.Expect(add.Form.VariantPriceInput("Mint")).ToHaveAttributeAsync(
             "aria-invalid", "true", new() { Timeout = 15_000 });
 
-        // The save button stays enabled — SaveAsync itself re-validates and refuses to submit
-        // (RULE-14/FR-23), rather than the button being disabled ahead of the click.
+        // Save stays enabled; the command refuses publication and keeps the incomplete row flagged.
         await add.Form.SaveAsync();
 
-        // Refused, not silently dropped: the form stays put with the same missing-price alert,
+        // Refused, not silently dropped: the form stays put with the same row-level price error,
         // and never navigates to the list (i.e. no product was created).
         await Assertions.Expect(Page).ToHaveURLAsync(
             new Regex(Regex.Escape(WebRoutes.Admin.AddProduct)), new() { Timeout = 15_000 });
-        await add.Form.MissingPriceAlert(1, 2).WaitForAsync(new() { Timeout = 15_000 });
+        await Assertions.Expect(add.Form.VariantPriceError("Mint")).ToBeVisibleAsync();
+        await Assertions.Expect(add.Form.VariantPriceInput("Mint")).ToHaveAttributeAsync("aria-invalid", "true");
     }
 
     [Fact]
@@ -621,6 +624,7 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
             .First.WaitForAsync(new() { Timeout = 15_000 });
 
         await manageProducts.GotoAsync();
+        await manageProducts.SearchAsync(name);
         await manageProducts.StatusChip(name, active: false).WaitForAsync(new() { Timeout = 15_000 });
 
         await catalogue.GotoAsync();
@@ -697,6 +701,7 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         await WaitForReturnToListAsync(WebRoutes.Admin.AddProduct);
 
         var manageProducts = new ManageProductsPage(Page);
+        await manageProducts.SearchAsync(name);
         await manageProducts.Row(name).WaitForAsync(new() { Timeout = 15_000 });
         return await manageProducts.GetProductIdAsync(name);
     }

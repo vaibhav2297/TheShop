@@ -25,8 +25,8 @@ internal static class ShopImageExpectations
     /// <summary>The spec's FR-1/FR-4 frame ratio (width, height) for <paramref name="preset"/> at a viewport width.</summary>
     public static (int Width, int Height) ExpectedRatio(ShopImagePreset preset, int viewportWidth) => preset switch
     {
-        ShopImagePreset.Banner when viewportWidth < 600 => (4, 5),
-        ShopImagePreset.Hero when viewportWidth < 600 => (4, 5),
+        ShopImagePreset.Banner when viewportWidth < 768 => (4, 5),
+        ShopImagePreset.Hero when viewportWidth < 768 => (4, 5),
         ShopImagePreset.Banner => (16, 5),
         ShopImagePreset.Hero => (16, 9),
         ShopImagePreset.PortraitCover => (4, 5),

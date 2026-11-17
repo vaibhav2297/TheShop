@@ -59,7 +59,8 @@ public sealed class ManageFreshDropsJourneyTests(PlaywrightFixture playwright)
         await Editor.Title.FillAsync("New arrivals");
         await Assertions.Expect(Editor.Root.Locator("h1")).ToHaveTextAsync(string.Format(Strings.FreshDrops_AddHeading, "New arrivals"));
         await Editor.Manual.ClickAsync();
-        await Assertions.Expect(Editor.ManualList.Locator("tbody tr")).ToHaveCountAsync(0);
+        await Assertions.Expect(Editor.ManualRows).ToHaveCountAsync(0);
+        await Assertions.Expect(Editor.ManualList).ToContainTextAsync(Strings.FreshDrops_EmptyTitle);
     }
 
     [Fact]
@@ -84,14 +85,15 @@ public sealed class ManageFreshDropsJourneyTests(PlaywrightFixture playwright)
         await first.ClickAsync();
         await Page.GetByRole(AriaRole.Dialog).GetByRole(AriaRole.Button, new() { Name = Strings.Cancel }).ClickAsync();
         await Assertions.Expect(Editor.Dialog).ToHaveCountAsync(0);
-        await Assertions.Expect(Editor.ManualList.Locator("tbody tr")).ToHaveCountAsync(0);
+        await Assertions.Expect(Editor.ManualRows).ToHaveCountAsync(0);
+        await Assertions.Expect(Editor.ManualList).ToContainTextAsync(Strings.FreshDrops_EmptyTitle);
         await Editor.OpenPicker.ClickAsync();
         await Editor.Dialog.Locator(".shop-image-tile-surface").First.ClickAsync();
         await Editor.ConfirmPicker.ClickAsync();
-        await Assertions.Expect(Editor.ManualList.Locator("tbody tr")).ToHaveCountAsync(1);
+        await Assertions.Expect(Editor.ManualRows).ToHaveCountAsync(1);
         await Editor.Newest.ClickAsync();
         await Editor.Manual.ClickAsync();
-        await Assertions.Expect(Editor.ManualList.Locator("tbody tr")).ToHaveCountAsync(1);
+        await Assertions.Expect(Editor.ManualRows).ToHaveCountAsync(1);
     }
 
     [Fact]
@@ -103,7 +105,7 @@ public sealed class ManageFreshDropsJourneyTests(PlaywrightFixture playwright)
         for (var i = 0; i < 3; i++) await tiles.Nth(i).ClickAsync();
         await Assertions.Expect(tiles.Nth(3)).ToBeDisabledAsync();
         await Editor.ConfirmPicker.ClickAsync();
-        var rows = Editor.ManualList.Locator("tbody tr");
+        var rows = Editor.ManualRows;
         await Assertions.Expect(rows).ToHaveCountAsync(3);
         var firstName = await rows.First.Locator("strong").InnerTextAsync();
         await rows.First.GetByRole(AriaRole.Button, new() { Name = Strings.FreshDrops_MoveDown }).ClickAsync();
@@ -122,7 +124,7 @@ public sealed class ManageFreshDropsJourneyTests(PlaywrightFixture playwright)
         await Assertions.Expect(Editor.Dialog).ToContainTextAsync(Strings.FreshDrops_NoResults);
         await Assertions.Expect(Editor.Dialog).ToContainTextAsync(string.Format(Strings.FreshDrops_SelectedCount, 1));
         await Editor.ConfirmPicker.ClickAsync();
-        await Assertions.Expect(Editor.ManualList.Locator("tbody tr")).ToHaveCountAsync(1);
+        await Assertions.Expect(Editor.ManualRows).ToHaveCountAsync(1);
     }
 
     [Fact]
@@ -168,7 +170,7 @@ public sealed class ManageFreshDropsJourneyTests(PlaywrightFixture playwright)
         await tiles.Nth(0).ClickAsync();
         await tiles.Nth(1).ClickAsync();
         await Editor.ConfirmPicker.ClickAsync();
-        var rows = Editor.ManualList.Locator("tbody tr");
+        var rows = Editor.ManualRows;
         await rows.First.GetByRole(AriaRole.Button, new() { Name = Strings.FreshDrops_MoveDown }).ClickAsync();
         var orderedNames = await rows.Locator("strong").AllInnerTextsAsync();
         await Editor.Status(Strings.FreshDrops_Hidden).ClickAsync();
