@@ -530,7 +530,7 @@ public class CreateProductCommandValidatorTests
     }
 
     private static VariantInput Variant(Guid optionValueId, string sku, decimal? price, decimal? salePrice = null) =>
-        new(Guid.NewGuid(), [optionValueId], sku, price, salePrice, true, null);
+        new(Guid.NewGuid(), [optionValueId], sku, price, salePrice, true, []);
 }
 
 // =============================================================================

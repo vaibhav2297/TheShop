@@ -9,11 +9,11 @@ public class GetProductDetailQueryValidatorTests
 {
     [Fact]
     [Trait("Feature", "001_product-detail")]
-    public async Task Validate_EmptyId_ReturnsUnavailableFieldFailure()
+    public async Task Validate_EmptyId_ReturnsUnavailableFailure()
     {
         var result = await new GetProductDetailQueryValidator().ValidateAsync(new GetProductDetailQuery(Guid.Empty));
         result.Errors.Should().ContainSingle().Which.Should().Match<FluentValidation.Results.ValidationFailure>(
-            e => e.PropertyName == "Id" && e.ErrorMessage == ProductErrorKeys.DetailUnavailable);
+            e => e.PropertyName == string.Empty && e.ErrorMessage == ProductErrorKeys.DetailUnavailable);
     }
 
     [Fact]

@@ -16,21 +16,22 @@ namespace TheShop.E2E.Tests.Journeys;
 public sealed class ProductDetailJourneyTests(PlaywrightFixture playwright) : E2ETestBase(playwright)
 {
     private static string Money(decimal amount) => CurrencyFormatter.Format(amount, "CAD");
-    private static string Range => string.Format(Strings.ProductDetail_PriceRange, Money(20), Money(35));
     private ProductDetailPage Detail(ProductDetailData data) => new(Page, data.Id);
     private static ILocator Current(ProductDetailPage detail) => detail.Price.Locator(".shop-product-detail-price");
     private static ILocator Selected(ProductDetailPage detail) => detail.Options.Locator("[aria-pressed='true']");
     private static async Task<decimal> NumberAsync(ILocator locator, string expression) => await locator.EvaluateAsync<decimal>(expression);
 
     [Fact]
-    public async Task AC1_OpensWithUnselectedVariantsRangeAndPrimaryFirst()
+    public async Task AC1_OpensWithDefaultVariantPriceAndAssignedGallery()
     {
         await using var data = await ProductDetailData.CreateAsync(); var detail = Detail(data);
         await detail.OpenAsync();
         await Assertions.Expect(detail.Root.GetByRole(AriaRole.Heading, new() { Level = 1 })).ToHaveTextAsync(data.Name);
         await Assertions.Expect(detail.Root.Locator(".shop-product-detail-brand")).Not.ToBeEmptyAsync();
-        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Range);
-        await Assertions.Expect(Selected(detail)).ToHaveCountAsync(0);
+        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(20));
+        await Assertions.Expect(Selected(detail)).ToHaveCountAsync(2);
+        new Uri(Page.Url).AbsolutePath.Should().Be(Routes.ProductVariant(data.Name, data.VariantSlugs[0]));
+        await Assertions.Expect(detail.Slides).ToHaveCountAsync(data.Images.Length);
         await Assertions.Expect(detail.Slides.First.Locator("img")).ToHaveAttributeAsync("src", new System.Text.RegularExpressions.Regex(data.Id.ToString("N")));
         var rows = await data.PublicRowsAsync("products", $"id=eq.{data.Id}");
         rows[0].GetProperty("original_price").ValueKind.Should().Be(JsonValueKind.Null);
@@ -51,7 +52,7 @@ public sealed class ProductDetailJourneyTests(PlaywrightFixture playwright) : E2
     public async Task AC4_ManualNarrowScrollUpdatesIndicatorWithoutChangingSelectionOrPrice()
     {
         await using var data = await ProductDetailData.CreateAsync(); var detail = Detail(data); await detail.OpenAsync(390, 844);
-        await detail.ChooseAsync(data.Values[0], data.Values[2]); await detail.PositionAsync(2);
+        await detail.PositionAsync(1);
         await detail.Viewport.EvaluateAsync("el=>{el.dispatchEvent(new Event('pointerdown'));el.scrollTo({left:el.clientWidth*2,behavior:'instant'});}");
         await detail.PositionAsync(3);
         await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(20));
@@ -60,26 +61,29 @@ public sealed class ProductDetailJourneyTests(PlaywrightFixture playwright) : E2
     }
 
     [Fact]
-    public async Task AC5_GroupedSelectionUpdatesExactPriceAndImageOnlyWhenComplete()
+    public async Task AC5_GroupedSelectionUpdatesExactPriceAndVariantGallery()
     {
         await using var data = await ProductDetailData.CreateAsync(); var detail = Detail(data); await detail.OpenAsync(834, 1112);
         await detail.Choice(data.Values[0]).ClickAsync();
-        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Range); await detail.PositionAsync(1);
+        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(20)); await detail.PositionAsync(1);
         await detail.Choice(data.Values[3]).ClickAsync();
-        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(25)); await detail.PositionAsync(6);
+        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(25)); await detail.PositionAsync(1);
+        new Uri(Page.Url).AbsolutePath.Should().Be(Routes.ProductVariant(data.Name, data.VariantSlugs[1]));
         await detail.Choice(data.Values[1]).ClickAsync();
-        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(35)); await detail.PositionAsync(8);
-        (await detail.Slides.CountAsync()).Should().Be(8);
+        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(35)); await detail.PositionAsync(1);
+        (await detail.Slides.CountAsync()).Should().Be(1);
         await Page.SetViewportSizeAsync(1440, 900);
-        await Page.SetViewportSizeAsync(390, 844); await detail.PositionAsync(8);
+        await Page.SetViewportSizeAsync(390, 844); await detail.PositionAsync(1);
     }
 
     [Fact]
-    public async Task AC6_VariantWithoutImageFallsBackToProductPrimary()
+    public async Task AC6_VariantWithoutImageShowsNeutralPlaceholder()
     {
         await using var data = await ProductDetailData.CreateAsync(); var detail = Detail(data); await detail.OpenAsync(390, 844);
-        await detail.ChooseAsync(data.Values[0], data.Values[3]); await detail.PositionAsync(6);
-        await detail.ChooseAsync(data.Values[1], data.Values[2]); await detail.PositionAsync(1);
+        await detail.ChooseAsync(data.Values[0], data.Values[3]); await detail.PositionAsync(1);
+        await detail.ChooseAsync(data.Values[1], data.Values[2]);
+        await Assertions.Expect(detail.Gallery).ToHaveCountAsync(0);
+        await Assertions.Expect(detail.Root.Locator(".shop-image-label")).ToHaveTextAsync(data.Name);
         await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(30));
     }
 
@@ -190,32 +194,31 @@ public sealed class ProductDetailJourneyTests(PlaywrightFixture playwright) : E2
     }
 
     [Fact]
-    public async Task AC15_MissingSelectionFocusesRevealsAndBrieflyShakesWithoutVisibleError()
+    public async Task AC15_DefaultSelectionKeepsBagUsableWithoutAttention()
     {
         await using var data = await ProductDetailData.CreateAsync(); var detail = Detail(data); await detail.OpenAsync(390, 844);
         await Page.EmulateMediaAsync(new() { ReducedMotion = ReducedMotion.NoPreference });
+        var url = Page.Url;
         await detail.Bag.ClickAsync();
-        await Assertions.Expect(detail.Choice(data.Values[0])).ToBeFocusedAsync();
-        await Assertions.Expect(detail.Options).ToHaveAttributeAsync("data-attention", "true");
-        await Assertions.Expect(detail.Root.Locator("[data-detail-announcement]")).ToHaveTextAsync(Strings.ProductDetail_SelectVariant);
-        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Range); await Assertions.Expect(Selected(detail)).ToHaveCountAsync(0);
-        (await detail.Options.EvaluateAsync<bool>("el=>el.getAnimations().every(a=>a.effect.getTiming().duration===300 && a.effect.getTiming().iterations===1)")).Should().BeTrue();
-        await Page.WaitForFunctionAsync("()=>document.querySelector('[data-testid=product-detail-options]').getAnimations().length===0");
-        await detail.Bag.FocusAsync(); await Page.Keyboard.PressAsync("Enter");
-        await Assertions.Expect(detail.Choice(data.Values[0])).ToBeFocusedAsync();
+        await Assertions.Expect(detail.Options).ToHaveAttributeAsync("data-attention", "false");
+        await Assertions.Expect(detail.Root.Locator("[data-detail-announcement]")).ToBeEmptyAsync();
+        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(20));
+        await Assertions.Expect(Selected(detail)).ToHaveCountAsync(2);
+        Page.Url.Should().Be(url);
         await Assertions.Expect(detail.Root.Locator("[role='alert']")).ToHaveCountAsync(0);
     }
 
     [Fact]
-    public async Task AC16_CompleteSelectionClearsAttentionAndLaterBagDoesNothing()
+    public async Task AC16_DefaultSelectionLeavesGalleryNavigationUsable()
     {
         await using var data = await ProductDetailData.CreateAsync(); var detail = Detail(data); await detail.OpenAsync(390, 844);
         await Page.EmulateMediaAsync(new() { ReducedMotion = ReducedMotion.Reduce });
-        await detail.Bag.ClickAsync(); await detail.ChooseAsync(data.Values[0], data.Values[2]);
+        await detail.Bag.ClickAsync();
         await Assertions.Expect(detail.Options).ToHaveAttributeAsync("data-attention", "false");
         await Assertions.Expect(detail.Root.Locator("[data-detail-announcement]")).ToBeEmptyAsync();
         (await detail.Options.EvaluateAsync<string>("el=>getComputedStyle(el).outlineStyle")).Should().Be("none");
         await detail.Bag.ClickAsync(); await Assertions.Expect(detail.Options).ToHaveAttributeAsync("data-attention", "false");
+        await detail.FocusCarouselAsync(); await Page.Keyboard.PressAsync("ArrowRight");
         await detail.PositionAsync(2); await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(20));
     }
 
@@ -228,7 +231,7 @@ public sealed class ProductDetailJourneyTests(PlaywrightFixture playwright) : E2
             await detail.OpenAsync(width); await detail.PositionAsync(1);
             await detail.Viewport.FocusAsync(); await Page.Keyboard.PressAsync("End"); await detail.PositionAsync(8);
             await Page.Keyboard.PressAsync("ArrowRight"); await detail.PositionAsync(8);
-            await Assertions.Expect(Current(detail)).ToHaveTextAsync(Range);
+            await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(20));
             (await detail.Viewport.EvaluateAsync<string>("el=>getComputedStyle(el).columnGap")).Should().Be("0px");
             await detail.AssertHealthyAsync();
         }
@@ -256,15 +259,15 @@ public sealed class ProductDetailJourneyTests(PlaywrightFixture playwright) : E2
     }
 
     [Fact]
-    public async Task AC20_HiddenDesktopTargetExpandsAndRevealsWithoutReordering()
+    public async Task AC20_DesktopVariantChangeResetsToCoverWithoutScrolling()
     {
         await using var data = await ProductDetailData.CreateAsync(); var detail = Detail(data); await detail.OpenAsync();
+        var before = await detail.ScrollTopAsync();
         await detail.ChooseAsync(data.Values[0], data.Values[3]);
-        await Assertions.Expect(detail.Gallery.Locator("[data-carousel-index]:visible")).ToHaveCountAsync(8);
-        await Page.WaitForFunctionAsync("()=>{const r=document.querySelector('[data-carousel-index=\"5\"]').getBoundingClientRect();const v=document.querySelector('main[data-shop-scroll-root]').getBoundingClientRect();return r.top<v.bottom && r.bottom>v.top}");
-        var order = await detail.Slides.EvaluateAllAsync<int[]>("slides=>slides.map(s=>Number(s.dataset.carouselIndex))");
-        order.Should().Equal(Enumerable.Range(0, 8));
-        await Assertions.Expect(detail.Less).ToBeVisibleAsync();
+        await Assertions.Expect(detail.Gallery.Locator("[data-carousel-index]:visible")).ToHaveCountAsync(1);
+        await detail.PositionAsync(1);
+        await Assertions.Expect(detail.More).ToHaveCountAsync(0);
+        (await detail.ScrollTopAsync()).Should().Be(before);
     }
 
     [Fact]
@@ -276,10 +279,10 @@ public sealed class ProductDetailJourneyTests(PlaywrightFixture playwright) : E2
     }
 
     [Fact]
-    public async Task AC22_EqualVariantPricesShowOneAmountWithNoInitialChoice()
+    public async Task AC22_EqualVariantPricesStillSelectDefaultVariant()
     {
         await using var data = await ProductDetailData.CreateAsync(equal: true); var detail = Detail(data); await detail.OpenAsync();
-        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(25)); await Assertions.Expect(Selected(detail)).ToHaveCountAsync(0);
+        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(25)); await Assertions.Expect(Selected(detail)).ToHaveCountAsync(2);
     }
 
     [Fact]
@@ -293,15 +296,14 @@ public sealed class ProductDetailJourneyTests(PlaywrightFixture playwright) : E2
     }
 
     [Fact]
-    public async Task AC24_ReducedMotionUsesStaticOutlineAndFocusWithoutShake()
+    public async Task AC24_ReducedMotionKeepsDefaultSelectionWithoutShake()
     {
         await using var data = await ProductDetailData.CreateAsync(); var detail = Detail(data); await detail.OpenAsync(390, 844);
         await Page.EmulateMediaAsync(new() { ReducedMotion = ReducedMotion.Reduce }); await detail.Bag.ClickAsync();
-        await Assertions.Expect(detail.Choice(data.Values[0])).ToBeFocusedAsync();
-        await Assertions.Expect(detail.Root.Locator("[data-detail-announcement]")).ToHaveTextAsync(Strings.ProductDetail_SelectVariant);
+        await Assertions.Expect(detail.Options).ToHaveAttributeAsync("data-attention", "false");
+        await Assertions.Expect(detail.Root.Locator("[data-detail-announcement]")).ToBeEmptyAsync();
         (await detail.Options.EvaluateAsync<int>("el=>el.getAnimations().length")).Should().Be(0);
-        (await detail.Options.EvaluateAsync<string>("el=>getComputedStyle(el).outlineStyle")).Should().Be("solid");
-        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Range); await Assertions.Expect(Selected(detail)).ToHaveCountAsync(0);
+        await Assertions.Expect(Current(detail)).ToHaveTextAsync(Money(20)); await Assertions.Expect(Selected(detail)).ToHaveCountAsync(2);
     }
 
     [Fact]

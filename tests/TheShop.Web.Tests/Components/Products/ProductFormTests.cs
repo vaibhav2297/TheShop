@@ -349,7 +349,7 @@ public class ProductFormTests : TestContext
             _category.Id, _category.Name, _brand.Id, _brand.Name,
             null, null, false, [],
             [new ProductOptionTypeDto(Guid.NewGuid(), "Flavour", 0, [new ProductOptionValueDto(optionValueId, "Mango", 0)])],
-            [], [new ProductVariantDto(variantId, "ELF-BC5000-MANGO", 24.99m, null, true, null, [optionValueId], "Mango")],
+            [], [new ProductVariantDto(variantId, "ELF-BC5000-MANGO", 24.99m, null, true, [], [optionValueId], "Mango")],
             "row-version-1");
         var cut = RenderEditForm(product);
 

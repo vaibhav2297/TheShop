@@ -35,6 +35,7 @@ public partial class ProductDetail : IAsyncDisposable
     private ProductDetailDto? _product;
     private ProductDetailVariantDto? _variant;
     private readonly Dictionary<Guid, Guid> _choices = [];
+    private Dictionary<Guid, Guid>? _pendingChoices;
     private CancellationTokenSource? _load;
     private int _generation, _galleryGeneration, _activeIndex;
     private bool _desktop, _expanded, _attention, _invalidCombination, _descriptionExpanded, _specificationsExpanded;
@@ -114,7 +115,7 @@ public partial class ProductDetail : IAsyncDisposable
         var ct = _load.Token;
         var generation = ++_generation;
         await DisposeControllerAsync();
-        _product = null; _variant = null; _choices.Clear(); _activeIndex = 0;
+        _product = null; _variant = null; _choices.Clear(); _pendingChoices = null; _activeIndex = 0;
         _expanded = _attention = _invalidCombination = _descriptionExpanded = _specificationsExpanded = false;
         _pageReady = _carouselReady = _focusExpanded = false;
         Breadcrumbs.Set(BreadcrumbTrail.Storefront().Current(Strings.Nav_Products));
@@ -175,9 +176,14 @@ public partial class ProductDetail : IAsyncDisposable
     private void SelectValue(Guid group, Guid value)
     {
         if (_product is null) return;
-        var choices = new Dictionary<Guid, Guid>(_choices) { [group] = value };
+        var choices = new Dictionary<Guid, Guid>(_pendingChoices ?? _choices) { [group] = value };
         var selected = ProductDetailVariantResolver.Resolve(_product, choices.Values.ToArray());
-        if (selected is null) { _invalidCombination = true; return; }
+        if (selected is null)
+        {
+            _pendingChoices = choices;
+            _invalidCombination = true;
+            return;
+        }
         CommitSelection(selected);
         Navigation.NavigateTo(Routes.ProductVariant(_product.ProductSlug, selected.Slug));
     }
@@ -185,6 +191,7 @@ public partial class ProductDetail : IAsyncDisposable
     private void CommitSelection(ProductDetailVariantDto? selected)
     {
         _variant = selected;
+        _pendingChoices = null;
         _choices.Clear();
         if (_product is not null && selected is not null)
             foreach (var group in _product.OptionTypes)

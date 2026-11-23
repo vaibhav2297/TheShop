@@ -18,11 +18,11 @@ public sealed class ProductDetailCustomerJourneyTests(PlaywrightFixture playwrig
     {
         await using var data = await ProductDetailData.CreateAsync();
         var customer = new ProductDetailPage(Page, data.Id); await customer.OpenAsync(390, 844);
-        await customer.ChooseAsync(data.Values[0], data.Values[2]); await customer.PositionAsync(2);
-        await Assertions.Expect(customer.Price.Locator(".shop-product-detail-price")).ToHaveTextAsync(CurrencyFormatter.Format(20));
+        await customer.ChooseAsync(data.Values[0], data.Values[3]); await customer.PositionAsync(1);
+        await Assertions.Expect(customer.Price.Locator(".shop-product-detail-price")).ToHaveTextAsync(CurrencyFormatter.Format(25));
         await using var guestContext = await ShopBrowser.NewContextAsync(Playwright.Browser);
         var guestPage = await guestContext.NewPageAsync(); var guest = new ProductDetailPage(guestPage, data.Id); await guest.OpenAsync(390, 844);
-        await guest.ChooseAsync(data.Values[0], data.Values[2]); await guest.PositionAsync(2);
-        await Assertions.Expect(guest.Price.Locator(".shop-product-detail-price")).ToHaveTextAsync(CurrencyFormatter.Format(20));
+        await guest.ChooseAsync(data.Values[0], data.Values[3]); await guest.PositionAsync(1);
+        await Assertions.Expect(guest.Price.Locator(".shop-product-detail-price")).ToHaveTextAsync(CurrencyFormatter.Format(25));
     }
 }

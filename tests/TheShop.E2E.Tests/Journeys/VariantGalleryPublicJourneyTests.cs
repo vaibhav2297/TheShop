@@ -90,7 +90,6 @@ public sealed class VariantGalleryPublicJourneyTests(PlaywrightFixture playwrigh
     public async Task AC11_LegacyProductLinkAndNonvariantGalleryRemainUsable()
     {
         await using var data = await ProductDetailData.CreateAsync(variants: false);
-        await data.SeedSlugAsync();
         var detail = new ProductDetailPage(Page, data.Id);
         await detail.OpenAsync();
         await Assertions.Expect(detail.Slides).ToHaveCountAsync(data.Images.Length);

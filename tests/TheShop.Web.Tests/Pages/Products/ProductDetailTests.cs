@@ -59,24 +59,30 @@ public class ProductDetailTests : TestContext
         [new(Id(10), "Flavour", 0, [new(Id(11), "Mango", 0), new(Id(12), "Peach", 1)]),
          new(Id(20), "Nicotine", 1, [new(Id(21), "10mg", 0), new(Id(22), "20mg", 1)])],
         [new(Id(50), "Capacity", "2 ml", 0)],
-        [new(Id(30), "Mango / 10mg", 30, 20, 20, true, imageCount > 5 ? [Id(105)] : imageCount > 0 ? [Id(100)] : [], [Id(11), Id(21)], "mango-10mg", "MANGO-10"),
-         new(Id(31), "Peach / 20mg", 25, null, 25, true, imageCount > 0 ? [Id(100)] : [], [Id(12), Id(22)], "peach-20mg", "PEACH-20")], "peach-ice", Id(30));
+        [new(Id(30), "Mango / 10mg", 30, 20, 20, true,
+            imageCount > 0 ? Enumerable.Range(0, imageCount).Select(i => Id(100 + i)).ToArray() : [],
+            [Id(11), Id(21)], "mango-10mg", "MANGO-10"),
+         new(Id(31), "Peach / 20mg", 25, null, 25, true, imageCount > 1 ? [Id(101)] : [],
+            [Id(12), Id(22)], "peach-20mg", "PEACH-20")], "peach-ice", Id(30));
 
-    private IRenderedComponent<ProductDetail> Open() => Render<ProductDetail>(p => p.Add(c => c.Id, Id(1)));
+    private IRenderedComponent<ProductDetail> Open()
+    {
+        Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>()
+            .NavigateTo(Routes.ProductDetail(Id(1)));
+        return Render<ProductDetail>(p => p.Add(c => c.Id, Id(1)));
+    }
     private static string Price(IRenderedComponent<ProductDetail> cut) => cut.Find(".shop-product-detail-price").TextContent;
     private static void Choose(IRenderedComponent<ProductDetail> cut, int value) =>
         cut.Find($"[data-testid='product-detail-option-{Id(value)}']").Click();
-    private static string Range() => string.Format(Strings.ProductDetail_PriceRange, CurrencyFormatter.Format(20), CurrencyFormatter.Format(25));
-
     [Fact]
     [Trait("Feature", "001_product-detail")]
-    public async Task Render_PublicProduct_StartsUnselectedWithRangeAndPrimaryFirst()
+    public async Task Render_PublicProduct_SelectsDefaultVariantWithItsPriceAndGallery()
     {
         var cut = Open();
         cut.Find("h1").TextContent.Should().Be("Peach Ice");
         cut.Find(".shop-product-detail-brand").TextContent.Should().Be("Test Brand");
-        Price(cut).Should().Be(Range());
-        cut.FindAll("[aria-pressed='true']").Should().BeEmpty();
+        Price(cut).Should().Be(CurrencyFormatter.Format(20));
+        cut.FindAll("[aria-pressed='true']").Should().HaveCount(2);
         cut.FindComponent<ShopSwipeCarousel<ProductImageDto>>().Instance.ActiveIndex.Should().Be(0);
         cut.FindAll(".shop-product-detail-slide img").First().GetAttribute("src").Should().Be("https://images.example/0.png");
         await _mediator.Received(1).Send(Arg.Is<GetProductDetailQuery>(q => q.Id == Id(1)), Arg.Any<CancellationToken>());
@@ -84,24 +90,26 @@ public class ProductDetailTests : TestContext
 
     [Fact]
     [Trait("Feature", "001_product-detail")]
-    public void Select_PartialThenCompleteCombination_KeepsRangeUntilExactPriceAndImageResolve()
+    public void Select_InvalidPartialThenCompleteCombination_KeepsCurrentVariantUntilExactMatch()
     {
         var cut = Open();
         Choose(cut, 11);
-        Price(cut).Should().Be(Range());
+        Price(cut).Should().Be(CurrencyFormatter.Format(20));
         cut.FindComponent<ShopSwipeCarousel<ProductImageDto>>().Instance.ActiveIndex.Should().Be(0);
         Choose(cut, 21);
         Price(cut).Should().Be(CurrencyFormatter.Format(20));
         cut.Find("s").TextContent.Should().Be(CurrencyFormatter.Format(30));
-        cut.FindComponent<ShopSwipeCarousel<ProductImageDto>>().Instance.ActiveIndex.Should().Be(5);
+        cut.FindComponent<ShopSwipeCarousel<ProductImageDto>>().Instance.ActiveIndex.Should().Be(0);
         cut.FindAll("[aria-pressed='true']").Should().HaveCount(2);
         Choose(cut, 12);
-        Price(cut).Should().Be(Range());
-        cut.FindComponent<ShopSwipeCarousel<ProductImageDto>>().Instance.ActiveIndex.Should().Be(5);
+        Price(cut).Should().Be(CurrencyFormatter.Format(20));
+        cut.FindComponent<ShopSwipeCarousel<ProductImageDto>>().Instance.ActiveIndex.Should().Be(0);
         Choose(cut, 22);
         Price(cut).Should().Be(CurrencyFormatter.Format(25));
         cut.FindAll("s").Should().BeEmpty();
         cut.FindComponent<ShopSwipeCarousel<ProductImageDto>>().Instance.ActiveIndex.Should().Be(0);
+        cut.FindAll(".shop-product-detail-slide img").Should().ContainSingle()
+            .Which.GetAttribute("src").Should().Be("https://images.example/1.png");
     }
 
     [Fact]
@@ -119,15 +127,16 @@ public class ProductDetailTests : TestContext
 
     [Fact]
     [Trait("Feature", "001_product-detail")]
-    public async Task Select_DesktopHiddenTarget_ExpandsWithoutReorderingAndRequestsReveal()
+    public async Task Select_DesktopVariantChange_ShowsOnlyAssignedImagesWithoutRevealing()
     {
         var cut = Open();
         await cut.InvokeAsync(() => cut.Instance.OnDetailBreakpointChanged(true, 1));
-        Choose(cut, 11); Choose(cut, 21);
-        cut.Find("article").ClassList.Should().Contain("shop-product-detail-expanded");
+        Choose(cut, 12); Choose(cut, 22);
+        cut.Find("article").ClassList.Should().NotContain("shop-product-detail-expanded");
         cut.FindAll(".shop-product-detail-slide img").Select(i => i.GetAttribute("src"))
-            .Should().Equal(Enumerable.Range(0, 6).Select(i => $"https://images.example/{i}.png"));
-        await _controller.Received().InvokeAsync<Microsoft.JSInterop.Infrastructure.IJSVoidResult>("revealImage", Arg.Is<object?[]>(a => (int)a[0]! == 5));
+            .Should().Equal("https://images.example/1.png");
+        await _controller.DidNotReceive().InvokeAsync<Microsoft.JSInterop.Infrastructure.IJSVoidResult>(
+            "revealImage", Arg.Any<object?[]>());
     }
 
     [Fact]
@@ -171,19 +180,26 @@ public class ProductDetailTests : TestContext
 
     [Fact]
     [Trait("Feature", "001_product-detail")]
-    public void Render_EqualVariantPrices_ShowsSingleAmountWithoutSelection()
+    public void Render_EqualVariantPrices_ShowsSelectedVariantAmount()
     {
         SetProduct(Product() with { MinVariantPrice = 20, MaxVariantPrice = 20 });
         var cut = Open();
         Price(cut).Should().Be(CurrencyFormatter.Format(20));
-        cut.FindAll("[aria-pressed='true']").Should().BeEmpty();
+        cut.FindAll("[aria-pressed='true']").Should().HaveCount(2);
     }
 
     [Fact]
     [Trait("Feature", "001_product-detail")]
     public void Render_UnpricedProduct_ShowsUnavailableInsteadOfZero()
     {
-        SetProduct(Product() with { MinVariantPrice = null, MaxVariantPrice = null });
+        var product = Product();
+        SetProduct(product with
+        {
+            MinVariantPrice = null,
+            MaxVariantPrice = null,
+            Variants = [product.Variants[0] with { OriginalPrice = null, SalePrice = null, CurrentPrice = null },
+                product.Variants[1]]
+        });
         Price(Open()).Should().Be(Strings.NotAvailable);
     }
 
@@ -221,21 +237,15 @@ public class ProductDetailTests : TestContext
 
     [Fact]
     [Trait("Feature", "001_product-detail")]
-    public async Task AddToBag_IncompleteSelection_RequestsAttentionThenCompleteSelectionClearsIt()
+    public void AddToBag_DefaultVariant_DoesNotRequestAttention()
     {
         var cut = Open();
-        var price = Price(cut);
-        cut.Find("[data-testid='product-detail-add-to-bag']").Click();
-        cut.Find("[data-testid='product-detail-options']").GetAttribute("data-attention").Should().Be("true");
-        await _controller.Received().InvokeAsync<Microsoft.JSInterop.Infrastructure.IJSVoidResult>("attention",
-            Arg.Is<object?[]>(a => (string)a[0]! == Id(10).ToString() && (string)a[1]! == Strings.ProductDetail_SelectVariant));
-        Price(cut).Should().Be(price);
-        cut.FindAll("[aria-pressed='true']").Should().BeEmpty();
-        cut.FindAll("[role='alert']").Should().BeEmpty();
-        Choose(cut, 11); Choose(cut, 21);
-        cut.Find("[data-testid='product-detail-options']").GetAttribute("data-attention").Should().Be("false");
         _controller.ClearReceivedCalls();
         cut.Find("[data-testid='product-detail-add-to-bag']").Click();
+        cut.Find("[data-testid='product-detail-options']").GetAttribute("data-attention").Should().Be("false");
+        Price(cut).Should().Be(CurrencyFormatter.Format(20));
+        cut.FindAll("[aria-pressed='true']").Should().HaveCount(2);
+        cut.FindAll("[role='alert']").Should().BeEmpty();
         _controller.ReceivedCalls().Should().BeEmpty();
         _notifications.ReceivedCalls().Should().BeEmpty();
     }
@@ -268,6 +278,8 @@ public class ProductDetailTests : TestContext
         Choose(cut, 11); Choose(cut, 21);
         _mediator.Send(Arg.Any<GetProductDetailQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Fail<ProductDetailDto>(ProductErrorKeys.DetailUnavailable));
+        Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>()
+            .NavigateTo(Routes.ProductDetail(Id(2)));
         cut.Render(p => p.Add(c => c.Id, Id(2)));
         cut.Find("[data-testid='product-detail-unavailable'] h1").TextContent.Should().Be(Strings.ProductDetail_Unavailable);
         cut.FindAll("fieldset, .shop-product-detail-price, article").Should().BeEmpty();
@@ -302,6 +314,6 @@ public class ProductDetailTests : TestContext
         await cut.InvokeAsync(() => cut.Instance.OnDetailBreakpointChanged(false, 0));
         carousel.Instance.ActiveIndex.Should().Be(2);
         await cut.InvokeAsync(() => cut.Instance.OnDetailBreakpointChanged(false, 1));
-        carousel.Instance.ActiveIndex.Should().Be(5);
+        carousel.Instance.ActiveIndex.Should().Be(0);
     }
 }
