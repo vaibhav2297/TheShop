@@ -243,6 +243,7 @@ public sealed class Product
         }
 
         EnsureExactlyOnePrimary();
+        PruneVariantImages();
     }
 
     /// <summary>
@@ -261,8 +262,7 @@ public sealed class Product
     }
 
     /// <summary>
-    /// Removes a gallery image, unpinning any variant that was pinned to it (RULE-13) and
-    /// re-asserting RULE-7's "exactly one primary" if the removed image was primary.
+    /// Removes a library image from every variant while preserving their remaining image order.
     /// </summary>
     public void RemoveImage(Guid imageId)
     {
@@ -272,8 +272,7 @@ public sealed class Product
 
         _images.Remove(image);
 
-        foreach (var variant in _variants.Where(v => v.PinnedImageId == imageId))
-            variant.Unpin();
+        PruneVariantImages();
 
         EnsureExactlyOnePrimary();
     }
@@ -357,6 +356,9 @@ public sealed class Product
             return;
         }
 
+        foreach (var input in requested)
+            ValidateVariantImages(input.ImageIds);
+
         var validCombinations = CartesianProductOfOptionValueIds();
         var existingByKey = _variants.ToDictionary(v => Key(v.OptionValueIds));
         var requestedByKey = requested
@@ -371,21 +373,21 @@ public sealed class Product
             ProductVariant variant;
             if (requestedByKey.TryGetValue(key, out var input))
             {
-                var id = input.Id ?? (existingByKey.TryGetValue(key, out var matched) ? matched.Id : (Guid?)null);
+                var id = existingByKey.TryGetValue(key, out var matched) ? matched.Id : input.Id;
                 variant = ProductVariant.Create(
                     id, input.Sku, input.Pricing, input.IsAvailable,
-                    input.PinnedImageId, combination, position);
+                    input.ImageIds, combination, position);
             }
             else if (existingByKey.TryGetValue(key, out var existing))
             {
                 variant = ProductVariant.Create(
                     existing.Id, existing.Sku, existing.Pricing, existing.IsAvailable,
-                    existing.PinnedImageId, combination, position);
+                    existing.ImageIds, combination, position);
             }
             else
             {
                 variant = ProductVariant.Create(
-                    null, Sku.Suggest(Sku, LabelsFor(combination)), null, true, null, combination, position);
+                    null, Sku.Suggest(Sku, LabelsFor(combination)), null, true, [], combination, position);
             }
 
             newVariants.Add(variant);
@@ -397,27 +399,29 @@ public sealed class Product
     }
 
     /// <summary>
-    /// Pins (or, with <paramref name="imageId"/> <c>null</c>, unpins) one variant's gallery
-    /// image. <paramref name="scope"/> is informational only — the "apply to every variant
-    /// sharing this option value" fan-out already happened in the Web layer before this call
-    /// (Decision 2), so each call always resolves exactly the one named variant.
+    /// Replaces one variant's ordered images. Empty assignments have no cover or fallback.
     /// </summary>
-    /// <exception cref="ProductImageNotOwnedException"><paramref name="imageId"/> is not in this product's gallery.</exception>
-    public void PinVariantImage(Guid variantId, Guid? imageId, PinScope scope = PinScope.ThisVariantOnly)
+    /// <exception cref="ProductImageNotOwnedException">An image is outside this product's library.</exception>
+    /// <exception cref="DuplicateVariantImageException">An image appears more than once.</exception>
+    public void SetVariantImages(Guid variantId, IReadOnlyList<Guid> imageIds)
     {
-        _ = scope;
-
-        if (imageId is Guid id && _images.All(i => i.Id != id))
-            throw new ProductImageNotOwnedException();
-
+        ValidateVariantImages(imageIds);
         var variant = _variants.FirstOrDefault(v => v.Id == variantId);
-        if (variant is null)
-            return;
+        variant?.SetImages(imageIds);
+    }
 
-        if (imageId is Guid pinnedId)
-            variant.Pin(pinnedId);
-        else
-            variant.Unpin();
+    private void ValidateVariantImages(IReadOnlyList<Guid> imageIds)
+    {
+        _ = new VariantImageAssignment(imageIds);
+        if (imageIds.Any(id => _images.All(image => image.Id != id)))
+            throw new ProductImageNotOwnedException();
+    }
+
+    private void PruneVariantImages()
+    {
+        var owned = _images.Select(image => image.Id).ToHashSet();
+        foreach (var variant in _variants)
+            variant.SetImages([.. variant.ImageIds.Where(owned.Contains)]);
     }
 
     /// <summary>

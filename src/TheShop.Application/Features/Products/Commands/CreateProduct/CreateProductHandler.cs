@@ -79,10 +79,7 @@ public sealed class CreateProductHandler(
 
             product.SetGallery(gallery);
 
-            // The gallery keeps the order it was given, so each client identifier lines up with the
-            // image the aggregate just minted for it. Resolving pins through this map is what lets a
-            // staff member pin an image they picked in the same unsaved session, without any
-            // client-supplied value ever becoming an image's real identity.
+            // Gallery order correlates staged client IDs with aggregate image IDs.
             var imageIdByClientId = clientIds
                 .Select((clientId, index) => (clientId, imageId: product.Images[index].Id))
                 .ToDictionary(pair => pair.clientId, pair => pair.imageId);

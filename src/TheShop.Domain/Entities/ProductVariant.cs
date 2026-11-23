@@ -4,7 +4,7 @@ namespace TheShop.Domain.Entities;
 
 /// <summary>
 /// One variant of a product — a specific combination of its option values, with its own SKU,
-/// pricing, availability, and at most one pinned gallery image. Owned by
+/// pricing, availability, and ordered gallery images. Owned by
 /// <see cref="Product"/> — never persisted or mutated on its own; assembled exclusively through
 /// <see cref="Product.ApplyVariantConfiguration"/>.
 /// </summary>
@@ -14,7 +14,7 @@ public sealed class ProductVariant
     public Sku Sku { get; private set; }
     public ProductPricing? Pricing { get; private set; }
     public bool IsAvailable { get; private set; }
-    public Guid? PinnedImageId { get; private set; }
+    public IReadOnlyList<Guid> ImageIds { get; private set; }
     public IReadOnlySet<Guid> OptionValueIds { get; }
     public int Position { get; private set; }
 
@@ -23,7 +23,7 @@ public sealed class ProductVariant
         Sku sku,
         ProductPricing? pricing,
         bool isAvailable,
-        Guid? pinnedImageId,
+        IReadOnlyList<Guid> imageIds,
         IReadOnlySet<Guid> optionValueIds,
         int position)
     {
@@ -31,7 +31,7 @@ public sealed class ProductVariant
         Sku = sku;
         Pricing = pricing;
         IsAvailable = isAvailable;
-        PinnedImageId = pinnedImageId;
+        ImageIds = new VariantImageAssignment(imageIds).ImageIds;
         OptionValueIds = optionValueIds;
         Position = position;
     }
@@ -45,19 +45,14 @@ public sealed class ProductVariant
         Sku sku,
         ProductPricing? pricing,
         bool isAvailable,
-        Guid? pinnedImageId,
+        IReadOnlyList<Guid> imageIds,
         IReadOnlySet<Guid> optionValueIds,
         int position) =>
-        new(id ?? Guid.NewGuid(), sku, pricing, isAvailable, pinnedImageId, optionValueIds, position);
+        new(id ?? Guid.NewGuid(), sku, pricing, isAvailable, imageIds, optionValueIds, position);
 
     /// <summary>
-    /// Pins this variant to a gallery image already verified to belong to the owning product.
+    /// Replaces ordered images already verified to belong to the owning product.
     /// </summary>
-    internal void Pin(Guid imageId) => PinnedImageId = imageId;
-
-    /// <summary>
-    /// Clears this variant's pin — e.g. when its pinned image is removed from the gallery
-    /// (RULE-13).
-    /// </summary>
-    internal void Unpin() => PinnedImageId = null;
+    internal void SetImages(IReadOnlyList<Guid> imageIds) =>
+        ImageIds = new VariantImageAssignment(imageIds).ImageIds;
 }

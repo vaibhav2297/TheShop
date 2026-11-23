@@ -48,6 +48,9 @@ public sealed class UpdateProductHandler(
             return Result.Fail<AdminProductDto>(ProductErrorKeys.SkuAlreadyExists);
 
         var previousImageKeysById = product.Images.ToDictionary(image => image.Id, image => image.ObjectKey);
+        if (request.Gallery.Any(entry => entry.ImageId is Guid imageId &&
+            !previousImageKeysById.ContainsKey(imageId)))
+            return Result.Fail<AdminProductDto>(ProductErrorKeys.VariantImageNotInGallery);
         var uploadedKeys = new List<string>();
 
         try
@@ -86,11 +89,7 @@ public sealed class UpdateProductHandler(
 
             product.SetGallery(gallery);
 
-            // The gallery keeps the order it was given, so each client identifier lines up with the
-            // image the aggregate now holds for it — the stored identifier for a kept image, the
-            // freshly minted one for an upload. Resolving pins through this map is what lets a staff
-            // member pin an image they picked in the same unsaved session, without any
-            // client-supplied value ever becoming an image's real identity.
+            // Gallery order correlates staged client IDs with aggregate image IDs.
             var imageIdByClientId = clientIds
                 .Select((clientId, index) => (clientId, imageId: product.Images[index].Id))
                 .ToDictionary(pair => pair.clientId, pair => pair.imageId);

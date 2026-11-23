@@ -379,6 +379,30 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
         return response is null ? null : await HydrateDetailAsync(response, ct);
     }
 
+    /// <inheritdoc/>
+    public async Task<Product?> GetPublishedDetailBySlugAsync(string productSlug, CancellationToken ct)
+    {
+        var route = await client.From<ProductRouteRecord>()
+            .Where(r => r.Slug == productSlug).Single(ct);
+        return route?.ProductId is Guid id
+            ? await GetPublishedDetailAsync(id, ct) : null;
+    }
+
+    /// <inheritdoc/>
+    public async Task<ProductAddressDto?> GetAddressesAsync(Guid productId, CancellationToken ct)
+    {
+        var routes = await client.From<ProductRouteRecord>()
+            .Where(r => r.ProductId == productId).Get(ct);
+        var route = routes.Models.SingleOrDefault();
+        if (route is null)
+            return null;
+        var variants = await client.From<ProductVariantRouteRecord>()
+            .Where(r => r.ProductSlug == route.Slug).Get(ct);
+        return new ProductAddressDto(route.Slug, variants.Models
+            .Where(r => r.VariantId is not null)
+            .ToDictionary(r => r.VariantId!.Value, r => r.Slug));
+    }
+
     private async Task<Product> HydrateDetailAsync(ProductRecord response, CancellationToken ct)
     {
         var id = response.Id;
@@ -388,6 +412,8 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
         var optionValueRecords = typeIds.Count > 0 ? await GetOptionValuesAsync(typeIds, ct) : [];
         var specificationRecords = await client.From<ProductSpecificationRecord>().Where(x => x.ProductId == id).Get(ct);
         var variantRecords = await client.From<ProductVariantRecord>().Where(x => x.ProductId == id).Get(ct);
+        var imageAssignments = await client.From<ProductVariantImageRecord>()
+            .Where(x => x.ProductId == id).Get(ct);
         var variantIds = variantRecords.Models.Select(v => v.Id).ToList();
         var variantOptionValueRecords = variantIds.Count > 0 ? await GetVariantOptionValuesAsync(variantIds, ct) : [];
 
@@ -401,7 +427,9 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
             .OrderBy(v => v.Position)
             .Select(v => v.ToDomain(
                 (IReadOnlySet<Guid>)new HashSet<Guid>(
-                    variantOptionValueRecords.Where(l => l.VariantId == v.Id).Select(l => l.OptionValueId))))
+                    variantOptionValueRecords.Where(l => l.VariantId == v.Id).Select(l => l.OptionValueId)),
+                imageAssignments.Models.Where(a => a.VariantId == v.Id)
+                    .OrderBy(a => a.Position).Select(a => a.ImageId).ToArray()))
             .ToList();
 
         return response.ToDomain(ResolveImagePublicUrl, images, optionTypes, specifications, variants);
@@ -439,6 +467,14 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
         catch (Exception ex) when (IsSpecificationNameUniqueViolation(ex))
         {
             return Result.Fail<string>(ProductErrorKeys.SpecificationNameDuplicated);
+        }
+        catch (Exception ex) when (IsVariantImageNotOwned(ex))
+        {
+            return Result.Fail<string>(ProductErrorKeys.VariantImageNotInGallery);
+        }
+        catch (Exception ex) when (IsVariantImageDuplicate(ex))
+        {
+            return Result.Fail<string>(ProductErrorKeys.VariantImageDuplicate);
         }
     }
 
@@ -478,6 +514,14 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
         catch (Exception ex) when (IsSpecificationNameUniqueViolation(ex))
         {
             return Result.Fail<string>(ProductErrorKeys.SpecificationNameDuplicated);
+        }
+        catch (Exception ex) when (IsVariantImageNotOwned(ex))
+        {
+            return Result.Fail<string>(ProductErrorKeys.VariantImageNotInGallery);
+        }
+        catch (Exception ex) when (IsVariantImageDuplicate(ex))
+        {
+            return Result.Fail<string>(ProductErrorKeys.VariantImageDuplicate);
         }
     }
 
@@ -543,7 +587,8 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
             original_price = v.Pricing?.OriginalPrice.Amount,
             sale_price = v.Pricing?.SalePrice?.Amount,
             is_available = v.IsAvailable,
-            image_id = v.PinnedImageId,
+            image_id = v.ImageIds.Count > 0 ? v.ImageIds[0] : (Guid?)null,
+            image_ids = v.ImageIds,
             position = v.Position,
             option_value_ids = v.OptionValueIds,
         }),
@@ -568,4 +613,12 @@ public sealed class SupabaseProductRepository(Supabase.Client client, IFileStora
 
     private static bool IsSpecificationNameUniqueViolation(Exception ex) =>
         ex.Message.Contains(SpecificationNameUniqueIndex, StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsVariantImageNotOwned(Exception ex) =>
+        ex.Message.Contains("variant image not in gallery", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsVariantImageDuplicate(Exception ex) =>
+        ex.Message.Contains("duplicate variant image", StringComparison.OrdinalIgnoreCase) ||
+        ex.Message.Contains("product_variant_images_pkey", StringComparison.OrdinalIgnoreCase) ||
+        ex.Message.Contains("product_variant_images_variant_id_position_key", StringComparison.OrdinalIgnoreCase);
 }

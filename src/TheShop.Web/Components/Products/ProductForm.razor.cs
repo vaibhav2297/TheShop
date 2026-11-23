@@ -172,7 +172,7 @@ public partial class ProductForm : ShopComponentBase
             variant.OriginalPrice,
             variant.SalePrice,
             variant.IsAvailable,
-            variant.PinnedImageId))];
+            variant.ImageIds))];
         _variantLabels = data.Variants.ToDictionary(variant => variant.Id, variant => variant.Label);
         _variantsSeeded = true;
     }

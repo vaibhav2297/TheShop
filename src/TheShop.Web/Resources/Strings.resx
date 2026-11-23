@@ -1835,7 +1835,7 @@
   <data name="ProductForm_GalleryVariantsHint" xml:space="preserve"><value>Images uploaded here are available to product variants.</value></data>
   <data name="ProductForm_VariantPricingHint" xml:space="preserve"><value>Pricing is set per variant. Enter the price and sale price for each variant below.</value></data>
   <data name="VariantImage_ImageFieldLabel" xml:space="preserve"><value>Variant image</value></data>
-  <data name="VariantImage_UploadHint" xml:space="preserve"><value>Choose or upload an image. Uploads are added to the product images.</value></data>
+  <data name="VariantImage_UploadHint" xml:space="preserve"><value>First selected image is the variant cover. Reselect an image to move it last in the variant gallery. Uploads are added to the product images.</value></data>
   <data name="VariantImage_EmptyUploadHint" xml:space="preserve"><value>This product has no images yet. Uploads are added to the product images.</value></data>
   <data name="VariantImage_FileHint" xml:space="preserve"><value>Drag and drop, or click to browse. PNG, JPG or WebP up to 2 MB.</value></data>
   <data name="ProductForm_CreateHeading" xml:space="preserve"><value>Create Product</value></data>
@@ -2136,4 +2136,9 @@
   <data name="HomepageCategory_LoadFailed" xml:space="preserve"><value>The category section could not load. Try again.</value></data>
   <data name="HomepageCategory_SaveFailed" xml:space="preserve"><value>The category section could not save. Try again.</value></data>
   <data name="HomepageCategory_ChoicesLoadFailed" xml:space="preserve"><value>Categories could not load. Try again.</value></data>
+  <data name="Product_VariantImageDuplicate" xml:space="preserve"><value>Each image can appear only once in a variant gallery.</value></data>
+  <data name="Product_VariantImageSelectionInvalid" xml:space="preserve"><value>Select images and variants from this product.</value></data>
+  <data name="ProductVariantImages_Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="ProductDetail_CombinationUnavailable" xml:space="preserve"><value>This option combination is unavailable.</value></data>
+  <data name="ProductDetail_SelectedVariant" xml:space="preserve"><value>Selected variant: {0}</value></data>
 </root>

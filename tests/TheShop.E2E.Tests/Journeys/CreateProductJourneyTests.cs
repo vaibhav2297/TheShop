@@ -284,8 +284,8 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
 
     /// <summary>
     /// Covers AC-10 (price, sale price, pin, unavailable render on a variant row) and AC-10a
-    /// (pinning with the shared-scope choice covers every variant sharing that option value,
-    /// and a later individual re-pin touches only its own row) in one flow — the SDD gate's
+    /// (All variants assigns to every variant, and a later individual edit touches only its
+    /// own row) in one flow — the SDD gate's
     /// AC-id extraction only recognizes purely-numeric ids, so AC-10a is folded in here rather
     /// than declared as its own classification entry.
     /// </summary>
@@ -321,7 +321,7 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
         await add.Form.ToggleVariantAvailabilityAsync("Mint / 20mg", currentlyAvailable: true);
         await add.Form.VariantAvailabilityChip("Mint / 20mg", available: false).WaitForAsync(new() { Timeout = 15_000 });
 
-        // AC-10a: pinning with the shared scope covers every variant sharing that option value...
+        // AC-10a: bulk assignment covers only variants sharing the selected option value.
         await add.Form.OpenPinDialogAsync("Mango / 20mg");
         await add.Form.SelectPinDialogImageAsync(0);
         await add.Form.ApplyToAllSharingCheckbox(2, "Flavour = Mango").ClickAsync();
@@ -329,10 +329,10 @@ public sealed class CreateProductJourneyTests(PlaywrightFixture playwright)
 
         await add.Form.VariantChangeImageButton("Mango / 20mg").WaitForAsync(new() { Timeout = 15_000 });
         await add.Form.VariantChangeImageButton("Mango / 50mg").WaitForAsync(new() { Timeout = 15_000 });
-        (await add.Form.VariantPinButton("Mint / 20mg").CountAsync()).Should().Be(1,
-            "the Mint rows do not share Flavour = Mango, so applying the pin to that scope must not touch them");
+        await Assertions.Expect(add.Form.VariantPinButton("Mint / 20mg")).ToBeVisibleAsync();
+        await Assertions.Expect(add.Form.VariantPinButton("Mint / 50mg")).ToBeVisibleAsync();
 
-        // ...and a later individual re-pin of one of those rows touches only that row.
+        // A later individual edit of one row touches only that row.
         await add.Form.OpenPinDialogAsync("Mango / 50mg");
         await add.Form.SelectPinDialogImageAsync(1);
         await add.Form.ConfirmPinDialogAsync();

@@ -15,6 +15,12 @@ public interface IProductRepository
     /// <summary>Returns the full published aggregate, or null when missing or unpublished, regardless of caller privileges.</summary>
     Task<Product?> GetPublishedDetailAsync(Guid id, CancellationToken ct);
 
+    /// <summary>Returns the published aggregate at a live saved slug, regardless of caller privileges.</summary>
+    Task<Product?> GetPublishedDetailBySlugAsync(string productSlug, CancellationToken ct);
+
+    /// <summary>Returns saved live addresses for a product, or null when its address is inaccessible.</summary>
+    Task<ProductAddressDto?> GetAddressesAsync(Guid productId, CancellationToken ct);
+
     /// <summary>
     /// Returns a filtered, sorted, paged slice of published products matching
     /// <paramref name="criteria"/>, carrying the total number of matches (pre-pagination).

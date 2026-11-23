@@ -81,7 +81,8 @@ public class CreateProductHandlerPinTests
     }
 
     private static VariantInput Variant(Guid optionValueId, string sku, decimal? price, Guid? pinnedImageId = null) =>
-        new(Guid.NewGuid(), [optionValueId], sku, price, null, true, pinnedImageId);
+        new(Guid.NewGuid(), [optionValueId], sku, price, null, true,
+            pinnedImageId is Guid id ? [id] : []);
 
     // =========================================================================
     // Pin resolution (FR-16, AC-10a)
@@ -105,9 +106,8 @@ public class CreateProductHandlerPinTests
         _persisted.Should().NotBeNull();
 
         var mangoVariant = _persisted!.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId));
-        mangoVariant.PinnedImageId.Should().Be(
-            _persisted.Images[0].Id,
-            "the pin named the first gallery image by its client id, which the handler resolves to the identifier the aggregate minted");
+        mangoVariant.ImageIds.Should().Equal(
+            _persisted.Images[0].Id);
     }
 
     [Fact]
@@ -151,13 +151,13 @@ public class CreateProductHandlerPinTests
         var mango = _persisted!.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId));
         var mint = _persisted.Variants.Single(v => v.OptionValueIds.Contains(mintValueId));
 
-        mango.PinnedImageId.Should().Be(_persisted.Images[0].Id);
-        mint.PinnedImageId.Should().Be(_persisted.Images[1].Id);
+        mango.ImageIds.Should().Equal(_persisted.Images[0].Id);
+        mint.ImageIds.Should().Equal(_persisted.Images[1].Id);
     }
 
     [Fact]
     [Trait("Feature", "create-product")]
-    public async Task Handle_WithAPinNamingAnImageOutsideTheGallery_LeavesTheVariantUnpinned()
+    public async Task Handle_WithAnImageOutsideTheGallery_RejectsAssignment()
     {
         var (optionTypes, mangoValueId, _) = FlavourOptions();
 
@@ -168,15 +168,13 @@ public class CreateProductHandlerPinTests
                 [Variant(mangoValueId, "ELF-BC5000-MANGO", 24.99m, Guid.NewGuid())]),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeTrue();
-        _persisted.Should().NotBeNull();
-        _persisted!.Variants.Should().OnlyContain(v => v.PinnedImageId == null,
-            "a variant may only be pinned to one of the product's own images (RULE-13)");
+        result.IsFailure.Should().BeTrue();
+        _persisted.Should().BeNull();
     }
 
     [Fact]
     [Trait("Feature", "create-product")]
-    public async Task Handle_WithNoGalleryAtAll_LeavesAPinnedVariantUnpinned()
+    public async Task Handle_WithNoGalleryAtAll_RejectsAssignment()
     {
         var (optionTypes, mangoValueId, _) = FlavourOptions();
 
@@ -184,8 +182,8 @@ public class CreateProductHandlerPinTests
             Command([], optionTypes, [Variant(mangoValueId, "ELF-BC5000-MANGO", 24.99m, Guid.NewGuid())]),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeTrue();
-        _persisted!.Variants.Should().OnlyContain(v => v.PinnedImageId == null);
+        result.IsFailure.Should().BeTrue();
+        _persisted.Should().BeNull();
     }
 
     // =========================================================================

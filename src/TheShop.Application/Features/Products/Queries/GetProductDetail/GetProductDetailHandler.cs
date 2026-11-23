@@ -13,9 +13,21 @@ public sealed class GetProductDetailHandler(IProductRepository products, IFileSt
     /// <inheritdoc/>
     public async Task<Result<ProductDetailDto>> Handle(GetProductDetailQuery request, CancellationToken cancellationToken)
     {
-        var product = await products.GetPublishedDetailAsync(request.Id, cancellationToken);
-        return product is null || !product.IsPublished
-            ? Result.Fail<ProductDetailDto>(ProductErrorKeys.DetailUnavailable)
-            : Result.Ok(ProductDetailDtoMapper.ToDto(product, fileStorage));
+        var product = request.Id is Guid id
+            ? await products.GetPublishedDetailAsync(id, cancellationToken)
+            : await products.GetPublishedDetailBySlugAsync(request.ProductSlug!, cancellationToken);
+        if (product is null || !product.IsPublished)
+            return Result.Fail<ProductDetailDto>(ProductErrorKeys.DetailUnavailable);
+
+        var addresses = await products.GetAddressesAsync(product.Id, cancellationToken);
+        if (addresses is null || (request.ProductSlug is not null && request.ProductSlug != addresses.ProductSlug))
+            return Result.Fail<ProductDetailDto>(ProductErrorKeys.DetailUnavailable);
+
+        var dto = ProductDetailDtoMapper.ToDto(product, fileStorage, addresses);
+        var selected = ProductDetailVariantResolver.ResolveInitial(dto, request.VariantSlug);
+        if ((request.VariantSlug is not null || product.HasVariants) && selected is null)
+            return Result.Fail<ProductDetailDto>(ProductErrorKeys.DetailUnavailable);
+
+        return Result.Ok(dto with { SelectedVariantId = selected?.Id });
     }
 }

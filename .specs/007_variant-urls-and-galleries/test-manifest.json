@@ -1,0 +1,48 @@
+{
+  "feature": "007_variant-urls-and-galleries",
+  "trait": "007_variant-urls-and-galleries",
+  "testProjects": [
+    "tests/TheShop.Domain.Tests/TheShop.Domain.Tests.csproj",
+    "tests/TheShop.Application.Tests/TheShop.Application.Tests.csproj",
+    "tests/TheShop.Infrastructure.Tests/TheShop.Infrastructure.Tests.csproj",
+    "tests/TheShop.Web.Tests/TheShop.Web.Tests.csproj"
+  ],
+  "classes": [
+    { "file": "tests/TheShop.Domain.Tests/ValueObjects/VariantImageAssignmentTests.cs", "fqn": "TheShop.Domain.Tests.ValueObjects.VariantImageAssignmentTests", "tests": 3 },
+    { "file": "tests/TheShop.Domain.Tests/Entities/ProductTests.cs", "fqn": "TheShop.Domain.Tests.Entities.ProductTests", "tests": 2 },
+    { "file": "tests/TheShop.Application.Tests/Features/Products/GetProductDetailRouteTests.cs", "fqn": "TheShop.Application.Tests.Features.Products.GetProductDetailRouteTests", "tests": 5 },
+    { "file": "tests/TheShop.Application.Tests/Features/Products/ProductDetailVariantResolverTests.cs", "fqn": "TheShop.Application.Tests.Features.Products.ProductDetailVariantResolverTests", "tests": 1 },
+    { "file": "tests/TheShop.Application.Tests/Features/Products/ApplyVariantImagesTests.cs", "fqn": "TheShop.Application.Tests.Features.Products.ApplyVariantImagesTests", "tests": 3 },
+    { "file": "tests/TheShop.Infrastructure.Tests/Persistence/VariantUrlGallerySchemaTests.cs", "fqn": "TheShop.Infrastructure.Tests.Persistence.VariantUrlGallerySchemaTests", "tests": 4 },
+    { "file": "tests/TheShop.Web.Tests/Components/Products/VariantImageDialogTests.cs", "fqn": "TheShop.Web.Tests.Components.Products.VariantImageDialogTests", "tests": 3 },
+    { "file": "tests/TheShop.Web.Tests/Components/Products/ProductFormTests.cs", "fqn": "TheShop.Web.Tests.Components.Products.ProductFormTests", "tests": 2 }
+  ],
+  "totalTests": 23,
+  "acceptanceCriteria": [
+    { "id": "AC-1", "tests": ["TheShop.Application.Tests.Features.Products.GetProductDetailRouteTests.Handle_ExactVariantSlug_SelectsItsIdentityAndGallery"], "boundary": "e2e", "reason": "Browser confirms all visible purchase details and images." },
+    { "id": "AC-2", "tests": [], "boundary": "e2e", "reason": "URL, gallery, and scroll changes require browser history and viewport proof." },
+    { "id": "AC-3", "tests": [], "boundary": "e2e", "reason": "Desktop, expanded, and touch gallery surfaces require browser proof." },
+    { "id": "AC-4", "tests": ["TheShop.Web.Tests.Components.Products.VariantImageDialogTests.Apply_ReorderedImages_UsesFirstAsCover", "TheShop.Application.Tests.Features.Products.ApplyVariantImagesTests.Handle_ReplaceOneVariant_ReordersCoverWithoutChangingProductOrSibling"], "boundary": "e2e", "reason": "Saved storefront order requires end-to-end persistence proof." },
+    { "id": "AC-5", "tests": ["TheShop.Domain.Tests.ValueObjects.VariantImageAssignmentTests.AppendMissing_ExistingAndRepeatedImages_PreservesCoverAndAppendsOnce", "TheShop.Application.Tests.Features.Products.ApplyVariantImagesTests.Handle_ExplicitBulkTargets_AppendsMissingWithoutChangingOtherCovers", "TheShop.Web.Tests.Components.Products.VariantImageDialogTests.Apply_BulkScope_ReturnsExplicitTargets"] },
+    { "id": "AC-6", "tests": ["TheShop.Application.Tests.Features.Products.ApplyVariantImagesTests.Handle_ReplaceOneVariant_ReordersCoverWithoutChangingProductOrSibling"] },
+    { "id": "AC-7", "tests": ["TheShop.Domain.Tests.Entities.ProductTests.SetVariantImages_ReorderAndRemoveCover_PreservesSiblingAndProductPrimary"], "boundary": "e2e", "reason": "Placeholder rendering requires browser proof." },
+    { "id": "AC-8", "tests": ["TheShop.Application.Tests.Features.Products.GetProductDetailRouteTests.Handle_ParentOrLegacyGuid_SelectsFirstAvailableVariant"], "boundary": "e2e", "reason": "Default URL and visible availability require browser proof." },
+    { "id": "AC-9", "tests": [], "boundary": "e2e", "reason": "Back, Forward, refresh, and copied links are browser behavior." },
+    { "id": "AC-10", "tests": ["TheShop.Application.Tests.Features.Products.GetProductDetailRouteTests.Handle_ExactVariantSlug_SelectsItsIdentityAndGallery"], "boundary": "e2e", "reason": "Placeholder and broken-image fallback require image loading in browser." },
+    { "id": "AC-11", "tests": ["TheShop.Application.Tests.Features.Products.GetProductDetailRouteTests.Handle_ParentOrLegacyGuid_SelectsFirstAvailableVariant"], "boundary": "e2e", "reason": "Legacy navigation and nonvariant gallery require browser proof." },
+    { "id": "AC-12", "tests": ["TheShop.Infrastructure.Tests.Persistence.VariantUrlGallerySchemaTests.Migration_BackfillsPinAndStableReadableRoutes"] },
+    { "id": "AC-13", "tests": ["TheShop.Application.Tests.Features.Products.GetProductDetailRouteTests.Handle_UnknownVariantSlug_DoesNotSubstituteDefault", "TheShop.Application.Tests.Features.Products.GetProductDetailRouteTests.Handle_WrongParentSlug_RejectsContent", "TheShop.Infrastructure.Tests.Persistence.VariantUrlGallerySchemaTests.PublicRead_HidesUnpublishedRoutes"] },
+    { "id": "AC-14", "tests": ["TheShop.Application.Tests.Features.Products.GetProductDetailRouteTests.Handle_UnavailableExactVariant_KeepsItsIdentityAndImages"], "boundary": "e2e", "reason": "Unavailable purchase controls and exact gallery need browser proof." },
+    { "id": "AC-15", "tests": ["TheShop.Infrastructure.Tests.Persistence.VariantUrlGallerySchemaTests.SaveProduct_GuestCannotChangeAssignments"] },
+    { "id": "AC-16", "tests": ["TheShop.Domain.Tests.ValueObjects.VariantImageAssignmentTests.Constructor_DuplicateImage_RejectsAssignment", "TheShop.Application.Tests.Features.Products.ApplyVariantImagesTests.Validator_UnknownTargetAndDuplicateImage_RejectsRequest"], "boundary": "e2e", "reason": "Admin guidance for a foreign image requires form submission proof." },
+    { "id": "AC-17", "tests": ["TheShop.Infrastructure.Tests.Persistence.VariantUrlGallerySchemaTests.Migration_BackfillsPinAndStableReadableRoutes", "TheShop.Infrastructure.Tests.Persistence.VariantUrlGallerySchemaTests.Routes_RenameKeepsSavedSlug_AndCollisionGetsSuffix"], "boundary": "e2e", "reason": "Saved links after a UI rename need browser proof." },
+    { "id": "AC-18", "tests": [], "boundary": "e2e", "reason": "Keyboard, touch, focus, and assistive behavior need browser inspection." },
+    { "id": "AC-19", "tests": [], "boundary": "e2e", "reason": "Rapid route changes require browser navigation timing." },
+    { "id": "AC-20", "tests": ["TheShop.Domain.Tests.Entities.ProductTests.RemoveImage_AssignedToMultipleVariants_PrunesBothWithoutDeletingVariants"] },
+    { "id": "AC-21", "tests": ["TheShop.Web.Tests.Components.Products.VariantImageDialogTests.Cancel_DiscardsSelection", "TheShop.Web.Tests.Components.Products.ProductFormTests.PickerUpload_AppendsToGallery_AndOnlySaveChangesThePin"], "boundary": "e2e", "reason": "Retry against a persisted admin save needs a browser journey." },
+    { "id": "AC-22", "tests": ["TheShop.Application.Tests.Features.Products.ProductDetailVariantResolverTests.Resolve_NonexistentCombination_DoesNotCommitAnotherVariant"], "boundary": "e2e", "reason": "Visible combination feedback requires browser proof." },
+    { "id": "AC-23", "tests": ["TheShop.Web.Tests.Components.Products.VariantImageDialogTests.Apply_ReorderedImages_UsesFirstAsCover", "TheShop.Application.Tests.Features.Products.ApplyVariantImagesTests.Handle_ReplaceOneVariant_ReordersCoverWithoutChangingProductOrSibling", "TheShop.Domain.Tests.Entities.ProductTests.SetVariantImages_ReorderAndRemoveCover_PreservesSiblingAndProductPrimary"] },
+    { "id": "AC-24", "tests": ["TheShop.Web.Tests.Components.Products.ProductFormTests.PickerUpload_AppendsToGallery_AndOnlySaveChangesThePin"], "boundary": "e2e", "reason": "Shared library persistence and other variant galleries need admin browser proof." }
+  ],
+  "scope": "Domain, Application, PostgreSQL migration, and bUnit behavior. Browser journeys belong to theshop-e2e."
+}

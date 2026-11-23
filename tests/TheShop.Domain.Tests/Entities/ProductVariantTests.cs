@@ -22,7 +22,7 @@ public class ProductVariantTests
     [Trait("Feature", "create-product")]
     public void Create_WithNoIdSupplied_AssignsANewId()
     {
-        var variant = ProductVariant.Create(null, Sku.Create("SKU-MANGO"), null, true, null, OneValue(), 0);
+        var variant = ProductVariant.Create(null, Sku.Create("SKU-MANGO"), null, true, [], OneValue(), 0);
 
         variant.Id.Should().NotBeEmpty();
     }
@@ -33,7 +33,7 @@ public class ProductVariantTests
     {
         var id = Guid.NewGuid();
 
-        var variant = ProductVariant.Create(id, Sku.Create("SKU-MANGO"), null, true, null, OneValue(), 0);
+        var variant = ProductVariant.Create(id, Sku.Create("SKU-MANGO"), null, true, [], OneValue(), 0);
 
         variant.Id.Should().Be(id, "an existing variant kept across an edit must keep its identity");
     }
@@ -44,7 +44,7 @@ public class ProductVariantTests
     {
         var pricing = ProductPricing.Create(Money.Create(24.99m));
 
-        var variant = ProductVariant.Create(null, Sku.Create("SKU-MANGO"), pricing, false, null, OneValue(), 2);
+        var variant = ProductVariant.Create(null, Sku.Create("SKU-MANGO"), pricing, false, [], OneValue(), 2);
 
         variant.Pricing.Should().Be(pricing);
         variant.IsAvailable.Should().BeFalse();
@@ -53,13 +53,14 @@ public class ProductVariantTests
 
     [Fact]
     [Trait("Feature", "create-product")]
-    public void Create_WithAPinnedImageId_CarriesItVerbatim()
+    public void Create_WithOrderedImages_CarriesTheirOrder()
     {
-        var imageId = Guid.NewGuid();
+        var first = Guid.NewGuid();
+        var second = Guid.NewGuid();
 
-        var variant = ProductVariant.Create(null, Sku.Create("SKU-MANGO"), null, true, imageId, OneValue(), 0);
+        var variant = ProductVariant.Create(null, Sku.Create("SKU-MANGO"), null, true, [first, second], OneValue(), 0);
 
-        variant.PinnedImageId.Should().Be(imageId);
+        variant.ImageIds.Should().Equal(first, second);
     }
 }
 

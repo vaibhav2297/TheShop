@@ -369,11 +369,11 @@ public class ProductTests
         var imageId = product.Images[0].Id;
         product.ApplyVariantConfiguration([]);
         var variantId = product.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId)).Id;
-        product.PinVariantImage(variantId, imageId);
+        product.SetVariantImages(variantId, [imageId]);
 
         product.RemoveImage(imageId);
 
-        product.Variants.Single(v => v.Id == variantId).PinnedImageId.Should().BeNull(
+        product.Variants.Single(v => v.Id == variantId).ImageIds.Should().BeEmpty(
             "RULE-13: removing a pinned gallery image leaves that variant unpinned");
     }
 
@@ -614,7 +614,7 @@ public class ProductTests
         var mangoVariant = product.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId));
         product.ApplyVariantConfiguration([
             new ProductVariantInput(mangoVariant.Id, mangoVariant.OptionValueIds, Sku.Create("SKU-MANGO"),
-                ProductPricing.Create(Money.Create(24.99m)), true, null),
+                ProductPricing.Create(Money.Create(24.99m)), true, []),
         ]);
 
         // Add a third value to the same option type — Berry.
@@ -627,7 +627,7 @@ public class ProductTests
         ]);
         product.ApplyVariantConfiguration([
             new ProductVariantInput(mangoVariant.Id, mangoVariant.OptionValueIds, Sku.Create("SKU-MANGO"),
-                ProductPricing.Create(Money.Create(24.99m)), true, null),
+                ProductPricing.Create(Money.Create(24.99m)), true, []),
         ]);
 
         product.Variants.Should().HaveCount(3);
@@ -659,7 +659,7 @@ public class ProductTests
         var product = BuildProductWithOneFlavourOption(out var mangoValueId, out _);
 
         product.ApplyVariantConfiguration([
-            new ProductVariantInput(null, new HashSet<Guid> { Guid.NewGuid() }, Sku.Create("STALE"), null, true, null),
+            new ProductVariantInput(null, new HashSet<Guid> { Guid.NewGuid() }, Sku.Create("STALE"), null, true, []),
         ]);
 
         product.Variants.Should().HaveCount(2, "the request named a combination outside the current option types and must be dropped (RULE-10)");
@@ -671,6 +671,48 @@ public class ProductTests
     // =========================================================================
 
     [Fact]
+    [Trait("Feature", "007_variant-urls-and-galleries")]
+    public void SetVariantImages_ReorderAndRemoveCover_PreservesSiblingAndProductPrimary()
+    {
+        var product = BuildProductWithOneFlavourOption(out var mangoValueId, out var mintValueId);
+        product.SetGallery([new GalleryImageInput(null, "primary.png", true),
+            new GalleryImageInput(null, "other.png", false)]);
+        var first = product.Images[0].Id;
+        var second = product.Images[1].Id;
+        var mango = product.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId));
+        var mint = product.Variants.Single(v => v.OptionValueIds.Contains(mintValueId));
+        product.SetVariantImages(mango.Id, [first, second]);
+        product.SetVariantImages(mint.Id, [first]);
+
+        product.SetVariantImages(mango.Id, [second]);
+
+        mango.ImageIds.Should().Equal(second);
+        mint.ImageIds.Should().Equal(first);
+        product.Images.Single(i => i.IsPrimary).Id.Should().Be(first);
+    }
+
+    [Fact]
+    [Trait("Feature", "007_variant-urls-and-galleries")]
+    public void RemoveImage_AssignedToMultipleVariants_PrunesBothWithoutDeletingVariants()
+    {
+        var product = BuildProductWithOneFlavourOption(out var mangoValueId, out var mintValueId);
+        product.SetGallery([new GalleryImageInput(null, "first.png", true),
+            new GalleryImageInput(null, "second.png", false)]);
+        var first = product.Images[0].Id;
+        var second = product.Images[1].Id;
+        var mango = product.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId));
+        var mint = product.Variants.Single(v => v.OptionValueIds.Contains(mintValueId));
+        product.SetVariantImages(mango.Id, [first, second]);
+        product.SetVariantImages(mint.Id, [first]);
+
+        product.RemoveImage(first);
+
+        product.Variants.Should().HaveCount(2);
+        mango.ImageIds.Should().Equal(second);
+        mint.ImageIds.Should().BeEmpty();
+    }
+
+    [Fact]
     [Trait("Feature", "create-product")]
     public void PinVariantImage_WithAnImageNotInTheGallery_ThrowsProductImageNotOwnedException()
     {
@@ -678,7 +720,7 @@ public class ProductTests
         product.ApplyVariantConfiguration([]);
         var variantId = product.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId)).Id;
 
-        var act = () => product.PinVariantImage(variantId, Guid.NewGuid());
+        var act = () => product.SetVariantImages(variantId, [Guid.NewGuid()]);
 
         act.Should().Throw<ProductImageNotOwnedException>();
     }
@@ -693,9 +735,9 @@ public class ProductTests
         product.ApplyVariantConfiguration([]);
         var variantId = product.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId)).Id;
 
-        product.PinVariantImage(variantId, imageId);
+        product.SetVariantImages(variantId, [imageId]);
 
-        product.Variants.Single(v => v.Id == variantId).PinnedImageId.Should().Be(imageId);
+        product.Variants.Single(v => v.Id == variantId).ImageIds.Should().Equal(imageId);
     }
 
     [Fact]
@@ -707,11 +749,11 @@ public class ProductTests
         var imageId = product.Images[0].Id;
         product.ApplyVariantConfiguration([]);
         var variantId = product.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId)).Id;
-        product.PinVariantImage(variantId, imageId);
+        product.SetVariantImages(variantId, [imageId]);
 
-        product.PinVariantImage(variantId, null);
+        product.SetVariantImages(variantId, []);
 
-        product.Variants.Single(v => v.Id == variantId).PinnedImageId.Should().BeNull();
+        product.Variants.Single(v => v.Id == variantId).ImageIds.Should().BeEmpty();
     }
 
     [Fact]
@@ -723,7 +765,7 @@ public class ProductTests
         var imageId = product.Images[0].Id;
         product.ApplyVariantConfiguration([]);
 
-        var act = () => product.PinVariantImage(Guid.NewGuid(), imageId);
+        var act = () => product.SetVariantImages(Guid.NewGuid(), [imageId]);
 
         act.Should().NotThrow();
     }
@@ -765,7 +807,7 @@ public class ProductTests
         var mango = product.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId));
         var mint = product.Variants.Single(v => v.OptionValueIds.Contains(mintValueId));
         product.ApplyVariantConfiguration([
-            new ProductVariantInput(mango.Id, mango.OptionValueIds, mango.Sku, ProductPricing.Create(Money.Create(24.99m)), true, null),
+            new ProductVariantInput(mango.Id, mango.OptionValueIds, mango.Sku, ProductPricing.Create(Money.Create(24.99m)), true, []),
         ]);
 
         var act = () => product.EnsurePublishable();
@@ -781,7 +823,7 @@ public class ProductTests
     {
         var product = BuildProductWithOneFlavourOption(out var mangoValueId, out var mintValueId);
         product.ApplyVariantConfiguration([.. product.Variants.Select(v =>
-            new ProductVariantInput(v.Id, v.OptionValueIds, v.Sku, ProductPricing.Create(Money.Create(24.99m)), true, null))]);
+            new ProductVariantInput(v.Id, v.OptionValueIds, v.Sku, ProductPricing.Create(Money.Create(24.99m)), true, []))]);
 
         var act = () => product.EnsurePublishable();
 
@@ -801,11 +843,11 @@ public class ProductTests
             new ProductVariantInput(
                 product.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId)).Id,
                 new HashSet<Guid> { mangoValueId }, Sku.Create("SKU-MANGO"),
-                ProductPricing.Create(Money.Create(29.99m)), true, null),
+                ProductPricing.Create(Money.Create(29.99m)), true, []),
             new ProductVariantInput(
                 product.Variants.Single(v => v.OptionValueIds.Contains(mintValueId)).Id,
                 new HashSet<Guid> { mintValueId }, Sku.Create("SKU-MINT"),
-                ProductPricing.Create(Money.Create(24.99m)), true, null),
+                ProductPricing.Create(Money.Create(24.99m)), true, []),
         ]);
 
         product.MinVariantPrice.Should().Be(Money.Create(24.99m));
@@ -826,7 +868,7 @@ public class ProductTests
     {
         var product = BuildProductWithOneFlavourOption(out _, out _);
         product.ApplyVariantConfiguration([.. product.Variants.Select(v =>
-            new ProductVariantInput(v.Id, v.OptionValueIds, v.Sku, null, false, null))]);
+            new ProductVariantInput(v.Id, v.OptionValueIds, v.Sku, null, false, []))]);
 
         product.HasSellableVariant.Should().BeFalse();
     }
@@ -838,7 +880,7 @@ public class ProductTests
         var product = BuildProductWithOneFlavourOption(out var mangoValueId, out _);
         var mango = product.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId));
         product.ApplyVariantConfiguration([.. product.Variants.Select(v =>
-            new ProductVariantInput(v.Id, v.OptionValueIds, v.Sku, null, v.Id == mango.Id, null))]);
+            new ProductVariantInput(v.Id, v.OptionValueIds, v.Sku, null, v.Id == mango.Id, []))]);
 
         product.HasSellableVariant.Should().BeTrue();
     }

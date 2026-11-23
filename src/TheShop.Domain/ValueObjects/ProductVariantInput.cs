@@ -12,4 +12,4 @@ public sealed record ProductVariantInput(
     Sku Sku,
     ProductPricing? Pricing,
     bool IsAvailable,
-    Guid? PinnedImageId);
+    IReadOnlyList<Guid> ImageIds);

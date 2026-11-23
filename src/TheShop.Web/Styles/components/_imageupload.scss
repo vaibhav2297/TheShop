@@ -49,7 +49,7 @@
 }
 
 .shop-image-upload-add {
-    container-type: size;
+    container-type: inline-size;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -120,7 +120,7 @@
     }
 }
 
-@container (height < 4rem) {
+@container (width < 4rem) {
     .shop-image-upload-add > .shop-icon {
         display: none;
     }

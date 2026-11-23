@@ -63,7 +63,7 @@ public class AdminProductDtoMapperTests
                 v.Sku,
                 variantPrices[i] is decimal amount ? ProductPricing.Create(Money.Create(amount)) : null,
                 true,
-                null))
+                []))
             .ToList();
         product.ApplyVariantConfiguration(priced);
 

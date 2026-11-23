@@ -52,8 +52,17 @@ public sealed class ProductDetailPage(IPage page, Guid id) : ShopPage(page)
     public async Task PositionAsync(int oneBased)
     {
         await Assertions.Expect(Gallery).ToHaveAttributeAsync("data-active-image", oneBased.ToString());
-        await Assertions.Expect(Gallery.Locator("[aria-live='polite']"))
-            .ToHaveTextAsync(string.Format(Strings.ProductDetail_ImagePosition, oneBased, await Slides.CountAsync()));
+        var slideCount = await Slides.CountAsync();
+        if (slideCount > 1)
+        {
+            await Assertions.Expect(Gallery.Locator("[aria-live='polite']"))
+                .ToHaveTextAsync(string.Format(Strings.ProductDetail_ImagePosition, oneBased, slideCount));
+        }
+        else
+        {
+            oneBased.Should().Be(1);
+            await Assertions.Expect(Gallery.Locator("[aria-live='polite']")).ToHaveCountAsync(0);
+        }
         await Page.WaitForFunctionAsync("({position}) => { const v=document.querySelector('.shop-product-detail-grid'); const slide=v.children[position-1]; return Math.abs(slide.getBoundingClientRect().left-v.getBoundingClientRect().left)<2; }", new { position = oneBased });
     }
     public async Task ScrollToAsync(int offset)

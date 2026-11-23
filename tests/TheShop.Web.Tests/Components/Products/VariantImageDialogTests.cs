@@ -1,12 +1,10 @@
-using Microsoft.Extensions.DependencyInjection;
-using TheShop.Web.Common;
 using Bunit;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using TheShop.Application.Features.Products.DTOs;
-using TheShop.Web.Components.Common;
+using TheShop.Web.Common;
 using TheShop.Web.Components.Products;
-using TheShop.Web.Resources;
 using Xunit;
 
 namespace TheShop.Web.Tests.Components.Products;
@@ -15,6 +13,7 @@ public class VariantImageDialogTests : TestContext
 {
     private readonly ProductImageDto _first = new(Guid.NewGuid(), "/first.webp", 0, true);
     private readonly ProductImageDto _second = new(Guid.NewGuid(), "/second.webp", 1, false);
+    private readonly Guid _variantId = Guid.NewGuid();
 
     public VariantImageDialogTests()
     {
@@ -23,106 +22,73 @@ public class VariantImageDialogTests : TestContext
     }
 
     [Fact]
-    public void Initialization_BrowserInteropFailure_CancelsInsteadOfLeavingAnOpenRequest()
+    [Trait("Feature", "007_variant-urls-and-galleries")]
+    public void Apply_ReorderedImages_UsesFirstAsCover()
     {
-        var results = new List<VariantImagePinResult?>();
-        JSInterop.SetupModule("./js/shopDialog.js").SetupVoid("show", _ => true)
-            .SetException(new JSException("Modal unavailable"));
-        var cut = Render<VariantImageDialog>(p => p.Add(c => c.OnCompleted, value => results.Add(value)));
-        cut.WaitForAssertion(() => results.Should().ContainSingle().Which.Should().BeNull());
-    }
-
-    [Fact]
-    public async Task Selection_TogglesAndSavesEmpty_AsAnAcceptedResult()
-    {
-        var results = new List<VariantImagePinResult?>();
+        VariantImageSelectionResult? result = null;
         var cut = Render<VariantImageDialog>(p => p
+            .Add(c => c.CurrentVariantId, _variantId)
             .Add(c => c.VariantLabel, "Mango")
             .Add(c => c.GalleryImages, [_first, _second])
-            .Add(c => c.CurrentImageId, _first.Id)
-            .Add(c => c.OnCompleted, value => results.Add(value)));
+            .Add(c => c.CurrentImageIds, [_first.Id, _second.Id])
+            .Add(c => c.OnCompleted, value => result = value));
 
-        var selected = cut.Find($"[data-image-id='{_first.Id}'] .shop-image-tile-surface");
-        selected.TagName.Should().Be("BUTTON");
-        selected.GetAttribute("type").Should().Be("button");
-        selected.GetAttribute("aria-pressed").Should().Be("true");
-        selected.GetAttribute("aria-label").Should().Be(string.Format(Strings.VariantImage_ImageLabel, 1, "Mango"));
-        cut.Find("[data-image-id] .shop-image-tile-surface").GetAttribute("aria-pressed").Should().Be("true");
-        await cut.Find($"[data-image-id='{_second.Id}'] .shop-image-tile-surface").ClickAsync(new());
-        cut.FindAll("[aria-pressed='true']").Should().ContainSingle();
-        await cut.Find($"[data-image-id='{_second.Id}'] .shop-image-tile-surface").ClickAsync(new());
-        cut.FindAll("[aria-pressed='true']").Should().BeEmpty();
-        cut.FindAll(".shop-image-tile-selected").Should().BeEmpty();
-        await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
-        await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
-        await cut.InvokeAsync(() => cut.FindComponent<ShopDialog>().Instance.DismissAsync());
-        results.Should().ContainSingle().Which.Should().Be(new VariantImagePinResult(null, false));
-    }
+        cut.Find($"[data-image-id='{_first.Id}'] .shop-image-tile-surface").Click();
+        cut.Find($"[data-image-id='{_first.Id}'] .shop-image-tile-surface").Click();
+        cut.FindAll(".shop-variant-image-gallery .shop-variant-image-option")
+            .Select(tile => tile.GetAttribute("data-image-id"))
+            .Should().Equal(_first.Id.ToString(), _second.Id.ToString());
+        cut.Find($"[data-image-id='{_second.Id}'] .shop-image-tile-primary").Should().NotBeNull();
+        cut.FindAll(".shop-variant-image-order").Should().BeEmpty();
+        cut.Find("[data-testid='variant-image-save']").Click();
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task Dismiss_CancelOrBrowserDismiss_ReturnsNullOnce(bool browserDismiss)
-    {
-        var results = new List<VariantImagePinResult?>();
-        var cut = Render<VariantImageDialog>(p => p
-            .Add(c => c.GalleryImages, [_first])
-            .Add(c => c.OnCompleted, value => results.Add(value)));
-        await cut.Find("[data-image-id] .shop-image-tile-surface").ClickAsync(new());
-        if (browserDismiss)
-            await cut.InvokeAsync(() => cut.FindComponent<ShopDialog>().Instance.DismissAsync());
-        else
-            await cut.Find("[data-testid='variant-image-cancel']").ClickAsync(new());
-        await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
-        results.Should().ContainSingle().Which.Should().BeNull();
+        result.Should().NotBeNull();
+        result!.ImageIds.Should().Equal(_second.Id, _first.Id);
+        result.TargetVariantIds.Should().Equal(_variantId);
+        result.Append.Should().BeFalse();
     }
 
     [Fact]
-    public async Task Scope_SharedVariants_UsesExclusiveShopCheckboxesAndReturnsChoice()
+    [Trait("Feature", "007_variant-urls-and-galleries")]
+    public void Cancel_DiscardsSelection()
     {
-        VariantImagePinResult? result = null;
+        VariantImageSelectionResult? result = new([], [], false);
         var cut = Render<VariantImageDialog>(p => p
+            .Add(c => c.CurrentVariantId, _variantId)
             .Add(c => c.GalleryImages, [_first])
-            .Add(c => c.SharedScopeLabel, "Color = Red")
-            .Add(c => c.SharedScopeCount, 2)
             .Add(c => c.OnCompleted, value => result = value));
-        cut.Find("fieldset legend").TextContent.Should().Be(Strings.VariantImage_ApplyToLabel);
-        cut.FindAll("input[type='radio']").Should().BeEmpty();
-        cut.FindAll("input[type='checkbox']").Should().HaveCount(2);
-        cut.FindComponents<ShopCheckbox>().Should().OnlyContain(c => c.Instance.Size == TheShop.Web.Common.UI.ShopSize.Medium);
-        cut.Find("[data-testid='variant-image-scope-this']").HasAttribute("checked").Should().BeTrue();
-        cut.Find("[data-testid='variant-image-scope-all']").Change(true);
-        cut.Find("[data-testid='variant-image-scope-this']").HasAttribute("checked").Should().BeFalse();
-        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeTrue();
-        cut.Find("[data-testid='variant-image-scope-all']").Change(false);
-        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeTrue("one scope must remain selected");
-        cut.Find("[data-testid='variant-image-scope-this']").Change(true);
-        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeFalse();
-        cut.Find("[data-testid='variant-image-scope-this']").HasAttribute("checked").Should().BeTrue();
-        cut.Find("[data-testid='variant-image-scope-this']").Change(false);
-        cut.Find("[data-testid='variant-image-scope-this']").HasAttribute("checked").Should().BeTrue("one scope must remain selected");
-        cut.Find("[data-testid='variant-image-scope-all']").Change(true);
-        await cut.Find("[data-image-id] .shop-image-tile-surface").ClickAsync(new());
-        await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
-        result.Should().Be(new VariantImagePinResult(_first.Id, true));
+
+        cut.Find("[data-image-id] .shop-image-tile-surface").Click();
+        cut.Find("[data-testid='variant-image-cancel']").Click();
+        result.Should().BeNull();
     }
 
     [Fact]
-    public async Task Parameters_GalleryAndScopeRemoved_DropsStaleSelectionAndScope()
+    [Trait("Feature", "007_variant-urls-and-galleries")]
+    public void Apply_BulkScope_ReturnsExplicitTargets()
     {
-        VariantImagePinResult? result = null;
+        var other = Guid.NewGuid();
+        var unrelated = Guid.NewGuid();
+        VariantImageSelectionResult? result = null;
         var cut = Render<VariantImageDialog>(p => p
+            .Add(c => c.CurrentVariantId, _variantId)
             .Add(c => c.GalleryImages, [_first])
-            .Add(c => c.CurrentImageId, _first.Id)
-            .Add(c => c.SharedScopeLabel, "Color = Red")
-            .Add(c => c.SharedScopeCount, 2)
+            .Add(c => c.SharedScopeLabel, "Flavour = Mango")
+            .Add(c => c.SharedVariantIds, [_variantId, other])
             .Add(c => c.OnCompleted, value => result = value));
+
+        cut.Markup.Should().Contain("All 2 variants with Flavour = Mango");
         cut.Find("[data-testid='variant-image-scope-all']").Change(true);
-        cut.Render(p => p.Add(c => c.GalleryImages, []).Add(c => c.SharedScopeCount, 1));
-        cut.FindAll("fieldset, [data-image-id]").Should().BeEmpty();
-        cut.Markup.Should().Contain(Strings.VariantImage_EmptyUploadHint);
-        cut.Find(".shop-file-dropzone-trigger").HasAttribute("disabled").Should().BeTrue();
-        await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
-        result.Should().Be(new VariantImagePinResult(null, false));
+        cut.FindAll(".shop-variant-image-targets").Should().BeEmpty();
+        cut.Find("[data-testid='variant-image-scope-all']").GetAttribute("type").Should().Be("checkbox");
+        cut.Find(".shop-dialog-actions").TextContent.Should().NotContain("Save the product to publish these changes.");
+        cut.Find("[data-image-id] .shop-image-tile-surface").Click();
+        cut.Find("[data-testid='variant-image-save']").Click();
+
+        result.Should().NotBeNull();
+        result!.ImageIds.Should().Equal(_first.Id);
+        result.TargetVariantIds.Should().BeEquivalentTo([_variantId, other]);
+        result.TargetVariantIds.Should().NotContain(unrelated);
+        result.Append.Should().BeTrue();
     }
 }

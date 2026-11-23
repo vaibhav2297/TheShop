@@ -73,6 +73,23 @@ public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProd
             .Must(gallery => gallery.Count == 0 || gallery.Count(g => g.IsPrimary) == 1)
             .WithMessage(ProductErrorKeys.PrimaryImageRequired);
 
+        RuleFor(x => x.Gallery)
+            .Must(gallery => gallery.All(entry => entry.ClientId != Guid.Empty) &&
+                gallery.Select(entry => entry.ClientId).Distinct().Count() == gallery.Count &&
+                gallery.All(entry => (entry.Upload is null) != (entry.ImageId is null)))
+            .WithMessage(ProductErrorKeys.VariantImageSelectionInvalid);
+
+        RuleForEach(x => x.Variants).ChildRules(variant =>
+        {
+            variant.RuleFor(v => v.ImageIds)
+                .Must(ids => ids.Distinct().Count() == ids.Count)
+                .WithMessage(ProductErrorKeys.VariantImageDuplicate);
+        });
+        RuleFor(x => x)
+            .Must(x => x.Variants.All(v => v.ImageIds.All(id =>
+                x.Gallery.Any(image => image.ClientId == id))))
+            .WithMessage(ProductErrorKeys.VariantImageNotInGallery);
+
         RuleFor(x => x)
             .Must(x => HaveNoSkuDuplicates(x.Sku, x.Variants))
             .WithMessage(ProductErrorKeys.SkuDuplicatedInRequest);

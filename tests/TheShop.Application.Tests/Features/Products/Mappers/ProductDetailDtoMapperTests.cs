@@ -29,8 +29,8 @@ public class ProductDetailDtoMapperTests
         dto.Images[0].Url.Should().Be("https://images.example/primary.png");
         dto.Variants[0].CurrentPrice.Should().Be(20);
         dto.Variants[0].OriginalPrice.Should().Be(30);
-        dto.Variants[0].TargetImageId.Should().Be(ProductDetailTestData.Id(10));
-        dto.Variants[1].TargetImageId.Should().Be(dto.PrimaryImageId);
+        dto.Variants[0].ImageIds.Should().Equal(ProductDetailTestData.Id(10));
+        dto.Variants[1].ImageIds.Should().BeEmpty();
         dto.Variants.Select(v => v.Label).Should().Equal("Mango", "Peach");
     }
 
@@ -66,17 +66,17 @@ public class ProductDetailDtoMapperTests
         var dto = ProductDetailDtoMapper.ToDto(ProductDetailTestData.Build(images: []), _storage);
         dto.Images.Should().BeEmpty();
         dto.PrimaryImageId.Should().BeNull();
-        dto.Variants.Should().OnlyContain(v => v.TargetImageId == null);
+        dto.Variants.Should().OnlyContain(v => v.ImageIds.Count == 0);
         _storage.ReceivedCalls().Should().BeEmpty();
     }
 
     [Fact]
     [Trait("Feature", "001_product-detail")]
-    public void ToDto_StalePinnedImage_FallsBackToPrimary()
+    public void ToDto_StaleAssignedImage_DoesNotFallBackToPrimary()
     {
         var dto = ProductDetailDtoMapper.ToDto(ProductDetailTestData.Build(images:
             [ProductImage.Rehydrate(ProductDetailTestData.Id(11), "only.png", 0, true)]), _storage);
-        dto.Variants.Should().OnlyContain(v => v.TargetImageId == dto.PrimaryImageId);
+        dto.Variants.Should().OnlyContain(v => v.ImageIds.Count == 0);
     }
 
     [Theory, InlineData(""), InlineData("   "), InlineData("<p><br></p>"),
@@ -122,7 +122,7 @@ public class ProductDetailDtoMapperTests
     {
         var dto = ProductDetailDtoMapper.ToDto(ProductDetailTestData.Build(variantRows:
             [ProductVariant.Create(ProductDetailTestData.Id(40), TheShop.Domain.ValueObjects.Sku.Create("UNPRICED"),
-                null, false, null, new HashSet<Guid> { ProductDetailTestData.Id(21) }, 0)]), _storage);
+                null, false, [], new HashSet<Guid> { ProductDetailTestData.Id(21) }, 0)]), _storage);
         dto.HasVariants.Should().BeTrue();
         dto.MinVariantPrice.Should().BeNull();
         dto.MaxVariantPrice.Should().BeNull();

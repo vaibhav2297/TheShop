@@ -13,6 +13,8 @@ internal sealed class ProductDetailData : IAsyncDisposable
     internal Guid[] Images { get; }
     internal Guid[] Values { get; } = Enumerable.Range(0, 4).Select(_ => Guid.NewGuid()).ToArray();
     internal Guid[] Groups { get; } = [Guid.NewGuid(), Guid.NewGuid()];
+    internal Guid[] Variants { get; } = Enumerable.Range(0, 4).Select(_ => Guid.NewGuid()).ToArray();
+    internal string[] VariantSlugs { get; } = ["peach-small", "peach-large", "mango-small", "mango-large"];
     internal string ImageKey { get; }
     internal int Count => Images.Length;
 
@@ -62,6 +64,7 @@ internal sealed class ProductDetailData : IAsyncDisposable
             { id, product_id = data.Id, object_key = data.ImageKey, position = i == 0 && primary ? 20 : i, is_primary = i == 0 && primary }).ToArray());
             if (content) await data.InsertAsync("product_specifications", new
             { id = Guid.NewGuid(), product_id = data.Id, name = "Capacity", value = "2 ml", position = 0 });
+            await data.InsertAsync("product_routes", new { slug = data.Name, product_id = data.Id });
             if (variants)
             {
                 await data.InsertAsync("product_option_types", data.Groups.Select((id, i) => new
@@ -70,7 +73,7 @@ internal sealed class ProductDetailData : IAsyncDisposable
                 { id, option_type_id = data.Groups[i / 2], value = new[] { "Peach", "Mango", "Small", "Large" }[i], position = i % 2 }).ToArray());
                 for (var i = 0; i < 4; i++)
                 {
-                    var variant = Guid.NewGuid();
+                    var variant = data.Variants[i];
                     var target = i == 2 || images == 0 ? (Guid?)null : data.Images[Math.Min(new[] { 1, 5, 0, 7 }[i], images - 1)];
                     await data.InsertAsync("product_variants", new
                     {
@@ -87,6 +90,23 @@ internal sealed class ProductDetailData : IAsyncDisposable
                         new { variant_id = variant, option_value_id = data.Values[i / 2] },
                         new { variant_id = variant, option_value_id = data.Values[2 + i % 2] } });
                 }
+                await data.InsertAsync("product_variant_routes", data.Variants.Select((id, i) => new
+                { product_slug = data.Name, slug = data.VariantSlugs[i], variant_id = id }).ToArray());
+                var assignments = data.Images.Select((id, i) => new
+                { product_id = data.Id, variant_id = data.Variants[0], image_id = id, position = i }).ToList();
+                foreach (var index in new[] { 1, 3 })
+                {
+                    if (images == 0) continue;
+                    assignments.Add(new
+                    {
+                        product_id = data.Id,
+                        variant_id = data.Variants[index],
+                        image_id = data.Images[Math.Min(index == 1 ? 5 : 7, images - 1)],
+                        position = 0
+                    });
+                }
+                if (assignments.Count > 0)
+                    await data.InsertAsync("product_variant_images", assignments);
             }
             return data;
         }

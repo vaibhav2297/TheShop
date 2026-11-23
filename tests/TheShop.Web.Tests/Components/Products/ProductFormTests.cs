@@ -17,6 +17,7 @@ using TheShop.Application.Features.Products;
 using TheShop.Application.Features.Products.Commands.CreateProduct;
 using TheShop.Application.Features.Products.Commands.UpdateProduct;
 using TheShop.Application.Features.Products.DTOs;
+using TheShop.Application.Features.Products.Queries.ApplyVariantImages;
 using TheShop.Domain.Exceptions;
 using TheShop.Web.Common;
 using TheShop.Web.Components.Common;
@@ -52,6 +53,8 @@ public class ProductFormTests : TestContext
         Services.AddSingleton(_notifications);
         Services.AddSingleton(_localizer);
         Services.AddSingleton(Substitute.For<IShopDialogService>());
+        _mediator.Send(Arg.Any<ApplyVariantImagesQuery>(), Arg.Any<CancellationToken>())
+            .Returns(call => new ApplyVariantImagesHandler().Handle(call.Arg<ApplyVariantImagesQuery>(), CancellationToken.None));
 
 
         _localizer[Arg.Any<string>()].Returns(call =>
@@ -346,7 +349,7 @@ public class ProductFormTests : TestContext
             _category.Id, _category.Name, _brand.Id, _brand.Name,
             null, null, false, [],
             [new ProductOptionTypeDto(Guid.NewGuid(), "Flavour", 0, [new ProductOptionValueDto(optionValueId, "Mango", 0)])],
-            [], [new ProductVariantDto(variantId, "ELF-BC5000-MANGO", 24.99m, null, true, null, [optionValueId], "Mango")],
+            [], [new ProductVariantDto(variantId, "ELF-BC5000-MANGO", 24.99m, null, true, [], [optionValueId], "Mango")],
             "row-version-1");
         var cut = RenderEditForm(product);
 
@@ -670,6 +673,7 @@ public class ProductFormTests : TestContext
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
+    [Trait("Feature", "007_variant-urls-and-galleries")]
     public async Task PickerUpload_AppendsToGallery_AndOnlySaveChangesThePin(bool cancelPin)
     {
         JSInterop.SetupModule("./js/shopImageUpload.js").Setup<string>("createObjectUrl", _ => true).SetResult("blob:picker-owned");
@@ -696,13 +700,13 @@ public class ProductFormTests : TestContext
         entry.ClientId.Should().Be(image.ClientId);
         entry.Upload!.Content.Should().Equal(1, 2, 3);
         entry.IsPrimary.Should().BeTrue();
-        saved.Variants.Single().PinnedImageId.Should().Be(cancelPin ? null : image.ClientId);
+        saved.Variants.Single().ImageIds.Should().Equal(cancelPin ? [] : [image.ClientId]);
         cut.FindComponent<NavigationLock>().Instance.ConfirmExternalNavigation.Should().BeTrue();
         await cut.Find(".shop-image-upload .shop-image-tile-remove").ClickAsync(new());
         cut.FindComponent<ProductVariantsCard>().Instance.GalleryImages.Should().BeEmpty();
         await cut.Find("form").SubmitAsync();
         saved.Gallery.Should().BeEmpty();
-        saved.Variants.Single().PinnedImageId.Should().BeNull();
+        saved.Variants.Single().ImageIds.Should().BeEmpty();
         JSInterop.Invocations.Should().ContainSingle(call => call.Identifier == "revokeObjectUrl");
     }
 

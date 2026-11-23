@@ -12,8 +12,8 @@ public class ProductDetailVariantResolverTests
         20, 25, null, null, [],
         [new(Id(10), "Flavour", 0, [new(Id(11), "Mango", 0), new(Id(12), "Peach", 1)]),
          new(Id(20), "Nicotine", 1, [new(Id(21), "10mg", 0), new(Id(22), "20mg", 1)])], [],
-        [new(Id(30), "Mango / 10mg", 25, 20, 20, true, null, [Id(11), Id(21)]),
-         new(Id(31), "Peach / 20mg", 25, null, 25, true, null, [Id(12), Id(22)])]);
+        [new(Id(30), "Mango / 10mg", 25, 20, 20, true, [], [Id(11), Id(21)], "mango-10mg", "MANGO-10"),
+         new(Id(31), "Peach / 20mg", 25, null, 25, true, [], [Id(12), Id(22)], "peach-20mg", "PEACH-20")]);
 
     [Theory, InlineData(""), InlineData("11"), InlineData("11,12"), InlineData("11,11"),
      InlineData("11,22"), InlineData("11,99"), InlineData("11,21,22")]
@@ -38,5 +38,12 @@ public class ProductDetailVariantResolverTests
     public void Resolve_ProductWithoutVariants_DoesNotSelectVariant()
     {
         ProductDetailVariantResolver.Resolve(Product() with { HasVariants = false }, [Id(11), Id(21)]).Should().BeNull();
+    }
+
+    [Fact]
+    [Trait("Feature", "007_variant-urls-and-galleries")]
+    public void Resolve_NonexistentCombination_DoesNotCommitAnotherVariant()
+    {
+        ProductDetailVariantResolver.Resolve(Product(), [Id(11), Id(22)]).Should().BeNull();
     }
 }

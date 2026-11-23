@@ -12,4 +12,4 @@ public sealed record VariantInput(
     decimal? OriginalPrice,
     decimal? SalePrice,
     bool IsAvailable,
-    Guid? PinnedImageId);
+    IReadOnlyList<Guid> ImageIds);

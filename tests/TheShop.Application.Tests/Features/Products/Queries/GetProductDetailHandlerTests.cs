@@ -2,6 +2,7 @@ using FluentAssertions;
 using NSubstitute;
 using TheShop.Application.Common.Interfaces;
 using TheShop.Application.Features.Products;
+using TheShop.Application.Features.Products.DTOs;
 using TheShop.Application.Features.Products.Queries.GetProductDetail;
 using TheShop.Domain.Entities;
 using Xunit;
@@ -20,13 +21,21 @@ public class GetProductDetailHandlerTests
         var product = ProductDetailTestData.Build();
         using var cancellation = new CancellationTokenSource();
         _products.GetPublishedDetailAsync(product.Id, cancellation.Token).Returns(product);
+        _products.GetAddressesAsync(product.Id, cancellation.Token)
+            .Returns(new ProductAddressDto("peach-ice", new Dictionary<Guid, string>
+            {
+                [ProductDetailTestData.Id(40)] = "mango",
+                [ProductDetailTestData.Id(41)] = "peach"
+            }));
         var result = await new GetProductDetailHandler(_products, _storage)
             .Handle(new(product.Id), cancellation.Token);
         result.IsSuccess.Should().BeTrue();
         result.Value.Name.Should().Be("Peach Ice");
         result.Value.CurrentPrice.Should().BeNull();
         result.Value.MinVariantPrice.Should().Be(20);
+        result.Value.SelectedVariantId.Should().Be(ProductDetailTestData.Id(40));
         await _products.Received(1).GetPublishedDetailAsync(product.Id, cancellation.Token);
+        await _products.Received(1).GetAddressesAsync(product.Id, cancellation.Token);
         await _products.DidNotReceive().GetForEditAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 

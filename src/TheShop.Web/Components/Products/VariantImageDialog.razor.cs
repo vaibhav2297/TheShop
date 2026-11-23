@@ -5,78 +5,61 @@ using TheShop.Web.Common;
 
 namespace TheShop.Web.Components.Products;
 
-/// <summary>
-/// The variant image pin picker (FR-16, AC-10a; Figma node <c>2946:14712</c>): shows the
-/// product's own gallery and, when this variant shares an option value with sibling variants,
-/// an "Apply To" choice between pinning this variant alone or every variant sharing that value.
-/// Owned by the variants card; cancellation is distinct from saving an empty selection.
-/// </summary>
+/// <summary>Stages an ordered variant gallery from the shared product image library.</summary>
 public partial class VariantImageDialog : ComponentBase
 {
     [Inject] private BusyState BusyState { get; set; } = default!;
 
-    /// <summary>Appends browser files to the owning product gallery before the input resets.</summary>
+    /// <summary>Adds new files to the pending product library.</summary>
     [Parameter] public EventCallback<IReadOnlyList<IBrowserFile>> AddGalleryFiles { get; set; }
-
-    /// <summary>File rejection messages from the product's gallery owner.</summary>
+    /// <summary>Upload errors displayed beside the library.</summary>
     [Parameter] public IReadOnlyList<string> UploadErrors { get; set; } = [];
+    /// <summary>Reports Apply or Cancel to the owning variants card.</summary>
+    [Parameter, EditorRequired] public EventCallback<VariantImageSelectionResult?> OnCompleted { get; set; }
+    /// <summary>Variant name shown in the dialog.</summary>
+    [Parameter, EditorRequired] public string VariantLabel { get; set; } = string.Empty;
+    /// <summary>Current images in the product library.</summary>
+    [Parameter, EditorRequired] public IReadOnlyList<ProductImageDto> GalleryImages { get; set; } = [];
+    /// <summary>Ordered images assigned to the edited variant.</summary>
+    [Parameter] public IReadOnlyList<Guid> CurrentImageIds { get; set; } = [];
+    /// <summary>Identity of the edited variant.</summary>
+    [Parameter] public Guid CurrentVariantId { get; set; }
+    /// <summary>Option value shared by the variants eligible for bulk assignment.</summary>
+    [Parameter] public string? SharedScopeLabel { get; set; }
+    /// <summary>Variants sharing the selected option value.</summary>
+    [Parameter] public IReadOnlyList<Guid> SharedVariantIds { get; set; } = [];
+    /// <summary>Last applied scope for the shared option value during the current edit session.</summary>
+    [Parameter] public bool InitiallyApplyToAllSharing { get; set; }
 
     private readonly string _uploadKey = $"{BusyKeys.ImageSelection}.{Guid.NewGuid():N}";
+    private readonly List<Guid> _selected = [];
     private HashSet<Guid>? _imagesBeforeUpload;
-    /// <summary>Completes once: null cancels; a result with null ImageId explicitly clears the pin.</summary>
-    [Parameter, EditorRequired] public EventCallback<VariantImagePinResult?> OnCompleted { get; set; }
-
-    /// <summary>The variant's option-value label (e.g. "Mango / 50mg"), shown in the dialog title.</summary>
-    [Parameter, EditorRequired]
-    public string VariantLabel { get; set; } = string.Empty;
-
-    /// <summary>The product's own gallery to choose a pin from.</summary>
-    [Parameter, EditorRequired]
-    public IReadOnlyList<ProductImageDto> GalleryImages { get; set; } = [];
-
-    /// <summary>The variant's current pin, if any.</summary>
-    [Parameter]
-    public Guid? CurrentImageId { get; set; }
-
-    /// <summary>
-    /// The shared option-value label to offer as a fan-out scope (e.g. "Color = Red"), or
-    /// <c>null</c> when this variant's option value isn't shared by another variant.
-    /// </summary>
-    [Parameter]
-    public string? SharedScopeLabel { get; set; }
-
-    /// <summary>The number of variants — including this one — sharing <see cref="SharedScopeLabel"/>.</summary>
-    [Parameter]
-    public int SharedScopeCount { get; set; }
-
-    private Guid? _selectedImageId;
-    private bool _applyToAllSharing;
-    private bool _completed;
-
-    private bool ShowScopeChoice => SharedScopeLabel is not null && SharedScopeCount > 1;
-
-    /// <inheritdoc/>
-    protected override void OnInitialized() => _selectedImageId = CurrentImageId;
+    private bool _initialized, _bulk, _completed;
+    private bool ShowScopeChoice => SharedScopeLabel is not null && SharedVariantIds.Count > 1;
 
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
-        if (_imagesBeforeUpload is not null && GalleryImages.FirstOrDefault(image => !_imagesBeforeUpload.Contains(image.Id)) is { } added)
+        if (!_initialized)
         {
-            _selectedImageId = added.Id;
-            _imagesBeforeUpload = null;
+            _selected.AddRange(CurrentImageIds);
+            _bulk = InitiallyApplyToAllSharing && ShowScopeChoice;
+            _initialized = true;
         }
-        if (_selectedImageId is Guid selected && !GalleryImages.Any(image => image.Id == selected))
-            _selectedImageId = null;
-        if (!ShowScopeChoice)
-            _applyToAllSharing = false;
+        if (_imagesBeforeUpload is not null)
+        {
+            foreach (var added in GalleryImages.Where(image => !_imagesBeforeUpload.Contains(image.Id)))
+                if (!_selected.Contains(added.Id)) _selected.Add(added.Id);
+            if (GalleryImages.Count > _imagesBeforeUpload.Count) _imagesBeforeUpload = null;
+        }
+        var available = GalleryImages.Select(image => image.Id).ToHashSet();
+        _selected.RemoveAll(id => !available.Contains(id));
     }
 
-    // Clicking the already-selected image deselects it — the dialog has no separate "clear" action.
-    private void SelectImage(Guid imageId)
+    private void SelectImage(Guid id)
     {
         if (_completed || BusyState.IsBusy(_uploadKey)) return;
-        _selectedImageId = _selectedImageId == imageId ? null : imageId;
+        if (!_selected.Remove(id)) _selected.Add(id);
     }
 
     private async Task AddFilesAsync(IReadOnlyList<IBrowserFile> files)
@@ -86,14 +69,17 @@ public partial class VariantImageDialog : ComponentBase
         await BusyState.RunAsync(_uploadKey, () => AddGalleryFiles.InvokeAsync(files));
     }
 
-    private Task ConfirmAsync() => CompleteAsync(new VariantImagePinResult(_selectedImageId, ShowScopeChoice && _applyToAllSharing));
+    private Task ConfirmAsync()
+    {
+        IReadOnlyList<Guid> targets = _bulk && ShowScopeChoice ? SharedVariantIds : [CurrentVariantId];
+        return CompleteAsync(new VariantImageSelectionResult(_selected.ToArray(), targets, _bulk && ShowScopeChoice));
+    }
 
     private Task CancelAsync() => CompleteAsync(null);
 
-    private Task CompleteAsync(VariantImagePinResult? result)
+    private Task CompleteAsync(VariantImageSelectionResult? result)
     {
-        if (_completed || BusyState.IsBusy(_uploadKey))
-            return Task.CompletedTask;
+        if (_completed || BusyState.IsBusy(_uploadKey)) return Task.CompletedTask;
         _completed = true;
         return OnCompleted.InvokeAsync(result);
     }

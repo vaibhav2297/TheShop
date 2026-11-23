@@ -88,7 +88,8 @@ public class UpdateProductHandlerPinTests
     }
 
     private static VariantInput Variant(Guid optionValueId, string sku, Guid? pinnedImageId) =>
-        new(Guid.NewGuid(), [optionValueId], sku, 24.99m, null, true, pinnedImageId);
+        new(Guid.NewGuid(), [optionValueId], sku, 24.99m, null, true,
+            pinnedImageId is Guid id ? [id] : []);
 
     [Fact]
     [Trait("Feature", "create-product")]
@@ -105,7 +106,7 @@ public class UpdateProductHandlerPinTests
 
         result.IsSuccess.Should().BeTrue();
         _persisted!.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId))
-            .PinnedImageId.Should().Be(_storedImageId);
+            .ImageIds.Should().Equal(_storedImageId);
     }
 
     [Fact]
@@ -130,7 +131,7 @@ public class UpdateProductHandlerPinTests
         var newImageId = _persisted!.Images[1].Id;
         newImageId.Should().NotBe(newImageClientId, "the aggregate mints the identifier, not the client");
         _persisted.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId))
-            .PinnedImageId.Should().Be(newImageId);
+            .ImageIds.Should().Equal(newImageId);
     }
 
     [Fact]
@@ -154,29 +155,28 @@ public class UpdateProductHandlerPinTests
             CancellationToken.None);
 
         _persisted!.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId))
-            .PinnedImageId.Should().Be(_persisted.Images[0].Id);
+            .ImageIds.Should().Equal(_persisted.Images[0].Id);
         _persisted.Variants.Single(v => v.OptionValueIds.Contains(mintValueId))
-            .PinnedImageId.Should().Be(_persisted.Images[1].Id);
+            .ImageIds.Should().Equal(_persisted.Images[1].Id);
     }
 
     [Fact]
     [Trait("Feature", "create-product")]
-    public async Task Handle_PinningAnImageDroppedFromTheGallery_LeavesTheVariantUnpinned()
+    public async Task Handle_AssigningAnImageDroppedFromTheGallery_RejectsTheUpdate()
     {
         var newImageClientId = Guid.NewGuid();
         var (optionTypes, mangoValueId, _) = FlavourOptions();
 
-        // The stored image is gone from the submitted gallery, so the pin naming it resolves to
-        // nothing — RULE-13's "removing a pinned image leaves those variants unpinned".
-        await CreateSut().Handle(
+        var result = await CreateSut().Handle(
             Command(
                 [new ProductGalleryEntry(null, new ImageUpload([1, 2, 3], "new.png", "image/png"), 0, true, newImageClientId)],
                 optionTypes,
                 [Variant(mangoValueId, "ELF-BC5000-MANGO", _storedImageId)]),
             CancellationToken.None);
 
-        _persisted!.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId))
-            .PinnedImageId.Should().BeNull();
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Be(TheShop.Application.Features.Products.ProductErrorKeys.VariantImageNotInGallery);
+        _persisted.Should().BeNull();
     }
 }
 
@@ -186,4 +186,4 @@ public class UpdateProductHandlerPinTests
 // AC-10a (pin a gallery image to a variant, Edit mode): Handle_PinningAKeptImage_ResolvesToTheStoredIdentifier,
 //         Handle_PinningAnImageAddedInThisEdit_ResolvesToTheNewlyMintedIdentifier,
 //         Handle_WithAKeptAndANewImagePinnedByDifferentVariants_ResolvesBoth
-// RULE-13 (removing a pinned image unpins its variants): Handle_PinningAnImageDroppedFromTheGallery_LeavesTheVariantUnpinned
+// RULE-13 (a removed image cannot be assigned): Handle_AssigningAnImageDroppedFromTheGallery_RejectsTheUpdate
