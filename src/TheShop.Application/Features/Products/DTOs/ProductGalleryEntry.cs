@@ -14,8 +14,7 @@ namespace TheShop.Application.Features.Products.DTOs;
 /// <param name="IsPrimary">Whether this entry is the product's primary image (RULE-7).</param>
 /// <param name="ClientId">
 /// The caller's own identifier for this entry, used solely to correlate a variant's
-/// <c>PinnedImageId</c> with an image that does not have a real identifier yet — a staff member
-/// can pin a just-picked image before the product is ever saved. It equals
+/// ordered variant image IDs with an image that does not have a real identifier yet. It equals
 /// <paramref name="ImageId"/> for a kept image, and is a client-minted correlation id for a new
 /// upload; the handler resolves it to the identifier the domain mints, so a client-supplied value
 /// never becomes an image's identity.

@@ -6,6 +6,8 @@ using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Components.Common;
 using TheShop.Web.Resources;
 using TheShop.Domain.ValueObjects;
+using MediatR;
+using TheShop.Application.Features.Products.Queries.ApplyVariantImages;
 
 namespace TheShop.Web.Components.Products;
 
@@ -20,6 +22,7 @@ namespace TheShop.Web.Components.Products;
 public partial class ProductVariantsCard : ShopComponentBase
 {
     [Inject] private IShopDialogService ConfirmDialogs { get; set; } = default!;
+    [Inject] private IMediator Mediator { get; set; } = default!;
 
     /// <summary>
     /// The product's own SKU, from which every variant SKU is derived (FR-15). Read live on every
@@ -92,7 +95,7 @@ public partial class ProductVariantsCard : ShopComponentBase
         public TheShop.Web.Common.UI.ShopNumericDraft PriceDraft { get; } = new();
         public TheShop.Web.Common.UI.ShopNumericDraft SalePriceDraft { get; } = new();
         public bool IsAvailable { get; set; } = true;
-        public Guid? PinnedImageId { get; set; }
+        public IReadOnlyList<Guid> ImageIds { get; set; } = [];
         public string Label { get; set; } = string.Empty;
     }
 
@@ -100,8 +103,10 @@ public partial class ProductVariantsCard : ShopComponentBase
     private List<VariantRow> _variants = [];
     private bool _initialized;
     private string? _lastProductSku;
-    private sealed record PinSelection(VariantRow Variant, string? ScopeLabel, int ScopeCount, Guid? ScopeValueId);
+    private sealed record PinSelection(VariantRow Variant, string? ScopeLabel, IReadOnlyList<Guid> SharedVariantIds,
+        Guid? ScopeValueId, bool InitiallyApplyToAllSharing);
     private PinSelection? _pinSelection;
+    private readonly HashSet<Guid> _applyToAllSharingValueIds = [];
 
     private bool IsFlagged(VariantRow variant) => FlaggedVariantIds.Contains(variant.Id);
 
@@ -132,7 +137,7 @@ public partial class ProductVariantsCard : ShopComponentBase
                 await NotifyAsync();
         }
 
-        await PruneRemovedPinsAsync();
+        await PruneRemovedImagesAsync();
         if (Disabled || (_pinSelection is { } selection && !_variants.Contains(selection.Variant)))
             _pinSelection = null;
     }
@@ -165,7 +170,7 @@ public partial class ProductVariantsCard : ShopComponentBase
             OriginalPrice = v.OriginalPrice,
             SalePrice = v.SalePrice,
             IsAvailable = v.IsAvailable,
-            PinnedImageId = v.PinnedImageId,
+            ImageIds = v.ImageIds,
             Label = v.Label,
         })];
     }
@@ -175,19 +180,14 @@ public partial class ProductVariantsCard : ShopComponentBase
     /// member can remove an image they pinned moments earlier, before either has been saved. The
     /// aggregate enforces the same rule server-side for images removed in an earlier session.
     /// </summary>
-    private Task PruneRemovedPinsAsync()
+    private Task PruneRemovedImagesAsync()
     {
         var available = GalleryImages.Select(image => image.Id).ToHashSet();
-        var stale = _variants
-            .Where(v => v.PinnedImageId is Guid pinned && !available.Contains(pinned))
-            .ToList();
-
+        var stale = _variants.Where(v => v.ImageIds.Any(id => !available.Contains(id))).ToList();
         if (stale.Count == 0)
             return Task.CompletedTask;
-
         foreach (var variant in stale)
-            variant.PinnedImageId = null;
-
+            variant.ImageIds = variant.ImageIds.Where(available.Contains).ToArray();
         return NotifyAsync();
     }
 
@@ -339,70 +339,46 @@ public partial class ProductVariantsCard : ShopComponentBase
     {
         if (Disabled || _pinSelection is not null || !_variants.Contains(variant))
             return;
-        var (scopeLabel, scopeCount) = FindSharedScope(variant);
-        _pinSelection = new(variant, scopeLabel, scopeCount, FindSharedOptionValueId(variant));
+        foreach (var type in _optionTypes)
+        {
+            var value = type.Values.FirstOrDefault(v => variant.OptionValueIds.Contains(v.Id));
+            if (value is null) continue;
+            var sharedIds = _variants.Where(v => v.OptionValueIds.Contains(value.Id)).Select(v => v.Id).ToArray();
+            if (sharedIds.Length > 1)
+            {
+                _pinSelection = new(variant, $"{type.Name} = {value.Value}", sharedIds,
+                    value.Id, _applyToAllSharingValueIds.Contains(value.Id));
+                return;
+            }
+        }
+        _pinSelection = new(variant, null, [], null, false);
     }
 
-    private async Task CompletePinAsync(PinSelection selection, VariantImagePinResult? pin)
+    private async Task CompletePinAsync(PinSelection selection, VariantImageSelectionResult? choice)
     {
         if (!ReferenceEquals(_pinSelection, selection))
             return;
         _pinSelection = null;
-        if (pin is null || Disabled || !_variants.Contains(selection.Variant) ||
-            (pin.ImageId is Guid imageId && !GalleryImages.Any(image => image.Id == imageId)))
+        if (choice is null || Disabled || !_variants.Contains(selection.Variant) ||
+            choice.ImageIds.Any(id => GalleryImages.All(image => image.Id != id)))
             return;
-
-        if (pin.ApplyToAllSharing)
+        var current = _variants.Select(v => new VariantInput(v.Id, [.. v.OptionValueIds],
+            v.Sku, v.OriginalPrice, v.SalePrice, v.IsAvailable, v.ImageIds)).ToArray();
+        IReadOnlyList<Guid> removedIds = choice.Append
+            ? selection.Variant.ImageIds.Except(choice.ImageIds).ToArray() : [];
+        var result = await Mediator.Send(new ApplyVariantImagesQuery(current,
+            choice.TargetVariantIds, choice.ImageIds, choice.Append, removedIds));
+        if (result.IsFailure || result.Value is null)
+            return;
+        var byId = result.Value.Where(v => v.Id is not null).ToDictionary(v => v.Id!.Value);
+        foreach (var row in _variants)
+            if (byId.TryGetValue(row.Id, out var updated)) row.ImageIds = updated.ImageIds;
+        if (selection.ScopeValueId is Guid scopeValueId)
         {
-            var sharedValueId = selection.ScopeValueId;
-            if (sharedValueId is Guid valueId)
-            {
-                foreach (var affected in _variants.Where(v => v.OptionValueIds.Contains(valueId)))
-                    affected.PinnedImageId = pin.ImageId;
-            }
+            if (choice.Append) _applyToAllSharingValueIds.Add(scopeValueId);
+            else _applyToAllSharingValueIds.Remove(scopeValueId);
         }
-        else
-        {
-            selection.Variant.PinnedImageId = pin.ImageId;
-        }
-
         await NotifyAsync();
-    }
-
-    /// <summary>
-    /// Finds this variant's first option value shared by at least one sibling, for the pin
-    /// dialog's "Apply To" scope (a defensible simplification for products with more than one
-    /// option type — the fan-out targets one option value at a time).
-    /// </summary>
-    private (string? Label, int Count) FindSharedScope(VariantRow variant)
-    {
-        foreach (var type in _optionTypes)
-        {
-            var value = type.Values.FirstOrDefault(v => variant.OptionValueIds.Contains(v.Id));
-            if (value is null)
-                continue;
-
-            var count = _variants.Count(v => v.OptionValueIds.Contains(value.Id));
-            if (count > 1)
-                return ($"{type.Name} = {value.Value}", count);
-        }
-
-        return (null, 0);
-    }
-
-    private Guid? FindSharedOptionValueId(VariantRow variant)
-    {
-        foreach (var type in _optionTypes)
-        {
-            var value = type.Values.FirstOrDefault(v => variant.OptionValueIds.Contains(v.Id));
-            if (value is null)
-                continue;
-
-            if (_variants.Count(v => v.OptionValueIds.Contains(value.Id)) > 1)
-                return value.Id;
-        }
-
-        return null;
     }
 
     private Task<bool> ConfirmRemovalAsync(int affectedCount) =>
@@ -513,7 +489,7 @@ public partial class ProductVariantsCard : ShopComponentBase
 
         var variantInputs = _variants
             .Select(v => new VariantInput(
-                v.Id, [.. v.OptionValueIds], v.Sku, v.OriginalPrice, v.SalePrice, v.IsAvailable, v.PinnedImageId))
+                v.Id, [.. v.OptionValueIds], v.Sku, v.OriginalPrice, v.SalePrice, v.IsAvailable, v.ImageIds))
             .ToList();
 
         var labels = _variants.ToDictionary(v => v.Id, v => v.Label);

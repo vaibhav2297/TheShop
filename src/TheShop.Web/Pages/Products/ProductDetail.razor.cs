@@ -16,30 +16,40 @@ namespace TheShop.Web.Pages.Products;
 
 /// <summary>Public product detail with explicit option selection and a responsive shared image gallery.</summary>
 [Route(Routes.ProductDetailPattern)]
+[Route(Routes.ProductBySlugPattern)]
+[Route(Routes.ProductVariantPattern)]
 public partial class ProductDetail : IAsyncDisposable
 {
     /// <summary>Product to load; missing and unpublished IDs share the unavailable state.</summary>
     [Parameter] public Guid Id { get; set; }
+    [Parameter] public string? ProductSlug { get; set; }
+    [Parameter] public string? VariantSlug { get; set; }
     [Inject] private IMediator Mediator { get; set; } = default!;
     [Inject] private BusyState BusyState { get; set; } = default!;
     [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
     [Inject] private IShopNotificationService Notifications { get; set; } = default!;
     [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private ProductDetailDto? _product;
     private ProductDetailVariantDto? _variant;
     private readonly Dictionary<Guid, Guid> _choices = [];
     private CancellationTokenSource? _load;
-    private int _generation, _activeIndex;
-    private bool _desktop, _expanded, _attention, _descriptionExpanded, _specificationsExpanded;
-    private bool _disposed, _pageReady, _carouselReady, _pendingTarget, _focusExpanded;
+    private int _generation, _galleryGeneration, _activeIndex;
+    private bool _desktop, _expanded, _attention, _invalidCombination, _descriptionExpanded, _specificationsExpanded;
+    private bool _disposed, _pageReady, _carouselReady, _focusExpanded, _clearAttention;
     private ElementReference _root;
     private IJSObjectReference? _module, _controller;
     private DotNetObjectReference<ProductDetail>? _reference;
     private string PageClass => ShopCssClass.Join("shop-product-detail", _expanded ? "shop-product-detail-expanded" : null);
     private string OptionsClass => ShopCssClass.Join("shop-product-detail-options", _attention ? "shop-product-detail-attention" : null);
-    private string? ReadyTestId => _pageReady && (_carouselReady || _product?.Images.Count == 0) ? "product-detail-ready" : null;
+    private IReadOnlyList<ProductImageDto> VisibleImages => _product is null ? [] :
+        !_product.HasVariants ? _product.Images :
+        _variant is null ? [] : _variant.ImageIds
+            .Select(id => _product.Images.FirstOrDefault(image => image.Id == id))
+            .OfType<ProductImageDto>().ToArray();
+    private string? ReadyTestId => _pageReady && (_carouselReady || VisibleImages.Count == 0) ? "product-detail-ready" : null;
     private static string OptionTestId(Guid id) => $"product-detail-option-{id}";
     private static string FormatPosition(int index, int count) => string.Format(Strings.ProductDetail_ImagePosition, index, count);
     private bool IsSelected(Guid group, Guid value) => _choices.GetValueOrDefault(group) == value;
@@ -77,6 +87,27 @@ public partial class ProductDetail : IAsyncDisposable
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
+        // Route parameters are reused by Blazor. Read the active path so stale values from a
+        // previous route shape cannot silently turn a slug request into a GUID request.
+        var segments = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', 2)[0]
+            .Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var id = segments.Length == 2 && Guid.TryParse(segments[1], out var parsed) ? parsed : (Guid?)null;
+        var productSlug = id is null && segments.Length >= 2 ? Uri.UnescapeDataString(segments[1]) : null;
+        var variantSlug = id is null && segments.Length == 3 ? Uri.UnescapeDataString(segments[2]) : null;
+        if (_product is { } current && productSlug == current.ProductSlug)
+        {
+            var selected = variantSlug is null
+                ? ProductDetailVariantResolver.ResolveInitial(current, null)
+                : current.Variants.FirstOrDefault(v => v.Slug == variantSlug);
+            if ((current.HasVariants || variantSlug is not null) && selected is null)
+            {
+                _product = null;
+                return;
+            }
+            if (selected?.Id != _variant?.Id) CommitSelection(selected);
+            Canonicalize(current, selected, id is not null || variantSlug is null);
+            return;
+        }
         _load?.Cancel();
         _load?.Dispose();
         _load = new CancellationTokenSource();
@@ -84,18 +115,21 @@ public partial class ProductDetail : IAsyncDisposable
         var generation = ++_generation;
         await DisposeControllerAsync();
         _product = null; _variant = null; _choices.Clear(); _activeIndex = 0;
-        _expanded = _attention = _descriptionExpanded = _specificationsExpanded = false;
-        _pageReady = _carouselReady = _pendingTarget = _focusExpanded = false;
+        _expanded = _attention = _invalidCombination = _descriptionExpanded = _specificationsExpanded = false;
+        _pageReady = _carouselReady = _focusExpanded = false;
         Breadcrumbs.Set(BreadcrumbTrail.Storefront().Current(Strings.Nav_Products));
         try
         {
             var result = await BusyState.RunAsync(BusyKeys.Products.Detail,
-                () => Mediator.Send(new GetProductDetailQuery(Id), ct));
+                () => Mediator.Send(new GetProductDetailQuery(id, productSlug, variantSlug), ct));
             if (_disposed || generation != _generation || ct.IsCancellationRequested) return;
             if (result.IsSuccess)
             {
                 _product = result.Value;
                 Breadcrumbs.Set(BreadcrumbTrail.Storefront().Add(Strings.Nav_Products, Routes.Products).Current(_product!.Name));
+                var selected = _product.Variants.FirstOrDefault(v => v.Id == _product.SelectedVariantId);
+                CommitSelection(selected);
+                Canonicalize(_product, selected, id is not null || variantSlug is null);
             }
             else if (result.Error != ProductErrorKeys.DetailUnavailable)
                 Notifications.Show(Localizer[result.Error!], ShopNotificationKind.Error);
@@ -117,47 +151,59 @@ public partial class ProductDetail : IAsyncDisposable
             _pageReady = true;
             StateHasChanged();
         }
-        if (_pendingTarget)
+        if (_clearAttention)
         {
-            _pendingTarget = false;
+            _clearAttention = false;
             await _controller.InvokeVoidAsync("clearAttention");
-            if (_desktop) await _controller.InvokeVoidAsync("revealImage", _activeIndex);
         }
         if (_focusExpanded)
         {
             _focusExpanded = false;
-            await _controller.InvokeVoidAsync("focusExpanded", string.Format(Strings.ProductDetail_AllImagesShown, _product.Images.Count));
+            await _controller.InvokeVoidAsync("focusExpanded", string.Format(Strings.ProductDetail_AllImagesShown, VisibleImages.Count));
         }
     }
 
     private void OnCarouselReady(int generation)
     {
-        if (generation == _generation) _carouselReady = true;
+        if (generation == _galleryGeneration) _carouselReady = true;
     }
 
     private void OnImageChanged(int index, int generation)
     {
-        if (generation == _generation) _activeIndex = index;
+        if (generation == _galleryGeneration) _activeIndex = index;
     }
     private void SelectValue(Guid group, Guid value)
     {
         if (_product is null) return;
-        _choices[group] = value;
-        _variant = ProductDetailVariantResolver.Resolve(_product, _choices.Values.ToArray());
-        if (_variant is null) return;
-        _attention = false;
-        _activeIndex = TargetIndex();
-        if (_desktop && _activeIndex >= 4) _expanded = true;
-        _pendingTarget = true;
+        var choices = new Dictionary<Guid, Guid>(_choices) { [group] = value };
+        var selected = ProductDetailVariantResolver.Resolve(_product, choices.Values.ToArray());
+        if (selected is null) { _invalidCombination = true; return; }
+        CommitSelection(selected);
+        Navigation.NavigateTo(Routes.ProductVariant(_product.ProductSlug, selected.Slug));
     }
 
-    private int TargetIndex()
+    private void CommitSelection(ProductDetailVariantDto? selected)
     {
-        if (_product is null) return 0;
-        var target = _variant?.TargetImageId ?? _product.PrimaryImageId;
-        for (var index = 0; index < _product.Images.Count; index++)
-            if (_product.Images[index].Id == target) return index;
-        return 0;
+        _variant = selected;
+        _choices.Clear();
+        if (_product is not null && selected is not null)
+            foreach (var group in _product.OptionTypes)
+            {
+                var value = group.Values.FirstOrDefault(v => selected.OptionValueIds.Contains(v.Id));
+                if (value is not null) _choices[group.Id] = value.Id;
+            }
+        _activeIndex = 0;
+        _expanded = _attention = _invalidCombination = _carouselReady = false;
+        _galleryGeneration++;
+        _clearAttention = _controller is not null;
+    }
+
+    private void Canonicalize(ProductDetailDto product, ProductDetailVariantDto? selected, bool replace)
+    {
+        var canonical = selected is null ? Routes.ProductBySlug(product.ProductSlug) :
+            Routes.ProductVariant(product.ProductSlug, selected.Slug);
+        if (Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', 2)[0].TrimEnd('/') != canonical.TrimStart('/'))
+            Navigation.NavigateTo(canonical, replace: replace);
     }
 
     private void ToggleGallery()
@@ -180,7 +226,7 @@ public partial class ProductDetail : IAsyncDisposable
     {
         if (_disposed || generation != _generation) return Task.CompletedTask;
         _desktop = desktop;
-        if (!desktop) _activeIndex = TargetIndex();
+        if (!desktop) _activeIndex = 0;
         return InvokeAsync(StateHasChanged);
     }
 

@@ -31,7 +31,8 @@ internal static class ProductChildMapper
     public static ProductSpecification ToDomain(this ProductSpecificationRecord record) =>
         ProductSpecification.Create(record.Id, record.Name, record.Value, record.Position);
 
-    public static ProductVariant ToDomain(this ProductVariantRecord record, IReadOnlySet<Guid> optionValueIds) =>
+    public static ProductVariant ToDomain(this ProductVariantRecord record,
+        IReadOnlySet<Guid> optionValueIds, IReadOnlyList<Guid>? imageIds = null) =>
         ProductVariant.Create(
             record.Id,
             Sku.Create(record.Sku),
@@ -40,7 +41,7 @@ internal static class ProductChildMapper
                     Money.Create(original), record.SalePrice is decimal sale ? Money.Create(sale) : null)
                 : null,
             record.IsAvailable,
-            record.ImageId,
+            imageIds ?? (record.ImageId is Guid imageId ? [imageId] : []),
             optionValueIds,
             record.Position);
 }

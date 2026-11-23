@@ -50,11 +50,11 @@
     else if (_product is { } product)
     {
         <article @ref="_root" @key="product.Id" class="@PageClass" data-testid="@ReadyTestId">
-            @{ var galleryGeneration = _generation; }
+            @{ var galleryGeneration = _galleryGeneration; var images = VisibleImages; }
             <div class="shop-product-detail-gallery-area">
-                @if (product.Images.Count > 0)
+                @if (images.Count > 0)
                 {
-                    <ShopSwipeCarousel TItem="ProductImageDto" @key="product.Id" Items="@product.Images"
+                    <ShopSwipeCarousel TItem="ProductImageDto" @key="galleryGeneration" Items="@images"
                                        ImageSource="@(image => image.Url)"
                                        ImageAlt="@(_ => string.Format(Strings.Product_ImageAlt, product.Name))"
                                        PlaceholderLabel="@product.Name"
@@ -70,7 +70,7 @@
                                Alt="@string.Format(Strings.Product_ImageAlt, product.Name)"
                                PlaceholderLabel="@product.Name" />
                 }
-                @if (product.Images.Count > 4)
+                @if (images.Count > 4)
                 {
                     <div class="shop-product-detail-more">
                         <ShopButton Variant="ShopVariant.Outlined" Size="ShopSize.Large"
@@ -88,6 +88,10 @@
                         <p class="shop-product-detail-brand">@product.BrandName</p>
                     }
                     <h1 class="shop-product-detail-title" tabindex="-1">@product.Name</h1>
+                    @if (_variant is { Sku.Length: > 0 } selectedVariant)
+                    {
+                        <p class="shop-product-detail-sku">@Strings.ProductVariants_ColumnSku: @selectedVariant.Sku</p>
+                    }
                 </div>
                 @if (product.HasVariants)
                 {
@@ -108,6 +112,10 @@
                         }
                     </div>
                 }
+                @if (_invalidCombination)
+                {
+                    <p class="shop-product-error" role="status">@Strings.ProductDetail_CombinationUnavailable</p>
+                }
                 <div class="shop-product-detail-pricing" data-testid="product-detail-price" aria-live="polite" aria-atomic="true">
                     <span class="shop-product-detail-price">@PriceLabel</span>
                     @if (DiscountOriginal is { } original)
@@ -117,6 +125,7 @@
                 </div>
                 <div class="shop-product-detail-actions">
                     <ShopButton Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Shopping_Bag_01"
+                                Disabled="@(product.HasVariants && _variant?.IsAvailable != true)"
                                 OnClick="AddToBagAsync" data-testid="product-detail-add-to-bag">@Strings.ProductDetail_AddToBag</ShopButton>
                     <ShopButton Size="ShopSize.Large" Variant="ShopVariant.Outlined" EndIcon="@ShopIcons.Outlined.Heart_01"
                                 data-testid="product-detail-favourite">@Strings.ProductDetail_Favourite</ShopButton>

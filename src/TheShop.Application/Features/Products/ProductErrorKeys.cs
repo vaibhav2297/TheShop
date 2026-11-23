@@ -42,6 +42,8 @@ public static class ProductErrorKeys
     public const string OptionNameDuplicated = "Product_OptionNameDuplicated";
     public const string OptionValueDuplicated = "Product_OptionValueDuplicated";
     public const string VariantImageNotInGallery = "Product_VariantImageNotInGallery";
+    public const string VariantImageDuplicate = "Product_VariantImageDuplicate";
+    public const string VariantImageSelectionInvalid = "Product_VariantImageSelectionInvalid";
     public const string NotPublishable = "Product_NotPublishable";
     public const string ModifiedElsewhere = "Product_ModifiedElsewhere";
     public const string NotFound = "Product_NotFound";

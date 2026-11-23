@@ -10,8 +10,8 @@ namespace TheShop.Application.Features.Products.Mappers;
 /// <summary>Projects a published aggregate into safe storefront content and deterministic gallery/price data.</summary>
 public static class ProductDetailDtoMapper
 {
-    /// <summary>Orders the shared gallery primary-first and resolves effective prices and variant image fallbacks.</summary>
-    public static ProductDetailDto ToDto(Product product, IFileStorage fileStorage)
+    /// <summary>Orders the shared library and preserves each variant's explicit image order without a fallback.</summary>
+    public static ProductDetailDto ToDto(Product product, IFileStorage fileStorage, ProductAddressDto? addresses = null)
     {
         var images = product.Images.OrderByDescending(i => i.IsPrimary)
             .ThenBy(i => i.Position).ThenBy(i => i.Id)
@@ -31,8 +31,9 @@ public static class ProductDetailDtoMapper
                     .Select(o => o.Value)),
                 v.Pricing?.OriginalPrice.Amount, v.Pricing?.SalePrice?.Amount, v.Pricing?.Effective.Amount,
                 v.IsAvailable,
-                v.PinnedImageId is { } pin && images.Any(i => i.Id == pin) ? pin : primaryId,
-                v.OptionValueIds.Order().ToArray()))
+                Array.AsReadOnly(v.ImageIds.Where(id => images.Any(image => image.Id == id)).ToArray()),
+                v.OptionValueIds.Order().ToArray(),
+                addresses?.VariantSlugs.GetValueOrDefault(v.Id) ?? "", v.Sku.Value))
             .ToArray();
         var prices = variants.Where(v => v.CurrentPrice.HasValue).Select(v => v.CurrentPrice!.Value).ToArray();
         var currency = product.HasVariants
@@ -49,7 +50,7 @@ public static class ProductDetailDtoMapper
             product.Specifications.OrderBy(s => s.Position).ThenBy(s => s.Id)
                 .Where(s => !string.IsNullOrWhiteSpace(s.Name) && !string.IsNullOrWhiteSpace(s.Value))
                 .Select(s => new ProductSpecificationDto(s.Id, s.Name, s.Value, s.Position)).ToArray(),
-            variants);
+            variants, addresses?.ProductSlug ?? "");
     }
 
     private static string? SafeDescription(ProductDescription description)

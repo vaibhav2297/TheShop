@@ -5,6 +5,12 @@ namespace TheShop.Application.Features.Products;
 /// <summary>Resolves only explicit, complete storefront option selections.</summary>
 public static class ProductDetailVariantResolver
 {
+    /// <summary>Resolves an exact slug or the first available variant, then the first saved variant.</summary>
+    public static ProductDetailVariantDto? ResolveInitial(ProductDetailDto product, string? variantSlug) =>
+        variantSlug is not null
+            ? product.Variants.FirstOrDefault(v => v.Slug == variantSlug)
+            : product.Variants.FirstOrDefault(v => v.IsAvailable) ?? product.Variants.FirstOrDefault();
+
     /// <summary>Returns the matching variant, or null until exactly one value in every group forms a configured combination.</summary>
     public static ProductDetailVariantDto? Resolve(ProductDetailDto product, IReadOnlyCollection<Guid> selectedValueIds)
     {

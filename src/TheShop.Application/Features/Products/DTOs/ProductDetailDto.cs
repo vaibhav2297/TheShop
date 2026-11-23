@@ -19,4 +19,6 @@ public sealed record ProductDetailDto(
     IReadOnlyList<ProductImageDto> Images,
     IReadOnlyList<ProductOptionTypeDto> OptionTypes,
     IReadOnlyList<ProductSpecificationDto> Specifications,
-    IReadOnlyList<ProductDetailVariantDto> Variants);
+    IReadOnlyList<ProductDetailVariantDto> Variants,
+    string ProductSlug = "",
+    Guid? SelectedVariantId = null);

@@ -43,9 +43,9 @@ public sealed class NativeVariantImageJourneyTests(PlaywrightFixture playwright)
             {
                 [nameof(VariantImageDialog.VariantLabel)] = "Red - 15 mg",
                 [nameof(VariantImageDialog.GalleryImages)] = images,
-                [nameof(VariantImageDialog.CurrentImageId)] = images[0].Id,
+                [nameof(VariantImageDialog.CurrentImageIds)] = new[] { images[0].Id },
                 [nameof(VariantImageDialog.SharedScopeLabel)] = "Color = Red",
-                [nameof(VariantImageDialog.SharedScopeCount)] = 2
+                [nameof(VariantImageDialog.SharedVariantIds)] = new[] { Guid.NewGuid(), Guid.NewGuid() }
             }))).ToHtmlString());
 
         // Static component markup and production modal module verify browser mechanics.
@@ -102,6 +102,11 @@ public sealed class NativeVariantImageJourneyTests(PlaywrightFixture playwright)
         metrics[0].Should().BeApproximately(Math.Min(600d, width - 32d), 1,
             "the picker explicitly selects ShopMaxWidth.Small");
         metrics.Skip(1).Should().Equal(132d, 132d, 32d, 8d);
+        var addTile = await dialog.Locator(".shop-variant-image-gallery > .shop-image-upload-add")
+            .EvaluateAsync<double[]>("el => { const rect = el.getBoundingClientRect(); return [rect.width, rect.height]; }");
+        addTile[0].Should().BeApproximately(132d, 1);
+        addTile[1].Should().BeApproximately(addTile[0], 1,
+            "Add images must occupy a full square grid tile even when it wraps to a new row");
         foreach (var option in await options.AllAsync())
         {
             var imageGeometry = await option.EvaluateAsync<double[]>("""

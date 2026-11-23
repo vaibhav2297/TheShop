@@ -1,0 +1,240 @@
+{
+  "feature": "007_variant-urls-and-galleries",
+  "trait": "007_variant-urls-and-galleries",
+  "date": "2026-11-17",
+  "journeys": [
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/VariantGalleryPublicJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests",
+      "tests": 13,
+      "methods": [
+        {
+          "name": "AC1_ExactAddressesShowTheirOwnPurchaseDetailsAndPhotos",
+          "ac": 1
+        },
+        {
+          "name": "AC2_SelectionChangesAddressAndGalleryWithoutReloadOrScroll",
+          "ac": 2
+        },
+        {
+          "name": "AC3_DesktopAndMobileGalleriesKeepSavedImageOrder",
+          "ac": 3
+        },
+        {
+          "name": "AC8_ParentAddressSelectsFirstAvailableOrFirstUnavailable",
+          "ac": 8
+        },
+        {
+          "name": "AC9_HistoryRefreshAndCopiedAddressRestoreExactVariant",
+          "ac": 9
+        },
+        {
+          "name": "AC10_EmptyAndBrokenAssignedImagesNeverShowSiblingPhotos",
+          "ac": 10
+        },
+        {
+          "name": "AC11_LegacyProductLinkAndNonvariantGalleryRemainUsable",
+          "ac": 11
+        },
+        {
+          "name": "AC13_UnknownWrongParentAndUnpublishedAddressesAreUnavailable",
+          "ac": 13
+        },
+        {
+          "name": "AC14_UnavailableExactVariantKeepsIdentityAndGallery",
+          "ac": 14
+        },
+        {
+          "name": "AC17_RenamedLabelsKeepSavedVariantAddress",
+          "ac": 17
+        },
+        {
+          "name": "AC18_KeyboardAndTouchKeepSelectedIdentityAndGalleryPosition",
+          "ac": 18
+        },
+        {
+          "name": "AC19_RapidSelectionsLeaveLatestVariantAligned",
+          "ac": 19
+        },
+        {
+          "name": "AC22_NonexistentCombinationCannotCommitPurchaseState",
+          "ac": 22
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/VariantGalleryAdminJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.VariantGalleryAdminJourneyTests",
+      "tests": 5,
+      "methods": [
+        {
+          "name": "AC4_ReorderingSavedImagesChangesVariantCover",
+          "ac": 4
+        },
+        {
+          "name": "AC7_RemovingCoverPromotesNextAndFinalRemovalShowsPlaceholder",
+          "ac": 7
+        },
+        {
+          "name": "AC16_ForeignProductImagesCannotBeSelectedAndDuplicatesStaySingle",
+          "ac": 16
+        },
+        {
+          "name": "AC21_FailedSavePreservesStagedGalleryForRetry",
+          "ac": 21
+        },
+        {
+          "name": "AC24_VariantUploadJoinsLibraryWithoutChangingSiblingOrPrimary",
+          "ac": 24
+        }
+      ]
+    }
+  ],
+  "totalTests": 18,
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC1_ExactAddressesShowTheirOwnPurchaseDetailsAndPhotos",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-2",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC2_SelectionChangesAddressAndGalleryWithoutReloadOrScroll",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-3",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC3_DesktopAndMobileGalleriesKeepSavedImageOrder",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-4",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryAdminJourneyTests.AC4_ReorderingSavedImagesChangesVariantCover",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-5",
+      "coverage": "unit",
+      "evidence": "TheShop.Domain.Tests.ValueObjects.VariantImageAssignmentTests.AppendMissing_ExistingAndRepeatedImages_PreservesCoverAndAppendsOnce",
+      "reason": "The same acceptance criterion has passing lower-level evidence in the feature test manifest."
+    },
+    {
+      "id": "AC-6",
+      "coverage": "unit",
+      "evidence": "TheShop.Application.Tests.Features.Products.ApplyVariantImagesTests.Handle_ReplaceOneVariant_ReordersCoverWithoutChangingProductOrSibling",
+      "reason": "The same acceptance criterion has passing lower-level evidence in the feature test manifest."
+    },
+    {
+      "id": "AC-7",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryAdminJourneyTests.AC7_RemovingCoverPromotesNextAndFinalRemovalShowsPlaceholder",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-8",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC8_ParentAddressSelectsFirstAvailableOrFirstUnavailable",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-9",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC9_HistoryRefreshAndCopiedAddressRestoreExactVariant",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-10",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC10_EmptyAndBrokenAssignedImagesNeverShowSiblingPhotos",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-11",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC11_LegacyProductLinkAndNonvariantGalleryRemainUsable",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-12",
+      "coverage": "unit",
+      "evidence": "TheShop.Infrastructure.Tests.Persistence.VariantUrlGallerySchemaTests.Migration_BackfillsPinAndStableReadableRoutes",
+      "reason": "The same acceptance criterion has passing lower-level evidence in the feature test manifest."
+    },
+    {
+      "id": "AC-13",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC13_UnknownWrongParentAndUnpublishedAddressesAreUnavailable",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-14",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC14_UnavailableExactVariantKeepsIdentityAndGallery",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-15",
+      "coverage": "unit",
+      "evidence": "TheShop.Infrastructure.Tests.Persistence.VariantUrlGallerySchemaTests.SaveProduct_GuestCannotChangeAssignments",
+      "reason": "The same acceptance criterion has passing lower-level evidence in the feature test manifest."
+    },
+    {
+      "id": "AC-16",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryAdminJourneyTests.AC16_ForeignProductImagesCannotBeSelectedAndDuplicatesStaySingle",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-17",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC17_RenamedLabelsKeepSavedVariantAddress",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-18",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC18_KeyboardAndTouchKeepSelectedIdentityAndGalleryPosition",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-19",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC19_RapidSelectionsLeaveLatestVariantAligned",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-20",
+      "coverage": "unit",
+      "evidence": "TheShop.Domain.Tests.Entities.ProductTests.RemoveImage_AssignedToMultipleVariants_PrunesBothWithoutDeletingVariants",
+      "reason": "The same acceptance criterion has passing lower-level evidence in the feature test manifest."
+    },
+    {
+      "id": "AC-21",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryAdminJourneyTests.AC21_FailedSavePreservesStagedGalleryForRetry",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-22",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryPublicJourneyTests.AC22_NonexistentCombinationCannotCommitPurchaseState",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    },
+    {
+      "id": "AC-23",
+      "coverage": "unit",
+      "evidence": "TheShop.Web.Tests.Components.Products.VariantImageDialogTests.Apply_ReorderedImages_UsesFirstAsCover",
+      "reason": "The same acceptance criterion has passing lower-level evidence in the feature test manifest."
+    },
+    {
+      "id": "AC-24",
+      "coverage": "e2e",
+      "evidence": "TheShop.E2E.Tests.Journeys.VariantGalleryAdminJourneyTests.AC24_VariantUploadJoinsLibraryWithoutChangingSiblingOrPrimary",
+      "reason": "The browser journey checks the visible route, gallery, or persisted interaction."
+    }
+  ]
+}

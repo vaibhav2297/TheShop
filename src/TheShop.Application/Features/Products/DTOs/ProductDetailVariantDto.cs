@@ -1,7 +1,7 @@
 namespace TheShop.Application.Features.Products.DTOs;
 
 /// <summary>
-/// A public option combination and its price; target image already includes the primary-image fallback.
+/// A public option combination with its saved slug, SKU, price, and explicitly ordered images.
 /// </summary>
 public sealed record ProductDetailVariantDto(
     Guid Id,
@@ -10,5 +10,7 @@ public sealed record ProductDetailVariantDto(
     decimal? SalePrice,
     decimal? CurrentPrice,
     bool IsAvailable,
-    Guid? TargetImageId,
-    IReadOnlyList<Guid> OptionValueIds);
+    IReadOnlyList<Guid> ImageIds,
+    IReadOnlyList<Guid> OptionValueIds,
+    string Slug,
+    string Sku);

@@ -62,6 +62,12 @@
     @include text-style.apply(h3);
 }
 
+.shop-product-detail-sku {
+    margin: 0;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(caption);
+}
+
 .shop-product-detail-options {
     display: flex;
     flex-direction: column;

@@ -28,11 +28,7 @@ internal static class ProductInputMapper
         [.. specifications.Select(s => new ProductSpecificationInput(s.Id, s.Name, s.Value))];
 
     /// <summary>
-    /// Maps the command's variant rows onto the aggregate's input shape, resolving each pin through
-    /// <paramref name="imageIdByClientId"/> — the map from the caller's own gallery identifiers to
-    /// the identifiers the domain minted for this save. A pin that resolves to nothing is dropped
-    /// rather than carried through: it names an image that is not in the product's gallery, which
-    /// RULE-13 forbids, and the same rule already leaves a variant unpinned when its image goes.
+    /// Resolves every staged image identifier to its saved identity, rejecting unknown identifiers.
     /// </summary>
     public static IReadOnlyList<ProductVariantInput> ToVariantInputs(
         IReadOnlyList<VariantInput> variants,
@@ -43,12 +39,8 @@ internal static class ProductInputMapper
             Sku.Create(v.Sku),
             ToPricing(v.OriginalPrice, v.SalePrice),
             v.IsAvailable,
-            ResolvePin(v.PinnedImageId, imageIdByClientId)))];
-
-    private static Guid? ResolvePin(Guid? clientImageId, IReadOnlyDictionary<Guid, Guid> imageIdByClientId) =>
-        clientImageId is Guid clientId && imageIdByClientId.TryGetValue(clientId, out var imageId)
-            ? imageId
-            : null;
+            v.ImageIds.Select(id => imageIdByClientId.TryGetValue(id, out var imageId)
+                ? imageId : throw new TheShop.Domain.Exceptions.ProductImageNotOwnedException()).ToArray()))];
 
     /// <summary>
     /// Normalizes the product's own SKU and every variant SKU (RULE-8) into the comparison set

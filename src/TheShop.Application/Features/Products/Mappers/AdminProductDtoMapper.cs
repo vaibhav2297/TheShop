@@ -102,7 +102,7 @@ public static class AdminProductDtoMapper
             variant.Pricing?.OriginalPrice.Amount,
             variant.Pricing?.SalePrice?.Amount,
             variant.IsAvailable,
-            variant.PinnedImageId,
+            Array.AsReadOnly(variant.ImageIds.ToArray()),
             [.. variant.OptionValueIds],
             BuildVariantLabel(product, variant));
 

@@ -25,5 +25,5 @@ internal static class ProductDetailTestData
     internal static ProductVariant Variant(int id, int value, decimal original, decimal? sale, Guid? image) =>
         ProductVariant.Create(Id(id), Sku.Create($"DETAIL-{id}"),
             ProductPricing.Create(Money.Create(original), sale is { } amount ? Money.Create(amount) : null),
-            true, image, new HashSet<Guid> { Id(value) }, id);
+            true, image is Guid imageId ? [imageId] : [], new HashSet<Guid> { Id(value) }, id);
 }

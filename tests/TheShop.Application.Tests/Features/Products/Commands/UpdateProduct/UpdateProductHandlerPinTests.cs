@@ -88,7 +88,8 @@ public class UpdateProductHandlerPinTests
     }
 
     private static VariantInput Variant(Guid optionValueId, string sku, Guid? pinnedImageId) =>
-        new(Guid.NewGuid(), [optionValueId], sku, 24.99m, null, true, pinnedImageId);
+        new(Guid.NewGuid(), [optionValueId], sku, 24.99m, null, true,
+            pinnedImageId is Guid id ? [id] : []);
 
     [Fact]
     [Trait("Feature", "create-product")]
@@ -105,7 +106,7 @@ public class UpdateProductHandlerPinTests
 
         result.IsSuccess.Should().BeTrue();
         _persisted!.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId))
-            .PinnedImageId.Should().Be(_storedImageId);
+            .ImageIds.Should().Equal(_storedImageId);
     }
 
     [Fact]
@@ -130,7 +131,7 @@ public class UpdateProductHandlerPinTests
         var newImageId = _persisted!.Images[1].Id;
         newImageId.Should().NotBe(newImageClientId, "the aggregate mints the identifier, not the client");
         _persisted.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId))
-            .PinnedImageId.Should().Be(newImageId);
+            .ImageIds.Should().Equal(newImageId);
     }
 
     [Fact]
@@ -154,9 +155,9 @@ public class UpdateProductHandlerPinTests
             CancellationToken.None);
 
         _persisted!.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId))
-            .PinnedImageId.Should().Be(_persisted.Images[0].Id);
+            .ImageIds.Should().Equal(_persisted.Images[0].Id);
         _persisted.Variants.Single(v => v.OptionValueIds.Contains(mintValueId))
-            .PinnedImageId.Should().Be(_persisted.Images[1].Id);
+            .ImageIds.Should().Equal(_persisted.Images[1].Id);
     }
 
     [Fact]
@@ -176,7 +177,7 @@ public class UpdateProductHandlerPinTests
             CancellationToken.None);
 
         _persisted!.Variants.Single(v => v.OptionValueIds.Contains(mangoValueId))
-            .PinnedImageId.Should().BeNull();
+            .ImageIds.Should().BeEmpty();
     }
 }
 

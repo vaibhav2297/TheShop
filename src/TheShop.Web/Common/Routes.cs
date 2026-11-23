@@ -12,8 +12,13 @@ public static class Routes
     public const string Products = "/products";
     /// <summary>Public product detail route; authentication is not required.</summary>
     public const string ProductDetailPattern = "/products/{id:guid}";
+    public const string ProductBySlugPattern = "/products/{productSlug}";
+    public const string ProductVariantPattern = "/products/{productSlug}/{variantSlug}";
     /// <summary>Builds a public product detail URL.</summary>
     public static string ProductDetail(Guid id) => $"{Products}/{id:D}";
+    public static string ProductBySlug(string productSlug) => $"{Products}/{Uri.EscapeDataString(productSlug)}";
+    public static string ProductVariant(string productSlug, string variantSlug) =>
+        $"{ProductBySlug(productSlug)}/{Uri.EscapeDataString(variantSlug)}";
     public const string Categories = "/categories";
     public const string Brands = "/brands";
     public const string Deals = "/deals";

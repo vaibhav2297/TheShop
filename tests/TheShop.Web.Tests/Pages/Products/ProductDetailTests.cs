@@ -59,8 +59,8 @@ public class ProductDetailTests : TestContext
         [new(Id(10), "Flavour", 0, [new(Id(11), "Mango", 0), new(Id(12), "Peach", 1)]),
          new(Id(20), "Nicotine", 1, [new(Id(21), "10mg", 0), new(Id(22), "20mg", 1)])],
         [new(Id(50), "Capacity", "2 ml", 0)],
-        [new(Id(30), "Mango / 10mg", 30, 20, 20, true, imageCount > 5 ? Id(105) : imageCount > 0 ? Id(100) : null, [Id(11), Id(21)]),
-         new(Id(31), "Peach / 20mg", 25, null, 25, true, imageCount > 0 ? Id(100) : null, [Id(12), Id(22)])]);
+        [new(Id(30), "Mango / 10mg", 30, 20, 20, true, imageCount > 5 ? [Id(105)] : imageCount > 0 ? [Id(100)] : [], [Id(11), Id(21)], "mango-10mg", "MANGO-10"),
+         new(Id(31), "Peach / 20mg", 25, null, 25, true, imageCount > 0 ? [Id(100)] : [], [Id(12), Id(22)], "peach-20mg", "PEACH-20")], "peach-ice", Id(30));
 
     private IRenderedComponent<ProductDetail> Open() => Render<ProductDetail>(p => p.Add(c => c.Id, Id(1)));
     private static string Price(IRenderedComponent<ProductDetail> cut) => cut.Find(".shop-product-detail-price").TextContent;

@@ -72,7 +72,7 @@
                             <td><ShopMoneyField @key="variant.Id" @ref="variant.SalePriceField" Value="@variant.SalePrice" ValueExpression="@(() => variant.SalePrice)" DraftState="@variant.SalePriceDraft"
                                                 ValueChanged="@((decimal? v) => OnVariantSalePriceChangedAsync(variant, v))" aria-label="@($"{variant.Label} {Strings.ProductVariants_ColumnSalePrice}")" Disabled="@Disabled" /></td>
                             <td><ShopChip Size="ShopSize.Small" Selected="@variant.IsAvailable" SelectedChanged="@(value => OnVariantAvailableChangedAsync(variant, value))" Disabled="@Disabled">@(variant.IsAvailable ? Strings.AddProduct_StatusActive : Strings.AddProduct_StatusInactive)</ShopChip></td>
-                            <td><ShopButton Variant="ShopVariant.Outlined" Size="ShopSize.Small" Disabled="@Disabled" OnClick="@(() => OpenPinDialog(variant))">@(variant.PinnedImageId is null ? Strings.ProductVariants_PinImage : Strings.ProductVariants_ChangeImage)</ShopButton></td>
+                            <td><ShopButton Variant="ShopVariant.Outlined" Size="ShopSize.Small" Disabled="@Disabled" OnClick="@(() => OpenPinDialog(variant))">@(variant.ImageIds.Count == 0 ? Strings.ProductVariants_PinImage : Strings.ProductVariants_ChangeImage)</ShopButton></td>
                         </RowTemplate>
                     </ShopTable>
                 }
@@ -84,7 +84,9 @@
 @if (_pinSelection is { } selection)
 {
     <VariantImageDialog @key="selection" VariantLabel="@selection.Variant.Label"
-                        GalleryImages="@GalleryImages" CurrentImageId="@selection.Variant.PinnedImageId" AddGalleryFiles="@AddGalleryFiles" UploadErrors="@UploadErrors"
-                        SharedScopeLabel="@selection.ScopeLabel" SharedScopeCount="@selection.ScopeCount"
-                        OnCompleted="@((VariantImagePinResult? result) => CompletePinAsync(selection, result))" />
+                        GalleryImages="@GalleryImages" CurrentImageIds="@selection.Variant.ImageIds" AddGalleryFiles="@AddGalleryFiles" UploadErrors="@UploadErrors"
+                        CurrentVariantId="@selection.Variant.Id"
+                        SharedScopeLabel="@selection.ScopeLabel" SharedVariantIds="@selection.SharedVariantIds"
+                        InitiallyApplyToAllSharing="@selection.InitiallyApplyToAllSharing"
+                        OnCompleted="@((VariantImageSelectionResult? result) => CompletePinAsync(selection, result))" />
 }

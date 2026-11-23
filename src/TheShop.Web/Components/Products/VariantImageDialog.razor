@@ -24,7 +24,7 @@
                                         var image = GalleryImages[index];
                                         <ShopImageTile @key="image.Id" Class="shop-variant-image-option" Src="@image.Url"
                                                        Alt="@string.Format(Strings.VariantImage_ImageLabel, index + 1, VariantLabel)"
-                                                       Selected="@(_selectedImageId == image.Id)" Removable="false" Disabled="@uploading"
+                                                       Selected="@_selected.Contains(image.Id)" Primary="@(_selected.Count > 0 && _selected[0] == image.Id)" Removable="false" Disabled="@uploading"
                                                        data-image-id="@image.Id" OnClick="@(() => SelectImage(image.Id))" />
                                     }
                                     <button type="button" class="shop-image-upload-add" data-file-picker disabled="@(uploading || !AddGalleryFiles.HasDelegate)">
@@ -53,11 +53,11 @@
                 {
                     <fieldset class="shop-variant-image-scope">
                         <legend class="shop-variant-image-label">@Strings.VariantImage_ApplyToLabel</legend>
-                        <ShopCheckbox Label="@string.Format(Strings.VariantImage_ApplyToAllSharing, SharedScopeCount, SharedScopeLabel)" Size="ShopSize.Medium"
-                                      Value="@_applyToAllSharing" ValueExpression="@(() => _applyToAllSharing)" ValueChanged="@(_ => _applyToAllSharing = true)"
+                        <ShopCheckbox Label="@string.Format(Strings.VariantImage_ApplyToAllSharing, SharedVariantIds.Count, SharedScopeLabel)" Size="ShopSize.Medium"
+                                      Value="@_bulk" ValueExpression="@(() => _bulk)" ValueChanged="@(_ => _bulk = true)"
                                       Disabled="@uploading" data-testid="variant-image-scope-all" />
-                        <ShopCheckbox Label="@Strings.VariantImage_ThisVariantOnly" Size="ShopSize.Medium" Value="@(!_applyToAllSharing)"
-                                      ValueExpression="@(() => _applyToAllSharing)" ValueChanged="@(_ => _applyToAllSharing = false)"
+                        <ShopCheckbox Label="@Strings.VariantImage_ThisVariantOnly" Size="ShopSize.Medium" Value="@(!_bulk)"
+                                      ValueExpression="@(() => _bulk)" ValueChanged="@(_ => _bulk = false)"
                                       Disabled="@uploading" data-testid="variant-image-scope-this" />
                     </fieldset>
                 }
@@ -66,7 +66,7 @@
     </DialogContent>
     <DialogActions>
         <BusyFor Key="@_uploadKey" Context="uploading">
-            <ShopButton OnClick="ConfirmAsync" Disabled="@uploading" data-testid="variant-image-save">@Strings.VariantImage_Save</ShopButton>
+            <ShopButton OnClick="ConfirmAsync" Disabled="@uploading" data-testid="variant-image-save">@Strings.ProductVariantImages_Apply</ShopButton>
             <ShopButton Variant="ShopVariant.Outlined" OnClick="CancelAsync" Disabled="@uploading" data-dialog-initial-focus data-testid="variant-image-cancel">@Strings.Cancel</ShopButton>
         </BusyFor>
     </DialogActions>

@@ -4,6 +4,8 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using MediatR;
+using TheShop.Application.Features.Products.Queries.ApplyVariantImages;
 using TheShop.Application.Features.Products.DTOs;
 using TheShop.Web.Components.Products;
 using TheShop.Web.Components.Common;
@@ -20,6 +22,10 @@ public class ProductVariantsCardTests : TestContext
         JSInterop.SetupVoid(i => true).SetVoidResult();
         Services.AddSingleton(Substitute.For<IShopDialogService>());
         Services.AddSingleton<TheShop.Web.Common.BusyState>();
+        var mediator = Substitute.For<IMediator>();
+        mediator.Send(Arg.Any<ApplyVariantImagesQuery>(), Arg.Any<CancellationToken>())
+            .Returns(call => new ApplyVariantImagesHandler().Handle(call.Arg<ApplyVariantImagesQuery>(), CancellationToken.None));
+        Services.AddSingleton(mediator);
     }
 
     [Theory]
@@ -30,16 +36,68 @@ public class ProductVariantsCardTests : TestContext
         var (cut, changes, imageId) = RenderPinCard();
         await OpenFirstPinAsync(cut);
         var picker = cut.FindComponent<VariantImageDialog>();
-        picker.Instance.SharedScopeCount.Should().Be(2);
+        picker.Instance.SharedScopeLabel.Should().Be("Color = Red");
+        picker.Instance.SharedVariantIds.Should().HaveCount(2);
+        picker.Markup.Should().Contain("All 2 variants with Color = Red");
         if (shared)
             picker.Find("[data-testid='variant-image-scope-all']").Change(true);
         await picker.Find("[data-image-id] .shop-image-tile-surface").ClickAsync(new());
         await picker.Find("[data-testid='variant-image-save']").ClickAsync(new());
         changes.Should().ContainSingle();
-        changes[0].Variants[0].PinnedImageId.Should().Be(imageId);
-        changes[0].Variants[1].PinnedImageId.Should().Be(shared ? imageId : null);
-        changes[0].Variants[2].PinnedImageId.Should().BeNull();
+        changes[0].Variants[0].ImageIds.Should().Equal(imageId);
+        changes[0].Variants[1].ImageIds.Should().Equal(shared ? [imageId] : []);
+        changes[0].Variants[2].ImageIds.Should().BeEmpty();
         cut.FindComponents<VariantImageDialog>().Should().BeEmpty();
+    }
+
+    [Fact]
+    [Trait("Feature", "007_variant-urls-and-galleries")]
+    public async Task PinImage_BulkDeselect_RemovesImageFromSharedVariantsAndReopensWithOneSelected()
+    {
+        var (cut, changes, removedId) = RenderPinCard(initiallyShared: true);
+        var remainingId = cut.Instance.GalleryImages[1].Id;
+        await OpenFirstPinAsync(cut);
+        var picker = cut.FindComponent<VariantImageDialog>();
+        await picker.Find($"[data-image-id='{removedId}'] .shop-image-tile-surface").ClickAsync(new());
+        picker.Find("[data-testid='variant-image-scope-all']").Change(true);
+        await picker.Find("[data-testid='variant-image-save']").ClickAsync(new());
+
+        changes.Should().ContainSingle();
+        changes[0].Variants[0].ImageIds.Should().Equal(remainingId);
+        changes[0].Variants[1].ImageIds.Should().Equal(remainingId);
+        changes[0].Variants[2].ImageIds.Should().Equal(removedId, remainingId);
+
+        await OpenFirstPinAsync(cut);
+        cut.FindComponent<VariantImageDialog>().FindAll(".shop-variant-image-option .shop-image-tile-surface[aria-pressed='true']")
+            .Should().ContainSingle();
+    }
+
+    [Fact]
+    [Trait("Feature", "007_variant-urls-and-galleries")]
+    public async Task PinImage_ApplyToSharedScope_RetainsChoiceAcrossSiblingDialogs()
+    {
+        var (cut, _, _) = RenderPinCard(initiallyShared: true);
+        await OpenPinAsync(cut, "Red / Small");
+        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeFalse();
+        cut.Find("[data-testid='variant-image-scope-all']").Change(true);
+        await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
+
+        await OpenPinAsync(cut, "Red / Large");
+        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeTrue();
+        cut.Find("[data-testid='variant-image-scope-this']").Change(true);
+        await cut.Find("[data-testid='variant-image-cancel']").ClickAsync(new());
+
+        await OpenPinAsync(cut, "Blue / Small");
+        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeFalse();
+        await cut.Find("[data-testid='variant-image-cancel']").ClickAsync(new());
+
+        await OpenPinAsync(cut, "Red / Large");
+        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeTrue();
+        cut.Find("[data-testid='variant-image-scope-this']").Change(true);
+        await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
+
+        await OpenPinAsync(cut, "Red / Small");
+        cut.Find("[data-testid='variant-image-scope-all']").HasAttribute("checked").Should().BeFalse();
     }
 
     [Fact]
@@ -51,12 +109,12 @@ public class ProductVariantsCardTests : TestContext
         await cut.Find("[data-testid='variant-image-cancel']").ClickAsync(new());
         changes.Should().BeEmpty();
         await OpenFirstPinAsync(cut);
-        await cut.InvokeAsync(() => oldCallback.InvokeAsync(new VariantImagePinResult(imageId, true)));
+        await cut.InvokeAsync(() => oldCallback.InvokeAsync(new VariantImageSelectionResult([imageId], [Guid.NewGuid()], true)));
         changes.Should().BeEmpty();
         cut.FindComponents<VariantImageDialog>().Should().ContainSingle();
         await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
         changes.Should().ContainSingle();
-        changes[0].Variants.Should().OnlyContain(v => v.PinnedImageId == null);
+        changes[0].Variants.Should().OnlyContain(v => v.ImageIds.Count == 0);
     }
 
     [Fact]
@@ -67,7 +125,7 @@ public class ProductVariantsCardTests : TestContext
         var callback = cut.FindComponent<VariantImageDialog>().Instance.OnCompleted;
         cut.Render(p => p.Add(c => c.Disabled, true));
         cut.FindComponents<VariantImageDialog>().Should().BeEmpty();
-        await cut.InvokeAsync(() => callback.InvokeAsync(new VariantImagePinResult(imageId, false)));
+        await cut.InvokeAsync(() => callback.InvokeAsync(new VariantImageSelectionResult([imageId], [Guid.NewGuid()], false)));
         changes.Should().BeEmpty();
     }
 
@@ -78,7 +136,7 @@ public class ProductVariantsCardTests : TestContext
         await OpenFirstPinAsync(cut);
         var callback = cut.FindComponent<VariantImageDialog>().Instance.OnCompleted;
         cut.Render(p => p.Add(c => c.GalleryImages, []));
-        await cut.InvokeAsync(() => callback.InvokeAsync(new VariantImagePinResult(imageId, false)));
+        await cut.InvokeAsync(() => callback.InvokeAsync(new VariantImageSelectionResult([imageId], [Guid.NewGuid()], false)));
         changes.Should().BeEmpty();
         cut.FindComponents<VariantImageDialog>().Should().BeEmpty();
     }
@@ -96,7 +154,7 @@ public class ProductVariantsCardTests : TestContext
         await cut.Find("[data-image-id] .shop-image-tile-surface").ClickAsync(new());
         await cut.Find("[data-testid='variant-image-save']").ClickAsync(new());
         changes.Should().ContainSingle();
-        changes[0].Variants[0].PinnedImageId.Should().BeNull();
+        changes[0].Variants[0].ImageIds.Should().BeEmpty();
     }
 
     [Fact]
@@ -112,17 +170,21 @@ public class ProductVariantsCardTests : TestContext
         changes.Last().Variants[0].OriginalPrice.Should().Be(24.5678m);
     }
 
-    private (IRenderedComponent<ProductVariantsCard> Cut, List<ProductVariantsState> Changes, Guid ImageId) RenderPinCard(bool initiallyPinned = false)
+    private (IRenderedComponent<ProductVariantsCard> Cut, List<ProductVariantsState> Changes, Guid ImageId) RenderPinCard(
+        bool initiallyPinned = false, bool initiallyShared = false)
     {
         var red = Guid.NewGuid();
         var blue = Guid.NewGuid();
         var small = Guid.NewGuid();
         var large = Guid.NewGuid();
         var imageId = Guid.NewGuid();
+        var secondImageId = Guid.NewGuid();
         var changes = new List<ProductVariantsState>();
         var cut = Render<ProductVariantsCard>(p => p
             .Add(c => c.ProductSku, "SKU")
-            .Add(c => c.GalleryImages, [new ProductImageDto(imageId, "/pin.webp", 0, true)])
+            .Add(c => c.GalleryImages, initiallyShared
+                ? [new ProductImageDto(imageId, "/pin.webp", 0, true), new ProductImageDto(secondImageId, "/second.webp", 1, false)]
+                : [new ProductImageDto(imageId, "/pin.webp", 0, true)])
             .Add(c => c.InitialOptionTypes,
             [
                 new ProductOptionTypeDto(Guid.NewGuid(), "Color", 0,
@@ -132,9 +194,9 @@ public class ProductVariantsCardTests : TestContext
             ])
             .Add(c => c.InitialVariants,
             [
-                new ProductVariantDto(Guid.NewGuid(), "SKU-RED-S", null, null, true, initiallyPinned ? imageId : null, [red, small], "Red / Small"),
-                new ProductVariantDto(Guid.NewGuid(), "SKU-RED-L", null, null, true, null, [red, large], "Red / Large"),
-                new ProductVariantDto(Guid.NewGuid(), "SKU-BLUE-S", null, null, true, null, [blue, small], "Blue / Small")
+                new ProductVariantDto(Guid.NewGuid(), "SKU-RED-S", null, null, true, initiallyShared ? [imageId, secondImageId] : initiallyPinned ? [imageId] : [], [red, small], "Red / Small"),
+                new ProductVariantDto(Guid.NewGuid(), "SKU-RED-L", null, null, true, initiallyShared ? [imageId, secondImageId] : [], [red, large], "Red / Large"),
+                new ProductVariantDto(Guid.NewGuid(), "SKU-BLUE-S", null, null, true, initiallyShared ? [imageId, secondImageId] : [], [blue, small], "Blue / Small")
             ])
             .Add(c => c.StateChanged, state => changes.Add(state)));
         changes.Clear();
@@ -147,6 +209,10 @@ public class ProductVariantsCardTests : TestContext
             button.TextContent.Trim() == Strings.ProductVariants_ChangeImage)
             .ClickAsync(new MouseEventArgs());
     }
+
+    private static Task OpenPinAsync(IRenderedComponent<ProductVariantsCard> cut, string label) =>
+        cut.FindAll("tbody tr").Single(row => row.TextContent.Contains(label))
+            .QuerySelectorAll("button").Last().ClickAsync(new MouseEventArgs());
 
     [Fact]
     [Trait("Feature", "create-product")]
@@ -165,7 +231,7 @@ public class ProductVariantsCardTests : TestContext
             null,
             null,
             true,
-            null,
+            [],
             [optionValueId],
             "Mango");
         ProductVariantsState? raised = null;
@@ -203,8 +269,8 @@ public class ProductVariantsCardTests : TestContext
             ]);
         ProductVariantDto[] variants =
         [
-            new ProductVariantDto(Guid.NewGuid(), "SKU-MANGO", null, null, true, null, [activeValueId], "Mango"),
-            new ProductVariantDto(Guid.NewGuid(), "SKU-BERRY", null, null, false, null, [inactiveValueId], "Berry"),
+            new ProductVariantDto(Guid.NewGuid(), "SKU-MANGO", null, null, true, [], [activeValueId], "Mango"),
+            new ProductVariantDto(Guid.NewGuid(), "SKU-BERRY", null, null, false, [], [inactiveValueId], "Berry"),
         ];
 
         var cut = Render<ProductVariantsCard>(parameters => parameters
@@ -294,7 +360,7 @@ public class ProductVariantsCardTests : TestContext
         var optionType = new ProductOptionTypeDto(
             Guid.NewGuid(), "Flavor", 0, [new ProductOptionValueDto(optionValueId, "Mango", 0)]);
         var variant = new ProductVariantDto(
-            Guid.NewGuid(), "SKU-MANGO", 24.99m, 19.99m, true, null, [optionValueId], "Mango");
+            Guid.NewGuid(), "SKU-MANGO", 24.99m, 19.99m, true, [], [optionValueId], "Mango");
 
         var cut = Render<ProductVariantsCard>(parameters => parameters
             .Add(component => component.ProductSku, "SKU")
@@ -319,7 +385,7 @@ public class ProductVariantsCardTests : TestContext
         var optionType = new ProductOptionTypeDto(
             Guid.NewGuid(), "Flavor", 0, [new ProductOptionValueDto(optionValueId, "Mango", 0)]);
         var variant = new ProductVariantDto(
-            Guid.NewGuid(), "SKU-MANGO", 24.99m, null, true, imageId, [optionValueId], "Mango");
+            Guid.NewGuid(), "SKU-MANGO", 24.99m, null, true, [imageId], [optionValueId], "Mango");
         ProductVariantsState? raised = null;
 
         var cut = Render<ProductVariantsCard>(parameters => parameters
@@ -335,7 +401,7 @@ public class ProductVariantsCardTests : TestContext
             .Add(component => component.GalleryImages, []));
 
         raised.Should().NotBeNull();
-        raised!.Variants.Should().OnlyContain(v => v.PinnedImageId == null);
+        raised!.Variants.Should().OnlyContain(v => v.ImageIds.Count == 0);
     }
 
     [Theory]
@@ -379,8 +445,8 @@ public class ProductVariantsCardTests : TestContext
 
         ProductVariantDto[] variants =
         [
-            new ProductVariantDto(Guid.NewGuid(), "SKU-MANGO", null, null, true, null, [mangoValueId], "Mango"),
-            new ProductVariantDto(Guid.NewGuid(), "SKU-BERRY", null, null, true, null, [berryValueId], "Berry"),
+            new ProductVariantDto(Guid.NewGuid(), "SKU-MANGO", null, null, true, [], [mangoValueId], "Mango"),
+            new ProductVariantDto(Guid.NewGuid(), "SKU-BERRY", null, null, true, [], [berryValueId], "Berry"),
         ];
 
         return (optionType, variants);
@@ -405,8 +471,8 @@ public class ProductVariantsCardTests : TestContext
 
         ProductVariantDto[] variants =
         [
-            new ProductVariantDto(Guid.NewGuid(), "SKU-MANGO", 24.99m, 19.99m, true, null, [mangoValueId], "Mango"),
-            new ProductVariantDto(Guid.NewGuid(), "SKU-BERRY", null, null, true, null, [berryValueId], "Berry"),
+            new ProductVariantDto(Guid.NewGuid(), "SKU-MANGO", 24.99m, 19.99m, true, [], [mangoValueId], "Mango"),
+            new ProductVariantDto(Guid.NewGuid(), "SKU-BERRY", null, null, true, [], [berryValueId], "Berry"),
         ];
 
         return (optionType, variants);

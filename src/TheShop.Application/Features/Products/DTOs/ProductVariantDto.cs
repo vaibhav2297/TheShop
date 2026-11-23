@@ -10,6 +10,6 @@ public sealed record ProductVariantDto(
     decimal? OriginalPrice,
     decimal? SalePrice,
     bool IsAvailable,
-    Guid? PinnedImageId,
+    IReadOnlyList<Guid> ImageIds,
     IReadOnlyList<Guid> OptionValueIds,
     string Label);

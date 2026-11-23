@@ -196,12 +196,12 @@ public sealed class ProductFormPage(IPage page)
 
     public Task SelectPinDialogImageAsync(int index) => DialogSurface.Locator(".shop-variant-image-option .shop-image-tile-surface").Nth(index).ClickAsync();
 
-    public ILocator ApplyToAllSharingCheckbox(int sharedCount, string sharedScopeLabel) =>
-        DialogSurface.GetByLabel(string.Format(Strings.VariantImage_ApplyToAllSharing, sharedCount, sharedScopeLabel));
+    public ILocator ApplyToAllSharingCheckbox(int count, string scopeLabel) =>
+        DialogSurface.GetByLabel(string.Format(Strings.VariantImage_ApplyToAllSharing, count, scopeLabel));
 
     public ILocator ThisVariantOnlyCheckbox => DialogSurface.GetByLabel(Strings.VariantImage_ThisVariantOnly);
 
-    public ILocator PinDialogSaveButton => DialogSurface.GetByRole(AriaRole.Button, new() { Name = Strings.VariantImage_Save });
+    public ILocator PinDialogSaveButton => DialogSurface.GetByRole(AriaRole.Button, new() { Name = Strings.ProductVariantImages_Apply });
 
     public Task ConfirmPinDialogAsync() => PinDialogSaveButton.ClickAsync();
 

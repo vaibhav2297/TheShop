@@ -103,6 +103,7 @@ internal sealed class ProductDetailData : IAsyncDisposable
         using var response = await _client.PostAsJsonAsync("/rest/v1/" + table, row);
         if (!response.IsSuccessStatusCode) throw new InvalidOperationException($"Local {table} fixture failed: {response.StatusCode}: {await response.Content.ReadAsStringAsync()}");
     }
+    internal Task SeedSlugAsync() => InsertAsync("product_routes", new { slug = Name, product_id = Id });
     internal async Task<JsonElement> PublicRowsAsync(string table, string filter, string? token = null)
     {
         using var client = new HttpClient { BaseAddress = _client.BaseAddress };
