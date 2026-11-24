@@ -57,14 +57,15 @@ This update must ride inside the feature PR.
 
 If tree is dirty:
 
-1. Derive title from spec; use repo style `{Type} | {Description}`.
+1. Derive message from spec. Follow [constitution Rule 36](../theshop-constitution/SKILL.md) and its [commit message rules](../theshop-constitution/references/rules/commit-messages.md).
 2. Show every staged candidate and proposed message.
 3. Ask for confirmation/edit.
 4. Only after confirmation:
    ```powershell
    git add -A
-   git commit -m "{confirmed message}"
+   git commit -m "{confirmed subject}"
    ```
+   For a body or footer, append one `-m "{confirmed section}"` argument per section, in order.
 
 Never include AI/model attribution.
 

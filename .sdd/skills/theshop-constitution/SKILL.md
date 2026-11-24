@@ -79,6 +79,10 @@ Each rule is keyed by number. References cite rules by number (e.g. *"Rule 11"*)
 
 35. [components] Map supplied Figma component instances to existing code components before implementation. Inspect source components, variants, properties, and overrides; reuse matching components through supported parameters. Do not recreate existing controls with page-owned markup or CSS. Resolve missing component capabilities explicitly and record the decision. Preserve native action/navigation semantics; visual similarity never justifies changing behavior. Verify component reuse in source.
 
+### Git commits
+
+36. [git] Write commit messages using the Conventional Commits format and type rules in `references/rules/commit-messages.md`. Use this rule when proposing or creating any commit, including `$theshop-ship` commits.
+
 ### Native dependency boundary
 
 The native migration is complete at the source boundary. Do not reintroduce MudBlazor, extension packages, providers, vendor assets/utilities, or C# theme palettes. Presentation belongs to project SCSS and native/Shop components. Browser checks must reject legacy assets rather than disabling them or hiding runtime error UI. Preserve architecture, resources, routes, loading, accessibility, and behavioral checks.
@@ -122,6 +126,7 @@ already inline a minimal example; pull an `examples/` file only when you want a 
 | **strings** | `references/rules/design-strings.md` |
 | **styles** | `references/rules/design-styles.md` |
 | **docs** | `references/rules/documentation.md` |
+| **commits** | `references/rules/commit-messages.md` |
 | **check:code** / **check:design** | `references/checklists/code-generation.md` / `design.md` |
 | **ex:{name}** | `references/examples/{name}.md` (`domain-entity`, `application-handler`, `infrastructure-repository`, `web-page`, `web-component`) |
 
@@ -167,6 +172,7 @@ already inline a minimal example; pull an `examples/` file only when you want a 
 | Writing tests | **check:code** §Tests (authoring authority: `shop-test-writer`) |
 | Creating / changing command-backed forms, request validators, or validation pipeline | **patterns** §FluentValidation — request validation |
 | Final review / self-verification | **check:code** (architecture/tests/docs) and/or **check:design** (UI) |
+| Proposing or creating a Git commit | **commits** |
 
 **Worked example — "implement add-to-cart end to end" (union across layers, deduped):**
 Domain entity → **core** + ex:domain-entity. Handler + validator + DTO → add **patterns** +
