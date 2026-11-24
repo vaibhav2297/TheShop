@@ -22,7 +22,7 @@ jobs:
     needs: tests
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    name: Build and Deploy Dev
     steps:
       - uses: actions/checkout@v5
         with:
