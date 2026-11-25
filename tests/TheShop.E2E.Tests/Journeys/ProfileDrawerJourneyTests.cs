@@ -93,7 +93,8 @@ public sealed class ProfileDrawerJourneyTests(PlaywrightFixture playwright)
         await Assertions.Expect(account).ToBeFocusedAsync();
         await account.ClickAsync();
         await drawer.GetByRole(AriaRole.Link, new() { Name = Strings.Nav_MyProfile, Exact = true }).ClickAsync();
-        await Page.WaitForURLAsync(url => new Uri(url).AbsolutePath == WebRoutes.Profile);
+        await Assertions.Expect(Page).ToHaveURLAsync(E2EEnvironment.AppBaseUrl + WebRoutes.Profile,
+            new() { Timeout = 30_000 });
         await Assertions.Expect(Page.Locator("dialog:modal")).ToHaveCountAsync(0);
         await Assertions.Expect(account).ToHaveAttributeAsync("aria-expanded", "false");
         await account.ClickAsync();

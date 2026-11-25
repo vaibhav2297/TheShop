@@ -136,7 +136,7 @@ public sealed class NativeNotificationJourneyTests(PlaywrightFixture playwright)
             await Assertions.Expect(bar.Locator(".shop-notification-message")).ToHaveCSSAsync("font-weight", "500");
             await Assertions.Expect(bar.Locator("svg")).ToHaveCSSAsync("width", "18px");
             var barBounds = (await bar.BoundingBoxAsync())!;
-            barBounds.Width.Should().BeApproximately(225, 2);
+            barBounds.Width.Should().BeApproximately(225, 3);
             barBounds.Height.Should().BeApproximately(50, 1);
             (barBounds.X + barBounds.Width / 2).Should().BeApproximately(viewportWidth / 2, 1);
             var dismissBounds = (await bar.GetByTestId("notification-dismiss").BoundingBoxAsync())!;

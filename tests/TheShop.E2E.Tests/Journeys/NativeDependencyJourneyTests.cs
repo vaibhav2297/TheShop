@@ -23,8 +23,10 @@ public sealed class NativeDependencyJourneyTests(PlaywrightFixture playwright) :
         Page.PageError += (_, error) => errors.Add(error);
         Page.Response += (_, response) =>
         {
-            if (response.Status >= 400 && new Uri(response.Url).Authority == new Uri(E2EEnvironment.AppBaseUrl).Authority)
-                failedAssets.Add(response.Status + " " + new Uri(response.Url).AbsolutePath);
+            var uri = new Uri(response.Url);
+            if (response.Status >= 400 && uri.Authority == new Uri(E2EEnvironment.AppBaseUrl).Authority
+                && uri.AbsolutePath != "/_framework/dotnet-browser-tools/hot-reload-settings.json")
+                failedAssets.Add(response.Status + " " + uri.AbsolutePath);
         };
         await Context.RouteAsync(E2EEnvironment.Get("API_URL").TrimEnd('/') + "/**", route => route.AbortAsync());
         var releaseBoot = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);

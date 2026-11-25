@@ -208,9 +208,12 @@ public sealed class NativeAdminProductLayoutJourneyTests(PlaywrightFixture playw
             await AssertNoOverflowAsync();
             await surface.GetByRole(AriaRole.Link, new() { Name = Strings.Cancel, Exact = true }).ClickAsync();
             await table.WaitForAsync();
+            var editLink = Page.GetByRole(AriaRole.Link,
+                new() { Name = string.Format(Strings.ManageProducts_EditAria, "Vape Pen 1"), Exact = true });
+            await Assertions.Expect(editLink).ToBeVisibleAsync();
             _empty = true;
             await Page.Locator(".shop-table-scroll").EvaluateAsync("el => el.scrollLeft=el.scrollWidth");
-            await Page.GetByRole(AriaRole.Link, new() { Name = string.Format(Strings.ManageProducts_EditAria, "Vape Pen 1"), Exact = true }).ClickAsync();
+            await editLink.ClickAsync();
             await Assertions.Expect(surface.Locator("h2")).ToHaveTextAsync(Strings.EditProduct_NotFoundTitle);
             await surface.GetByRole(AriaRole.Link, new() { Name = Strings.EditProduct_BackToList, Exact = true }).ClickAsync();
             await Assertions.Expect(surface.Locator("h2")).ToHaveTextAsync(Strings.ManageProducts_EmptyTitle);
@@ -290,7 +293,8 @@ public sealed class NativeAdminProductLayoutJourneyTests(PlaywrightFixture playw
             body = JsonSerializer.Serialize(Enumerable.Range(0, 2).Select(i => new { id = $"ab09dac2-bc69-4e50-8f1a-49c98a963a{i:00}", product_id = ProductId, object_key = "fixture/pen.svg", position = i, is_primary = i == 0 }));
         else if (path.EndsWith("/rest/v1/product_specifications") && route.Request.Method == "GET")
             body = JsonSerializer.Serialize(Enumerable.Range(0, 2).Select(i => new { id = $"ab09dac2-bc69-4e50-8f1a-49c98a963c{i:00}", product_id = ProductId, name = i == 0 ? "Material" : "Weight", value = i == 0 ? "Steel" : "159 g", position = i }));
-        else if ((path.EndsWith("/rest/v1/product_option_types") || path.EndsWith("/rest/v1/product_variants")) && route.Request.Method == "GET") body = "[]";
+        else if ((path.EndsWith("/rest/v1/product_option_types") || path.EndsWith("/rest/v1/product_variants")
+            || path.EndsWith("/rest/v1/product_variant_images")) && route.Request.Method == "GET") body = "[]";
         if (body is null) { _unexpected.Add(route.Request.Method + " " + path); await route.AbortAsync(); }
         else await route.FulfillAsync(new() { ContentType = "application/json", Body = body });
     });
