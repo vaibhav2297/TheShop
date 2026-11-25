@@ -1,0 +1,5 @@
+@if (Dialogs.IsHost(this) && Dialogs.Current is { } request)
+{
+    <ShopConfirmDialog @key="request.Id" Options="@request.Options"
+                       Completed="@(confirmed => Dialogs.Complete(request.Id, confirmed))" />
+}

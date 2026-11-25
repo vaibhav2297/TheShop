@@ -1,0 +1,55 @@
+@layout TheShop.Web.Components.Layout.AuthLayout
+@attribute [AllowAnonymous]
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Components.Layout
+
+<PageTitle>@Strings.Verify_PageTitle</PageTitle>
+
+<AuthPanel TitleId="signin-verify-title">
+    <header>
+        <h1 id="signin-verify-title" class="shop-auth-title">@Strings.Verify_Heading</h1>
+        <div class="shop-auth-identity">
+            <div class="shop-auth-identity-heading">
+                <p>@Strings.Verify_SigningInAs</p>
+                <a class="shop-button shop-button-outlined shop-button-small shop-button-primary"
+                   href="@SignInHref" data-testid="otp-change">@Strings.Auth_Change</a>
+            </div>
+            <p class="shop-auth-email">@_email</p>
+        </div>
+    </header>
+
+    <div class="shop-auth-form">
+        <p id="signin-verify-instruction" class="shop-auth-code-instruction">@Strings.Verify_CodeLabel</p>
+        <EditForm Model="@_model" OnSubmit="OnVerifyAsync" novalidate>
+            <BusyFor Key="@BusyKeys.Auth.SignInVerify" Context="busy">
+                <BusyFor Key="@BusyKeys.Auth.ResendOtp" Context="resending">
+                    <OtpInput @bind-Value="_model.Code" Length="@OtpLength"
+                              Disabled="@(busy || resending)" role="group"
+                              aria-labelledby="signin-verify-instruction" data-testid="otp-input" />
+                    <div class="shop-auth-actions shop-auth-verify-actions">
+                        <ShopButton Type="submit" Size="ShopSize.Large"
+                                    Disabled="@(!_isCodeComplete || busy || resending)" Loading="@busy"
+                                    EndIcon="@ShopIcons.Outlined.Arrow_Right_MD" data-testid="otp-submit">
+                            @Strings.Verify_Submit
+                        </ShopButton>
+                        @if (_resendCooldown > 0)
+                        {
+                            <span class="shop-auth-countdown" role="timer"
+                                  aria-label="@string.Format(Strings.Verify_ResendIn, _resendCooldown)"
+                                  data-testid="otp-countdown">@CooldownText</span>
+                        }
+                        else
+                        {
+                            <ShopButton Variant="ShopVariant.Outlined" Disabled="@(busy || resending)"
+                                        Loading="@resending" OnClick="OnResendAsync" data-testid="otp-resend">
+                                @Strings.Verify_SendAgain
+                            </ShopButton>
+                        }
+                    </div>
+                </BusyFor>
+            </BusyFor>
+        </EditForm>
+    </div>
+</AuthPanel>

@@ -1,0 +1,261 @@
+@inherits QueryStatePageBase<BrandQueryState>
+
+@using TheShop.Application.Features.Brands.DTOs
+@using TheShop.Domain.Enums
+@using TheShop.Domain.ValueObjects
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.ManageBrands_PageTitle</PageTitle>
+
+<section class="shop-native shop-brands-page">
+    <header class="shop-brands-heading">
+        <h1>@Strings.ManageBrands_Heading</h1>
+        <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Create.Code)" Context="createAuth">
+            <Authorized>
+                <ShopButton Href="@Routes.Admin.AddBrand" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus">
+                    @Strings.AddBrand_Heading
+                </ShopButton>
+            </Authorized>
+        </AuthorizeView>
+    </header>
+
+    <div class="@ListClass">
+
+        <aside class="shop-brands-sidebar">
+            <BusyFor Key="@BusyKeys.Brands.ManageList" Context="loadingFilters">
+                @if (loadingFilters && !_brands.HasLoaded)
+                {
+                    <div class="shop-brands-filter-skeleton" aria-hidden="true">
+                        @for (var i = 0; i < 5; i++)
+                        {
+                            <div class="shop-brands-filter-placeholder">
+                                <ShopSkeleton Class="shop-brands-filter-placeholder-title" />
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <ShopFilterPanel Groups="@FilterGroups"
+                             SelectedFilters="@SelectedFilters"
+                             SingleSelectChanged="OnSingleSelectChangedAsync"
+                             OnClearFilters="OnClearFiltersAsync" />
+                }
+            </BusyFor>
+        </aside>
+
+        <div class="shop-brands-results">
+
+
+                <div class="shop-brands-tools">
+                    <div class="shop-brands-search">
+                        <ShopTextField type="search" Value="@_search" ValueChanged="OnSearchInputAsync"
+                                       ValueExpression="@(() => _search)"
+                                       StartIcon="@ShopIcons.Outlined.Search_Magnifying_Glass"
+                                       Label="@Strings.ManageBrands_SearchPlaceholder" />
+                    </div>
+                    <ShopButton Class="shop-brands-filter-button" Variant="ShopVariant.Outlined" Size="ShopSize.Large"
+                                StartIcon="@ShopIcons.Outlined.Filter" OnClick="@(() => _filtersOpen = true)">
+                        @Strings.Brands_Filters
+                    </ShopButton>
+                    <ShopSortSelect TSort="BrandSortOption" Class="shop-brands-sort" Sort="@_sort" Options="@SortOptions" SortChanged="OnSortChangedAsync" />
+                </div>
+
+                <ShopBulkActionBar Visible="@HasSelection"
+                                   SelectedCount="@_selectedItems.Count"
+                                   OnClose="OnCloseBulkActions">
+                    <Actions>
+                        <BusyFor Keys="@MutationBusyKeys" Context="mutating">
+                            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Edit.Code)"
+                                           Context="bulkEditAuth">
+
+                                <Authorized>
+
+                                    <ShopButton Variant="ShopVariant.Outlined"
+                                               Color="ShopColor.Primary"
+                                               StartIcon="@ShopIcons.Outlined.Show"
+                                               Disabled="@mutating"
+                                               OnClick="BulkActivateAsync">
+                                        <span class="shop-bulk-action-text">@Strings.ManageBrands_BulkSetActive</span>
+                                    </ShopButton>
+
+                                    <ShopButton Variant="ShopVariant.Outlined"
+                                               Color="ShopColor.Primary"
+                                               StartIcon="@ShopIcons.Outlined.Hide"
+                                               Disabled="@mutating"
+                                               OnClick="BulkDeactivateAsync">
+                                        <span class="shop-bulk-action-text">@Strings.ManageBrands_BulkSetInactive</span>
+                                    </ShopButton>
+                                </Authorized>
+
+                            </AuthorizeView>
+
+                            <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Delete.Code)" Context="bulkDeleteAuth">
+
+                                <Authorized>
+
+                                    <ShopButton Variant="ShopVariant.Outlined"
+                                               Color="ShopColor.Error"
+                                               StartIcon="@ShopIcons.Outlined.Trash_Empty"
+                                               Disabled="@mutating"
+                                               OnClick="BulkDeleteAsync">
+                                        <span class="shop-bulk-action-text">@Strings.ManageBrands_BulkDelete</span>
+                                    </ShopButton>
+
+                                </Authorized>
+
+                            </AuthorizeView>
+                        </BusyFor>
+                    </Actions>
+                </ShopBulkActionBar>
+
+                <BusyFor Key="@BusyKeys.Brands.ManageList" Context="busy">
+                    @if (busy || _brands.Items.Count > 0)
+                    {
+                        <BusyFor Keys="@MutationBusyKeys" Context="mutating">
+                            <ShopTable TItem="BrandListItemDto"
+                                      Loading="@busy" Class="shop-brands-table"
+                                      Items="@_brands.Items"
+                                      ItemKey="@(item => item.Id)"
+                                      Caption="@Strings.ManageBrands_Heading"
+                                      ColumnCount="4"
+                                      Selectable="true"
+                                      SelectedKeys="@SelectedKeys"
+                                      SelectedKeysChanged="OnSelectedKeysChanged"
+                                      RowSelectionLabel="@(item => string.Format(Strings.Table_SelectRow, item.Name))"
+                                      SelectionDisabled="@mutating">
+
+                                <HeaderContent>
+                                    <th scope="col">@Strings.ManageBrands_ColumnName</th>
+                                    <th scope="col">@Strings.ManageBrands_ColumnDescription</th>
+                                    <th scope="col" class="shop-table-column-compact">@Strings.ManageBrands_ColumnStatus</th>
+                                    <th scope="col" class="shop-table-column-compact">@Strings.ManageBrands_ColumnActions</th>
+                                </HeaderContent>
+
+                                <RowTemplate Context="brand">
+                                    <td>
+                                        <div class="shop-brands-name">
+                                            <div class="shop-brands-logo">
+                                                <ShopImage Src="@brand.LogoUrl" Preset="ShopImagePreset.BrandLogo" Alt="@brand.Name" PlaceholderLabel="@brand.Name" />
+                                            </div>
+                                            <div>
+                                                <span>@brand.Name</span>
+
+                                                @if (_blockedIds.Contains(brand.Id))
+                                                {
+                                                    <span class="shop-brands-in-use">
+                                                        @string.Format(Strings.ManageBrands_InUseIndicator, brand.ProductCount)
+                                                    </span>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span>@brand.Description</span>
+                                    </td>
+                                    <td class="shop-table-column-compact">
+                                        <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Edit.Code)" Context="statusAuth">
+                                            <Authorized>
+
+                                                @* The spinner takes the chip's place rather than sitting beside it: the
+                                                   user just clicked here, so this is the one spot guaranteed to be in
+                                                   view — unlike the table's progress bar up under the header. *@
+                                                @if (IsRowPending(brand.Id, RowMutation.Status))
+                                                {
+                                                    <span role="status" aria-label="@Strings.Loading"><ShopLoader Class="shop-loader-inline" /></span>
+                                                }
+                                                else
+                                                {
+                                                    <ShopChip Size="ShopSize.Small" Selected="@brand.IsActive" Disabled="@mutating"
+                                                              SelectedChanged="@((bool active) => OnStatusToggledAsync(brand, active))">
+                                                        @(brand.IsActive ? Strings.AddBrand_StatusActive : Strings.AddBrand_StatusInactive)
+                                                    </ShopChip>
+                                                }
+
+                                            </Authorized>
+                                            <NotAuthorized>
+                                                <span>
+                                                    @(brand.IsActive ? Strings.AddBrand_StatusActive : Strings.AddBrand_StatusInactive)
+                                                </span>
+                                            </NotAuthorized>
+                                        </AuthorizeView>
+                                    </td>
+                                    <td class="shop-table-column-compact">
+                                        @* A deletion replaces the whole action group, not just the trash button:
+                                           leaving Edit live next to a spinner would invite a navigation away from
+                                           the row mid-delete. *@
+                                        @if (IsRowPending(brand.Id, RowMutation.Delete))
+                                        {
+                                            <span role="status" aria-label="@Strings.Loading"><ShopLoader Class="shop-loader-inline shop-loader-error" /></span>
+                                        }
+                                        else
+                                        {
+                                            <div class="shop-brands-row-actions">
+                                                <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Edit.Code)" Context="editRowAuth">
+                                                    <Authorized>
+
+                                                        <ShopIconButton Href="@Routes.Admin.EditBrand(brand.Id)"
+                                                                        Disabled="@mutating" Variant="ShopVariant.Text"
+                                                                        Icon="@ShopIcons.Outlined.Edit_Pencil_02"
+                                                                        Label="@string.Format(Strings.ManageBrands_EditAria, brand.Name)" />
+
+
+                                                    </Authorized>
+                                                </AuthorizeView>
+                                                <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Brands.Delete.Code)" Context="deleteRowAuth">
+                                                    <Authorized>
+
+                                                        <ShopIconButton Icon="@ShopIcons.Outlined.Trash_Empty"
+                                                                       Color="ShopColor.Error"
+                                                                       Disabled="@mutating"
+                                                                       OnClick="@(() => DeleteSingleAsync(brand))"
+                                                                       Variant="ShopVariant.Text" Label="@string.Format(Strings.ManageBrands_DeleteAria, brand.Name)" />
+
+                                                    </Authorized>
+                                                </AuthorizeView>
+                                            </div>
+                                        }
+                                    </td>
+                                </RowTemplate>
+                            </ShopTable>
+                        </BusyFor>
+
+                        if (!busy)
+                        {
+                            <ShopPagination Page="@_brands.Page"
+                                            TotalPages="@_brands.TotalPages"
+                                            PageChanged="OnPageChangedAsync"
+                                            Class="shop-brands-pagination" />
+                        }
+                    }
+                    else if (_search is not null || _status is not null)
+                    {
+                        <div class="shop-brands-empty">
+                            <h2>@Strings.ManageBrands_NoMatchTitle</h2>
+                            <p>@Strings.ManageBrands_NoMatchDescription</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="shop-brands-empty">
+                            <h2>@Strings.ManageBrands_EmptyTitle</h2>
+                            <p>@Strings.ManageBrands_EmptyDescription</p>
+                        </div>
+                    }
+                </BusyFor>
+        </div>
+    </div>
+</section>
+
+<ShopDrawer @bind-Open="_filtersOpen" Side="ShopDrawerSide.Left">
+    <HeaderContent><h2 class="shop-drawer-title">@Strings.Brands_Filters</h2></HeaderContent>
+    <DrawerContent>
+        <ShopFilterPanel Class="shop-brands-filter-panel"
+                         ClearLabel="@Strings.Filter_ClearAll"
+                         Groups="@FilterGroups" SelectedFilters="@SelectedFilters"
+                         SingleSelectChanged="OnSingleSelectChangedAsync" OnClearFilters="OnClearFiltersAsync" />
+    </DrawerContent>
+</ShopDrawer>

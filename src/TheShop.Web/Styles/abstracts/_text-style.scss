@@ -1,0 +1,10 @@
+// Apply a named Figma style without emitting utility classes or alias tokens.
+// Leave decoration to semantic markup (e.g. <s>) and link/control affordances.
+@mixin apply($style) {
+    font-family: var(--shop-typography-#{$style}-font-family);
+    font-size: var(--shop-typography-#{$style}-font-size);
+    font-weight: var(--shop-typography-#{$style}-font-weight);
+    line-height: var(--shop-typography-#{$style}-line-height);
+    letter-spacing: var(--shop-typography-#{$style}-letter-spacing);
+    text-transform: var(--shop-typography-#{$style}-text-transform);
+}

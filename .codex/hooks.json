@@ -1,0 +1,36 @@
+{
+  "description": "The Shop SDD Stop hooks.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/invoke-codex-stop.ps1 -Check design",
+            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/invoke-codex-stop.ps1 -Check design",
+            "timeout": 30,
+            "statusMessage": "Checking changed C# and Razor files..."
+          },
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/invoke-codex-stop.ps1 -Check format",
+            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/invoke-codex-stop.ps1 -Check format",
+            "timeout": 300,
+            "statusMessage": "Formatting changed C# and Razor files..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "C:/Users/vaibh/.local/bin/graphify.EXE hook-check"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/text-style';
+
+// Figma 2629:1708: equal-width label-less outlined fields with H6 centered digits.
+.shop-otp-input {
+    display: flex;
+    flex-direction: column;
+    gap: var(--shop-space-3);
+}
+
+.shop-otp-input-digits {
+    display: flex;
+    align-items: center;
+    gap: var(--shop-space-6);
+
+    > .shop-field {
+        flex: 1 1 0;
+        min-inline-size: 0;
+    }
+}
+
+.shop-otp-digit {
+    @include text-style.apply(h6);
+    text-align: center;
+}
+
+.shop-otp-input-hint {
+    margin: 0;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(caption);
+}
+
+@media (width < bp.$tablet) {
+    .shop-otp-input-digits {
+        gap: var(--shop-space-2);
+
+        // Narrow rows keep the centered digit visible inside each box.
+        .shop-field-control {
+            padding-inline: var(--shop-space-1);
+        }
+    }
+}

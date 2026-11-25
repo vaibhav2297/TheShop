@@ -1,0 +1,12 @@
+---
+name: theshop-e2e
+description: "Write, run, repair, and report feature-scoped browser tests."
+---
+
+# theshop-e2e
+
+Read [SDD](../../../.sdd/README.md), then [canonical skill](../../../.sdd/skills/theshop-e2e/SKILL.md).
+Follow canonical instructions here. Never reinvoke this adapter.
+Pass invocation arguments unchanged as canonical `$ARGUMENTS`.
+Resolve references/templates from canonical folder. Run commands from repo root.
+Missing canonical file: stop; report path.

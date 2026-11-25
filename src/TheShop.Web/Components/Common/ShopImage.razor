@@ -1,0 +1,29 @@
+@inherits TheShop.Web.Common.UI.ShopComponentBase
+
+<div @attributes="RootAttributes"
+     class="@Classname"
+     style="@Style">
+
+    @foreach (var branch in Branches)
+    {
+        @if (branch.ShowsImage)
+        {
+            <img @key="@($"{branch.Key}-image")"
+                 src="@branch.Src"
+                 alt="@Alt"
+                 class="@branch.MediaClassname"
+                 data-shop-image-branch="@branch.Key" />
+        }
+        else
+        {
+            @* Named placeholder: sits inside the same reserved frame, so a missing or failed source
+               never collapses the space or moves surrounding content. *@
+            <div @key="@($"{branch.Key}-placeholder")"
+                 @attributes="PlaceholderAttributes"
+                 class="@branch.PlaceholderClassname">
+                <span class="shop-image-label" aria-hidden="true">@PlaceholderLabel</span>
+            </div>
+        }
+    }
+
+</div>

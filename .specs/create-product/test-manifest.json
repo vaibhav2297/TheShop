@@ -1,0 +1,216 @@
+{
+  "feature": "create-product",
+  "trait": "create-product",
+  "writtenAt": "2026-09-05",
+  "totalTests": 251,
+  "classes": [
+    { "fqn": "TheShop.Domain.Tests.Entities.ProductTests", "file": "tests/TheShop.Domain.Tests/Entities/ProductTests.cs", "tests": 40 },
+    { "fqn": "TheShop.Domain.Tests.ValueObjects.SkuTests", "file": "tests/TheShop.Domain.Tests/ValueObjects/SkuTests.cs", "tests": 13 },
+    { "fqn": "TheShop.Domain.Tests.Entities.ProductOptionTypeTests", "file": "tests/TheShop.Domain.Tests/Entities/ProductOptionTypeTests.cs", "tests": 9 },
+    { "fqn": "TheShop.Domain.Tests.Entities.ProductVariantTests", "file": "tests/TheShop.Domain.Tests/Entities/ProductVariantTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/CreateProduct/CreateProductCommandValidatorTests.cs", "tests": 33 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductCommandValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/UpdateProduct/UpdateProductCommandValidatorTests.cs", "tests": 12 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/CreateProduct/CreateProductHandlerTests.cs", "tests": 9 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/UpdateProduct/UpdateProductHandlerTests.cs", "tests": 10 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerPinTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/CreateProduct/CreateProductHandlerPinTests.cs", "tests": 8 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerPinTests", "file": "tests/TheShop.Application.Tests/Features/Products/Commands/UpdateProduct/UpdateProductHandlerPinTests.cs", "tests": 4 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetAdminProductsPageQueryValidatorTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetAdminProductsPageHandlerTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetProductForEditHandlerTests", "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetProductForEditHandlerTests.cs", "tests": 2 },
+    { "fqn": "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests", "file": "tests/TheShop.Application.Tests/Features/Products/Mappers/AdminProductDtoMapperTests.cs", "tests": 13 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/SupabaseProductAdminSchemaTests.cs", "tests": 16 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/ProductMapperTests.cs", "tests": 3 },
+    { "fqn": "TheShop.Infrastructure.Tests.Persistence.Filtering.ProductFilterDefinitionsTests", "file": "tests/TheShop.Infrastructure.Tests/Persistence/Filtering/ProductFilterDefinitionsTests.cs", "tests": 2 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageProductsTests.cs", "tests": 11 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.AddProductTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/AddProductTests.cs", "tests": 5 },
+    { "fqn": "TheShop.Web.Tests.Pages.Admin.EditProductTests", "file": "tests/TheShop.Web.Tests/Pages/Admin/EditProductTests.cs", "tests": 7 },
+    { "fqn": "TheShop.Web.Tests.Components.Products.ProductFormTests", "file": "tests/TheShop.Web.Tests/Components/Products/ProductFormTests.cs", "tests": 14 },
+    { "fqn": "TheShop.Web.Tests.Components.Products.ProductVariantsCardTests", "file": "tests/TheShop.Web.Tests/Components/Products/ProductVariantsCardTests.cs", "tests": 8 },
+    { "fqn": "TheShop.Web.Tests.Components.Common.ShopImageUploadTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopImageUploadTests.cs", "tests": 2 },
+    { "fqn": "TheShop.Web.Tests.Components.Common.ShopMoneyFieldTests", "file": "tests/TheShop.Web.Tests/Components/Common/ShopMoneyFieldTests.cs", "tests": 7 },
+    { "fqn": "TheShop.Web.Tests.Common.CurrencyFormatterTests", "file": "tests/TheShop.Web.Tests/Common/CurrencyFormatterTests.cs", "tests": 11 },
+    { "fqn": "TheShop.Web.Tests.Resources.MoneyStringFormatTests", "file": "tests/TheShop.Web.Tests/Resources/MoneyStringFormatTests.cs", "tests": 2 }
+  ],
+  "acceptanceCriteria": [
+    { "id": "AC-1", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenProductsExist_ShowsEachProductsNameSkuBrandCategoryAndStatus",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenAProductIsUnpublished_ShowsInactiveStatus",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_OnInitialize_RequestsTheFirstPageOfTen",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageHandlerTests.Handle_ReturnsBothPublishedAndUnpublishedProducts",
+      "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToListItemDto_WithoutDiscount_MapsEffectivePriceAsOriginalPrice"
+    ] },
+    { "id": "AC-2", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenProductsSpanMultiplePages_ShowsPaginationControls",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.ChangePage_RequestsTheNextPageOfTenInTheSameOrder",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageHandlerTests.Handle_WhenTheCallerRequestsADifferentPageSize_ClampsItToTheFixedTen",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests.Validate_WithPageOne_IsValid",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageQueryValidatorTests.Validate_WithPageBelowOne_HasPageInvalidError"
+    ] },
+    { "id": "AC-3", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserHoldsOnlyProductsView_DoesNotShowTheAddProductButton",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenUserHoldsOnlyProductsView_DoesNotShowTheEditRowControl",
+      "TheShop.Web.Tests.Pages.Admin.AddProductTests.AddProduct_Always_CarriesTheProductsCreateAuthorizePolicy",
+      "TheShop.Web.Tests.Pages.Admin.EditProductTests.EditProduct_Always_CarriesTheProductsEditAuthorizePolicy"
+    ] },
+    { "id": "AC-4", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WithValidData_PersistsTheProductAndReturnsItsDto",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_UploadsEveryGalleryImage"
+    ] },
+    { "id": "AC-5", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.AddProductTests.Render_Always_PassesCreateModeAndNoInitialDataToTheForm"
+    ] },
+    { "id": "AC-6", "tests": [
+      "TheShop.Application.Tests.Features.Products.Queries.GetProductForEditHandlerTests.Handle_WhenTheProductExists_ReturnsItsFullEditPayload",
+      "TheShop.Web.Tests.Pages.Admin.EditProductTests.Render_WhenTheProductExists_PassesEditModeAndTheLoadedDataToTheForm",
+      "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToAdminDto_MapsDetailsCategoryAndBrandNames",
+      "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToAdminDto_MapsTheGalleryInSavedOrderWithThePrimaryMarked",
+      "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToAdminDto_MapsEachOptionTypeAndItsValues",
+      "TheShop.Application.Tests.Features.Products.Mappers.AdminProductDtoMapperTests.ToAdminDto_MapsEveryGeneratedVariantWithItsLabel",
+      "TheShop.Domain.Tests.Entities.ProductTests.UpdateDetails_WithValidData_UpdatesNameDescriptionCategoryAndBrand"
+    ] },
+    { "id": "AC-7", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.SetGallery_WithNoImageMarkedPrimary_DefaultsTheFirstToPrimary",
+      "TheShop.Domain.Tests.Entities.ProductTests.RemoveImage_WhenTheRemovedImageWasPrimary_PromotesTheNextImage",
+      "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerTests.Handle_WhenAnImageIsRemovedFromTheGallery_DeletesItAfterSaving",
+      "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerTests.Handle_WhenANewImageIsAdded_UploadsItAndKeepsTheStoredOne",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.InsertProductImage_WithASecondPrimaryForTheSameProduct_ThrowsUniqueViolation"
+    ] },
+    { "id": "AC-8", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithAnImageOfAnUnacceptedType_HasImageInvalidTypeError",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithAnImageOverTwoMegabytes_HasImageTooLargeError",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithAnAcceptedImageType_IsValid"
+    ] },
+    { "id": "AC-9", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.ApplyVariantConfiguration_WithTwoOptionTypesOfTwoValuesEach_GeneratesFourVariants",
+      "TheShop.Domain.Tests.Entities.ProductVariantTests.Create_WithPricingAndAvailability_CarriesThemVerbatim"
+    ] },
+    { "id": "AC-10", "tests": [
+      "TheShop.Web.Tests.Components.Products.ProductVariantsCardTests.Render_WithAvailableAndUnavailableVariants_ShowsActiveAndInactiveStatuses",
+      "TheShop.Web.Tests.Components.Products.ProductVariantsCardTests.CopyPriceToAll_WithAPricedFirstRow_CopiesItToTheOtherVariants",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerPinTests.Handle_WithAPinOnAnImageUploadedInTheSameSave_PinsTheVariantToThatImage",
+      "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerPinTests.Handle_PinningAKeptImage_ResolvesToTheStoredIdentifier",
+      "TheShop.Domain.Tests.Entities.ProductTests.PinVariantImage_WithAGalleryImage_PinsTheVariant",
+      "TheShop.Domain.Tests.Entities.ProductVariantTests.Create_WithAPinnedImageId_CarriesItVerbatim",
+      "TheShop.Web.Tests.Components.Products.ProductFormTests.PickAnImage_BeforeAnythingIsSaved_OffersItToTheVariantPinPicker"
+    ] },
+    { "id": "AC-11", "tests": [
+      "TheShop.Domain.Tests.ValueObjects.SkuTests.SuggestFromName_UppercasesAndHyphenatesTheName",
+      "TheShop.Domain.Tests.ValueObjects.SkuTests.SuggestFromName_WhenTheNameChanges_ProducesADifferentSku",
+      "TheShop.Domain.Tests.ValueObjects.SkuTests.SuggestFromProductSkuAndValues_BuildsTheHyphenatedSuffixForm"
+    ] },
+    { "id": "AC-12", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.ApplyVariantConfiguration_WhenAValueIsAdded_KeepsEveryExistingVariantsConfiguration",
+      "TheShop.Domain.Tests.Entities.ProductVariantTests.Create_WithAnExistingId_ReusesIt"
+    ] },
+    { "id": "AC-13", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.ApplyVariantConfiguration_WhenAValueIsRemoved_DropsOnlyTheVariantsBuiltFromIt",
+      "TheShop.Web.Tests.Components.Products.ProductVariantsCardTests.RemoveOptionValue_WhenItIsTheOnlyValue_RemovesOptionTypeAndVariant"
+    ] },
+    { "id": "AC-14", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.ApplyVariantConfiguration_WithNoOptionTypes_ProducesNoVariants"
+    ] },
+    { "id": "AC-15", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.ApplyVariantConfiguration_WithTwoOptionTypesOfTwoValuesEach_GeneratesFourVariants"
+    ] },
+    { "id": "AC-16", "tests": [
+      "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests.ToDomain_WithNoMinVariantPriceColumnAndNoEmbeddedVariants_MapsHasVariantsFalse"
+    ] },
+    { "id": "AC-17", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.MinVariantPrice_WithVariantsAtDifferentPrices_ReturnsTheLowest",
+      "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests.ToDomain_WithAMinVariantPriceColumn_MapsHasVariantsTrueAndTheMinPrice"
+    ] },
+    { "id": "AC-18", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.Product_CarriesNoDedicatedFlavourOrNicotineProperty",
+      "TheShop.Infrastructure.Tests.Persistence.Filtering.ProductFilterDefinitionsTests.CatalogueFiltersRecord_DeserializesOptionTypesFromTheRpcPayload"
+    ] },
+    { "id": "AC-19", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WithOnlyANameCategoryAndBrand_SavesAsADraft",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.InsertProduct_WithNoPriceAtAll_Succeeds",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.InsertVariant_WithNoPriceOrStockYet_Succeeds"
+    ] },
+    { "id": "AC-20", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.EnsurePublishable_WithAnUnpricedVariant_ThrowsNamingThatVariantsToken",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerPinTests.Handle_PublishingWithAnUnpricedVariant_FailsWithTheNotPublishableKey",
+      "TheShop.Web.Tests.Components.Products.ProductFormTests.Publish_WithAVariantMissingItsPrice_ShowsWhichRowsAreIncomplete",
+      "TheShop.Web.Tests.Components.Products.ProductFormTests.Publish_WithAVariantMissingItsPrice_DoesNotDispatchTheCommand"
+    ] },
+    { "id": "AC-21", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithBlankName_HasNameRequiredError",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithNameOver150Characters_HasNameTooLongError",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithDescriptionOver2000Characters_HasDescriptionTooLongError",
+      "TheShop.Domain.Tests.Entities.ProductTests.UpdateDetails_WithBlankName_ThrowsProductNameRequiredException",
+      "TheShop.Domain.Tests.Entities.ProductTests.UpdateDetails_WithNameOver150Characters_ThrowsProductNameTooLongException",
+      "TheShop.Domain.Tests.Entities.ProductTests.UpdateDetails_WithDescriptionOver2000Characters_ThrowsProductDescriptionTooLongException"
+    ] },
+    { "id": "AC-22", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WithADuplicateName_FailsWithNameAlreadyExists",
+      "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerTests.Handle_WhenRenamedToAnotherProductsName_FailsWithNameAlreadyExists",
+      "TheShop.Web.Tests.Components.Products.ProductFormTests.Save_WhenTheProductNameAlreadyExists_ShowsAnErrorSnackbarAndDoesNotNavigate",
+      "TheShop.Web.Tests.Components.Products.ProductFormTests.Save_WhenTheProductNameAlreadyExists_PreservesTheEnteredName",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.InsertProduct_WithADuplicateNormalizedName_ThrowsUniqueViolation"
+    ] },
+    { "id": "AC-23", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WhenTheCategoryDoesNotExist_FailsWithCategoryRequired",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WhenTheBrandDoesNotExist_FailsWithBrandRequired",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithEmptyCategoryId_HasCategoryRequiredError",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithEmptyBrandId_HasBrandRequiredError",
+      "TheShop.Web.Tests.Pages.Admin.AddProductTests.Render_LoadsActiveCategoriesAndBrandsIntoTheForm"
+    ] },
+    { "id": "AC-24", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.EditProductTests.Render_WhenTheAssignedCategoryHasSinceBeenDeactivated_StillOffersItInTheForm"
+    ] },
+    { "id": "AC-25", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithSalePriceEqualToPrice_HasSalePriceTooHighError",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_OnAVariantWithSalePriceAboveItsOwnPrice_HasSalePriceTooHighError",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.InsertVariant_WithSalePriceEqualToOriginalPrice_ThrowsPostgresException"
+    ] },
+    { "id": "AC-26", "tests": [] },
+    { "id": "AC-27", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithAVariantSkuMatchingTheProductSku_HasSkuDuplicatedInRequestError",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WithADuplicateSku_FailsWithSkuAlreadyExists",
+      "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerTests.Handle_ChecksConflictsExcludingItsOwnProductId",
+      "TheShop.Domain.Tests.ValueObjects.SkuTests.SuggestFromName_TwoDifferentlyPunctuatedNames_CanCollide",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.InsertSkuRegistryRow_WithASkuAlreadyUsedByAnotherProduct_ThrowsUniqueViolation",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.InsertSkuRegistryRow_WithAVariantSkuMatchingAnotherProductsSku_ThrowsUniqueViolation"
+    ] },
+    { "id": "AC-28", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithABlankOptionTypeName_HasOptionNameRequiredError",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductCommandValidatorTests.Validate_WithDuplicateOptionTypeNames_HasOptionNameDuplicatedError",
+      "TheShop.Domain.Tests.Entities.ProductOptionTypeTests.Create_WithDuplicateValuesIgnoringCaseAndSpaces_ThrowsDuplicateOptionValueException",
+      "TheShop.Domain.Tests.Entities.ProductTests.SetOptionTypes_WithDuplicateNamesIgnoringCaseAndSpaces_ThrowsDuplicateOptionNameException"
+    ] },
+    { "id": "AC-29", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.HasSellableVariant_WithEveryVariantUnavailable_ReturnsFalse",
+      "TheShop.Domain.Tests.Entities.ProductTests.HasSellableVariant_WithAtLeastOneAvailableVariant_ReturnsTrue",
+      "TheShop.Infrastructure.Tests.Persistence.ProductMapperTests.ToDomain_WithAMinVariantPriceColumnButNoSellableVariant_MapsHasSellableVariantFalse"
+    ] },
+    { "id": "AC-30", "tests": [
+      "TheShop.Domain.Tests.Entities.ProductTests.SetPublished_TogglesTheStatus",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.SelectProducts_AsStaffWithProductsView_SeesUnpublishedRows"
+    ] },
+    { "id": "AC-31", "tests": [] },
+    { "id": "AC-32", "tests": [
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WhenAnUnexpectedExceptionIsThrown_FailsWithCreateFailed",
+      "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerTests.Handle_WhenAnUnexpectedExceptionIsThrown_FailsWithUpdateFailed",
+      "TheShop.Web.Tests.Components.Products.ProductFormTests.Save_WhenTheSaveFailsForATechnicalReason_ShowsAnErrorSnackbarAndDoesNotNavigate",
+      "TheShop.Application.Tests.Features.Products.Commands.CreateProduct.CreateProductHandlerTests.Handle_WhenPersistenceFails_DeletesEveryImageUploadedThisRequest"
+    ] },
+    { "id": "AC-33", "tests": [
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.SelectProducts_AsAuthenticatedUserWithoutProductsView_SeesNoUnpublishedRows",
+      "TheShop.Infrastructure.Tests.Persistence.SupabaseProductAdminSchemaTests.InsertProductImage_AsAuthenticatedUserWithoutProductsCreateOrEdit_IsDeniedByRls"
+    ] },
+    { "id": "AC-34", "tests": [
+      "TheShop.Application.Tests.Features.Products.Queries.GetProductForEditHandlerTests.Handle_WhenTheProductNoLongerExists_FailsWithNotFound",
+      "TheShop.Application.Tests.Features.Products.Commands.UpdateProduct.UpdateProductHandlerTests.Handle_WhenTheProductNoLongerExists_FailsWithNotFound",
+      "TheShop.Web.Tests.Pages.Admin.EditProductTests.Render_WhenTheProductNoLongerExists_ShowsTheNotFoundMessage",
+      "TheShop.Web.Tests.Pages.Admin.EditProductTests.Render_WhenTheProductNoLongerExists_OffersALinkBackToTheList"
+    ] },
+    { "id": "AC-35", "tests": [
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenNoProductsExistYet_ShowsTheEmptyStateMessage",
+      "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenNoProductsExistAndUserHoldsCreatePermission_ShowsTheAddProductControl",
+      "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductsPageHandlerTests.Handle_WhenNoProductsExist_ReturnsAnEmptyPage"
+    ] },
+    { "id": "AC-36", "tests": [] },
+    { "id": "AC-37", "tests": [] }
+  ]
+}

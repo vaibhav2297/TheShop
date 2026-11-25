@@ -1,0 +1,220 @@
+using Bunit;
+using FluentAssertions;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.DependencyInjection;
+using TheShop.Web.Common;
+using TheShop.Web.Components.Common;
+using Xunit;
+
+namespace TheShop.Web.Tests.Components.Common;
+
+/// <summary>
+/// Tests for <see cref="ShopImageUpload"/> — the reusable dropzone-with-preview control backing
+/// the add-brand logo field (Behavior 2, Figma node <c>2490:1257</c>/<c>2493:6632</c>). Covers
+/// preview rendering, removal (returning the form to its no-logo state), and the client-side
+/// type/size guard that backs RULE-4/AC-5.
+/// <see href=".specs/add-brand/spec.md"/>
+/// </summary>
+public class ShopImageUploadTests : TestContext
+{
+    private const string InvalidTypeError = "Logo must be a PNG, JPG, or WebP image.";
+    private const string TooLargeError = "Logo must be 2 MB or smaller.";
+    private const string PrimaryLabel = "Primary";
+
+    public ShopImageUploadTests()
+    {
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        JSInterop.SetupVoid(i => true).SetVoidResult();
+        Services.AddSingleton<BusyState>();
+    }
+
+    private static ShopUploadedImage ExampleImage(string fileName = "logo.png") =>
+        new([1, 2, 3], fileName, "image/png", "data:image/png;base64,AQID");
+
+    // =========================================================================
+    // Preview rendering (Behavior 2, AC-4)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "add-brand")]
+    public void Render_WithASelectedImage_ShowsAPreview()
+    {
+        var cut = Render<ShopImageUpload>(p => p.Add(c => c.Files, [ExampleImage()]));
+
+        cut.FindAll("img").Should().Contain(img => img.GetAttribute("src") == "data:image/png;base64,AQID");
+    }
+
+    [Fact]
+    [Trait("Feature", "add-brand")]
+    public void Render_WithNoSelectedImage_ShowsNoPreview()
+    {
+        var cut = Render<ShopImageUpload>(p => p.Add(c => c.Files, []));
+
+        cut.FindAll("img").Should().BeEmpty();
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public void Render_ByDefault_ShowsEachPreviewAsAWholeSquareTile()
+    {
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [ExampleImage()]));
+
+        var preview = cut.FindComponent<ShopImage>();
+        preview.Instance.Preset.Should().Be(ShopImagePreset.SquareContain);
+        cut.FindComponent<ShopImageTile>().Should().NotBeNull();
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public void Render_WithTheBrandLogoPreviewPreset_ContainsEachLogoPreview()
+    {
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [ExampleImage()])
+            .Add(c => c.PreviewPreset, ShopImagePreset.BrandLogo));
+
+        cut.FindComponent<ShopImage>().Instance.Preset.Should().Be(ShopImagePreset.BrandLogo);
+        cut.Find("img.shop-image-media").ClassList.Should().Contain("shop-image-contain");
+    }
+
+    [Fact]
+    [Trait("Feature", "shop-image")]
+    public async Task PreviewFails_WhenTheSelectedFileCannotDisplay_ShowsItsFileNameAndKeepsTheRemoveAction()
+    {
+        var image = ExampleImage("broken-logo.png");
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [image])
+            .Add(c => c.RemoveLabel, "Remove logo"));
+
+        var preview = cut.FindComponent<ShopImage>();
+        await cut.InvokeAsync(() => preview.Instance.OnImageFailed("desktop", image.PreviewUrl));
+
+        cut.Find(".shop-image-placeholder").TextContent.Trim().Should().Be("broken-logo.png");
+        cut.Find("button.shop-image-tile-remove").GetAttribute("aria-label").Should().Be("Remove logo: broken-logo.png");
+    }
+
+    // =========================================================================
+    // Remove — the form returns to its no-logo state (Behavior 2 edge case)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "add-brand")]
+    public async Task ClickRemove_WithASingleSelectedImage_RaisesFilesChangedWithAnEmptyList()
+    {
+        IReadOnlyList<ShopUploadedImage>? raised = null;
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [ExampleImage()])
+            .Add(c => c.FilesChanged, images => raised = images));
+
+        await cut.Find("button.shop-image-tile-remove").ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
+
+        raised.Should().NotBeNull();
+        raised!.Should().BeEmpty();
+    }
+
+    // =========================================================================
+    // Type guard (RULE-4, AC-5) — the row still appears, flagged with its own error (Figma)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "add-brand")]
+    public void SelectFile_WithADisallowedContentType_KeepsItAsARowFlaggedWithTheTypeError()
+    {
+        IReadOnlyList<ShopUploadedImage>? raised = null;
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [])
+            .Add(c => c.FilesChanged, images => raised = images)
+            .Add(c => c.InvalidTypeError, InvalidTypeError));
+
+        var inputFile = cut.FindComponent<InputFile>();
+        inputFile.UploadFiles(InputFileContent.CreateFromBinary([1, 2, 3], "logo.gif", contentType: "image/gif"));
+
+        raised.Should().NotBeNull();
+        raised!.Should().ContainSingle(image => image.Error == InvalidTypeError,
+            "a disallowed content type stays in the selection as an error row, not silently dropped");
+
+        // Echo the callback back through Files, exactly as a consumer's @bind-Files would.
+        cut.Render(p => p.Add(c => c.Files, raised));
+        cut.Markup.Should().Contain(InvalidTypeError);
+    }
+
+    // =========================================================================
+    // Size guard (RULE-4, AC-5) — the row still appears, flagged with its own error (Figma)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "add-brand")]
+    public void SelectFile_ExceedingTheMaxFileSize_KeepsItAsARowFlaggedWithTheSizeError()
+    {
+        IReadOnlyList<ShopUploadedImage>? raised = null;
+        var oversized = new byte[3 * 1024 * 1024];
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [])
+            .Add(c => c.FilesChanged, images => raised = images)
+            .Add(c => c.MaxFileSizeError, TooLargeError)
+            .Add(c => c.MaxFileSize, 2 * 1024 * 1024));
+
+        var inputFile = cut.FindComponent<InputFile>();
+        inputFile.UploadFiles(InputFileContent.CreateFromBinary(oversized, "logo.png", contentType: "image/png"));
+
+        raised.Should().NotBeNull();
+        raised!.Should().ContainSingle(image => image.Error == TooLargeError,
+            "an oversized file stays in the selection as an error row, not silently dropped");
+
+        // Echo the callback back through Files, exactly as a consumer's @bind-Files would.
+        cut.Render(p => p.Add(c => c.Files, raised));
+        cut.Markup.Should().Contain(TooLargeError);
+    }
+
+    // =========================================================================
+    // Valid selection — accepted into the file list (AC-4)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "add-brand")]
+    public void SelectFile_WithAnAllowedTypeAndSize_RaisesFilesChangedWithOneImage()
+    {
+        IReadOnlyList<ShopUploadedImage>? raised = null;
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [])
+            .Add(c => c.FilesChanged, images => raised = images));
+
+        var inputFile = cut.FindComponent<InputFile>();
+        inputFile.UploadFiles(InputFileContent.CreateFromBinary([1, 2, 3], "logo.png", contentType: "image/png"));
+
+        raised.Should().NotBeNull();
+        raised!.Should().ContainSingle(image => image.FileName == "logo.png" && image.ContentType == "image/png");
+    }
+
+    // =========================================================================
+    // Primary badge — position, not a flag, is what makes an image primary (FR-11)
+    // =========================================================================
+
+    [Fact]
+    [Trait("Feature", "create-product")]
+    public void Render_WithThePrimaryBadgeEnabled_BadgesOnlyTheFirstImage()
+    {
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [ExampleImage("first.png"), ExampleImage("second.png")])
+            .Add(c => c.Multiple, true)
+            .Add(c => c.ShowPrimaryBadge, true)
+            .Add(c => c.PrimaryLabel, PrimaryLabel));
+
+        cut.FindAll(".shop-image-tile-primary").Should().ContainSingle();
+        cut.Find(".shop-image-tile-primary").TextContent.Should().Contain(PrimaryLabel);
+        cut.FindComponents<ShopBadge>().Should().ContainSingle();
+    }
+
+    [Fact]
+    [Trait("Feature", "create-product")]
+    public void Render_WithThePrimaryBadgeDisabled_BadgesNothing()
+    {
+        var cut = Render<ShopImageUpload>(p => p
+            .Add(c => c.Files, [ExampleImage("first.png"), ExampleImage("second.png")])
+            .Add(c => c.Multiple, true)
+            .Add(c => c.PrimaryLabel, PrimaryLabel));
+
+        cut.FindAll(".shop-image-tile-primary").Should().BeEmpty();
+    }
+
+}

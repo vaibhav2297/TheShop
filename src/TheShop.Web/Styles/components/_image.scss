@@ -1,0 +1,79 @@
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/image-presets';
+@use '../abstracts/text-style';
+
+.shop-image {
+    position: relative;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    aspect-ratio: var(--shop-image-aspect-ratio);
+    overflow: hidden;
+}
+
+.shop-image-media,
+.shop-image-placeholder {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+}
+
+.shop-image-media {
+    display: block;
+    object-position: center;
+}
+
+.shop-image-contain {
+    object-fit: contain;
+}
+
+.shop-image-cover {
+    object-fit: cover;
+}
+
+.shop-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: var(--shop-space-2);
+    overflow: hidden;
+    background-color: var(--shop-color-tertiary);
+}
+
+.shop-image-label {
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
+    overflow: hidden;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(subtitle-1);
+    text-align: center;
+}
+
+@include image-presets.geometry('shop-image');
+
+.shop-image-brand-logo {
+    block-size: 100%;
+}
+
+.shop-image-branch-mobile {
+    display: none;
+}
+
+@media (width < bp.$tablet) {
+    .shop-image-banner:not(.shop-image-static),
+    .shop-image-hero:not(.shop-image-static) {
+        .shop-image-branch-mobile.shop-image-media {
+            display: block;
+        }
+
+        .shop-image-branch-mobile.shop-image-placeholder {
+            display: flex;
+        }
+
+        .shop-image-branch-desktop {
+            display: none;
+        }
+    }
+}

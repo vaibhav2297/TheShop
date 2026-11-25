@@ -1,0 +1,37 @@
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Admin
+@using TheShop.Web.Components.Common
+@using TheShop.Application.Features.Admin
+
+<PageTitle>@Strings.AdminConsole_PageTitle</PageTitle>
+
+<section class="shop-native shop-admin-console">
+    <h1>@Strings.AdminConsole_Heading</h1>
+
+    <BusyFor Key="@BusyKeys.AdminDashboard" Context="busy">
+        <p class="shop-visually-hidden" role="status">@(busy ? Strings.Loading : null)</p>
+        <div class="shop-admin-console-grid" aria-busy="@busy.ToString().ToLowerInvariant()">
+            @if (busy)
+            {
+                @for (var i = 0; i < AdminDashboardCatalogue.Modules.Count; i++)
+                {
+                    <AdminModuleCardSkeleton />
+                }
+            }
+            else if (_modules.Count > 0)
+            {
+                @foreach (var card in _modules)
+                {
+                    <AdminModuleCard Module="@card.Module" Count="@card.Count" />
+                }
+            }
+        </div>
+        @if (!busy && _modules.Count == 0)
+        {
+            <div class="shop-admin-console-empty">
+                <h2>@Strings.AdminConsole_Welcome</h2>
+                <p>@Strings.AdminConsole_NotHaveModulePermission</p>
+            </div>
+        }
+    </BusyFor>
+</section>

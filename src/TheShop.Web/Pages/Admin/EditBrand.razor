@@ -1,0 +1,35 @@
+@using TheShop.Web.Components.Brands
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.EditBrand_PageTitle</PageTitle>
+<section class="shop-native shop-brands-page">
+    <h1>@(_notFound ? Strings.Brand_NotFound : Strings.EditBrand_Heading)</h1>
+    <BusyFor Key="@BusyKeys.Brands.EditBrand" Context="busy">
+        @if (busy && !_loaded && !_notFound)
+        {
+            <div class="shop-brands-form" role="status" aria-label="@Strings.Loading">
+                <ShopSkeleton Class="shop-brands-upload-skeleton" />
+                <div class="shop-brands-fields">
+                    @for (var i = 0; i < 4; i++)
+                    {
+                        <ShopSkeleton Class="shop-brands-field-skeleton" />
+                    }
+                </div>
+            </div>
+        }
+        else if (_notFound)
+        {
+            <div class="shop-brands-empty">
+                <a class="shop-button shop-button-filled shop-button-primary shop-button-medium" href="@Routes.Admin.ManageBrands">@Strings.EditBrand_BackToList</a>
+            </div>
+        }
+        else
+        {
+            <BrandForm @ref="_form" Model="_model" Busy="@busy"
+                       LogoImages="DisplayedLogoImages" LogoImagesChanged="OnNewLogoImagesChanged"
+                       OnSave="SaveAsync" TestIdPrefix="edit-brand" />
+        }
+    </BusyFor>
+</section>

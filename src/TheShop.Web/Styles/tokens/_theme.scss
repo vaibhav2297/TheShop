@@ -1,0 +1,29 @@
+:root {
+    // Shared TextField/Select chrome; component-only values belong in their own partials.
+    // Outlined Text Field 170:136, inspected 2026-10-03. Motion is an implementation decision.
+    --shop-field-min-height: 3.8125rem;
+    --shop-field-padding-block: 1.15625rem;
+    --shop-field-padding-inline: 0.875rem;
+    --shop-field-icon-size: 1.5rem;
+    --shop-field-border-width: 1px;
+    --shop-field-label-transition-duration: 240ms;
+    --shop-field-label-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --shop-radius-control: 0;
+    --shop-focus-width: 2px;
+    --shop-focus-offset: 3px;
+    --shop-color-focus-ring: var(--shop-color-text-primary);
+
+    // Interaction states are inferred; the supplied button set defines resting variants only.
+    --shop-color-action-hover: #333;
+    --shop-color-action-pressed: #000;
+    --shop-color-action-disabled: var(--shop-color-tertiary);
+    --shop-color-on-disabled: var(--shop-color-text-secondary);
+
+    // Filled interaction backgrounds preserve the existing darker hover/pressed treatments.
+    --shop-color-secondary-hover: #595959;
+    --shop-color-info-hover: #075ca8;
+    --shop-color-success-hover: #146c37;
+    --shop-color-warning-hover: #805400;
+    --shop-color-error-hover: #b42318;
+
+}

@@ -1,0 +1,39 @@
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+
+<section class="shop-featured-tile" data-testid="@TestId" aria-labelledby="@TitleId">
+    <h3 id="@TitleId">@TileName</h3>
+    @if (ReadOnly)
+    {
+        <ShopImage Src="@Model.Images.FirstOrDefault()?.PreviewUrl" Preset="ShopImagePreset.SquareContain"
+                   Responsive="false" Alt="@TileName" PlaceholderLabel="@TileName" />
+        <dl class="shop-featured-read-content">
+            <dt>@Strings.Featured_Label</dt><dd>@Model.Label</dd>
+            <dt>@Strings.Featured_Title</dt><dd>@Model.Title</dd>
+            <dt>@Strings.Featured_ButtonLabel</dt><dd>@Model.ButtonLabel</dd>
+            <dt>@Strings.Featured_ButtonLink</dt><dd>@Model.ButtonLink</dd>
+        </dl>
+    }
+    else
+    {
+        <ShopImageUpload @ref="_upload" Files="@Model.Images" FilesChanged="ImagesChanged"
+                         Multiple="false" Layout="ShopImageUploadLayout.SinglePreview"
+                         PreviewPreset="ShopImagePreset.SquareContain" ResponsivePreview="false"
+                         MaxFileSize="5242880" ValidateFileAsync="@ValidateFileAsync" Disabled="@Disabled"
+                         UploadText="@Strings.HeroBanner_AddImage" UploadHint="@Strings.Featured_UploadHint"
+                         PreviewAlt="@TileName" RemoveLabel="@RemoveLabel"
+                         InvalidTypeError="@Strings.Featured_ImageInvalidType" MaxFileSizeError="@Strings.Featured_ImageTooLarge"
+                         data-testid="featured-image" role="group" aria-label="@TileName"
+                         aria-describedby="@ImageDescriptionIds" />
+        <p id="@HintId" class="shop-featured-hint"><ShopIcon Icon="@ShopIcons.Outlined.Info" />@Strings.Featured_ImageHint</p>
+        <div id="@ErrorId" class="shop-featured-errors" aria-live="polite"><ValidationMessage For="@(() => Model.Images)" /></div>
+        <ShopTextField id="@LabelId" data-testid="featured-label" Label="@Strings.Featured_Label"
+                       @bind-Value="Model.Label" Disabled="@Disabled" />
+        <ShopTextField id="@TileTitleId" data-testid="featured-tile-title" Label="@Strings.Featured_Title"
+                       @bind-Value="Model.Title" Disabled="@Disabled" required />
+        <ShopTextField id="@ButtonLabelId" data-testid="featured-button-label" Label="@Strings.Featured_ButtonLabel"
+                       @bind-Value="Model.ButtonLabel" Disabled="@Disabled" />
+        <ShopTextField id="@ButtonLinkId" data-testid="featured-button-link" type="text" Label="@Strings.Featured_ButtonLink"
+                       @bind-Value="Model.ButtonLink" Disabled="@Disabled" />
+    }
+</section>

@@ -1,0 +1,11 @@
+{
+    "Source": "Styles",
+    "Target": "wwwroot/css",
+    "Arguments": "--style=compressed --no-source-map",
+    "GenerateScopedCss": false,
+    "Configurations": {
+        "Debug": {
+            "Arguments": "--style=expanded"
+        }
+    }
+}

@@ -1,0 +1,141 @@
+﻿@attribute [AllowAnonymous]
+@inherits QueryStatePageBase<CatalogueQueryState>
+
+@using TheShop.Domain.Enums
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Components.Products
+
+<PageTitle>@Strings.Products_PageTitle</PageTitle>
+
+<section class="shop-native shop-catalogue-page">
+    <h1>@Strings.Nav_Products</h1>
+
+    <div class="shop-catalogue-list">
+        <aside class="shop-catalogue-sidebar">
+            <BusyFor Key="@BusyKeys.Products.Filters" Context="filtersBusy">
+                @if (filtersBusy)
+                {
+                    <div class="shop-filter-skeleton shop-catalogue-filter" aria-hidden="true">
+                        @for (var i = 0; i < 5; i++)
+                        {
+                            <div class="shop-filter-skeleton-group">
+                                <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-filter-skeleton-title" />
+                            </div>
+                        }
+                    </div>
+                }
+                else if (_filtersErrorKey is not null)
+                {
+                    <p role="alert">@Strings.VariantFilters_LoadFailed</p>
+                    <ShopButton OnClick="RetryAsync">@Strings.VariantFilters_Retry</ShopButton>
+                }
+                else
+                {
+                    <ShopFilterPanel Class="shop-catalogue-filter" ClearLabel="@Strings.Filter_ClearAll"
+                                     Groups="@FilterGroups" SelectedFilters="@_selectedFilters"
+                                     FilterToggled="OnFilterToggledAsync" SelectedRanges="@SelectedRanges"
+                                     RangeChanged="OnRangeChangedAsync" RangeFormatter="FormatRange"
+                                     RangeStep="@(_ => 0.01m)"
+                                     RangeMinimumLabel="@(_ => Strings.Range_MinimumCad)"
+                                     RangeMaximumLabel="@(_ => Strings.Range_MaximumCad)"
+                                     OnClearFilters="OnClearFiltersAsync" />
+                }
+            </BusyFor>
+        </aside>
+
+        <div class="shop-catalogue-results">
+            <div class="shop-catalogue-tools">
+                <ShopButton Class="shop-catalogue-filter-button" Variant="ShopVariant.Outlined" Size="ShopSize.Large"
+                            StartIcon="@ShopIcons.Outlined.Filter" OnClick="@(() => _filtersOpen = true)">
+                    @Strings.Products_Filters
+                </ShopButton>
+                <ShopSortSelect TSort="ProductSortOption" Class="shop-catalogue-sort" Sort="@_sort"
+                                Options="@SortOptions" SortChanged="OnSortChangedAsync" />
+                @if (_products.HasLoaded && !LoadFailed)
+                {
+                    <p class="shop-catalogue-count" role="status" aria-atomic="true">
+                        @string.Format(Strings.Catalogue_ResultCount, ResultRangeStart, ResultRangeEnd, _products.TotalCount)
+                    </p>
+                }
+            </div>
+
+            <BusyFor Key="@BusyKeys.Products.Catalogue" Context="busy">
+                @if (busy)
+                {
+                    <div class="shop-catalogue-grid" aria-busy="true" aria-label="@Strings.Loading">
+                        @for (var i = 0; i < 12; i++)
+                        {
+                            <ProductCardSkeleton />
+                        }
+                    </div>
+                }
+                else if (LoadFailed)
+                {
+                    <div class="shop-catalogue-empty" role="alert" data-testid="listing-load-error">
+                        <p>@Strings.VariantFilters_LoadFailed</p>
+                        <ShopButton OnClick="RetryAsync" data-testid="listing-retry">@Strings.VariantFilters_Retry</ShopButton>
+                    </div>
+                }
+                else if (_products.Items.Count > 0)
+                {
+                    <div class="shop-catalogue-grid" data-testid="catalogue-grid">
+                        @foreach (var product in _products.Items)
+                        {
+                            <ProductCard @key="product.Id" Product="@product" Href="@Routes.ProductDetail(product.Id)" />
+                        }
+                    </div>
+                    <ShopPagination Page="@_products.Page" TotalPages="@_products.TotalPages"
+                                    PageChanged="OnPageChangedAsync" Class="shop-catalogue-pagination" />
+                }
+                else
+                {
+                    <div class="shop-catalogue-empty">
+                        <h2>@Strings.Empty_NoResults</h2>
+                        <p>@Strings.No_Product_Found_Desc</p>
+                        <ShopButton OnClick="OnClearFiltersAsync">@Strings.Filter_ClearAll</ShopButton>
+                    </div>
+                }
+            </BusyFor>
+        </div>
+    </div>
+</section>
+
+<ShopDrawer Open="@_filtersOpen" OpenChanged="@(open => _filtersOpen = open)" Side="ShopDrawerSide.Left">
+    <HeaderContent><h2 class="shop-drawer-title">@Strings.Products_Filters</h2></HeaderContent>
+    <DrawerContent>
+        @if (_filtersOpen)
+        {
+            <BusyFor Key="@BusyKeys.Products.Filters" Context="filtersBusy">
+                @if (filtersBusy)
+                {
+                    <div class="shop-filter-skeleton shop-catalogue-filter" aria-hidden="true">
+                        @for (var i = 0; i < 5; i++)
+                        {
+                            <div class="shop-filter-skeleton-group">
+                                <ShopSkeleton Shape="ShopSkeletonShape.Text" Class="shop-filter-skeleton-title" />
+                            </div>
+                        }
+                    </div>
+                }
+                else if (_filtersErrorKey is not null)
+                {
+                    <p role="alert">@Strings.VariantFilters_LoadFailed</p>
+                    <ShopButton OnClick="RetryAsync">@Strings.VariantFilters_Retry</ShopButton>
+                }
+                else
+                {
+                    <ShopFilterPanel Class="shop-catalogue-filter" ClearLabel="@Strings.Filter_ClearAll"
+                                     Groups="@FilterGroups" SelectedFilters="@_selectedFilters"
+                                     FilterToggled="OnFilterToggledAsync" SelectedRanges="@SelectedRanges"
+                                     RangeChanged="OnRangeChangedAsync" RangeFormatter="FormatRange"
+                                     RangeStep="@(_ => 0.01m)"
+                                     RangeMinimumLabel="@(_ => Strings.Range_MinimumCad)"
+                                     RangeMaximumLabel="@(_ => Strings.Range_MaximumCad)"
+                                     OnClearFilters="OnClearFiltersAsync" />
+                }
+            </BusyFor>
+        }
+    </DrawerContent>
+</ShopDrawer>

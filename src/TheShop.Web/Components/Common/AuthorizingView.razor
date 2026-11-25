@@ -1,0 +1,12 @@
+@inherits ShopComponentBase
+@using TheShop.Web.Common.UI
+
+@using TheShop.Web.Resources
+
+<div @attributes="AdditionalAttributes" class="@Classname" style="@Style" role="status">
+
+    <ShopLoader />
+
+    <p>@Strings.Authorizing_Loading</p>
+
+</div>

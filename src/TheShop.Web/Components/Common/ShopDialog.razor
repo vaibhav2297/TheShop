@@ -1,0 +1,12 @@
+@using TheShop.Web.Common.UI
+
+<dialog @ref="_element" class="@CssClass"
+        aria-labelledby="@_titleId" aria-describedby="@DescriptionId">
+    <header class="shop-dialog-header">
+        <div id="@_titleId" class="shop-dialog-title-content">@TitleContent</div>
+        <ShopIconButton Variant="ShopVariant.Text" Icon="@ShopIcons.Outlined.Close_MD"
+                        OnClick="DismissAsync" Label="@Strings.Close" data-testid="dialog-close" />
+    </header>
+    <div class="shop-dialog-content" tabindex="0" role="region" aria-labelledby="@_titleId">@DialogContent</div>
+    <footer class="shop-dialog-actions">@DialogActions</footer>
+</dialog>

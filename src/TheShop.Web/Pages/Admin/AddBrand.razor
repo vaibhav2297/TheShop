@@ -1,0 +1,14 @@
+@using TheShop.Web.Components.Brands
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.AddBrand_PageTitle</PageTitle>
+<section class="shop-native shop-brands-page">
+    <h1>@Strings.Brands_CreateHeading</h1>
+    <BusyFor Key="@BusyKeys.Brands.AddBrand" Context="busy">
+        <BrandForm @ref="_form" Model="_model" Busy="@busy"
+                   LogoImages="_logoImages" LogoImagesChanged="OnLogoImagesChanged"
+                   OnSave="SaveAsync" TestIdPrefix="add-brand" />
+    </BusyFor>
+</section>

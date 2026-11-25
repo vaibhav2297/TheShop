@@ -1,0 +1,63 @@
+// Static WASM boot/error elements exist before Razor can render shared components.
+.shop-boot-progress {
+    position: absolute;
+    display: block;
+    inline-size: 8rem;
+    block-size: 8rem;
+    inset: 20vh 0 auto;
+    margin-inline: auto;
+
+    circle {
+        fill: none;
+        stroke: var(--shop-color-lines-default);
+        stroke-width: 0.6rem;
+        transform-origin: 50% 50%;
+        transform: rotate(-90deg);
+    }
+
+    circle:last-child {
+        stroke: var(--shop-color-primary);
+        stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+        transition: stroke-dasharray 50ms ease-in-out;
+    }
+}
+
+.shop-boot-progress-text {
+    position: absolute;
+    inset: calc(20vh + 3.25rem) 0 auto;
+    text-align: center;
+    font-weight: var(--shop-typography-subtitle-1-font-weight);
+
+    &::after {
+        content: var(--blazor-load-percentage-text, "Loading");
+    }
+}
+
+// The Blazor runtime controls this element's display on an unhandled exception.
+#blazor-error-ui {
+    display: none;
+    position: fixed;
+    inset: auto 0 0;
+    z-index: var(--shop-layer-runtime-error);
+    padding: var(--shop-space-4);
+    padding-inline-end: var(--shop-space-12);
+    color: var(--shop-color-primary-contrast);
+    background: var(--shop-color-primary);
+    overflow-wrap: anywhere;
+
+    .reload {
+        color: inherit;
+        text-decoration: underline;
+    }
+
+    .dismiss {
+        position: absolute;
+        inset-block-start: var(--shop-space-4);
+        inset-inline-end: var(--shop-space-4);
+        cursor: pointer;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shop-boot-progress circle:last-child { transition: none; }
+}

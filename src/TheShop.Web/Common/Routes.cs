@@ -1,0 +1,185 @@
+namespace TheShop.Web.Common;
+
+/// <summary>
+/// Centralised route constants and URL-building helpers for the application.
+/// All page <c>[Route]</c> attributes reference values from this class.
+/// </summary>
+public static class Routes
+{
+    public const string Home = "/";
+    public const string NotFound = "/not-found";
+    public const string Cart = "/cart";
+    public const string Products = "/products";
+    /// <summary>Public product detail route; authentication is not required.</summary>
+    public const string ProductDetailPattern = "/products/{id:guid}";
+    public const string ProductBySlugPattern = "/products/{productSlug}";
+    public const string ProductVariantPattern = "/products/{productSlug}/{variantSlug}";
+    /// <summary>Builds a public product detail URL.</summary>
+    public static string ProductDetail(Guid id) => $"{Products}/{id:D}";
+    public static string ProductBySlug(string productSlug) => $"{Products}/{Uri.EscapeDataString(productSlug)}";
+    public static string ProductVariant(string productSlug, string variantSlug) =>
+        $"{ProductBySlug(productSlug)}/{Uri.EscapeDataString(variantSlug)}";
+    public const string Categories = "/categories";
+    public const string Brands = "/brands";
+    public const string Deals = "/deals";
+
+    /// <summary>
+    /// The signed-in customer's profile page. Surfaced from the profile menu; not backed by a
+    /// page in this feature — resolves to the app's not-found route until the account module ships.
+    /// </summary>
+    public const string Profile = "/profile";
+
+    /// <summary>
+    /// The signed-in customer's order history. Surfaced from the profile menu; not backed by a
+    /// page in this feature — resolves to the app's not-found route until the orders module ships.
+    /// </summary>
+    public const string Orders = "/orders";
+
+    /// <summary>
+    /// The signed-in customer's wishlist. Surfaced from the profile menu; not backed by a page in
+    /// this feature — resolves to the app's not-found route until the wishlist module ships.
+    /// </summary>
+    public const string Wishlist = "/wishlist";
+
+    /// <summary>
+    /// Admin-panel route constants.
+    /// <para>
+    /// <b>Authorization prerequisite:</b> every page added under this prefix requires a signed-in
+    /// user via <c>Pages/Admin/_Imports.razor</c> carrying <c>[Authorize]</c>, must gate itself on
+    /// its own screen permission (page-level <c>[Authorize(Policy = ...)]</c> or
+    /// <c>AuthorizeView</c>), <b>and</b> must be backed by the corresponding Supabase RLS
+    /// policies. The <c>[Authorize]</c> attribute is a UX guard; RLS is the only real
+    /// authorization boundary. See <c>references/rules/architecture-admin.md</c>.
+    /// </para>
+    /// </summary>
+    public static class Admin
+    {
+        public const string Console = "/admin";
+        /// <summary>Homepage administration entry point.</summary>
+        public const string ManageHomepage = "/admin/homepage";
+        /// <summary>The singleton hero banner Add/Edit route.</summary>
+        public const string ManageHeroBanner = "/admin/homepage/hero-banner";
+        /// <summary>The singleton Fresh Drops Add/Edit route.</summary>
+        public const string ManageFreshDrops = "/admin/homepage/fresh-drops";
+        public const string ManageFeatured = "/admin/homepage/featured";
+        /// <summary>The singleton homepage category Add/Edit route.</summary>
+        public const string ManageHomepageCategory = "/admin/homepage/category";
+
+        /// <summary>
+        /// The Manage Products admin harness shell. Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>products.view</c> on the
+        /// page itself.
+        /// </summary>
+        public const string ManageProducts = "/admin/products";
+
+        /// <summary>
+        /// The add-product form. Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>products.create</c> on the
+        /// page itself.
+        /// </summary>
+        public const string AddProduct = "/admin/products/new";
+
+        /// <summary>
+        /// The edit-product form, id-keyed. Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>products.edit</c> on the page
+        /// itself — <c>GetProductForEditQuery</c> only requires <c>products.view</c>, so the
+        /// page-level gate is what denies a view-only admin's direct link.
+        /// </summary>
+        public const string EditProductPattern = "/admin/products/{id:guid}/edit";
+
+        /// <summary>Builds the edit-product URL for a specific product.</summary>
+        public static string EditProduct(Guid id) => $"/admin/products/{id}/edit";
+
+        /// <summary>
+        /// The Manage Brands admin harness shell and AddBrand's post-save return target.
+        /// Requires a signed-in user via <c>Pages/Admin/_Imports.razor</c> and is gated on
+        /// <c>brands.view</c> on the page itself.
+        /// </summary>
+        public const string ManageBrands = "/admin/brands";
+
+        /// <summary>
+        /// The add-brand form. Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>brands.create</c> on the
+        /// page itself.
+        /// </summary>
+        public const string AddBrand = "/admin/brands/new";
+
+        /// <summary>
+        /// The edit-brand form, id-keyed (plan §5 Decision 8). Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated
+        /// on <c>brands.edit</c> on the page itself (plan §5 Decision 11) — <c>GetBrandByIdQuery</c>
+        /// only requires <c>brands.view</c>, so the page-level gate is what denies a view-only
+        /// admin's direct link (AC-16).
+        /// </summary>
+        public const string EditBrandPattern = "/admin/brands/{id:guid}/edit";
+
+        /// <summary>Builds the edit-brand URL for a specific brand.</summary>
+        public static string EditBrand(Guid id) => $"/admin/brands/{id}/edit";
+
+        /// <summary>
+        /// The Manage Categories admin harness shell and AddCategory's post-save return target.
+        /// Requires a signed-in user via <c>Pages/Admin/_Imports.razor</c> and is gated on
+        /// <c>categories.view</c> on the page itself.
+        /// </summary>
+        public const string ManageCategories = "/admin/categories";
+
+        /// <summary>
+        /// The add-category form. Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>categories.create</c> on the
+        /// page itself.
+        /// </summary>
+        public const string AddCategory = "/admin/categories/new";
+
+        /// <summary>
+        /// The edit-category form, id-keyed (plan §5 Decision 8). Requires a signed-in user via
+        /// <c>Pages/Admin/_Imports.razor</c> and is gated on <c>categories.edit</c> on the page
+        /// itself (plan §5 Decision 9) — <c>GetCategoryByIdQuery</c> only requires
+        /// <c>categories.view</c>, so the page-level gate is what denies a view-only admin's
+        /// direct link (AC-20).
+        /// </summary>
+        public const string EditCategoryPattern = "/admin/categories/{id:guid}/edit";
+
+        /// <summary>Builds the edit-category URL for a specific category.</summary>
+        public static string EditCategory(Guid id) => $"/admin/categories/{id}/edit";
+
+        /// <summary>
+        /// The admin console's Users card target. Not backed by a page in this feature —
+        /// resolves to the app's not-found route until the Users module ships.
+        /// </summary>
+        public const string ManageUsers = "/admin/users";
+
+        /// <summary>
+        /// The admin console's Roles card target. Not backed by a page in this feature —
+        /// resolves to the app's not-found route until the Roles module ships.
+        /// </summary>
+        public const string ManageRoles = "/admin/roles";
+    }
+
+    /// <summary>Auth-flow route constants and query-string helpers.</summary>
+    public static class Auth
+    {
+        public const string SignIn = "/sign-in";
+        public const string SignInVerify = "/sign-in/verify";
+        public const string SignUp = "/sign-up";
+        public const string SignUpVerify = "/sign-up/verify";
+
+        /// <summary>
+        /// Builds the sign-in URL with <paramref name="returnUrl"/> encoded as a query parameter
+        /// so the user is redirected back after authenticating.
+        /// </summary>
+        public static string SignInWithReturn(string returnUrl) =>
+            $"{SignIn}?returnUrl={Uri.EscapeDataString(returnUrl)}";
+
+        /// <summary>
+        /// Builds the sign-in verify URL, embedding the target <paramref name="email"/> and
+        /// an optional <paramref name="returnUrl"/> as query parameters.
+        /// </summary>
+        public static string SignInVerifyWith(string email, string? returnUrl = null)
+        {
+            var url = $"{SignInVerify}?email={Uri.EscapeDataString(email)}";
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+                url += $"&returnUrl={Uri.EscapeDataString(returnUrl)}";
+            return url;
+        }
+    }
+}

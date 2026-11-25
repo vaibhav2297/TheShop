@@ -1,0 +1,22 @@
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Common.UI
+
+<PageTitle>@Strings.Homepage_Heading</PageTitle>
+<section class="shop-native shop-admin-console" data-testid="manage-homepage">
+    <h1>@Strings.Homepage_Heading</h1>
+    <div>
+        <ShopButton Href="@Routes.Admin.ManageHeroBanner" data-testid="manage-hero-banner">
+            @Strings.Homepage_HeroBanner
+        </ShopButton>
+        <ShopButton Href="@Routes.Admin.ManageFreshDrops" data-testid="manage-fresh-drops">
+            @Strings.Homepage_FreshDrops
+        </ShopButton>
+        <ShopButton Href="@Routes.Admin.ManageFeatured" data-testid="manage-featured">
+            @Strings.Homepage_Featured
+        </ShopButton>
+        <ShopButton Href="@Routes.Admin.ManageHomepageCategory" data-testid="manage-homepage-category">
+            @Strings.HomepageCategory_DefaultTitle
+        </ShopButton>
+    </div>
+</section>
+

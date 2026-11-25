@@ -1,0 +1,51 @@
+@inherits InputBase<string?>
+@using TheShop.Web.Common.UI
+
+<div class="@FieldClass">
+    <div class="shop-field-control">
+        @if (!string.IsNullOrEmpty(StartIcon))
+        {
+            <ShopIcon Icon="@StartIcon" Class="shop-field-icon" />
+        }
+        @if (Lines > 1)
+        {
+            <textarea @attributes="InputAttributes" @ref="_element"
+                      id="@InputId" name="@NameAttributeValue" class="@InputClass"
+                      rows="@Lines" disabled="@Disabled" aria-invalid="@InvalidAttribute"
+                      placeholder=" " @bind:get="CurrentValueAsString"
+                      @bind:set="SetValue" @bind:event="oninput"></textarea>
+        }
+        else
+        {
+        <input @attributes="InputAttributes" @ref="_element"
+               id="@InputId"
+               name="@NameAttributeValue"
+               class="@InputClass"
+               disabled="@Disabled"
+               aria-invalid="@InvalidAttribute"
+               placeholder=" "
+               @bind:get="CurrentValueAsString"
+               @bind:set="SetValue"
+               @bind:event="oninput" />
+        }
+        @if (ShowClear)
+        {
+            <ShopIconButton Icon="@ShopIcons.Outlined.Close_MD" Label="@(ClearLabel!)" Variant="ShopVariant.Text"
+                            Size="ShopSize.Small" Class="shop-field-clear" OnClick="ClearValue" />
+        }
+        @if (HasLabel)
+        {
+            <label class="shop-field-label" for="@InputId">@Label</label>
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(HelperText))
+    {
+        <div id="@HelperId" class="shop-field-hint">@if (!string.IsNullOrEmpty(HelperIcon)) {<ShopIcon Icon="@HelperIcon" Class="shop-field-hint-icon" />}@HelperText</div>
+    }
+    @if (EditContext is not null)
+    {
+        <div id="@ErrorId" class="shop-field-error" aria-live="polite">
+            <ValidationMessage For="@ValueExpression" />
+        </div>
+    }
+</div>

@@ -1,28 +1,50 @@
 @inherits LayoutComponentBase
-@inject ShopTheme Theme
 
-<MudThemeProvider Theme="@Theme.BuildTheme()" />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Common.UI
 
-<MudLayout>
-    <MudAppBar Elevation="1" Color="Color.Primary">
-        <MudText Typo="Typo.h6">@Strings.AppName</MudText>
-        <MudSpacer />
-        <MudIconButton Icon="@ShopIcons.Cart"
-                       Color="Color.Inherit"
-                       Href="/cart"
-                       aria-label="@Strings.Nav_Cart" />
-        <MudIconButton Icon="@ShopIcons.Account"
-                       Color="Color.Inherit"
-                       Href="/account"
-                       aria-label="@Strings.Nav_Account" />
-    </MudAppBar>
+<ShopUiHost />
 
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
+<div class="shop-native shop-shell">
+
+    @if (Announcement.HasAnnouncement)
+    {
+        <ShopAnnouncementBar Message="@Announcement.Message" />
+    }
+
+    <ShopAppBar OnAccountClick="OpenProfileDrawer" AccountOpen="@ProfileOpen"
+                OnMenuClick="OpenNavigationDrawer" MenuOpen="@NavigationOpen"
+                MenuDrawerId="@_navigationDrawerId" OnMenuUnavailable="CloseNavigationDrawer" />
+
+    @if (Breadcrumbs.HasTrail)
+    {
+        <ShopBreadcrumbs Items="@Breadcrumbs.Trail" />
+    }
+
+    <main class="shop-main-scroll" data-shop-scroll-root>
+
+        <div class="shop-shell-page">
+
             @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+
+            @if (Footer.Visible)
+            {
+                <ShopFooter />
+            }
+
+        </div>
+    </main>
+
+</div>
+
+<ShopDrawer id="@_navigationDrawerId" Side="ShopDrawerSide.Left" Class="shop-navigation-drawer"
+            Open="@NavigationOpen" OpenChanged="NavigationOpenChanged">
+    <HeaderContent><h2 class="shop-drawer-title">@Strings.Nav_Menu</h2></HeaderContent>
+    <DrawerContent><ShopPrimaryNavigation OnNavigate="CloseNavigationDrawer" /></DrawerContent>
+</ShopDrawer>
+
+<AuthorizeView>
+    <Authorized>
+        <ProfileDrawer Open="@ProfileOpen" OpenChanged="ProfileOpenChanged" />
+    </Authorized>
+</AuthorizeView>

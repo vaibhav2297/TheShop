@@ -1,0 +1,10 @@
+{
+  "outcome": "User-approved variant amendment validated; spec remains Confirmed with 17 FRs, 29 ACs, and no open assumptions.",
+  "checks": [{
+    "id": "spec-after-variants",
+    "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .sdd/scripts/check-sdd-gates.ps1 spec -Feature manage-product",
+    "exitCode": 0,
+    "logPath": ".specs/manage-product/evidence/logs/spec-after-variants.log"
+  }],
+  "sourcePaths": []
+}

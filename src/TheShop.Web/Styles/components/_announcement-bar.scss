@@ -1,0 +1,19 @@
+@use '../abstracts/text-style';
+
+.shop-announcement-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 2rem;
+    padding-block: var(--shop-space-1);
+    padding-inline: var(--shop-space-4);
+    background-color: var(--shop-color-primary);
+    color: var(--shop-color-primary-contrast);
+}
+
+.shop-announcement-bar-message {
+    margin: 0;
+    @include text-style.apply(subtitle-1);
+    text-align: center;
+    overflow-wrap: anywhere;
+}

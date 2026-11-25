@@ -1,0 +1,92 @@
+@inherits ShopComponentBase
+@using TheShop.Web.Common.UI
+
+<ShopExpander @attributes="AdditionalAttributes" Class="@Classname" Style="@Style" Expanded="true" Disabled="@Disabled">
+    <TitleContent>
+        <h2 class="shop-product-section-title">@Strings.ProductVariants_Heading</h2>
+    </TitleContent>
+    <OverviewContent>
+        @if (_variants.Count > 0)
+        {
+            @string.Format(Strings.ProductVariants_With_Args, _variants.Count)
+        }
+    </OverviewContent>
+    <ChildContent>
+        <div class="shop-product-option-list">
+            @if (_optionTypes.Count == 0)
+            {
+                <div class="shop-product-editor-empty">
+                    <h3>@Strings.ProductVariants_EmptyStateTitle</h3>
+                    <p>@Strings.ProductVariants_EmptyStateDescription</p>
+                    <ShopButton Variant="ShopVariant.Outlined" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus" Disabled="@Disabled" OnClick="AddOptionTypeAsync">@Strings.ProductVariants_AddVariant</ShopButton>
+                </div>
+            }
+            else
+            {
+                @foreach (var (type, index) in _optionTypes.Select((t, i) => (t, i)))
+                {
+                    <section class="shop-product-option" @key="type.Id">
+                        <header class="shop-product-option-heading">
+                            <h3>@(string.IsNullOrWhiteSpace(type.Name) ? Strings.ProductVariants_NewOption : type.Name)</h3>
+                            <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.ProductVariants_RemoveOptionType" Disabled="@Disabled" OnClick="@(() => RemoveOptionTypeAsync(type))" />
+                        </header>
+                        <div class="shop-product-editor-row">
+                            <ShopTextField Value="@type.Name" ValueChanged="@((string? v) => OnOptionTypeNameChangedAsync(type, v))" ValueExpression="@(() => type.Name)"
+                                           Label="@Strings.ProductVariants_OptionNameLabel" Disabled="@Disabled" />
+                            <div class="shop-product-option-values">
+                                @foreach (var value in type.Values)
+                                {
+                                    <div class="shop-product-editor-value" @key="value.Id">
+                                        <ShopTextField Value="@value.Value" ValueChanged="@((string? v) => OnOptionValueChangedAsync(value, v))" ValueExpression="@(() => value.Value)"
+                                                       Label="@Strings.ProductVariants_OptionValuesLabel" Disabled="@Disabled" />
+                                        <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.ProductVariants_RemoveOptionValue" Disabled="@Disabled" OnClick="@(() => RemoveOptionValueAsync(type, value))" />
+                                    </div>
+                                }
+                                <ShopButton Class="shop-product-editor-add" Variant="ShopVariant.Outlined" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus" Disabled="@Disabled" OnClick="@(() => AddOptionValueAsync(type))">@Strings.ProductVariants_AddValue</ShopButton>
+                            </div>
+                        </div>
+                    </section>
+                }
+                <ShopButton Class="shop-product-editor-add" Variant="ShopVariant.Outlined" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus" Disabled="@Disabled" OnClick="AddOptionTypeAsync">@Strings.ProductVariants_AddVariant</ShopButton>
+                @if (_variants.Count > 0)
+                {
+                    <ShopTable TItem="VariantRow" Items="@_variants" ItemKey="@(v => v.Id)" Caption="@Strings.ProductVariants_Heading" ColumnCount="6" Virtualize="@(_variants.Count > 20)" Class="shop-product-variant-table">
+                        <HeaderContent>
+                            <th scope="col">@Strings.ProductVariants_ColumnVariant</th>
+                            <th scope="col">@Strings.ProductVariants_ColumnSku</th>
+                            <th scope="col"><div class="shop-product-price-heading">@Strings.ProductVariants_ColumnPrice
+                                <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Small" Icon="@ShopIcons.Outlined.Copy" Label="@Strings.ProductVariants_CopyToAll" Disabled="@(Disabled || !CanCopyPriceToAll)" OnClick="CopyPriceToAllVariantsAsync" />
+                            </div></th>
+                            <th scope="col"><div class="shop-product-price-heading">@Strings.ProductVariants_ColumnSalePrice
+                                <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Small" Icon="@ShopIcons.Outlined.Copy" Label="@Strings.ProductVariants_CopyToAll" Disabled="@(Disabled || !CanCopySalePriceToAll)" OnClick="CopySalePriceToAllVariantsAsync" />
+                            </div></th>
+                            <th scope="col">@Strings.ProductVariants_ColumnStatus</th>
+                            <th scope="col">@Strings.ProductVariants_ColumnImage</th>
+                        </HeaderContent>
+                        <RowTemplate Context="variant">
+                            <td>@variant.Label</td>
+                            <td>@variant.Sku</td>
+                            <td><ShopMoneyField @key="variant.Id" @ref="variant.PriceField" Value="@variant.OriginalPrice" ValueExpression="@(() => variant.OriginalPrice)" DraftState="@variant.PriceDraft"
+                                                ValueChanged="@((decimal? v) => OnVariantOriginalPriceChangedAsync(variant, v))" aria-label="@($"{variant.Label} {Strings.ProductVariants_ColumnPrice}")" AriaRequired="@RequirePrices"
+                                                Error="@IsFlagged(variant)" ErrorText="@Strings.Product_PriceRequired" Disabled="@Disabled" /></td>
+                            <td><ShopMoneyField @key="variant.Id" @ref="variant.SalePriceField" Value="@variant.SalePrice" ValueExpression="@(() => variant.SalePrice)" DraftState="@variant.SalePriceDraft"
+                                                ValueChanged="@((decimal? v) => OnVariantSalePriceChangedAsync(variant, v))" aria-label="@($"{variant.Label} {Strings.ProductVariants_ColumnSalePrice}")" Disabled="@Disabled" /></td>
+                            <td><ShopChip Size="ShopSize.Small" Selected="@variant.IsAvailable" SelectedChanged="@(value => OnVariantAvailableChangedAsync(variant, value))" Disabled="@Disabled">@(variant.IsAvailable ? Strings.AddProduct_StatusActive : Strings.AddProduct_StatusInactive)</ShopChip></td>
+                            <td><ShopButton Variant="ShopVariant.Outlined" Size="ShopSize.Small" Disabled="@Disabled" OnClick="@(() => OpenPinDialog(variant))">@(variant.ImageIds.Count == 0 ? Strings.ProductVariants_PinImage : Strings.ProductVariants_ChangeImage)</ShopButton></td>
+                        </RowTemplate>
+                    </ShopTable>
+                }
+            }
+        </div>
+    </ChildContent>
+</ShopExpander>
+
+@if (_pinSelection is { } selection)
+{
+    <VariantImageDialog @key="selection" VariantLabel="@selection.Variant.Label"
+                        GalleryImages="@GalleryImages" CurrentImageIds="@selection.Variant.ImageIds" AddGalleryFiles="@AddGalleryFiles" UploadErrors="@UploadErrors"
+                        CurrentVariantId="@selection.Variant.Id"
+                        SharedScopeLabel="@selection.ScopeLabel" SharedVariantIds="@selection.SharedVariantIds"
+                        InitiallyApplyToAllSharing="@selection.InitiallyApplyToAllSharing"
+                        OnCompleted="@((VariantImageSelectionResult? result) => CompletePinAsync(selection, result))" />
+}

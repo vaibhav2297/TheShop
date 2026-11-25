@@ -1,0 +1,11 @@
+@use '../abstracts/text-style';
+
+.shop-home-page {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+}
+
+.shop-home-page h1 {
+    margin: 0;
+    @include text-style.apply(h4);
+}

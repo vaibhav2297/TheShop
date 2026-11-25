@@ -1,0 +1,72 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
+using TheShop.Web.Components.Common;
+using TheShop.Web.State;
+
+namespace TheShop.Web.Components.Layout;
+
+/// <summary>
+/// Root layout for all main shop pages. Lays out the optional <see cref="ShopAnnouncementBar"/>,
+/// the <see cref="ShopAppBar"/>, the breadcrumb slot (when a trail is active), the scrollable
+/// page content, and the <see cref="ShopFooter"/> slot as a vertical flex column. Clears the
+/// breadcrumb trail and restores footer visibility on every navigation so the next page starts
+/// from a clean chrome state. Admin navigation is gated by <c>AuthorizeView</c> against the
+/// permission claims in the access token, so it re-renders automatically on every auth-state
+/// change. Auth pages use <see cref="AuthLayout"/> instead.
+/// </summary>
+public partial class MainLayout : LayoutComponentBase, IDisposable
+{
+    [Inject] private AnnouncementState Announcement { get; set; } = default!;
+
+    [Inject] private BreadcrumbState Breadcrumbs { get; set; } = default!;
+
+    [Inject] private FooterState Footer { get; set; } = default!;
+
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+    private IDisposable? _locationChangingRegistration;
+    private enum ActiveDrawer { None, Navigation, Profile }
+    private ActiveDrawer _activeDrawer;
+    private readonly string _navigationDrawerId = $"shop-navigation-{Guid.NewGuid():N}";
+    private bool NavigationOpen => _activeDrawer == ActiveDrawer.Navigation;
+    private bool ProfileOpen => _activeDrawer == ActiveDrawer.Profile;
+
+    private void OpenProfileDrawer() => _activeDrawer = ActiveDrawer.Profile;
+    private void OpenNavigationDrawer() => _activeDrawer = ActiveDrawer.Navigation;
+    private void CloseNavigationDrawer() => NavigationOpenChanged(false);
+    private void NavigationOpenChanged(bool open) => SetDrawerOpen(ActiveDrawer.Navigation, open);
+    private void ProfileOpenChanged(bool open) => SetDrawerOpen(ActiveDrawer.Profile, open);
+
+    private void SetDrawerOpen(ActiveDrawer drawer, bool open)
+    {
+        if (open) _activeDrawer = drawer;
+        else if (_activeDrawer == drawer) _activeDrawer = ActiveDrawer.None;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        Announcement.OnChange += StateHasChanged;
+        Breadcrumbs.OnChange += StateHasChanged;
+        Footer.OnChange += StateHasChanged;
+        _locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(OnLocationChanging);
+    }
+
+    private ValueTask OnLocationChanging(LocationChangingContext context)
+    {
+        _activeDrawer = ActiveDrawer.None;
+        Breadcrumbs.Clear();
+        Footer.Show();
+        StateHasChanged();
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Announcement.OnChange -= StateHasChanged;
+        Breadcrumbs.OnChange -= StateHasChanged;
+        Footer.OnChange -= StateHasChanged;
+        _locationChangingRegistration?.Dispose();
+    }
+}

@@ -1,0 +1,26 @@
+﻿{
+    "changedIds":  [
+                       "FR-1",
+                       "FR-4",
+                       "FR-5",
+                       "FR-17",
+                       "RULE-9",
+                       "RULE-10",
+                       "RULE-11",
+                       "AC-24",
+                       "AC-25",
+                       "AC-26",
+                       "AC-27",
+                       "AC-28",
+                       "AC-29"
+                   ],
+    "afterHash":  "7e37af0a45e73791b97f8b5be4e57e0ece62d95588a50dd232f6b5d0754fa61d",
+    "decision":  "Show full current variant selling-price range, one amount when equal; filter actual variant prices inclusively; count beneath name; include all non-deleted variants, including inactive/out-of-stock; sort by lowest variant price in both directions.",
+    "evidence":  [
+                     "User: proceed to add this recommandation to spec",
+                     ".specs/manage-product/evidence/artifacts/b2fea4d6c5494e988ead9a407edc5cb06935ff25b40f3ca25d2cbf4f5f96a786/spec.md"
+                 ],
+    "reason":  "User approved variant-listing recommendations.",
+    "target":  "spec",
+    "beforeHash":  "b2fea4d6c5494e988ead9a407edc5cb06935ff25b40f3ca25d2cbf4f5f96a786"
+}

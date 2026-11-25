@@ -1,0 +1,22 @@
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
+
+@if (Visible)
+{
+    <div id="@_slotId" class="shop-bulk-action-slot">
+        <section @attributes="AdditionalAttributes" class="@ClassName" style="@Style"
+                 aria-label="@Strings.BulkActions_Label">
+            <p class="shop-bulk-action-selection" role="status" aria-atomic="true">
+                <span class="shop-visually-hidden">@string.Format(Strings.BulkActions_SelectedCount, SelectedCount)</span>
+                <span class="shop-bulk-action-count" aria-hidden="true">@SelectedCount.ToString("D2")</span>
+                <span class="shop-bulk-action-label" aria-hidden="true">@Strings.BulkActions_Selected</span>
+            </p>
+            <div class="shop-bulk-action-actions">@Actions</div>
+            <div class="shop-bulk-action-close">
+                <ShopIconButton Icon="@ShopIcons.Outlined.Close_MD" Label="@Strings.Close_BulkActionBar"
+                                Variant="ShopVariant.Outlined" Color="ShopColor.Primary" Size="ShopSize.Medium"
+                                OnClick="OnClose" />
+            </div>
+        </section>
+    </div>
+}

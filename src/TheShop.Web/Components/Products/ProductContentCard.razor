@@ -1,0 +1,47 @@
+@inherits ShopComponentBase
+@using TheShop.Web.Common.UI
+
+<ShopExpander @attributes="AdditionalAttributes" Class="@Classname" Style="@Style" Expanded="true" Disabled="@Disabled">
+    <TitleContent>
+        <h2 class="shop-product-section-title">@Strings.ProductSpecifications_Heading</h2>
+    </TitleContent>
+    <OverviewContent>
+        @if (_specifications.Count > 0)
+        {
+            @string.Format(Strings.ProductSpecifications_Count, _specifications.Count)
+        }
+    </OverviewContent>
+    <ChildContent>
+        <div class="shop-product-specification-list">
+            @if (_specifications.Count == 0)
+            {
+                <div class="shop-product-editor-empty">
+                    <h3>@Strings.ProductSpecifications_EmptyStateTitle</h3>
+                    <p>@Strings.ProductSpecifications_EmptyStateDescription</p>
+                    <ShopButton @ref="_addButtonRef" Variant="ShopVariant.Outlined" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus" Disabled="@Disabled" OnClick="AddRowAsync">@Strings.ProductSpecifications_AddRow</ShopButton>
+                </div>
+            }
+            else
+            {
+                @foreach (var (row, position) in _specifications.Select((r, i) => (r, i)))
+                {
+                    <div class="shop-product-editor-row" @key="row.Id">
+                        <ShopTextField @ref="_nameFieldRefs[row.Id]" Value="@row.Name" ValueChanged="@((string? v) => OnRowNameChangedAsync(row, v))" ValueExpression="@(() => row.Name)"
+                                       Label="@Strings.ProductSpecifications_NameLabel" Disabled="@Disabled" aria-invalid="@IsFlagged(position).ToString().ToLowerInvariant()" aria-describedby="@RowErrorId(row, position)" />
+                        <div class="shop-product-editor-value">
+                            <ShopTextField Value="@row.Value" ValueChanged="@((string? v) => OnRowValueChangedAsync(row, v))" ValueExpression="@(() => row.Value)"
+                                           Label="@Strings.ProductSpecifications_ValueLabel" Disabled="@Disabled" aria-invalid="@IsFlagged(position).ToString().ToLowerInvariant()" aria-describedby="@RowErrorId(row, position)" />
+                            <ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.ProductSpecifications_RemoveRow" Disabled="@Disabled" OnClick="@(() => RemoveRowAsync(row))" />
+                        </div>
+                        @if (IsFlagged(position))
+                        {
+                            <p id="@RowErrorId(row, position)" class="shop-product-error" role="alert">@Strings.ProductSpecifications_RowInvalid</p>
+                        }
+                    </div>
+                }
+                <ShopButton @ref="_addButtonRef" Class="shop-product-editor-add" Variant="ShopVariant.Outlined" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus" Disabled="@Disabled" OnClick="AddRowAsync">@Strings.ProductSpecifications_AddRow</ShopButton>
+            }
+        </div>
+        <span class="shop-visually-hidden" role="status">@_liveAnnouncement</span>
+    </ChildContent>
+</ShopExpander>

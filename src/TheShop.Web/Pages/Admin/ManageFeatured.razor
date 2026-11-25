@@ -1,0 +1,116 @@
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Components.Admin
+@using TheShop.Web.Common.UI
+
+<PageTitle>@Heading</PageTitle>
+<section @ref="_root" class="shop-native shop-featured" data-testid="featured-admin" data-state="@State">
+    <h1>@Heading</h1>
+    <BusyFor Key="@BusyKeys.Homepage.LoadFeatured" Context="loading">
+        @if (loading && !_loaded)
+        {
+            <div class="shop-featured-grid" aria-busy="true" aria-label="@Strings.Loading">
+                <div class="shop-featured-content">
+                    <h2><ShopSkeleton Shape="ShopSkeletonShape.Text" /></h2>
+                    <div class="shop-featured-tiles">
+                        @for (var tile = 0; tile < 2; tile++)
+                        {
+                            <div class="shop-featured-tile">
+                                <ShopSkeleton Shape="ShopSkeletonShape.Text" />
+                                <ShopSkeleton Class="shop-featured-skeleton-image" />
+                                <ShopSkeleton Shape="ShopSkeletonShape.Text" />
+                                @for (var field = 0; field < 4; field++)
+                                {
+                                    <ShopSkeleton Class="shop-featured-skeleton-field" />
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="shop-featured-settings">
+                    <ShopSkeleton Shape="ShopSkeletonShape.Text" />
+                    <ShopSkeleton Class="shop-featured-skeleton-field" />
+                    <ShopSkeleton Class="shop-featured-skeleton-field" />
+                    <ShopSkeleton Class="shop-featured-skeleton-field" />
+                </div>
+            </div>
+        }
+        @if (_loadError is not null)
+        {
+            <div role="alert" class="shop-featured-load-error">
+                <p>@Localizer[_loadError]</p>
+                <ShopButton OnClick="LoadAsync" Disabled="@loading" data-testid="featured-reload">@Strings.Featured_Reload</ShopButton>
+            </div>
+        }
+        @if (_loaded && _loadError is null && CanMutate)
+        {
+            <EditForm @key="_editContext" EditContext="@_editContext" OnSubmit="SaveAsync" novalidate>
+                <ShopCommandValidation @ref="_validation" FieldMap="@FieldMap" />
+                <BusyFor Key="@BusyKeys.Homepage.SaveFeatured" Context="saving">
+                    <div class="shop-featured-grid">
+                        <div class="shop-featured-content">
+                            <h2>@Strings.Featured_Tiles</h2>
+                            <div class="shop-featured-tiles">
+                                <FeaturedTileEditor @ref="_tile1Editor" Number="1" Model="@_model.Tile1"
+                                                    Disabled="@(saving || loading)" ValidateFileAsync="ValidateImageAsync" />
+                                <FeaturedTileEditor @ref="_tile2Editor" Number="2" Model="@_model.Tile2"
+                                                    Disabled="@(saving || loading)" ValidateFileAsync="ValidateImageAsync" />
+                            </div>
+                        </div>
+                        <div class="shop-featured-settings" data-testid="featured-settings">
+                            <section class="shop-featured-section">
+                                <h2>@Strings.Featured_Section</h2>
+                                <ShopTextField id="featured-title" data-testid="featured-title" Label="@Strings.Featured_Title"
+                                               @bind-Value="_model.Title" Disabled="@(saving || loading)" required />
+                            </section>
+                            <fieldset class="shop-featured-status" disabled="@(saving || loading)">
+                                <legend>@Strings.Featured_Status</legend>
+                                <div>
+                                    <ShopChip Selected="@_model.IsVisible" SelectedChanged="@(_ => SetVisible(true))"
+                                              Size="ShopSize.Medium" Disabled="@(saving || loading)" data-testid="featured-visible">@Strings.Featured_Visible</ShopChip>
+                                    <ShopChip Selected="@(!_model.IsVisible)" SelectedChanged="@(_ => SetVisible(false))"
+                                              Size="ShopSize.Medium" Disabled="@(saving || loading)" data-testid="featured-hidden">@Strings.Featured_Hidden</ShopChip>
+                                </div>
+                            </fieldset>
+                            <div class="shop-featured-actions">
+                                <ShopButton Type="submit" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
+                                            Loading="@saving" Disabled="@(loading || _requiresReload)" data-testid="featured-save">@Strings.Save</ShopButton>
+                                <ShopButton Href="@Routes.Admin.ManageHomepage" Variant="ShopVariant.Outlined" Size="ShopSize.Large"
+                                            Disabled="@saving" data-testid="featured-cancel">@Strings.Cancel</ShopButton>
+                                @if (_requiresReload)
+                                {
+                                    <ShopButton OnClick="LoadAsync" Variant="ShopVariant.Outlined" Disabled="@(saving || loading)"
+                                                data-testid="featured-reload">@Strings.Featured_Reload</ShopButton>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </BusyFor>
+            </EditForm>
+        }
+        else if (_loaded && _loadError is null && _hasFeatured)
+        {
+            <div class="shop-featured-grid">
+                <div class="shop-featured-content">
+                    <h2>@Strings.Featured_Tiles</h2>
+                    <div class="shop-featured-tiles">
+                        <FeaturedTileEditor Number="1" Model="@_model.Tile1" ReadOnly="true" />
+                        <FeaturedTileEditor Number="2" Model="@_model.Tile2" ReadOnly="true" />
+                    </div>
+                </div>
+                <section class="shop-featured-settings" data-testid="featured-settings">
+                    <h2>@Strings.Featured_Section</h2>
+                    <dl class="shop-featured-read-content">
+                        <dt>@Strings.Featured_Title</dt><dd>@_model.Title</dd>
+                        <dt>@Strings.Featured_Status</dt><dd>@(_model.IsVisible ? Strings.Featured_Visible : Strings.Featured_Hidden)</dd>
+                    </dl>
+                    <ShopButton OnClick="LoadAsync" Variant="ShopVariant.Outlined" Disabled="@loading"
+                                data-testid="featured-reload">@Strings.Featured_Reload</ShopButton>
+                </section>
+            </div>
+        }
+        else if (_loaded && _loadError is null)
+        {
+            <p>@Strings.Featured_Absent</p>
+        }
+    </BusyFor>
+</section>

@@ -1,0 +1,54 @@
+@use '../abstracts/text-style';
+
+.shop-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    max-inline-size: 100%;
+    min-block-size: 2rem;
+    padding: 0 0.75rem;
+    border-radius: 0;
+    @include text-style.apply(body-2);
+    overflow-wrap: anywhere;
+    text-align: center;
+}
+
+.shop-badge-small {
+    min-block-size: 1.5rem;
+    padding-inline: 0.5rem;
+    @include text-style.apply(caption);
+}
+
+.shop-badge-large {
+    min-block-size: 2.5rem;
+    padding-inline: 1rem;
+    @include text-style.apply(body-1);
+}
+
+@each $color in primary, secondary, info, success, warning, error {
+    .shop-badge-#{$color}.shop-badge-filled {
+        background: var(--shop-color-#{$color});
+        color: var(--shop-color-#{$color}-contrast);
+    }
+
+    .shop-badge-#{$color}.shop-badge-outlined {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px var(--shop-color-#{$color});
+        color: var(--shop-color-#{$color});
+    }
+}
+
+.shop-badge-primary.shop-badge-outlined {
+    box-shadow: inset 0 0 0 1px var(--shop-color-lines-default);
+}
+
+@media (forced-colors: active) {
+    .shop-badge.shop-badge-filled,
+    .shop-badge.shop-badge-outlined {
+        border: 1px solid CanvasText;
+        background: Canvas;
+        box-shadow: none;
+        color: CanvasText;
+    }
+}

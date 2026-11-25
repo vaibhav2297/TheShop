@@ -1,0 +1,25 @@
+{
+  "description": "The Shop SDD Stop hooks.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$(git rev-parse --show-toplevel)/.sdd/scripts/check-design-rules.ps1\" -Changed",
+            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"& (Join-Path ((git rev-parse --show-toplevel).Trim()) '.sdd/scripts/check-design-rules.ps1') -Changed\"",
+            "timeout": 30,
+            "statusMessage": "Checking changed C# and Razor files..."
+          },
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$(git rev-parse --show-toplevel)/.sdd/scripts/format-on-stop.ps1\"",
+            "commandWindows": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"& (Join-Path ((git rev-parse --show-toplevel).Trim()) '.sdd/scripts/format-on-stop.ps1')\"",
+            "timeout": 300,
+            "statusMessage": "Formatting changed C# and Razor files..."
+          }
+        ]
+      }
+    ]
+  }
+}

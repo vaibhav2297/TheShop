@@ -1,0 +1,15 @@
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
+
+@using TheShop.Web.Common
+@using TheShop.Web.Resources
+
+<section @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+    <div class="shop-access-denied-content">
+        <h1>@Strings.AccessDenied_Title</h1>
+        <p>@Strings.AccessDenied_Message</p>
+        <ShopButton Href="@BackHref" Variant="ShopVariant.Filled" Color="ShopColor.Primary">
+            @Strings.AccessDenied_BackToHome
+        </ShopButton>
+    </div>
+</section>

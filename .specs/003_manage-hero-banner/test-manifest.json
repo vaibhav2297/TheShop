@@ -1,0 +1,102 @@
+{
+  "feature": "003_manage-hero-banner",
+  "trait": "003_manage-hero-banner",
+  "testProjects": [
+    "tests/TheShop.Domain.Tests/TheShop.Domain.Tests.csproj",
+    "tests/TheShop.Application.Tests/TheShop.Application.Tests.csproj",
+    "tests/TheShop.Infrastructure.Tests/TheShop.Infrastructure.Tests.csproj",
+    "tests/TheShop.Web.Tests/TheShop.Web.Tests.csproj"
+  ],
+  "classes": [
+    {
+      "file": "tests/TheShop.Domain.Tests/Entities/HeroBannerTests.cs",
+      "fqn": "TheShop.Domain.Tests.Entities.HeroBannerTests",
+      "tests": 4,
+      "methods": [
+        { "name": "Create_ValidContent_PreservesSingletonAndVisibility", "count": 1 },
+        { "name": "Create_MissingRequiredContent_RejectsIt", "count": 1 },
+        { "name": "ChangeContent_IncompleteButtonPair_PreservesPreviousValues", "count": 1 },
+        { "name": "ChangeImagesAndVisibility_RemovingMobile_PreservesDesktopAndContent", "count": 1 }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Application.Tests/Features/Homepage/HeroBannerValidationTests.cs",
+      "fqn": "TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests",
+      "tests": 9,
+      "methods": [
+        { "name": "Create_MissingHeadingAndDesktop_ReturnsBothFieldErrors", "count": 1 },
+        { "name": "Create_ExactMinimumAndLargerSixteenNine_AcceptsBoth", "count": 1 },
+        { "name": "Create_DesktopWrongSizeOrRatio_RejectsImage", "count": 1 },
+        { "name": "Create_MobileFourFive_AcceptsAndWrongRatioRejects", "count": 1 },
+        { "name": "Selection_AtFiveMegabytesAccepted_AboveLimitRejectedBeforeDecode", "count": 1 },
+        { "name": "Selection_MismatchedOrUndecodableBytes_RejectsImage", "count": 1 },
+        { "name": "Create_UnsafeDestinationsAndIncompleteButtonPair_RejectsFields", "count": 1 },
+        { "name": "Update_RemoveDesktopWithoutReplacementRejected_ReplacementAccepted", "count": 1 },
+        { "name": "Commands_NormalizeOptionalTextAndPreservePlainDestination", "count": 1 }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Application.Tests/Features/Homepage/HeroBannerHandlerTests.cs",
+      "fqn": "TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests",
+      "tests": 10,
+      "methods": [
+        { "name": "Create_AbsentBanner_UploadsCanonicalPngAndPersistsSingleton", "count": 1 },
+        { "name": "Create_ExistingHiddenBanner_ReturnsConflictWithoutUploading", "count": 1 },
+        { "name": "Update_MissingBanner_ReturnsNotFoundWithoutWriting", "count": 1 },
+        { "name": "Update_RemoveMobile_PreservesDesktopAndSavesHidden", "count": 1 },
+        { "name": "Create_UploadFailure_DoesNotPersistConfiguration", "count": 1 },
+        { "name": "Create_DefinitePersistenceFailure_RemovesOnlyNewUpload", "count": 1 },
+        { "name": "Create_UnconfirmedPersistence_KeepsUploadForReconciliation", "count": 1 },
+        { "name": "Read_AbsentBanner_ReturnsSuccessfulNullWithoutSignedUrl", "count": 1 },
+        { "name": "Read_ExistingBanner_SignsBothPrivatePreviews", "count": 1 },
+        { "name": "SelectionHandler_AfterValidation_ReturnsSuccess", "count": 1 }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Infrastructure.Tests/Persistence/HeroBannerSchemaTests.cs",
+      "fqn": "TheShop.Infrastructure.Tests.Persistence.HeroBannerSchemaTests",
+      "tests": 4,
+      "methods": [
+        { "name": "Migrations_CreatePrivateFiveMegabyteBucketAndSingletonTable", "count": 1 },
+        { "name": "CreateOnlyUser_CanSaveButCannotReadManagementOrEdit", "count": 1 },
+        { "name": "EditOnlyUser_CanUpdateWithoutViewOrCreate", "count": 1 },
+        { "name": "ViewOnlyUser_CanReadButCannotSave", "count": 1 }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageHeroBannerTests.cs",
+      "fqn": "TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests",
+      "tests": 8,
+      "methods": [
+        { "name": "Render_AbsentAndCreatePermission_ShowsAddFormWithVisibleDefault", "count": 1 },
+        { "name": "Render_ExistingAndEditPermission_LoadsValuesAndHiddenStatus", "count": 1 },
+        { "name": "Render_ViewOnly_ShowsReadOnlyBannerWithoutSave", "count": 1 },
+        { "name": "Render_AbsentViewOnly_ShowsAbsentWithoutMutation", "count": 1 },
+        { "name": "Render_LoadFailure_ShowsRetryInsteadOfAdd", "count": 1 },
+        { "name": "Save_Success_NotifiesAndNavigatesToManageHomepage", "count": 1 },
+        { "name": "Save_Edit_DispatchesUpdateWithoutReplacingSavedArtwork", "count": 1 },
+        { "name": "Save_Failure_StaysOnEditorWithDraft", "count": 1 }
+      ]
+    }
+  ],
+  "totalTests": 35,
+  "acceptanceCriteria": [
+    { "id": "AC-1", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Render_AbsentAndCreatePermission_ShowsAddFormWithVisibleDefault"] },
+    { "id": "AC-2", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Render_ExistingAndEditPermission_LoadsValuesAndHiddenStatus"] },
+    { "id": "AC-3", "tests": ["TheShop.Infrastructure.Tests.Persistence.HeroBannerSchemaTests.ViewOnlyUser_CanReadButCannotSave"], "boundary": "e2e", "reason": "Direct guest route redirects and signed-in access-denied rendering require App routing in a browser." },
+    { "id": "AC-4", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Render_ViewOnly_ShowsReadOnlyBannerWithoutSave", "TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Render_AbsentViewOnly_ShowsAbsentWithoutMutation", "TheShop.Infrastructure.Tests.Persistence.HeroBannerSchemaTests.CreateOnlyUser_CanSaveButCannotReadManagementOrEdit", "TheShop.Infrastructure.Tests.Persistence.HeroBannerSchemaTests.EditOnlyUser_CanUpdateWithoutViewOrCreate"] },
+    { "id": "AC-5", "tests": [], "boundary": "e2e", "reason": "Native file selection, drag/drop, image preview and draft preservation require a browser." },
+    { "id": "AC-6", "tests": ["TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Selection_AtFiveMegabytesAccepted_AboveLimitRejectedBeforeDecode", "TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Create_DesktopWrongSizeOrRatio_RejectsImage", "TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Selection_MismatchedOrUndecodableBytes_RejectsImage"], "boundary": "e2e", "reason": "Browser image decoding and upload guidance remain browser checks." },
+    { "id": "AC-7", "tests": ["TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Create_MissingHeadingAndDesktop_ReturnsBothFieldErrors", "TheShop.Domain.Tests.Entities.HeroBannerTests.Create_MissingRequiredContent_RejectsIt"] },
+    { "id": "AC-8", "tests": ["TheShop.Domain.Tests.Entities.HeroBannerTests.ChangeContent_IncompleteButtonPair_PreservesPreviousValues", "TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Create_UnsafeDestinationsAndIncompleteButtonPair_RejectsFields"] },
+    { "id": "AC-9", "tests": ["TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Create_UnsafeDestinationsAndIncompleteButtonPair_RejectsFields", "TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Commands_NormalizeOptionalTextAndPreservePlainDestination", "TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Render_ExistingAndEditPermission_LoadsValuesAndHiddenStatus"] },
+    { "id": "AC-10", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Save_Success_NotifiesAndNavigatesToManageHomepage", "TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Save_Edit_DispatchesUpdateWithoutReplacingSavedArtwork", "TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Create_AbsentBanner_UploadsCanonicalPngAndPersistsSingleton", "TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Read_ExistingBanner_SignsBothPrivatePreviews"], "boundary": "e2e", "reason": "Actual save, route transition, and reopen with persisted data require a browser." },
+    { "id": "AC-11", "tests": ["TheShop.Domain.Tests.Entities.HeroBannerTests.ChangeImagesAndVisibility_RemovingMobile_PreservesDesktopAndContent", "TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Update_RemoveMobile_PreservesDesktopAndSavesHidden"] },
+    { "id": "AC-12", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Render_AbsentAndCreatePermission_ShowsAddFormWithVisibleDefault"], "boundary": "e2e", "reason": "Cancel navigation and unsaved browser draft disposal require a browser." },
+    { "id": "AC-13", "tests": ["TheShop.Application.Tests.Features.Homepage.HeroBannerValidationTests.Update_RemoveDesktopWithoutReplacementRejected_ReplacementAccepted", "TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Update_RemoveMobile_PreservesDesktopAndSavesHidden"] },
+    { "id": "AC-14", "tests": ["TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Create_UploadFailure_DoesNotPersistConfiguration", "TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Create_DefinitePersistenceFailure_RemovesOnlyNewUpload", "TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Create_UnconfirmedPersistence_KeepsUploadForReconciliation", "TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Render_LoadFailure_ShowsRetryInsteadOfAdd", "TheShop.Web.Tests.Pages.Admin.ManageHeroBannerTests.Save_Failure_StaysOnEditorWithDraft"] },
+    { "id": "AC-15", "tests": ["TheShop.Application.Tests.Features.Homepage.HeroBannerHandlerTests.Create_ExistingHiddenBanner_ReturnsConflictWithoutUploading", "TheShop.Infrastructure.Tests.Persistence.HeroBannerSchemaTests.Migrations_CreatePrivateFiveMegabyteBucketAndSingletonTable"] },
+    { "id": "AC-16", "tests": [], "boundary": "e2e", "reason": "Responsive layout, keyboard use, focus visibility and assistive technology need browser inspection." }
+  ],
+  "scope": "Feature-filtered unit, bUnit and isolated Testcontainers PostgreSQL tests. Browser journeys belong to theshop-e2e."
+}

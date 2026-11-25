@@ -1,0 +1,15 @@
+@* Components/Common/ShopSortSelect.razor *@
+@typeparam TSort where TSort : struct, Enum
+@inherits ShopComponentBase
+
+@using TheShop.Web.Resources
+@using TheShop.Web.Common.UI
+
+<div @attributes="AdditionalAttributes" class="@Class" style="@Style">
+    <ShopSelect TValue="TSort"
+                Label="@Strings.Sort_Label"
+                Options="@SelectOptions"
+                Value="@Sort"
+                ValueExpression="@(() => Sort)"
+                ValueChanged="OnValueChangedAsync" />
+</div>

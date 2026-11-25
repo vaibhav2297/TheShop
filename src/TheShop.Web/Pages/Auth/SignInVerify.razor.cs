@@ -1,0 +1,137 @@
+using TheShop.Web.Common.Notifications;
+using MediatR;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using TheShop.Application.Features.Auth.Commands.ResendOtp;
+using TheShop.Application.Features.Auth.Commands.VerifySignInOtp;
+using TheShop.Domain.Enums;
+using TheShop.Web.Common;
+using TheShop.Web.Resources;
+
+namespace TheShop.Web.Pages.Auth;
+
+/// <summary>
+/// Sign-in page (step 2 of 2). Collects the 6-digit OTP, dispatches
+/// <see cref="VerifySignInOtpCommand"/>, and manages the 60-second resend cooldown.
+/// </summary>
+[Route(Routes.Auth.SignInVerify)]
+public partial class SignInVerify : ComponentBase, IDisposable
+{
+    [Inject] private IMediator Mediator { get; set; } = default!;
+    [Inject] private NavigationManager Nav { get; set; } = default!;
+    [Inject] private IShopNotificationService Notifications { get; set; } = default!;
+    [Inject] private IStringLocalizer<Strings> Localizer { get; set; } = default!;
+    [Inject] private BusyState BusyState { get; set; } = default!;
+
+    /// <summary>
+    /// The email address the OTP was sent to. Supplied by <see cref="SignIn"/> via query string.
+    /// If absent, <see cref="OnInitialized"/> redirects back to the sign-in page.
+    /// </summary>
+    [SupplyParameterFromQuery] public string? Email { get; set; }
+
+    /// <summary>
+    /// Optional URL to redirect to after a successful sign-in. When absent, the user is
+    /// sent to the home page.
+    /// </summary>
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+
+    private const int OtpLength = 6;
+
+    private readonly SignInVerifyFormModel _model = new();
+    private int _resendCooldown;
+    private Timer? _cooldownTimer;
+
+    private string _email => Email ?? string.Empty;
+    private bool _isCodeComplete => _model.Code.Length == OtpLength;
+    private string CooldownText => TimeSpan.FromSeconds(_resendCooldown).ToString(@"mm\:ss", System.Globalization.CultureInfo.InvariantCulture);
+    private string SignInHref => string.IsNullOrWhiteSpace(ReturnUrl)
+        ? Routes.Auth.SignIn
+        : Routes.Auth.SignInWithReturn(ReturnUrl);
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrWhiteSpace(_email))
+        {
+            Nav.NavigateTo(Routes.Auth.SignIn, replace: true);
+            return;
+        }
+
+        StartCooldown(60);
+    }
+
+    private async Task OnVerifyAsync()
+    {
+        if (!_isCodeComplete || BusyState.IsBusy(BusyKeys.Auth.SignInVerify)
+            || BusyState.IsBusy(BusyKeys.Auth.ResendOtp)) return;
+
+        await BusyState.RunAsync(BusyKeys.Auth.SignInVerify, async () =>
+        {
+            var result = await Mediator.Send(new VerifySignInOtpCommand(_email, _model.Code));
+
+            if (result.IsSuccess)
+            {
+                Notifications.Show(Strings.Auth_SignedIn, ShopNotificationKind.Success);
+
+                var destination = !string.IsNullOrWhiteSpace(ReturnUrl)
+                    ? ReturnUrl
+                    : Routes.Home;
+                Nav.NavigateTo(destination, forceLoad: false);
+            }
+            else
+            {
+                var key = result.Error ?? nameof(Strings.Auth_Unexpected);
+
+                // Too many attempts: redirect back to email entry
+                if (key == nameof(Strings.Auth_TooManyAttempts))
+                {
+                    Notifications.Show(Localizer[key], ShopNotificationKind.Error);
+                    Nav.NavigateTo(Routes.Auth.SignIn, replace: true);
+                    return;
+                }
+
+                Notifications.Show(Localizer[key], ShopNotificationKind.Error);
+
+                // Clear the digits on failure so the user types fresh
+                _model.Code = string.Empty;
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+    }
+
+    private async Task OnResendAsync()
+    {
+        if (_resendCooldown > 0 || BusyState.IsBusy(BusyKeys.Auth.ResendOtp)
+            || BusyState.IsBusy(BusyKeys.Auth.SignInVerify)) return;
+
+        await BusyState.RunAsync(BusyKeys.Auth.ResendOtp, async () =>
+        {
+            var result = await Mediator.Send(new ResendOtpCommand(_email, OtpPurpose.SignIn));
+
+            if (result.IsSuccess)
+            {
+                Notifications.Show(Strings.Auth_CodeSent, ShopNotificationKind.Success);
+                StartCooldown(result.Value.ResendCooldownSeconds);
+            }
+            else
+            {
+                Notifications.Show(Localizer[result.Error ?? nameof(Strings.Auth_Unexpected)], ShopNotificationKind.Error);
+            }
+        });
+    }
+
+    private void StartCooldown(int seconds)
+    {
+        _resendCooldown = seconds;
+        _cooldownTimer?.Dispose();
+        _cooldownTimer = new Timer(_ =>
+        {
+            if (_resendCooldown > 0)
+            {
+                _resendCooldown--;
+                InvokeAsync(StateHasChanged);
+            }
+        }, null, 1000, 1000);
+    }
+
+    public void Dispose() => _cooldownTimer?.Dispose();
+}

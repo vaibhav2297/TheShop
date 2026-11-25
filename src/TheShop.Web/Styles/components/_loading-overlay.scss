@@ -1,0 +1,16 @@
+// Figma 2996:28795 scrim; BusyKeys.Global owns blocking state.
+.shop-loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--shop-layer-loading);
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--shop-color-primary) 40%, transparent);
+    color: var(--shop-color-primary);
+    cursor: progress;
+}
+
+.shop-loading-overlay-spinner {
+    inline-size: 3rem;
+    block-size: 3rem;
+}

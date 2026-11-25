@@ -1,0 +1,77 @@
+@use '../abstracts/text-style';
+
+// ─── ShopRichTextEditor ──────────────────────────────────────────────────────
+// Quill's own snow theme owns the toolbar buttons and their SVG icons (plan
+// Decision 2 waiver). The host owns the outlined field chrome of Text Field
+// 170:136 so toolbar and editor read as one bordered control.
+.shop-rich-text-editor {
+    background: transparent;
+    box-shadow: inset 0 0 0 var(--shop-field-border-width) var(--shop-color-lines-input);
+
+    &:focus-within {
+        box-shadow: inset 0 0 0 var(--shop-focus-width) var(--shop-color-primary);
+    }
+
+    .ql-toolbar.ql-snow {
+        padding: var(--shop-space-2) var(--shop-space-3);
+        border: 0;
+        box-shadow: inset 0 calc(-1 * var(--shop-field-border-width)) 0 var(--shop-color-lines-input);
+    }
+
+    .ql-container.ql-snow {
+        border: 0;
+        @include text-style.apply(body-1);
+    }
+
+    .ql-editor {
+        min-block-size: 10rem;
+        padding: var(--shop-space-3) var(--shop-field-padding-inline);
+        color: var(--shop-color-text-primary);
+
+        // The host chrome owns editing focus; toolbar buttons keep the shared focus ring.
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .ql-editor.ql-blank::before {
+        inset-inline: var(--shop-field-padding-inline);
+        color: var(--shop-color-text-secondary);
+        font-style: normal;
+    }
+}
+
+.shop-rich-text-editor-disabled {
+    // Toolbar buttons do not inherit color, so each Quill icon part takes the token directly.
+    .ql-toolbar.ql-snow {
+        pointer-events: none;
+
+        .ql-stroke {
+            stroke: var(--shop-color-text-disabled);
+        }
+
+        .ql-fill {
+            fill: var(--shop-color-text-disabled);
+        }
+
+        .ql-picker {
+            color: var(--shop-color-text-disabled);
+        }
+    }
+
+    .ql-editor {
+        color: var(--shop-color-text-secondary);
+        cursor: not-allowed;
+    }
+}
+
+@media (forced-colors: active) {
+    .shop-rich-text-editor {
+        outline: var(--shop-field-border-width) solid CanvasText;
+        outline-offset: calc(-1 * var(--shop-field-border-width));
+
+        &:focus-within {
+            outline: var(--shop-focus-width) solid Highlight;
+        }
+    }
+}

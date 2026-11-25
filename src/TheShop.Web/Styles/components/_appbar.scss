@@ -1,0 +1,76 @@
+@use '../abstracts/breakpoints' as bp;
+
+.shop-appbar {
+    position: relative;
+    z-index: var(--shop-layer-appbar);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem 1.5rem;
+    flex: none;
+    min-inline-size: 0;
+    min-block-size: 4rem;
+    padding: 0.375rem 1rem;
+    background: var(--shop-color-surface-appbar);
+    color: var(--shop-color-text-primary);
+}
+
+.shop-appbar-logo {
+    display: inline-flex;
+    inline-size: 3.25rem;
+    block-size: 3.25rem;
+}
+
+.shop-appbar-navigation {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2.25rem;
+    min-inline-size: 0;
+    text-transform: uppercase;
+}
+
+.shop-appbar-leading {
+    display: flex;
+    align-items: center;
+    gap: var(--shop-space-3);
+}
+
+.shop-appbar-menu {
+    display: none;
+}
+
+.shop-appbar-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.5rem;
+}
+
+.shop-appbar-navigation .shop-button {
+    text-transform: uppercase;
+}
+
+@media (width < bp.$desktop) {
+    .shop-appbar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5rem 0.75rem;
+    }
+
+    .shop-appbar-navigation {
+        display: none;
+    }
+
+    .shop-appbar-menu {
+        display: inline-flex;
+    }
+
+    .shop-appbar-actions {
+        gap: 0.75rem;
+    }
+}

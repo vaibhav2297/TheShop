@@ -1,0 +1,56 @@
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@inherits ShopComponentBase
+
+@{
+    RenderFragment content = @<text>
+        <span class="shop-product-card-brand">@Product.BrandName</span>
+        <span class="shop-product-card-title">@Product.Name</span>
+        <span class="shop-product-card-pricing">
+            @if (Product.IsDiscounted)
+            {
+                <span class="shop-product-card-price">@CurrencyFormatter.Format(Product.SalePrice!.Value, Product.Currency)</span>
+                <s class="shop-product-card-original-price">@CurrencyFormatter.Format(Product.OriginalPrice!.Value, Product.Currency)</s>
+            }
+            else
+            {
+                <span class="shop-product-card-price">@PriceLabel</span>
+            }
+        </span>
+    </text>;
+}
+
+<article @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+    <div class="shop-product-card-media">
+        <ShopImage Src="@Product.ImageUrl"
+                   Preset="ShopImagePreset.SquareContain"
+                   Alt="@string.Format(Strings.Product_ImageAlt, Product.Name)"
+                   PlaceholderLabel="@Product.Name" />
+
+        @if (!Product.IsInStock)
+        {
+            <ShopBadge Color="ShopColor.Error" Class="shop-product-card-stock">@Strings.OutOfStock</ShopBadge>
+        }
+
+        @if (Product.IsInStock)
+        {
+            <ShopIconButton Color="ShopColor.Surface" Class="shop-product-card-action shop-product-card-cart"
+                            Label="@Strings.AddToCart" Icon="@ShopIcons.Outlined.Shopping_Bag_01"
+                            OnClick="OnAddToCartAsync" />
+        }
+
+        <ShopIconButton Color="ShopColor.Surface" Class="shop-product-card-action shop-product-card-wishlist"
+                        Label="@Strings.Wishlist_Add" Icon="@ShopIcons.Outlined.Heart_01"
+                        OnClick="OnToggleWishlistAsync" />
+    </div>
+
+    @if (Href is not null)
+    {
+        <a href="@Href" class="shop-product-card-content">@content</a>
+    }
+    else
+    {
+        <button type="button" class="shop-product-card-content" @onclick="OnSelectAsync">@content</button>
+    }
+</article>

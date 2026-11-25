@@ -1,0 +1,707 @@
+{
+  "feature": "002_variant-filters",
+  "trait": "002_variant-filters",
+  "testProjects": [
+    "tests/TheShop.Application.Tests/TheShop.Application.Tests.csproj",
+    "tests/TheShop.Infrastructure.Tests/TheShop.Infrastructure.Tests.csproj",
+    "tests/TheShop.Web.Tests/TheShop.Web.Tests.csproj"
+  ],
+  "classes": [
+    {
+      "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetAdminProductListingHandlerTests.cs",
+      "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductListingHandlerTests",
+      "tests": 5,
+      "methods": [
+        {
+          "name": "Handle_AdminChoices_ReconcilesUsingManagementMetadataAndPreservesCriteria",
+          "count": 1
+        },
+        {
+          "name": "Handle_MetadataFailure_DoesNotDispatchPage",
+          "count": 1
+        },
+        {
+          "name": "Handle_PageFailure_ReturnsFailureWithoutEmptySuccess",
+          "count": 1
+        },
+        {
+          "name": "Handle_CancelledPage_DiscardsResponseAndForwardsToken",
+          "count": 1
+        },
+        {
+          "name": "Authorization_WithoutProductsView_DeniesBeforeMetadataOrPage",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Application.Tests/Features/Products/Queries/GetProductCatalogueListingHandlerTests.cs",
+      "fqn": "TheShop.Application.Tests.Features.Products.Queries.GetProductCatalogueListingHandlerTests",
+      "tests": 5,
+      "methods": [
+        {
+          "name": "Handle_StaleSelections_ReconcilesBeforePagingAndPreservesFixedCriteria",
+          "count": 1
+        },
+        {
+          "name": "Handle_ChangedMetadata_ReloadsAllChoicesBeforeEveryPage",
+          "count": 1
+        },
+        {
+          "name": "Handle_MetadataFailure_DoesNotDispatchPageOrPretendEmptySuccess",
+          "count": 1
+        },
+        {
+          "name": "Handle_PageFailure_PreservesErrorDetails",
+          "count": 1
+        },
+        {
+          "name": "Handle_SupersededPage_DoesNotAdoptResponse",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Application.Tests/Features/Products/Queries/VariantListingValidationTests.cs",
+      "fqn": "TheShop.Application.Tests.Features.Products.Queries.VariantListingValidationTests",
+      "tests": 9,
+      "methods": [
+        {
+          "name": "Validate_FilterNamespace_RespectsPublicAndAdminContracts",
+          "count": 6
+        },
+        {
+          "name": "Validate_MalformedFilters_ReturnsFilterErrorInsteadOfThrowing",
+          "count": 1
+        },
+        {
+          "name": "Validate_WrappedInvalidPageAndPrice_PreservesExistingValidation",
+          "count": 1
+        },
+        {
+          "name": "AdminPage_ValidVariantSelections_ForwardsToRepositoryWithCancellation",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Application.Tests/Features/Products/VariantFilterSelectionTests.cs",
+      "fqn": "TheShop.Application.Tests.Features.Products.VariantFilterSelectionTests",
+      "tests": 11,
+      "methods": [
+        {
+          "name": "Reconcile_RepeatedGroupsAndValues_MergesWithoutDroppingOtherGroups",
+          "count": 1
+        },
+        {
+          "name": "Reconcile_UnknownGroupAndRemovedValue_KeepsValidChoicesAndReportsRemoval",
+          "count": 1
+        },
+        {
+          "name": "Reconcile_EmptyGroupAndFixedFilters_ImposesNoVariantRestriction",
+          "count": 1
+        },
+        {
+          "name": "Reconcile_DatabaseTokens_UsesExactKeysWithoutSecondNormalization",
+          "count": 1
+        },
+        {
+          "name": "Reconcile_NoEligibleGroups_RemovesOldSelections",
+          "count": 1
+        },
+        {
+          "name": "IsVariantKey_PrefixSeparatesFixedCriteria",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Infrastructure.Tests/Persistence/VariantFilterMapperTests.cs",
+      "fqn": "TheShop.Infrastructure.Tests.Persistence.VariantFilterMapperTests",
+      "tests": 4,
+      "methods": [
+        {
+          "name": "FacetRecords_PublicAndAdmin_MapSameDynamicContractWithoutEmptyOrFixedGroups",
+          "count": 1
+        },
+        {
+          "name": "FacetRecords_MissingOptionalFields_DefaultToEmptyChoices",
+          "count": 1
+        },
+        {
+          "name": "CatalogueRpcRow_CompleteScalars_PreservesPriceReadModelAndImagePriority",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Infrastructure.Tests/Persistence/VariantFilterSchemaTests.cs",
+      "fqn": "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests",
+      "tests": 18,
+      "methods": [
+        {
+          "name": "Facets_NormalizedNames_MergeCaseAndSpacesButKeepDifferentSpellings",
+          "count": 1
+        },
+        {
+          "name": "Facets_UnassignedValuesAndLaterPages_UsesAllActualAssignmentsOnly",
+          "count": 1
+        },
+        {
+          "name": "Facets_SavedActivationAndDeletion_RefreshesChoicesAndRemovesEmptyGroups",
+          "count": 1
+        },
+        {
+          "name": "Catalogue_MultipleValuesAndGroups_RequiresOneVariantToMatchEveryGroup",
+          "count": 1
+        },
+        {
+          "name": "Catalogue_DuplicateMatchesAndNoVariants_CountsProductsOnceBeforePagination",
+          "count": 1
+        },
+        {
+          "name": "PublicScope_InactiveAndUnpublished_RemainsRestrictedEvenForStaff",
+          "count": 2
+        },
+        {
+          "name": "Catalogue_ExistingCriteriaAndPrices_FiltersBeforePagingWithoutChangingDisplayPrice",
+          "count": 1
+        },
+        {
+          "name": "Admin_ExistingCriteriaAndRollups_PreservesFullRangeAndLegacyCall",
+          "count": 1
+        },
+        {
+          "name": "DeletedProduct_RemovesChoicesAndMatchesFromBothScopes",
+          "count": 1
+        },
+        {
+          "name": "AdminScope_UnauthorizedCaller_DeniesAccess",
+          "count": 6
+        },
+        {
+          "name": "Matcher_InvalidJsonShape_RejectsInput",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Web.Tests/Components/Common/VariantFilterPanelTests.cs",
+      "fqn": "TheShop.Web.Tests.Components.Common.VariantFilterPanelTests",
+      "tests": 3,
+      "methods": [
+        {
+          "name": "Render_MerchantLabels_AreEncodedAndAssociatedWithNativeCheckboxes",
+          "count": 1
+        },
+        {
+          "name": "Toggle_MultiSelect_ReportsOnlyChangedOptionAndKeepsOtherSelections",
+          "count": 1
+        },
+        {
+          "name": "Render_NoVariantGroups_PreservesFixedGroupLabels",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageProductsTests.cs",
+      "fqn": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests",
+      "tests": 52,
+      "methods": [
+        {
+          "name": "Table_StatusAndActions_UseCompactHeadersAndCells",
+          "count": 1
+        },
+        {
+          "name": "Render_OnInitialize_QueriesTheFirstPageWithNoNarrowingAndNameAToZ",
+          "count": 1
+        },
+        {
+          "name": "ChangeStatusFilter_WhenStaffFiltersByInactive_ReQueriesWithThatStatusFromPageOne",
+          "count": 1
+        },
+        {
+          "name": "ChangeSort_WhenStaffReversesTheNameOrder_ReQueriesWithThatSortFromPageOne",
+          "count": 1
+        },
+        {
+          "name": "Search_WhenStaffTypesATerm_ReQueriesWithThatTermFromPageOne",
+          "count": 1
+        },
+        {
+          "name": "ChangeBrandFilter_WhenStaffTogglesABrand_ReQueriesWithThatBrandIdFromPageOne",
+          "count": 1
+        },
+        {
+          "name": "ChangePriceRange_WhenStaffSettlesTheSlider_ReQueriesWithThoseBoundsFromPageOne",
+          "count": 1
+        },
+        {
+          "name": "ChangePage_AfterFilteringAndSorting_KeepsBothCriteriaOnTheNewPage",
+          "count": 1
+        },
+        {
+          "name": "ChangeSort_WithProductsSelected_ClearsTheSelectionAndHidesTheBulkBar",
+          "count": 1
+        },
+        {
+          "name": "SelectAll_OnAPageWithMoreProductsThanFit_SelectsOnlyTheCurrentPagesProducts",
+          "count": 1
+        },
+        {
+          "name": "CloseBulkBar_WhenStaffDismissesIt_ClearsTheSelectionAndHidesTheBar",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenProductsExist_ShowsEachProductsNameSkuBrandCategoryAndStatus",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenProductsExist_ShowsEachPrimaryImageWholeAsASquareThumbnail",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenAProductHasNoPrimaryImage_ShowsItsNameInTheThumbnailSpace",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenAProductIsUnpublished_ShowsInactiveStatus",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenAProductHasVariants_ShowsTheVariantCountCaption",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenAProductHasNoVariants_OmitsTheVariantCountCaption",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenPriceRangeDiffers_ShowsBothEndsFormattedAsARange",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenProductsSpanMultiplePages_ShowsPaginationControls",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenAProductHasExactlyOneVariant_ShowsSingularVariantCountWording",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenEveryVariantSharesThePrice_ShowsOneAmountNotARange",
+          "count": 1
+        },
+        {
+          "name": "Render_WhileTheFirstPageIsStillLoading_ShowsSkeletonsNotAFalseEmptyMessage",
+          "count": 1
+        },
+        {
+          "name": "ManageProducts_Always_CarriesTheProductsViewAuthorizePolicy",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenUserHoldsOnlyProductsView_DoesNotShowTheAddProductButton",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenUserHoldsOnlyProductsView_DoesNotShowEditOrDeleteRowControls",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenUserHoldsOnlyProductsView_RendersStatusAsPlainTextNotAClickableToggle",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenUserHoldsEditButNotDelete_BulkBarOffersActivateAndDeactivateButNotDelete",
+          "count": 1
+        },
+        {
+          "name": "Render_EditControl_LinksToTheProductsIdKeyedEditRoute",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenUserHoldsProductsCreatePermission_ShowsTheAddProductButtonLinkedToTheAddRoute",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenNoProductsExistYet_ShowsTheEmptyStateMessageAndHidesTheFilterPanel",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenSearchMatchesNothing_ShowsTheNoMatchMessageAndKeepsTheFilterPanel",
+          "count": 1
+        },
+        {
+          "name": "ClearFilters_FromTheNoMatchState_RestoresUnrestrictedResults",
+          "count": 1
+        },
+        {
+          "name": "DeleteSingle_WhenConfirmed_SendsDeleteProductsCommandWithThatProductsId",
+          "count": 1
+        },
+        {
+          "name": "DeleteSingle_WhenCancelled_DoesNotSendTheCommand",
+          "count": 1
+        },
+        {
+          "name": "DeleteSingle_WhenItEmptiesTheLastPage_RecoversToTheNewLastPage",
+          "count": 1
+        },
+        {
+          "name": "DeleteSingle_WhenTheCommandFails_ShowsTheErrorMessageAndNeverClaimsSuccess",
+          "count": 1
+        },
+        {
+          "name": "DeleteSingle_WhenTheProductIsReferenced_ShowsTheInUseMessageNamingItAndItsReferenceCount",
+          "count": 1
+        },
+        {
+          "name": "BulkDelete_WhenConfirmed_SendsDeleteProductsCommandWithEverySelectedId",
+          "count": 1
+        },
+        {
+          "name": "BulkDelete_WithAMixedOutcome_ReportsBothCountsAndKeepsOnlyTheReferencedProductsSelected",
+          "count": 1
+        },
+        {
+          "name": "BulkDelete_WhenEverySelectedProductIsReferenced_ShowsTheAllBlockedMessage",
+          "count": 1
+        },
+        {
+          "name": "BulkDelete_WhenCancelled_DoesNotSendTheCommandAndKeepsTheSelection",
+          "count": 1
+        },
+        {
+          "name": "StatusToggle_WhenActivatingAnInactiveProduct_SendsImmediatelyWithoutConfirmation",
+          "count": 1
+        },
+        {
+          "name": "StatusToggle_WhilePending_ReplacesOnlyTargetChip_AndRestoresAfterCompletion",
+          "count": 4
+        },
+        {
+          "name": "StatusToggle_WhenDeactivatingAnActiveProduct_AsksForConfirmationBeforeSending",
+          "count": 1
+        },
+        {
+          "name": "StatusToggle_WhenDeactivationIsCancelled_DoesNotSendTheCommand",
+          "count": 1
+        },
+        {
+          "name": "BulkActivate_SendsImmediatelyWithoutConfirmation",
+          "count": 1
+        },
+        {
+          "name": "BulkActivate_WhenSomeAreSkippedForMissingAPrice_ReportsBothTheChangedAndSkippedCounts",
+          "count": 1
+        },
+        {
+          "name": "BulkDeactivate_WhenConfirmed_SendsWithEverySelectedIdAndReportsHowManyChanged",
+          "count": 1
+        },
+        {
+          "name": "BulkDeactivate_WhenCancelled_DoesNotSendTheCommand",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Web.Tests/Pages/Admin/VariantManageProductsTests.cs",
+      "fqn": "TheShop.Web.Tests.Pages.Admin.VariantManageProductsTests",
+      "tests": 7,
+      "methods": [
+        {
+          "name": "Toggle_VariantCriteria_PreservesSearchStatusFixedFiltersAndClearsRowSelection",
+          "count": 1
+        },
+        {
+          "name": "Paging_RetainsMultiSelectionsAndFullRowRollups",
+          "count": 1
+        },
+        {
+          "name": "NoMatch_ClearRemovesVariantCriteriaAndRestoresResults",
+          "count": 1
+        },
+        {
+          "name": "LoadFailure_OffersRetryWithoutNoMatch",
+          "count": 2
+        },
+        {
+          "name": "StaleLink_DropsUnknownValuesAndKeepsValidFiltersWithNotice",
+          "count": 1
+        },
+        {
+          "name": "DrawerAndSidebar_PreserveSameVariantChoicesAndSelectedState",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Web.Tests/Pages/Products/ProductCatalogueTests.cs",
+      "fqn": "TheShop.Web.Tests.Pages.Products.ProductCatalogueTests",
+      "tests": 14,
+      "methods": [
+        {
+          "name": "Render_OnInitialize_DispatchesFiltersAndPageQueries",
+          "count": 1
+        },
+        {
+          "name": "Render_WithProducts_RendersAProductCardPerItem",
+          "count": 1
+        },
+        {
+          "name": "Render_WithoutAnyAuthenticationContextRegistered_RendersSuccessfully",
+          "count": 1
+        },
+        {
+          "name": "Render_OnInitialize_DefaultsToNewestFirstSortAndPageOne",
+          "count": 1
+        },
+        {
+          "name": "Render_WhenNoProductsMatch_ShowsEmptyStateMessage",
+          "count": 1
+        },
+        {
+          "name": "ChangeSort_WhenUserSelectsADifferentOption_ResetsToPageOneAndSendsNewSort",
+          "count": 1
+        },
+        {
+          "name": "ApplyFilter_WhenUserSelectsAFilterOption_ResetsToPageOneWithTheFilterApplied",
+          "count": 1
+        },
+        {
+          "name": "DrawerFilter_WhenToggled_UpdatesUrlAndTheDesktopPanel",
+          "count": 1
+        },
+        {
+          "name": "ApplyFilters_WhenTwoOptionsAreToggledInRapidSuccession_BothSurviveInTheQuery",
+          "count": 1
+        },
+        {
+          "name": "ClearFilters_AfterNarrowingThePriceRange_ResetsPriceBoundsToNull",
+          "count": 1
+        },
+        {
+          "name": "NarrowPriceRange_WhenBothBoundsSettle_SendsOnePageQueryCarryingBoth",
+          "count": 1
+        },
+        {
+          "name": "ChangePage_WhenUserNavigatesToPage2_PreservesTheActiveSort",
+          "count": 1
+        },
+        {
+          "name": "Render_WhileQueriesAreInFlight_ShowsTwelveProductSkeletonsAndFiveFilterSkeletons",
+          "count": 1
+        },
+        {
+          "name": "Render_AfterFiltersLoad_ReplacesTheFilterSkeletonWithThePanelAndDoesNotReskeletonOnLaterBusyToggles",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Web.Tests/Pages/Products/VariantCatalogueTests.cs",
+      "fqn": "TheShop.Web.Tests.Pages.Products.VariantCatalogueTests",
+      "tests": 8,
+      "methods": [
+        {
+          "name": "Toggle_TwoValues_ReturnsToFirstPageAndRetainsChoicesWhenPaging",
+          "count": 1
+        },
+        {
+          "name": "EmptyFilteredResults_ClearActionRemovesVariantsAndRestoresListing",
+          "count": 1
+        },
+        {
+          "name": "StaleLink_RemovesInvalidSelectionWithNoticeAndPreservesOtherCriteria",
+          "count": 1
+        },
+        {
+          "name": "LoadFailure_ShowsRetryWithoutNoMatchAndRecovers",
+          "count": 2
+        },
+        {
+          "name": "DrawerAndSidebar_ExposeSameGroupsAndSelections",
+          "count": 1
+        },
+        {
+          "name": "SupersededResponse_AfterClearCannotRestoreResultsSelectionsNoticeOrUrl",
+          "count": 1
+        },
+        {
+          "name": "DisposedPage_CancelsPendingReadAndIgnoresLateResponse",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/TheShop.Web.Tests/Pages/Products/VariantQueryStateTests.cs",
+      "fqn": "TheShop.Web.Tests.Pages.Products.VariantQueryStateTests",
+      "tests": 6,
+      "methods": [
+        {
+          "name": "QueryState_DynamicRepeatedKeys_RoundTripsWithExistingCriteria",
+          "count": 2
+        },
+        {
+          "name": "Toggle_OneValueThenFinalValue_RemovesOnlyThatRestrictionAndResetsPage",
+          "count": 2
+        },
+        {
+          "name": "QueryState_EmptyAndUnrecognizedUrlFields_LeavesExistingControlsUsable",
+          "count": 2
+        }
+      ]
+    }
+  ],
+  "totalTests": 142,
+  "expectedDiscoveredCount": 142,
+  "supportFiles": [
+    "tests/TheShop.Infrastructure.Tests/Persistence/VariantFilterDatabaseFixture.cs"
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.Facets_NormalizedNames_MergeCaseAndSpacesButKeepDifferentSpellings",
+        "TheShop.Web.Tests.Components.Common.VariantFilterPanelTests.Render_MerchantLabels_AreEncodedAndAssociatedWithNativeCheckboxes"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.Facets_UnassignedValuesAndLaterPages_UsesAllActualAssignmentsOnly",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCatalogueListingHandlerTests.Handle_ChangedMetadata_ReloadsAllChoicesBeforeEveryPage"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.Facets_SavedActivationAndDeletion_RefreshesChoicesAndRemovesEmptyGroups",
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCatalogueListingHandlerTests.Handle_ChangedMetadata_ReloadsAllChoicesBeforeEveryPage"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.Catalogue_MultipleValuesAndGroups_RequiresOneVariantToMatchEveryGroup",
+        "TheShop.Web.Tests.Pages.Products.VariantCatalogueTests.Toggle_TwoValues_ReturnsToFirstPageAndRetainsChoicesWhenPaging"
+      ]
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.Catalogue_MultipleValuesAndGroups_RequiresOneVariantToMatchEveryGroup"
+      ]
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.Catalogue_DuplicateMatchesAndNoVariants_CountsProductsOnceBeforePagination"
+      ]
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.PublicScope_InactiveAndUnpublished_RemainsRestrictedEvenForStaff",
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.Facets_SavedActivationAndDeletion_RefreshesChoicesAndRemovesEmptyGroups",
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.DeletedProduct_RemovesChoicesAndMatchesFromBothScopes"
+      ]
+    },
+    {
+      "id": "AC-8",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.Catalogue_ExistingCriteriaAndPrices_FiltersBeforePagingWithoutChangingDisplayPrice",
+        "TheShop.Web.Tests.Pages.Products.VariantCatalogueTests.Toggle_TwoValues_ReturnsToFirstPageAndRetainsChoicesWhenPaging"
+      ]
+    },
+    {
+      "id": "AC-9",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.Admin_ExistingCriteriaAndRollups_PreservesFullRangeAndLegacyCall",
+        "TheShop.Web.Tests.Pages.Admin.VariantManageProductsTests.Toggle_VariantCriteria_PreservesSearchStatusFixedFiltersAndClearsRowSelection"
+      ]
+    },
+    {
+      "id": "AC-10",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.VariantManageProductsTests.Toggle_VariantCriteria_PreservesSearchStatusFixedFiltersAndClearsRowSelection",
+        "TheShop.Web.Tests.Pages.Products.VariantCatalogueTests.Toggle_TwoValues_ReturnsToFirstPageAndRetainsChoicesWhenPaging",
+        "TheShop.Web.Tests.Pages.Products.VariantCatalogueTests.SupersededResponse_AfterClearCannotRestoreResultsSelectionsNoticeOrUrl",
+        "TheShop.Web.Tests.Pages.Products.VariantCatalogueTests.DisposedPage_CancelsPendingReadAndIgnoresLateResponse"
+      ]
+    },
+    {
+      "id": "AC-11",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.VariantQueryStateTests.Toggle_OneValueThenFinalValue_RemovesOnlyThatRestrictionAndResetsPage",
+        "TheShop.Web.Tests.Components.Common.VariantFilterPanelTests.Toggle_MultiSelect_ReportsOnlyChangedOptionAndKeepsOtherSelections"
+      ]
+    },
+    {
+      "id": "AC-12",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.VariantCatalogueTests.EmptyFilteredResults_ClearActionRemovesVariantsAndRestoresListing",
+        "TheShop.Web.Tests.Pages.Admin.VariantManageProductsTests.NoMatch_ClearRemovesVariantCriteriaAndRestoresResults"
+      ]
+    },
+    {
+      "id": "AC-13",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Products.VariantQueryStateTests.QueryState_DynamicRepeatedKeys_RoundTripsWithExistingCriteria"
+      ],
+      "boundary": "e2e",
+      "reason": "URL serialization covered here; real refresh, shared navigation, browser Back/Forward require theshop-e2e."
+    },
+    {
+      "id": "AC-14",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterMapperTests.FacetRecords_MissingOptionalFields_DefaultToEmptyChoices",
+        "TheShop.Web.Tests.Components.Common.VariantFilterPanelTests.Render_NoVariantGroups_PreservesFixedGroupLabels"
+      ]
+    },
+    {
+      "id": "AC-15",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.PublicScope_InactiveAndUnpublished_RemainsRestrictedEvenForStaff",
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.AdminScope_UnauthorizedCaller_DeniesAccess",
+        "TheShop.Application.Tests.Features.Products.Queries.GetAdminProductListingHandlerTests.Authorization_WithoutProductsView_DeniesBeforeMetadataOrPage"
+      ]
+    },
+    {
+      "id": "AC-16",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.VariantFilterSelectionTests.Reconcile_UnknownGroupAndRemovedValue_KeepsValidChoicesAndReportsRemoval",
+        "TheShop.Web.Tests.Pages.Products.VariantCatalogueTests.StaleLink_RemovesInvalidSelectionWithNoticeAndPreservesOtherCriteria",
+        "TheShop.Web.Tests.Pages.Admin.VariantManageProductsTests.StaleLink_DropsUnknownValuesAndKeepsValidFiltersWithNotice"
+      ]
+    },
+    {
+      "id": "AC-17",
+      "tests": [
+        "TheShop.Application.Tests.Features.Products.Queries.GetProductCatalogueListingHandlerTests.Handle_MetadataFailure_DoesNotDispatchPageOrPretendEmptySuccess",
+        "TheShop.Web.Tests.Pages.Products.VariantCatalogueTests.LoadFailure_ShowsRetryWithoutNoMatchAndRecovers",
+        "TheShop.Web.Tests.Pages.Admin.VariantManageProductsTests.LoadFailure_OffersRetryWithoutNoMatch"
+      ]
+    },
+    {
+      "id": "AC-18",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.VariantFilterPanelTests.Render_MerchantLabels_AreEncodedAndAssociatedWithNativeCheckboxes",
+        "TheShop.Web.Tests.Pages.Products.VariantCatalogueTests.DrawerAndSidebar_ExposeSameGroupsAndSelections",
+        "TheShop.Web.Tests.Pages.Admin.VariantManageProductsTests.DrawerAndSidebar_PreserveSameVariantChoicesAndSelectedState"
+      ],
+      "boundary": "e2e",
+      "reason": "Native names/states, merchant encoding, English recovery text, drawer/sidebar parity covered here; keyboard traversal, visible focus and viewport behavior require theshop-e2e."
+    },
+    {
+      "id": "AC-19",
+      "tests": [
+        "TheShop.Infrastructure.Tests.Persistence.VariantFilterSchemaTests.PublicScope_InactiveAndUnpublished_RemainsRestrictedEvenForStaff"
+      ]
+    }
+  ],
+  "scope": "Unit, component and isolated Testcontainers PostgreSQL tests only. No live database or browser journeys. Existing page regressions carry additional feature traits; legacy assertions remain."
+}

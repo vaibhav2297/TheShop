@@ -1,0 +1,47 @@
+@using TheShop.Web.Components.Categories
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.EditCategory_PageTitle</PageTitle>
+<section class="shop-native shop-categories-page">
+    <h1>@(_notFound ? Strings.Category_NotFound : Strings.EditCategory_Heading)</h1>
+    <BusyFor Key="@BusyKeys.Categories.EditCategory" Context="busy">
+        @if (busy && !_loaded && !_notFound)
+        {
+            <div class="shop-categories-form" role="status" aria-label="@Strings.Loading">
+                <div class="shop-categories-upload-placeholder">
+                    <ShopSkeleton Class="shop-categories-upload-skeleton" />
+                    <ShopSkeleton Class="shop-categories-upload-hint-skeleton" />
+                </div>
+                <div class="shop-categories-fields">
+                    <ShopSkeleton Class="shop-categories-field-skeleton" />
+                    <ShopSkeleton Class="shop-categories-field-skeleton" />
+                    <div class="shop-categories-status">
+                        <ShopSkeleton Class="shop-categories-status-label-skeleton" />
+                        <div class="shop-categories-status-options-skeleton">
+                            <ShopSkeleton Class="shop-categories-active-skeleton" />
+                            <ShopSkeleton Class="shop-categories-inactive-skeleton" />
+                        </div>
+                    </div>
+                    <div class="shop-categories-form-actions">
+                        <ShopSkeleton Class="shop-categories-save-skeleton" />
+                        <ShopSkeleton Class="shop-categories-cancel-skeleton" />
+                    </div>
+                </div>
+            </div>
+        }
+        else if (_notFound)
+        {
+            <div class="shop-categories-empty">
+                <ShopButton Href="@Routes.Admin.ManageCategories">@Strings.EditCategory_BackToList</ShopButton>
+            </div>
+        }
+        else
+        {
+            <CategoryForm @ref="_form" Model="_model" Busy="@busy"
+                       Images="DisplayedImages" ImagesChanged="OnNewCategoryImagesChanged"
+                       OnSave="SaveAsync" TestIdPrefix="edit-category" />
+        }
+    </BusyFor>
+</section>

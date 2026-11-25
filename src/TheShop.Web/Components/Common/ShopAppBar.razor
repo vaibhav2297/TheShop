@@ -1,0 +1,40 @@
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@inherits ShopComponentBase
+
+<header @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+    <div class="shop-appbar-leading">
+        <span @ref="_menuTrigger" class="shop-appbar-menu">
+            <ShopIconButton Icon="@ShopIcons.Outlined.Hamburger_MD" Variant="ShopVariant.Outlined"
+                            Label="@Strings.Nav_Menu" OnClick="OnMenuClick"
+                            aria-haspopup="dialog" aria-controls="@MenuDrawerId"
+                            aria-expanded="@(MenuOpen ? "true" : "false")" />
+        </span>
+        <a class="shop-appbar-logo" href="@Routes.Home">
+            <ShopImage Src="@ShopIcons.ImageAssets.LogoIcon" Preset="ShopImagePreset.BrandLogo"
+                       Alt="@Strings.AppName" PlaceholderLabel="@Strings.AppName" />
+        </a>
+    </div>
+    <ShopPrimaryNavigation Class="shop-appbar-navigation" />
+    <div class="shop-appbar-actions">
+        <ShopIconButton Icon="@ShopIcons.Outlined.Search_Magnifying_Glass"
+                        Variant="ShopVariant.Outlined" Label="@Strings.Nav_Search" />
+        <a class="shop-button shop-icon-button shop-button-outlined shop-button-primary shop-button-medium"
+           href="@Routes.Cart" aria-label="@Strings.Nav_Cart">
+            <ShopIcon Icon="@ShopIcons.Outlined.Shopping_Bag_01" />
+        </a>
+        <AuthorizeView>
+            <Authorized>
+                <ShopIconButton Icon="@ShopIcons.Outlined.User_02" Variant="ShopVariant.Outlined"
+                                Label="@Strings.Nav_Account" OnClick="OnAccountClick"
+                                aria-haspopup="dialog" aria-expanded="@(AccountOpen ? "true" : "false")" />
+            </Authorized>
+            <NotAuthorized>
+                <a class="shop-button shop-icon-button shop-button-outlined shop-button-primary shop-button-medium"
+                   href="@Routes.Auth.SignIn" aria-label="@Strings.Nav_Account">
+                    <ShopIcon Icon="@ShopIcons.Outlined.User_02" />
+                </a>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</header>

@@ -1,0 +1,55 @@
+{
+  "feature": "004_fresh-drops",
+  "trait": "004_fresh-drops",
+  "date": "2026-10-31",
+  "journeys": [
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageFreshDropsJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests",
+      "tests": 10,
+      "methods": [
+        { "name": "AC1_AddDefaultsAndHeadingTrackTitle", "ac": 1 },
+        { "name": "AC2_EditLoadsSavedValuesAndHeadingTracksTitle", "ac": 2 },
+        { "name": "AC6_PickerCancelAndModeSwitchPreserveDraftSelections", "ac": 6 },
+        { "name": "AC7_ThirdSelectionBlocksFourthAndRowsReorder", "ac": 7 },
+        { "name": "AC8_NoResultsKeepDraftSelection", "ac": 8 },
+        { "name": "AC9_InvalidFieldsBlockSaveAndBlankPairPersists", "ac": 9 },
+        { "name": "AC10_ValidLinkPersistsAndUnsafeLinkFails", "ac": 10 },
+        { "name": "AC11_SaveAndReopenPreservesManualOrderAndHiddenStatus", "ac": 11 },
+        { "name": "AC12_CancelDiscardsUnsavedAddAndEdit", "ac": 12 },
+        { "name": "AC15_DesktopTabletPhoneKeyboardAndOverflow", "ac": 15 }
+      ]
+    },
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageFreshDropsAnonymousJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageFreshDropsAnonymousJourneyTests",
+      "tests": 1,
+      "methods": [{ "name": "AC3_GuestRedirectsAndCustomerSeesAccessDenied", "ac": 3 }]
+    },
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageFreshDropsViewOnlyJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageFreshDropsViewOnlyJourneyTests",
+      "tests": 1,
+      "methods": [{ "name": "AC4_ViewOnlyStaffCannotAddOrEdit", "ac": 4 }]
+    }
+  ],
+  "totalTests": 12,
+  "acceptanceCriteria": [
+    { "id": "AC-1", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests.AC1_AddDefaultsAndHeadingTrackTitle", "reason": "Admin navigation, product cards, and editable defaults." },
+    { "id": "AC-2", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests.AC2_EditLoadsSavedValuesAndHeadingTracksTitle", "reason": "Saved state reopening." },
+    { "id": "AC-3", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsAnonymousJourneyTests.AC3_GuestRedirectsAndCustomerSeesAccessDenied", "reason": "Guest redirect and signed-in permission denial." },
+    { "id": "AC-4", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsViewOnlyJourneyTests.AC4_ViewOnlyStaffCannotAddOrEdit", "reason": "Support persona has Homepage View without Create or Edit; denied combinations also have application and RLS tests." },
+    { "id": "AC-5", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.FreshDropsSchemaTests.ProductCards_OnlyPublishedNewestAndSearchableByBrand", "reason": "Published ordering and search use real PostgreSQL integration tests." },
+    { "id": "AC-6", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests.AC6_PickerCancelAndModeSwitchPreserveDraftSelections", "reason": "Dialog interaction and draft mode switching." },
+    { "id": "AC-7", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests.AC7_ThirdSelectionBlocksFourthAndRowsReorder", "reason": "Selection limit and browser row controls." },
+    { "id": "AC-8", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests.AC8_NoResultsKeepDraftSelection", "reason": "Live search and no-results state." },
+    { "id": "AC-9", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests.AC9_InvalidFieldsBlockSaveAndBlankPairPersists", "reason": "Validation display and saved blank button pair." },
+    { "id": "AC-10", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests.AC10_ValidLinkPersistsAndUnsafeLinkFails", "reason": "URL validation display and persistence." },
+    { "id": "AC-11", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests.AC11_SaveAndReopenPreservesManualOrderAndHiddenStatus", "reason": "Cross-page persistence." },
+    { "id": "AC-12", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests.AC12_CancelDiscardsUnsavedAddAndEdit", "reason": "Cancel navigation and persisted state." },
+    { "id": "AC-13", "coverage": "unit", "evidence": "TheShop.Infrastructure.Tests.Persistence.FreshDropsSchemaTests.Schema_HiddenSingletonAndInvalidManualIds_RejectSecondOrInvalidRows", "reason": "Singleton database constraint tested against PostgreSQL." },
+    { "id": "AC-14", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageFreshDropsTests.Render_LoadFailure_ShowsRetryWithoutAddForm", "reason": "Injected failure states covered by component and handler tests." },
+    { "id": "AC-15", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageFreshDropsJourneyTests.AC15_DesktopTabletPhoneKeyboardAndOverflow", "reason": "Viewport and keyboard behavior require browser." }
+  ],
+  "pageObjects": ["tests/TheShop.E2E.Tests/Pages/Admin/ManageFreshDropsPage.cs"]
+}

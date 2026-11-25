@@ -1,0 +1,45 @@
+﻿@inherits TheShop.Web.Common.UI.ShopComponentBase
+@using TheShop.Web.Common
+
+<footer @attributes="AdditionalAttributes" aria-label="@Strings.Footer_AriaLabel" class="@ClassName" style="@Style">
+    <div class="shop-footer-content">
+        <div class="shop-footer-brand">
+            <a class="shop-footer-logo" href="@Routes.Home">
+                <ShopImage Src="@ShopIcons.ImageAssets.LogoPrimary" Preset="ShopImagePreset.BrandLogo"
+                           Alt="@Strings.AppName" PlaceholderLabel="@Strings.AppName" />
+            </a>
+            <div class="shop-footer-info">
+                <p class="shop-footer-tagline">@Strings.Footer_Tagline</p>
+                <div class="shop-footer-socials">
+                    <button type="button" aria-label="@Strings.Footer_Social_Facebook"><ShopIcon Icon="@ShopIcons.Outlined.Facebook" /></button>
+                    <button type="button" aria-label="@Strings.Footer_Social_WhatsApp"><ShopIcon Icon="@ShopIcons.Outlined.WhatsApp" /></button>
+                    <button type="button" aria-label="@Strings.Footer_Social_Instagram"><ShopIcon Icon="@ShopIcons.Outlined.Instagram" /></button>
+                </div>
+            </div>
+        </div>
+        <div class="shop-footer-sections">
+            @foreach (var section in FooterContent.Sections())
+            {
+                <section class="shop-footer-section">
+                    <h2 class="shop-footer-heading">@section.Title</h2>
+                    <ul class="shop-footer-links">
+                        @foreach (var link in section.Links)
+                        {
+                            <li>
+                                @if (link.Href is null)
+                                {
+                                    <span>@link.Label</span>
+                                }
+                                else
+                                {
+                                    <a href="@link.Href">@link.Label</a>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+        </div>
+    </div>
+    <p class="shop-footer-copyright">@Copyright</p>
+</footer>

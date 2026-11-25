@@ -1,0 +1,177 @@
+@inherits QueryStatePageBase<ProductQueryState>
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+@using TheShop.Application.Features.Products.DTOs
+@using TheShop.Domain.Enums
+@using TheShop.Domain.ValueObjects
+@using TheShop.Web.Common.UI
+
+<PageTitle>@Strings.ManageProducts_PageTitle</PageTitle>
+<section class="shop-native shop-products-page">
+    <header class="shop-products-heading">
+        <h1>@Strings.ManageProducts_Heading</h1>
+        <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Create.Code)" Context="createAuth">
+            <Authorized><ShopButton Href="@Routes.Admin.AddProduct" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Add_Plus">@Strings.AddProduct_Heading</ShopButton></Authorized>
+        </AuthorizeView>
+    </header>
+    @if (!ShowEmptyState)
+    {
+        <div class="shop-products-list">
+            <aside class="shop-products-sidebar"><ShopFilterPanel Class="shop-products-filter" CompactRangeEditors="true" Groups="@FilterGroups" ClearLabel="@Strings.Filter_ClearAll"
+                         SingleSelectChanged="OnSingleSelectChangedAsync" SelectedFilters="@SelectedFilters"
+                         FilterToggled="OnFilterToggledAsync" SelectedRanges="@SelectedRanges" RangeChanged="OnRangeChangedAsync"
+                         RangeFormatter="FormatRange" RangeStep="@(_ => 0.01m)"
+                         RangeMinimumLabel="@(_ => Strings.Range_MinimumCad)" RangeMaximumLabel="@(_ => Strings.Range_MaximumCad)"
+                         OnClearFilters="OnClearFiltersAsync" /></aside>
+            <div class="shop-products-results">
+                <div class="shop-products-tools">
+                    <div class="shop-products-search">
+                        <ShopTextField type="search" Value="@_search" ValueChanged="OnSearchInputAsync" ValueExpression="@(() => _search)"
+                                       Label="@Strings.ManageProducts_SearchPlaceholder" StartIcon="@ShopIcons.Outlined.Search_Magnifying_Glass" />
+                    </div>
+                    <ShopButton Class="shop-products-filter-button" Size="ShopSize.Large" Variant="ShopVariant.Outlined" StartIcon="@ShopIcons.Outlined.Filter" OnClick="@(() => _filtersOpen = true)">@Strings.Products_Filters</ShopButton>
+                    <ShopSortSelect Class="shop-products-sort" TSort="AdminProductSortOption" Sort="@_sort" Options="@SortOptions" SortChanged="OnSortChangedAsync" />
+                </div>
+                    <ShopBulkActionBar Visible="@HasSelection"
+                                       SelectedCount="@_selectedItems.Count"
+                                       OnClose="OnCloseBulkActions">
+                        <Actions>
+                            <BusyFor Keys="@MutationBusyKeys" Context="mutating">
+                                <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Edit.Code)"
+                                               Context="bulkEditAuth">
+
+                                    <Authorized>
+
+                                        <ShopButton Variant="ShopVariant.Outlined"
+                                                   Color="ShopColor.Primary"
+                                                   StartIcon="@ShopIcons.Outlined.Show"
+                                                   Disabled="@mutating"
+                                                   OnClick="BulkActivateAsync">
+                                            <span class="shop-bulk-action-text">@Strings.ManageProducts_BulkSetActive</span>
+                                        </ShopButton>
+
+                                        <ShopButton Variant="ShopVariant.Outlined"
+                                                   Color="ShopColor.Primary"
+                                                   StartIcon="@ShopIcons.Outlined.Hide"
+                                                   Disabled="@mutating"
+                                                   OnClick="BulkDeactivateAsync">
+                                            <span class="shop-bulk-action-text">@Strings.ManageProducts_BulkSetInactive</span>
+                                        </ShopButton>
+                                    </Authorized>
+
+                                </AuthorizeView>
+
+                                <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Delete.Code)" Context="bulkDeleteAuth">
+
+                                    <Authorized>
+
+                                        <ShopButton Variant="ShopVariant.Outlined"
+                                                   Color="ShopColor.Error"
+                                                   StartIcon="@ShopIcons.Outlined.Trash_Empty"
+                                                   Disabled="@mutating"
+                                                   OnClick="BulkDeleteAsync">
+                                            <span class="shop-bulk-action-text">@Strings.ManageProducts_BulkDelete</span>
+                                        </ShopButton>
+
+                                    </Authorized>
+
+                                </AuthorizeView>
+                            </BusyFor>
+                        </Actions>
+                    </ShopBulkActionBar>
+
+
+                <BusyFor Key="@BusyKeys.Products.ManageList" Context="busy">
+                    @if (!busy && LoadFailed)
+                    {
+                        <div class="shop-products-empty" role="alert" data-testid="listing-load-error">
+                            <p>@Strings.VariantFilters_LoadFailed</p>
+                            <ShopButton OnClick="RetryAsync" data-testid="listing-retry">@Strings.VariantFilters_Retry</ShopButton>
+                        </div>
+                    }
+                    else if (busy || _products.Items.Count > 0)
+                    {
+                        <BusyFor Keys="@MutationBusyKeys" Context="mutating">
+                            <ShopTable TItem="ProductListItemDto" Class="shop-products-table" Loading="@busy" Items="@_products.Items"
+                                       ItemKey="@(item => item.Id)" Caption="@Strings.ManageProducts_Heading" ColumnCount="7" Selectable="true"
+                                       SelectedKeys="@SelectedKeys" SelectedKeysChanged="OnSelectedKeysChanged"
+                                       RowSelectionLabel="@(item => string.Format(Strings.Table_SelectRow, item.Name))" SelectionDisabled="@mutating">
+                                <HeaderContent>
+                                    <th scope="col">@Strings.ManageProducts_ColumnName</th>
+                                    <th scope="col">@Strings.ManageProducts_ColumnSku</th>
+                                    <th scope="col">@Strings.ManageProducts_ColumnPrice</th>
+                                    <th scope="col">@Strings.ManageProducts_ColumnBrand</th>
+                                    <th scope="col">@Strings.ManageProducts_ColumnCategory</th>
+                                    <th scope="col" class="shop-table-column-compact">@Strings.ManageProducts_ColumnStatus</th>
+                                    <th scope="col" class="shop-table-column-compact">@Strings.ManageProducts_ColumnActions</th>
+                                </HeaderContent>
+                                <RowTemplate Context="product">
+                                    <td><div class="shop-products-name">
+                                        <div class="shop-products-image"><ShopImage Src="@product.PrimaryImageUrl" Preset="ShopImagePreset.SquareContain" Alt="@product.Name" PlaceholderLabel="@product.Name" /></div>
+                                        <div>@product.Name
+                                            @if (product.VariantCount > 0) { <span class="shop-products-caption">@FormatVariantCount(product.VariantCount)</span> }
+                                            @if (_referencedIds.TryGetValue(product.Id, out var references)) { <span class="shop-products-caption">@string.Format(Strings.Product_InUse, product.Name, references)</span> }
+                                        </div>
+                                    </div></td>
+                                    <td>@product.Sku</td>
+                                    <td>@FormatPrice(product)</td>
+                                    <td>@product.BrandName</td>
+                                    <td>@product.CategoryName</td>
+                                    <td class="shop-table-column-compact"><AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Edit.Code)" Context="statusAuth">
+                                        <Authorized>
+                                            @if (IsRowPending(product.Id, RowMutation.Status))
+                                            {
+                                                <span role="status" aria-label="@Strings.Loading"><ShopLoader Class="shop-loader-inline" /></span>
+                                            }
+                                            else
+                                            {
+                                                <ShopChip Size="ShopSize.Small" Selected="@product.IsPublished" SelectedChanged="@(value => OnStatusToggledAsync(product, value))" Disabled="@mutating">@(product.IsPublished ? Strings.ManageProducts_StatusActive : Strings.ManageProducts_StatusInactive)</ShopChip>
+                                            }
+                                        </Authorized>
+                                        <NotAuthorized><ShopChip Size="ShopSize.Small" Selected="@product.IsPublished">@(product.IsPublished ? Strings.ManageProducts_StatusActive : Strings.ManageProducts_StatusInactive)</ShopChip></NotAuthorized>
+                                    </AuthorizeView></td>
+                                    <td class="shop-table-column-compact"><div class="shop-products-row-actions">
+                                        <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Edit.Code)" Context="editAuth">
+                                            <Authorized><ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Icon="@ShopIcons.Outlined.Edit_Pencil_02" Label="@string.Format(Strings.ManageProducts_EditAria, product.Name)" Href="@Routes.Admin.EditProduct(product.Id)" Disabled="@mutating" /></Authorized>
+                                        </AuthorizeView>
+                                        <AuthorizeView Policy="@PolicyNames.Permission(PermissionCatalogue.Products.Delete.Code)" Context="deleteAuth">
+                                            <Authorized><ShopIconButton Variant="ShopVariant.Text" Size="ShopSize.Medium" Color="ShopColor.Error" Icon="@ShopIcons.Outlined.Trash_Empty" Label="@string.Format(Strings.ManageProducts_DeleteAria, product.Name)" Loading="@IsRowPending(product.Id, RowMutation.Delete)" Disabled="@mutating" OnClick="@(() => DeleteSingleAsync(product))" /></Authorized>
+                                        </AuthorizeView>
+                                    </div></td>
+                                </RowTemplate>
+                            </ShopTable>
+                        </BusyFor>
+                        if (!busy) { <ShopPagination Class="shop-products-pagination" Page="@_products.Page" TotalPages="@_products.TotalPages" PageChanged="OnPageChangedAsync" /> }
+                    }
+                    else
+                    {
+                        <div class="shop-products-empty"><h2>@Strings.ManageProducts_NoMatchTitle</h2><p>@Strings.ManageProducts_NoMatchDescription</p><ShopButton OnClick="OnClearFiltersAsync">@Strings.Filter_ClearAll</ShopButton></div>
+                    }
+                </BusyFor>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="shop-products-empty"><h2>@Strings.ManageProducts_EmptyTitle</h2><p>@Strings.ManageProducts_EmptyDescription</p></div>
+    }
+</section>
+<ShopDrawer @bind-Open="_filtersOpen" Side="ShopDrawerSide.Left">
+    <HeaderContent><h2 class="shop-drawer-title">@Strings.Products_Filters</h2></HeaderContent>
+    <DrawerContent>
+        @if (!ShowEmptyState)
+        {
+            @if (_filtersErrorKey is not null)
+            {
+                <p role="alert">@Strings.VariantFilters_LoadFailed</p>
+                <ShopButton OnClick="RetryAsync">@Strings.VariantFilters_Retry</ShopButton>
+            }
+<ShopFilterPanel Class="shop-products-filter" CompactRangeEditors="true" Groups="@FilterGroups" ClearLabel="@Strings.Filter_ClearAll"
+                         SingleSelectChanged="OnSingleSelectChangedAsync" SelectedFilters="@SelectedFilters"
+                         FilterToggled="OnFilterToggledAsync" SelectedRanges="@SelectedRanges" RangeChanged="OnRangeChangedAsync"
+                         RangeFormatter="FormatRange" RangeStep="@(_ => 0.01m)"
+                         RangeMinimumLabel="@(_ => Strings.Range_MinimumCad)" RangeMaximumLabel="@(_ => Strings.Range_MaximumCad)"
+                         OnClearFilters="OnClearFiltersAsync" />
+        }
+    </DrawerContent>
+</ShopDrawer>

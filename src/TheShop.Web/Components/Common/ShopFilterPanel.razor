@@ -1,0 +1,78 @@
+@using TheShop.Web.Common.UI
+@using TheShop.Domain.Enums
+@inherits ShopComponentBase
+
+<div @attributes="AdditionalAttributes" class="@ClassName" style="@Style">
+    @if (Groups is { Count: > 0 })
+    {
+        <div class="shop-filter-groups">
+            @foreach (var group in Groups)
+            {
+                <ShopExpander @key="group.Key" Expanded="@(InitiallyExpandedGroups?.Contains(group.Key) ?? InitiallyExpanded)">
+                    <TitleContent>
+                        <h3 class="shop-filter-title" id="@GroupLabelId(group.Key)">@GroupLabel(group)</h3>
+                    </TitleContent>
+                    <OverviewContent>
+                        @if (group.Kind is FilterKind.MultiSelect or FilterKind.SingleSelect && CountSelected(group.Key) is var count && count > 0)
+                        {
+                            <ShopChip Size="ShopSize.Small">@count</ShopChip>
+                        }
+                        else if (group.Kind == FilterKind.Range && group.Range is not null)
+                        {
+                            <ShopChip Size="ShopSize.Small">@RangeHeaderText(group.Key)</ShopChip>
+                        }
+                    </OverviewContent>
+                    <ChildContent>
+                        @if (group.Kind == FilterKind.MultiSelect)
+                        {
+                            <div class="shop-filter-options" role="group" aria-labelledby="@GroupLabelId(group.Key)" data-testid="filter-group" data-filter-key="@group.Key">
+                                @foreach (var option in group.Options)
+                                {
+                                    var isChecked = IsSelected(group.Key, option.Value);
+                                    <ShopCheckbox @key="option.Value" Label="@option.Label"
+                                                  Value="@isChecked" ValueExpression="@(() => isChecked)"
+                                                  ValueChanged="@(chosen => OnOptionToggledAsync(group.Key, option.Value, chosen))" />
+                                }
+                            </div>
+                        }
+                        else if (group.Kind == FilterKind.SingleSelect)
+                        {
+                            var selectedValue = SelectedSingleValue(group.Key);
+                            <div class="shop-filter-options" role="group" aria-labelledby="@GroupLabelId(group.Key)" data-testid="filter-group" data-filter-key="@group.Key">
+                                @foreach (var option in group.Options)
+                                {
+                                    var isChecked = option.Value == selectedValue;
+                                    <ShopCheckbox @key="option.Value" Label="@option.Label"
+                                                  Value="@isChecked" ValueExpression="@(() => isChecked)"
+                                                  ValueChanged="@(chosen => OnSingleSelectChangedAsync(group.Key, chosen ? option.Value : null))" />
+                                }
+                            </div>
+                        }
+                        else if (group.Range is { } range)
+                        {
+                            var thumbs = Thumbs(group.Key);
+                            <ShopRangeSlider Label="@GroupLabel(group)" Min="@range.Min" Max="@range.Max"
+                                             CompactEditors="@CompactRangeEditors"
+                                             Step="@RangeStep(group.Key)" Value="@(new ShopRangeValue(thumbs.Min, thumbs.Max))"
+                                             MinimumLabel="@RangeMinimumLabel(group.Key)" MaximumLabel="@RangeMaximumLabel(group.Key)"
+                                             ValueFormatter="@(value => RangeFormatter(group.Key, value))"
+                                             ValueChanged="@(value => OnRangeChangedAsync(group.Key, value))" />
+                        }
+                    </ChildContent>
+                </ShopExpander>
+            }
+        </div>
+        @if (HasActiveFilters)
+        {
+            <div class="shop-filter-actions">
+                <ShopButton Variant="ShopVariant.Text" Size="ShopSize.Small" OnClick="OnClearFiltersAsync">
+                    @ClearLabel
+                </ShopButton>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="shop-filter-empty">@Strings.No_Filters</p>
+    }
+</div>

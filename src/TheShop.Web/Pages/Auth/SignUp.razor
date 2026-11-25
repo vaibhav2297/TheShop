@@ -1,0 +1,43 @@
+@layout TheShop.Web.Components.Layout.AuthLayout
+@attribute [AllowAnonymous]
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Components.Layout
+
+<PageTitle>@Strings.SignUp_PageTitle</PageTitle>
+
+<AuthPanel TitleId="signup-title" NavigationHref="@Routes.Auth.SignIn" NavigationLabel="@Strings.Login">
+    <header>
+        <h1 id="signup-title" class="shop-auth-title">@Strings.SignUp_Heading</h1>
+        <p class="shop-auth-subtitle">@Strings.SignUp_Instruction</p>
+    </header>
+    <div class="shop-auth-form">
+        <EditForm EditContext="@_editContext" OnSubmit="OnSendCodeAsync" novalidate>
+            <ShopCommandValidation @ref="_validation" />
+            <BusyFor Key="@BusyKeys.Auth.SignUp" Context="busy">
+                <div class="shop-auth-signup-fields">
+                    <div class="shop-auth-name-fields">
+                        <ShopTextField id="signup-first-name" Label="@Strings.FirstName_Label"
+                                       @bind-Value="_model.FirstName" autocomplete="given-name" required Disabled="@busy" />
+                        <ShopTextField id="signup-last-name" Label="@Strings.SignUp_Surname"
+                                       @bind-Value="_model.LastName" autocomplete="family-name" required Disabled="@busy" />
+                    </div>
+                    <ShopTextField id="signup-email" type="email" Label="@Strings.SignIn_EmailLabel"
+                                   @bind-Value="_model.Email" StartIcon="@ShopIcons.Outlined.Mention"
+                                   autocomplete="email" required Disabled="@busy" />
+                    <ShopDateField @ref="_dateField" id="signup-date" Label="@Strings.DateOfBirth_Label"
+                                   @bind-Value="_model.DateOfBirth" Disabled="@busy" autocomplete="bday" />
+                    <ShopCheckbox id="signup-age" Label="@Strings.SignUp_AgeConfirm"
+                                  @bind-Value="_model.AgeConfirmed" required Disabled="@busy" />
+                    <div>
+                        <ShopButton Type="submit" Size="ShopSize.Large" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
+                                    Disabled="@busy" Loading="@busy" data-testid="signup-submit">
+                            @Strings.Auth_Create_Submit
+                        </ShopButton>
+                    </div>
+                </div>
+            </BusyFor>
+        </EditForm>
+    </div>
+</AuthPanel>

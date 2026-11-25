@@ -1,0 +1,104 @@
+using TheShop.Application.Common.Filtering;
+using TheShop.Application.Common.Models;
+using TheShop.Application.Features.Products.DTOs;
+using TheShop.Domain.Entities;
+
+namespace TheShop.Application.Common.Interfaces;
+
+/// <summary>
+/// Persistence contract for <see cref="Product"/> — both the customer catalogue's read side and
+/// the admin CRUD side (list, edit-load, create, update, uniqueness checks). Implementations
+/// live in the Infrastructure layer.
+/// </summary>
+public interface IProductRepository
+{
+    /// <summary>Returns the full published aggregate, or null when missing or unpublished, regardless of caller privileges.</summary>
+    Task<Product?> GetPublishedDetailAsync(Guid id, CancellationToken ct);
+
+    /// <summary>Returns the published aggregate at a live saved slug, regardless of caller privileges.</summary>
+    Task<Product?> GetPublishedDetailBySlugAsync(string productSlug, CancellationToken ct);
+
+    /// <summary>Returns saved live addresses for a product, or null when its address is inaccessible.</summary>
+    Task<ProductAddressDto?> GetAddressesAsync(Guid productId, CancellationToken ct);
+
+    /// <summary>
+    /// Returns a filtered, sorted, paged slice of published products matching
+    /// <paramref name="criteria"/>, carrying the total number of matches (pre-pagination).
+    /// </summary>
+    Task<PagedResult<Product>> GetPageAsync(
+        ProductCatalogueCriteria criteria, CancellationToken ct);
+
+    /// <summary>
+    /// Returns the backend-driven filter groups (category, brand, price range, and the generic
+    /// option types published products carry) computed from the published product catalogue.
+    /// </summary>
+    Task<IReadOnlyList<FilterGroupDto>> GetFilterGroupsAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Returns <c>true</c> when <paramref name="name"/> (ignoring case and surrounding
+    /// whitespace) or any of <paramref name="skus"/> (each already normalized) already belongs
+    /// to another product or variant, excluding <paramref name="excludeProductId"/> so a product
+    /// can keep its own name and SKUs on a no-op save (RULE-2, RULE-8).
+    /// </summary>
+    Task<ProductConflicts> FindConflictsAsync(
+        string name, IReadOnlyCollection<string> skus, Guid? excludeProductId, CancellationToken ct);
+
+    /// <summary>
+    /// Returns a filtered, sorted, paged slice of the admin product list — published and
+    /// unpublished alike — matching <paramref name="criteria"/>, each row carrying its variant
+    /// price range and count (AC-1..AC-5, FR-17).
+    /// </summary>
+    Task<PagedResult<ProductListItemDto>> GetAdminPageAsync(AdminProductCriteria criteria, CancellationToken ct);
+
+    /// <summary>
+    /// Returns the filter options for the admin product list: every brand and category that owns
+    /// a product, plus the variant-aware price bounds (plan §5 Decision 7).
+    /// </summary>
+    Task<AdminProductFiltersDto> GetAdminFiltersAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Returns the products matching <paramref name="ids"/> together with their variants, for
+    /// activation's <c>EnsurePublishable()</c> check (plan §5 Decision 3). Ids that no longer
+    /// exist are silently omitted.
+    /// </summary>
+    Task<IReadOnlyList<Product>> GetManyWithVariantsAsync(IReadOnlyList<Guid> ids, CancellationToken ct);
+
+    /// <summary>
+    /// Sets <c>is_published</c> to <paramref name="isPublished"/> for every id in
+    /// <paramref name="ids"/> currently in the opposite status, returning the number of rows
+    /// actually changed — a product already in the target status is a no-op (plan §5 Decision 4).
+    /// </summary>
+    Task<int> SetPublishedAsync(IReadOnlyList<Guid> ids, bool isPublished, CancellationToken ct);
+
+    /// <summary>
+    /// Deletes every product in <paramref name="ids"/> that has no referencing record, atomically
+    /// (RULE-3/RULE-4 partial success). Alongside the outcome, returns the image storage keys the
+    /// deleted products exclusively owned, so the caller can dispose them (RULE-8) — the rows are
+    /// already gone by the time this returns, so that disposal is best-effort.
+    /// </summary>
+    Task<(ProductDeletionOutcomeDto Outcome, IReadOnlyList<string> DeletedImageKeys)> DeleteManyAsync(
+        IReadOnlyList<Guid> ids, CancellationToken ct);
+
+    /// <summary>
+    /// Returns the full aggregate — gallery, option types, and variants included — for the admin
+    /// edit form, alongside its current <c>RowVersion</c> concurrency token, or <c>null</c> when
+    /// it no longer exists (AC-34).
+    /// </summary>
+    Task<(Product Product, string RowVersion)?> GetForEditAsync(Guid id, CancellationToken ct);
+
+    /// <summary>
+    /// Persists a newly created product — details, gallery, option types, and variants — in one
+    /// transaction, returning its assigned <c>RowVersion</c> on success. Fails with a
+    /// resource-key <see cref="Result{T}"/> on a concurrent uniqueness conflict; throws for
+    /// unexpected technical failures.
+    /// </summary>
+    Task<Result<string>> AddAsync(Product product, CancellationToken ct);
+
+    /// <summary>
+    /// Persists changes to an existing product in one transaction, guarded by
+    /// <paramref name="expectedRowVersion"/>: a concurrent save since the form was loaded fails
+    /// with <see cref="Features.Products.ProductErrorKeys.ModifiedElsewhere"/>. Returns the new
+    /// <c>RowVersion</c> on success; throws for unexpected technical failures.
+    /// </summary>
+    Task<Result<string>> UpdateAsync(Product product, string expectedRowVersion, CancellationToken ct);
+}

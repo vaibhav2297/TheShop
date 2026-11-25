@@ -1,4 +1,4 @@
-name: Azure Static Web Apps CI/CD
+name: TheShop.Web - Prod
 
 on:
   push:
@@ -9,13 +9,24 @@ on:
     branches:
       - master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
+  tests:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    uses: ./.github/workflows/tests.yml
+    with:
+      full-e2e: true
+
   build_and_deploy_job:
+    needs: tests
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    name: Build and Deploy Prod
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           submodules: true
           lfs: false
@@ -44,6 +55,12 @@ jobs:
           output_location: "" # Built app content directory - optional
           skip_app_build: true
           ###### End of Repository/Build Configurations ######
+
+      - name: Check deployed routes and assets
+        shell: pwsh
+        env:
+          DEPLOYMENT_URL: ${{ steps.builddeploy.outputs.static_web_app_url }}
+        run: ./.github/scripts/check-deployment.ps1 -BaseUrl $env:DEPLOYMENT_URL
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'

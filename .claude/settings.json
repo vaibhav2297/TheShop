@@ -1,0 +1,42 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.sdd/scripts/check-design-rules.ps1\" -Changed",
+            "timeout": 30,
+            "statusMessage": "Checking changed C# and Razor files..."
+          },
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.sdd/scripts/format-on-stop.ps1\"",
+            "timeout": 300,
+            "statusMessage": "Formatting changed C# and Razor files..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "C:/Users/vaibh/.local/bin/graphify.EXE hook-guard search"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "C:/Users/vaibh/.local/bin/graphify.EXE hook-guard read"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+@use '../abstracts/text-style';
+
+.shop-command-validation {
+    color: var(--shop-color-error);
+    @include text-style.apply(caption);
+
+    .validation-message {
+        color: inherit;
+    }
+}

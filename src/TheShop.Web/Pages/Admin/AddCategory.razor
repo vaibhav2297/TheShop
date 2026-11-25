@@ -1,0 +1,14 @@
+@using TheShop.Web.Components.Categories
+@using TheShop.Web.Common
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+
+<PageTitle>@Strings.AddCategory_PageTitle</PageTitle>
+<section class="shop-native shop-categories-page">
+    <h1>@Strings.Categories_CreateHeading</h1>
+    <BusyFor Key="@BusyKeys.Categories.AddCategory" Context="busy">
+        <CategoryForm @ref="_form" Model="_model" Busy="@busy"
+                   Images="_categoryImages" ImagesChanged="OnCategoryImagesChanged"
+                   OnSave="SaveAsync" TestIdPrefix="add-category" />
+    </BusyFor>
+</section>

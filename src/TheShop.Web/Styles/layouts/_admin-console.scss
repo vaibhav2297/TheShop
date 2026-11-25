@@ -1,0 +1,73 @@
+@use '../abstracts/breakpoints' as bp;
+@use '../abstracts/text-style';
+
+.shop-admin-console {
+    display: grid;
+    gap: 4rem;
+    min-inline-size: 0;
+    padding: 4rem 2rem;
+}
+
+.shop-admin-console > h1 {
+    margin: 0;
+    @include text-style.apply(h2);
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+}
+
+.shop-admin-console-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.shop-admin-console-grid:empty {
+    display: none;
+}
+
+.shop-admin-console-empty {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 1rem;
+    min-block-size: 34.125rem;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.shop-admin-console-empty h2 {
+    margin: 0;
+    @include text-style.apply(h4);
+}
+
+.shop-admin-console-empty p {
+    margin: 0;
+    color: var(--shop-color-text-secondary);
+    @include text-style.apply(subtitle-1);
+}
+
+@media (width < bp.$desktop) {
+    .shop-admin-console {
+        gap: 3rem;
+        padding-block: 3rem;
+    }
+
+    .shop-admin-console-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (width < bp.$tablet) {
+    .shop-admin-console {
+        gap: 2rem;
+        padding: 2rem 1rem;
+    }
+
+    .shop-admin-console-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .shop-admin-console-empty {
+        min-block-size: 14.0625rem;
+    }
+}

@@ -1,0 +1,203 @@
+{
+  "feature": "shop-image",
+  "trait": "shop-image",
+  "writtenAt": "2026-09-30",
+  "totalTests": 65,
+  "testProjects": [
+    "tests/TheShop.Web.Tests/TheShop.Web.Tests.csproj"
+  ],
+  "classes": [
+    {
+      "fqn": "TheShop.Web.Tests.Components.Common.ShopImageTests",
+      "file": "tests/TheShop.Web.Tests/Components/Common/ShopImageTests.cs",
+      "tests": 49
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Components.Common.ShopImageUploadTests",
+      "file": "tests/TheShop.Web.Tests/Components/Common/ShopImageUploadTests.cs",
+      "tests": 3
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Components.Common.ShopFooterTests",
+      "file": "tests/TheShop.Web.Tests/Components/Common/ShopFooterTests.cs",
+      "tests": 1
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Components.Products.ProductCardTests",
+      "file": "tests/TheShop.Web.Tests/Components/Products/ProductCardTests.cs",
+      "tests": 4
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests",
+      "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageBrandsTests.cs",
+      "tests": 3
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests",
+      "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageCategoriesTests.cs",
+      "tests": 2
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Pages.Admin.ManageProductsTests",
+      "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageProductsTests.cs",
+      "tests": 2
+    },
+    {
+      "fqn": "TheShop.Web.Tests.Pages.Admin.EditBrandTests",
+      "file": "tests/TheShop.Web.Tests/Pages/Admin/EditBrandTests.cs",
+      "tests": 1
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-1",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithEachPreset_TagsTheFrameWithThatPresetsGeometryClass",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithAWholeImagePreset_ContainsTheImageWithoutCropping",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_Always_ShowsTheWholeProductImageInASquareProductCardFrame"
+      ],
+      "boundary": "e2e",
+      "reason": "Rendered frame dimensions, crop, and overflow need real CSS layout; bUnit proves preset class and fit only. Browser geometry belongs to $theshop-e2e."
+    },
+    {
+      "id": "AC-2",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithAWholeImagePreset_ContainsTheImageWithoutCropping",
+        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenProductsExist_ShowsEachPrimaryImageWholeAsASquareThumbnail",
+        "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.Render_WhenCategoriesExist_ShowsEachImageWholeAsASquareThumbnail",
+        "TheShop.Web.Tests.Components.Common.ShopImageUploadTests.Render_ByDefault_ShowsEachPreviewAsAWholeSquareThumbnailInItsPreviewSize"
+      ],
+      "boundary": "e2e",
+      "reason": "Rendered frame dimensions, crop, and overflow need real CSS layout; bUnit proves preset class and fit only. Browser geometry belongs to $theshop-e2e."
+    },
+    {
+      "id": "AC-3",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithAPhotographyPreset_FillsTheFrameWithACenteredCrop",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_Always_LeavesTheSourceUrlUnchanged"
+      ],
+      "boundary": "e2e",
+      "reason": "Rendered frame dimensions, crop, and overflow need real CSS layout; bUnit proves preset class and fit only. Browser geometry belongs to $theshop-e2e."
+    },
+    {
+      "id": "AC-4",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithEachPreset_TagsTheFrameWithThatPresetsGeometryClass",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithAPhotographyPreset_FillsTheFrameWithACenteredCrop"
+      ],
+      "boundary": "e2e",
+      "reason": "Rendered frame dimensions, crop, and overflow need real CSS layout; bUnit proves preset class and fit only. Browser geometry belongs to $theshop-e2e."
+    },
+    {
+      "id": "AC-5",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithDedicatedMobileArtwork_ShowsItInTheMobileBranchAndKeepsDesktopArtworkForDesktop",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.ImageFails_InTheMobileBranch_LeavesTheDesktopBranchShowingItsImage",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.ImageFails_InTheDesktopBranch_LeavesDedicatedMobileArtworkShowing"
+      ],
+      "boundary": "e2e",
+      "reason": "Branch switch at 600 CSS px is a media query; browser must prove which branch displays."
+    },
+    {
+      "id": "AC-6",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithoutMobileArtwork_ReusesTheDesktopArtworkInTheMobileBranch",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithANonResponsivePreset_IgnoresMobileArtworkAndRendersOneImage"
+      ],
+      "boundary": "e2e",
+      "reason": "4:5 crop of desktop artwork below 600 CSS px needs real layout."
+    },
+    {
+      "id": "AC-7",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithEachPreset_TagsTheFrameWithThatPresetsGeometryClass",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithAPhotographyPreset_FillsTheFrameWithACenteredCrop"
+      ],
+      "boundary": "e2e",
+      "reason": "Rendered frame dimensions, crop, and overflow need real CSS layout; bUnit proves preset class and fit only. Browser geometry belongs to $theshop-e2e."
+    },
+    {
+      "id": "AC-8",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithAWholeImagePreset_ContainsTheImageWithoutCropping",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithABrandLogoPlaceholder_KeepsTheCallersReservedSpace",
+        "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenBrandsExist_ShowsEachLogoWholeInItsReservedAvatarSpace",
+        "TheShop.Web.Tests.Pages.Admin.EditBrandTests.Render_WithAnExistingLogo_ContainsItInTheReservedLogoSpaceBesideTheRemoveAction",
+        "TheShop.Web.Tests.Components.Common.ShopImageUploadTests.Render_WithTheBrandLogoPreviewPreset_ContainsEachLogoPreview",
+        "TheShop.Web.Tests.Components.Common.ShopFooterTests.Render_Always_KeepsTheLogoLinkNamedAndTheLogoWholeInItsReservedSpace"
+      ],
+      "boundary": "e2e",
+      "reason": "Rendered frame dimensions, crop, and overflow need real CSS layout; bUnit proves preset class and fit only. Browser geometry belongs to $theshop-e2e."
+    },
+    {
+      "id": "AC-9",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithEachPreset_TagsTheFrameWithThatPresetsGeometryClass",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithAWholeImagePreset_ContainsTheImageWithoutCropping"
+      ],
+      "boundary": "e2e",
+      "reason": "Rendered frame dimensions, crop, and overflow need real CSS layout; bUnit proves preset class and fit only. Browser geometry belongs to $theshop-e2e."
+    },
+    {
+      "id": "AC-10",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithEachPreset_TagsTheFrameWithThatPresetsGeometryClass",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithConsumerClassStyleAndAttributes_ForwardsThemToTheFrame"
+      ],
+      "boundary": "e2e",
+      "reason": "Width-following height across 375/768/1440 px and orientation resize needs a browser."
+    },
+    {
+      "id": "AC-11",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithoutASource_ShowsTheNamedPlaceholderInsteadOfAnImage",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.ImageFails_ForTheCurrentSource_ReplacesItWithTheNamedPlaceholderInsideTheSameFrame",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.ImageFails_ForASourceThatHasSinceBeenReplaced_IsIgnored",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.ReplaceSource_AfterAFailure_ShowsTheNewImageAgain",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.ImageFails_InTheMobileBranch_LeavesTheDesktopBranchShowingItsImage",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.ImageFails_ForAMobileReportOnANonResponsivePreset_IsIgnored",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithABrandLogoPlaceholder_KeepsTheCallersReservedSpace",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_AfterFirstRender_StartsObservingItsOwnFrameForImageFailures",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Dispose_WhenTheComponentIsRemoved_StopsObservingItsFrame",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.ImageFails_WhenTheProductImageCannotLoad_ShowsTheProductNameAndKeepsTheActions",
+        "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.Render_WhenABrandHasNoLogo_ShowsItsNameInsteadOfABrokenImage",
+        "TheShop.Web.Tests.Pages.Admin.ManageProductsTests.Render_WhenAProductHasNoPrimaryImage_ShowsItsNameInTheThumbnailSpace",
+        "TheShop.Web.Tests.Components.Common.ShopImageUploadTests.PreviewFails_WhenTheSelectedFileCannotDisplay_ShowsItsFileNameAndKeepsTheRemoveAction"
+      ],
+      "boundary": "e2e",
+      "reason": "Real network failure, cached-failure JS detection, and unchanged adjacent positions need a browser."
+    },
+    {
+      "id": "AC-12",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithAMeaningfulDescription_UsesItAsTheImagesAltText",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithADecorativeImage_RendersAnEmptyAltText",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithAMissingMeaningfulImage_ExposesThePlaceholderAsAnImageWithThatDescription",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_WithAMissingDecorativeImage_HidesThePlaceholderFromAssistiveTechnology",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.Render_Always_DescribesTheImageWithTheLocalizedProductName"
+      ]
+    },
+    {
+      "id": "AC-13",
+      "tests": [
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_Always_AddsNoFocusableElements",
+        "TheShop.Web.Tests.Components.Common.ShopImageTests.Render_Always_ExposesNoGroupRoleThatWouldHideTheAltTextFromASurroundingLink",
+        "TheShop.Web.Tests.Components.Products.ProductCardTests.ClickWishlistButton_WithTheShopImageTreatment_StillInvokesItsCallback",
+        "TheShop.Web.Tests.Components.Common.ShopFooterTests.Render_Always_KeepsTheLogoLinkNamedAndTheLogoWholeInItsReservedSpace",
+        "TheShop.Web.Tests.Pages.Admin.EditBrandTests.Render_WithAnExistingLogo_ContainsItInTheReservedLogoSpaceBesideTheRemoveAction",
+        "TheShop.Web.Tests.Components.Common.ShopImageUploadTests.PreviewFails_WhenTheSelectedFileCannotDisplay_ShowsItsFileNameAndKeepsTheRemoveAction"
+      ],
+      "boundary": "e2e",
+      "reason": "Visible focus and real keyboard activation need a browser."
+    },
+    {
+      "id": "AC-14",
+      "tests": [
+        "TheShop.Web.Tests.Pages.Admin.ManageBrandsTests.ManageBrands_WithBrandLogoImages_KeepsTheBrandsViewAuthorizePolicy",
+        "TheShop.Web.Tests.Pages.Admin.ManageCategoriesTests.ManageCategories_WithThumbnailImages_KeepsTheCategoriesViewAuthorizePolicy"
+      ],
+      "boundary": "e2e",
+      "reason": "Actual sign-in redirect and denied page for guests/customers are existing E2E journeys."
+    }
+  ]
+}
