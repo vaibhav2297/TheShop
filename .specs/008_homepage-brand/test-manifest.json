@@ -1,0 +1,39 @@
+{
+  "feature": "008_homepage-brand",
+  "trait": "008_homepage-brand",
+  "testProjects": [
+    "tests/TheShop.Domain.Tests/TheShop.Domain.Tests.csproj",
+    "tests/TheShop.Application.Tests/TheShop.Application.Tests.csproj",
+    "tests/TheShop.Infrastructure.Tests/TheShop.Infrastructure.Tests.csproj",
+    "tests/TheShop.Web.Tests/TheShop.Web.Tests.csproj"
+  ],
+  "classes": [
+    { "file": "tests/TheShop.Domain.Tests/Entities/HomepageBrandSectionTests.cs", "fqn": "TheShop.Domain.Tests.Entities.HomepageBrandSectionTests", "tests": 5 },
+    { "file": "tests/TheShop.Application.Tests/Features/Homepage/HomepageBrandAuthorizationTests.cs", "fqn": "TheShop.Application.Tests.Features.Homepage.HomepageBrandAuthorizationTests", "tests": 2 },
+    { "file": "tests/TheShop.Application.Tests/Features/Homepage/HomepageBrandHandlerTests.cs", "fqn": "TheShop.Application.Tests.Features.Homepage.HomepageBrandHandlerTests", "tests": 6 },
+    { "file": "tests/TheShop.Application.Tests/Features/Homepage/HomepageBrandValidationTests.cs", "fqn": "TheShop.Application.Tests.Features.Homepage.HomepageBrandValidationTests", "tests": 3 },
+    { "file": "tests/TheShop.Infrastructure.Tests/Persistence/HomepageBrandRepositoryTests.cs", "fqn": "TheShop.Infrastructure.Tests.Persistence.HomepageBrandRepositoryTests", "tests": 3 },
+    { "file": "tests/TheShop.Infrastructure.Tests/Persistence/HomepageBrandSchemaTests.cs", "fqn": "TheShop.Infrastructure.Tests.Persistence.HomepageBrandSchemaTests", "tests": 3 },
+    { "file": "tests/TheShop.Web.Tests/Components/Admin/HomepageBrandPickerDialogTests.cs", "fqn": "TheShop.Web.Tests.Components.Admin.HomepageBrandPickerDialogTests", "tests": 5 },
+    { "file": "tests/TheShop.Web.Tests/Pages/Admin/ManageHomepageBrandTests.cs", "fqn": "TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests", "tests": 10 }
+  ],
+  "totalTests": 37,
+  "acceptanceCriteria": [
+    { "id": "AC-1", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Add_OpensWithEmptySelectionAndEditablePrefilledFields"] },
+    { "id": "AC-2", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Edit_RestoresSavedFieldsOrderLogoAndHiddenStatus"] },
+    { "id": "AC-3", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Picker_ApplyChangesDraftButDismissKeepsPreviousSelection", "TheShop.Application.Tests.Features.Homepage.HomepageBrandHandlerTests.Choices_ActiveBrandsKeepLogoAndNameOnlyChoice"] },
+    { "id": "AC-4", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.FullSelection_DisablesAddUntilOneRemoved", "TheShop.Web.Tests.Components.Admin.HomepageBrandPickerDialogTests.Picker_AtSixSelections_DisablesSeventhUntilOneRemoved", "TheShop.Domain.Tests.Entities.HomepageBrandSectionTests.Create_DuplicateEmptyOrSeventhBrand_Rejects"] },
+    { "id": "AC-5", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Edit_MoveAndSave_SendsAllChangedFieldsInNewOrder", "TheShop.Infrastructure.Tests.Persistence.HomepageBrandRepositoryTests.Save_UsesOneParameterizedRpcWithOrderedBrandsAndVisibility"], "boundary": "e2e", "reason": "Reopening after Save needs a browser and backing database." },
+    { "id": "AC-6", "tests": ["TheShop.Domain.Tests.Entities.HomepageBrandSectionTests.Create_HiddenEmptySelection_AcceptsZeroButVisibleRequiresOne", "TheShop.Application.Tests.Features.Homepage.HomepageBrandValidationTests.Create_BlankFieldsAndVisibleEmptySelection_ReportsAllFields", "TheShop.Application.Tests.Features.Homepage.HomepageBrandHandlerTests.Update_InactiveOrDeletedBrand_RejectsWithoutWriting", "TheShop.Infrastructure.Tests.Persistence.HomepageBrandSchemaTests.Schema_SingletonRequiredFieldsAndSelectionRules_RejectInvalidRows", "TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Save_HiddenEmptySelection_SendsCreateWithNoBrands"] },
+    { "id": "AC-7", "tests": ["TheShop.Domain.Tests.Entities.HomepageBrandSectionTests.Create_MissingFieldsOrUnsafeLink_Rejects", "TheShop.Application.Tests.Features.Homepage.HomepageBrandValidationTests.Create_DuplicateSeventhEmptyIdAndUnsafeLink_Rejects", "TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Save_ValidationError_RetainsDraftAndDoesNotNavigate"] },
+    { "id": "AC-8", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Edit_MoveAndSave_SendsAllChangedFieldsInNewOrder", "TheShop.Infrastructure.Tests.Persistence.HomepageBrandSchemaTests.Rpc_CreateAndEditRequireViewPlusMatchingAction_AndRestoreHiddenOrder"], "boundary": "e2e", "reason": "Reopening after Save needs a browser and backing database." },
+    { "id": "AC-9", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Cancel_UnsavedChange_OffersNavigationWithoutSaving"], "boundary": "e2e", "reason": "Persisted cancellation needs browser navigation and database state." },
+    { "id": "AC-10", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Edit_PendingLoadShowsSkeletonThenFailureAllowsRetry"] },
+    { "id": "AC-11", "tests": ["TheShop.Application.Tests.Features.Homepage.HomepageBrandAuthorizationTests.Save_CreateAndUpdateRequireViewAndMatchingActionBeforeHandler", "TheShop.Application.Tests.Features.Homepage.HomepageBrandAuthorizationTests.AdminAndChoicesQueries_RequireHomepageView", "TheShop.Infrastructure.Tests.Persistence.HomepageBrandSchemaTests.AnonymousCannotReadSection_AndCreateConflictOrMissingEditReturnExpectedStates", "TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.ViewOnlyAndLoadFailure_DoNotExposeSaveOrPrematureAdd"], "boundary": "e2e", "reason": "Guest sign-in and access-denied presentation require a browser." },
+    { "id": "AC-12", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Edit_MoveAndSave_SendsAllChangedFieldsInNewOrder", "TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Add_OpensWithEmptySelectionAndEditablePrefilledFields"], "boundary": "e2e", "reason": "Responsive width, focus, and keyboard behavior need browser inspection." },
+    { "id": "AC-13", "tests": ["TheShop.Web.Tests.Components.Admin.HomepageBrandPickerDialogTests.Picker_WithInactiveSavedBrand_ShowsOnlyActivePreviewAndReturnsActiveSelection", "TheShop.Application.Tests.Features.Homepage.HomepageBrandHandlerTests.Choices_ActiveBrandsKeepLogoAndNameOnlyChoice"] },
+    { "id": "AC-14", "tests": ["TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Picker_ApplyChangesDraftButDismissKeepsPreviousSelection", "TheShop.Web.Tests.Components.Admin.HomepageBrandPickerDialogTests.Picker_DismissAfterSelection_ReturnsNullOnce"] },
+    { "id": "AC-15", "tests": ["TheShop.Web.Tests.Components.Admin.HomepageBrandPickerDialogTests.Picker_WithInactiveSavedBrand_ShowsOnlyActivePreviewAndReturnsActiveSelection", "TheShop.Web.Tests.Components.Admin.HomepageBrandPickerDialogTests.Picker_PendingChoices_ShowsSkeletonUntilBrandsLoad", "TheShop.Web.Tests.Components.Admin.HomepageBrandPickerDialogTests.Picker_LoadFailure_OffersRetryAndPreservesInitialSelection"] }
+  ],
+  "scope": "Feature-scoped Domain, Application, PostgreSQL schema, repository, and bUnit coverage. Browser journeys remain in theshop-e2e."
+}

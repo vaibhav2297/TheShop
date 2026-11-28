@@ -1,0 +1,61 @@
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Common
+@using TheShop.Web.Components.Common
+
+<ShopDialog MaxWidth="ShopMaxWidth.Medium" OnDismiss="CancelAsync">
+    <TitleContent><h2>@Strings.HomepageBrand_PickerTitle</h2></TitleContent>
+    <DialogContent>
+        <div class="shop-homepage-brand-picker" data-testid="homepage-brand-picker">
+            <ShopTextField id="homepage-brand-search" type="search" Label="@Strings.HomepageBrand_SearchBrands"
+                           StartIcon="@ShopIcons.Outlined.Search_Magnifying_Glass" @bind-Value="_search"
+                           Clearable="true" ClearLabel="@Strings.HomepageBrand_ClearSearch"
+                           Disabled="@(!_choicesLoaded)" data-testid="homepage-brand-search" />
+            <p aria-live="polite">@string.Format(Strings.HomepageBrand_SelectedCount, _selectedIds.Count)</p>
+            <BusyFor Key="@BusyKeys.Homepage.LoadBrandChoices" Context="loadingChoices">
+                @if (loadingChoices && !_choicesLoaded)
+                {
+                    <div class="shop-homepage-brand-choice-grid" role="status" aria-label="@Strings.Loading" data-testid="homepage-brand-picker-skeleton">
+                        @for (var i = 0; i < 8; i++) { <ShopSkeleton Class="shop-homepage-brand-choice-skeleton" /> }
+                    </div>
+                }
+                else if (_choiceError is not null)
+                {
+                    <div role="alert">
+                        <p>@Localizer[_choiceError]</p>
+                        <ShopButton OnClick="LoadChoicesAsync" data-testid="homepage-brand-retry-choices">@Strings.HomepageBrand_RetryChoices</ShopButton>
+                    </div>
+                }
+                else if (_choicesLoaded && _choices.Count == 0)
+                {
+                    <p data-testid="homepage-brand-no-choices">@Strings.HomepageBrand_NoChoices</p>
+                }
+                else if (_choicesLoaded && !FilteredChoices.Any())
+                {
+                    <div class="shop-homepage-brand-no-results" data-testid="homepage-brand-no-results" role="status">
+                        <h3>@Strings.HomepageBrand_NoResults</h3>
+                        <p>@string.Format(Strings.HomepageBrand_NoResultsHint, _search.Trim())</p>
+                    </div>
+                }
+                else if (_choicesLoaded)
+                {
+                    <ul class="shop-homepage-brand-choice-grid">
+                        @foreach (var choice in FilteredChoices)
+                        {
+                            <li>
+                                <ShopImageTile Src="@choice.LogoUrl" Preset="ShopImagePreset.BrandLogo"
+                                               Alt="@choice.Name" Selected="@_selectedIds.Contains(choice.Id)" Removable="false"
+                                               Disabled="@(_selectedIds.Count >= 6 && !_selectedIds.Contains(choice.Id))"
+                                               OnClick="@(() => ToggleChoice(choice.Id))" data-testid="@($"homepage-brand-choice-{choice.Id}")" />
+                                <strong>@choice.Name</strong>
+                            </li>
+                        }
+                    </ul>
+                }
+            </BusyFor>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <ShopButton OnClick="ConfirmAsync" Disabled="@(!_choicesLoaded)" data-testid="homepage-brand-confirm-picker">@Strings.HomepageBrand_AddBrands</ShopButton>
+        <ShopButton Variant="ShopVariant.Outlined" OnClick="CancelAsync" data-dialog-initial-focus>@Strings.Cancel</ShopButton>
+    </DialogActions>
+</ShopDialog>

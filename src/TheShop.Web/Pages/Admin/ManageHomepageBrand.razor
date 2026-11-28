@@ -1,0 +1,127 @@
+@using TheShop.Web.Common.UI
+@using TheShop.Web.Components.Common
+@using TheShop.Web.Components.Admin
+
+<PageTitle>@Heading</PageTitle>
+<section class="shop-native shop-homepage-brand-editor" data-testid="homepage-brand-editor" data-state="@State">
+    <h1>@Heading</h1>
+    <BusyFor Key="@BusyKeys.Homepage.LoadBrandSection" Context="loading">
+        @if (loading && !_loaded)
+        {
+            <div class="shop-homepage-brand-grid" role="status" aria-label="@Strings.Loading" data-testid="homepage-brand-skeleton">
+                <div><ShopSkeleton Class="shop-homepage-brand-skeleton-card" /><ShopSkeleton Class="shop-homepage-brand-skeleton-card" /><ShopSkeleton Class="shop-homepage-brand-skeleton-card" /></div>
+                <div><ShopSkeleton Class="shop-homepage-brand-skeleton-field" /><ShopSkeleton Class="shop-homepage-brand-skeleton-field" /><ShopSkeleton Class="shop-homepage-brand-skeleton-field" /></div>
+            </div>
+        }
+        else if (_loadError is not null)
+        {
+            <div role="alert">
+                <p>@Localizer[_loadError]</p>
+                <ShopButton OnClick="LoadAsync" data-testid="homepage-brand-reload">@Strings.HomepageBrand_Reload</ShopButton>
+            </div>
+        }
+        else if (_loaded && !_hasSection && !CanMutate)
+        {
+            <p>@Strings.HomepageBrand_Absent</p>
+        }
+        else if (_loaded)
+        {
+            <EditForm @key="_editContext" EditContext="@_editContext" OnSubmit="SaveAsync" novalidate>
+                <ShopCommandValidation @ref="_validation" />
+                <BusyFor Key="@BusyKeys.Homepage.SaveBrandSection" Context="saving">
+                    <div class="shop-homepage-brand-grid">
+                        <section class="shop-homepage-brand-brands" aria-label="@Strings.HomepageBrand_Brands">
+                            <div class="shop-homepage-brand-toolbar">
+                                <p aria-live="polite">@string.Format(Strings.HomepageBrand_SelectedCount, _model.BrandIds.Count)</p>
+                                @if (CanMutate)
+                                {
+                                    <ShopButton OnClick="OpenPickerAsync" Variant="ShopVariant.Outlined" StartIcon="@ShopIcons.Outlined.Add_Plus"
+                                                Disabled="@(saving || _model.BrandIds.Count >= 6)" data-testid="homepage-brand-open-picker">
+                                        @Strings.HomepageBrand_AddBrand
+                                    </ShopButton>
+                                }
+                            </div>
+                            <ShopTable TItem="Guid" Class="shop-homepage-brand-table" Items="@SelectedIds" ItemKey="@(id => id)"
+                                       Caption="@Strings.HomepageBrand_Brands" ColumnCount="2" data-testid="homepage-brand-selected">
+                                <HeaderContent>
+                                    <th scope="col">@Strings.HomepageBrand_Brand</th>
+                                    <th scope="col" class="shop-table-column-compact">@Strings.HomepageBrand_Actions</th>
+                                </HeaderContent>
+                                <RowTemplate Context="id">
+                                    <td>
+                                        @if (_cards.TryGetValue(id, out var brand))
+                                        {
+                                            <div class="shop-homepage-brand-row">
+                                                <ShopImage Src="@brand.LogoUrl" Preset="ShopImagePreset.BrandLogo" Alt="@brand.Name" PlaceholderLabel="@brand.Name" />
+                                                <span><strong>@brand.Name</strong>
+                                                @if (!brand.IsActive) { <small role="alert">@Strings.HomepageBrand_UnavailableBrand</small> }</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <small role="alert">@Strings.HomepageBrand_UnavailableBrand</small>
+                                        }
+                                    </td>
+                                    <td class="shop-table-column-compact">
+                                        @if (CanMutate)
+                                        {
+                                            <div class="shop-homepage-brand-row-actions">
+                                                <ShopIconButton Icon="@ShopIcons.Outlined.Arrow_Up_MD" Label="@Strings.HomepageBrand_MoveUp"
+                                                                Variant="ShopVariant.Text" Size="ShopSize.Medium" Disabled="@(saving || _model.BrandIds.IndexOf(id) == 0)" OnClick="@(() => Move(id, -1))" />
+                                                <ShopIconButton Icon="@ShopIcons.Outlined.Arrow_Down_MD" Label="@Strings.HomepageBrand_MoveDown"
+                                                                Variant="ShopVariant.Text" Size="ShopSize.Medium" Disabled="@(saving || _model.BrandIds.IndexOf(id) == _model.BrandIds.Count - 1)" OnClick="@(() => Move(id, 1))" />
+                                                <ShopIconButton Icon="@ShopIcons.Outlined.Trash_Empty" Label="@Strings.HomepageBrand_Remove"
+                                                                Variant="ShopVariant.Text" Color="ShopColor.Error" Size="ShopSize.Medium" Disabled="@saving" OnClick="@(() => Remove(id))" />
+                                            </div>
+                                        }
+                                    </td>
+                                </RowTemplate>
+                                <EmptyContent>
+                                    <div class="shop-homepage-brand-empty">
+                                        <strong>@Strings.HomepageBrand_EmptyTitle</strong>
+                                        <span>@Strings.HomepageBrand_EmptyHint</span>
+                                    </div>
+                                </EmptyContent>
+                            </ShopTable>
+                            <p class="shop-homepage-brand-hint" aria-live="polite">
+                                <ShopIcon Icon="@ShopIcons.Outlined.Info" />
+                                @((CanMutate && _model.BrandIds.Count >= 6) ? Strings.HomepageBrand_RemoveFirst : Strings.HomepageBrand_SelectionHint)
+                            </p>
+                            <div class="shop-field-error" aria-live="polite"><ValidationMessage For="@(() => _model.BrandIds)" /></div>
+                        </section>
+                        <div class="shop-homepage-brand-settings">
+                            <section aria-label="@Strings.HomepageBrand_Section">
+                                <ShopTextField id="homepage-brand-title" Label="@Strings.HomepageBrand_Title" @bind-Value="_model.Title"
+                                               Disabled="@(!CanMutate || saving)" data-testid="homepage-brand-title" />
+                                <ShopTextField id="homepage-brand-button-label" Label="@Strings.HomepageBrand_ButtonLabel" @bind-Value="_model.ButtonLabel"
+                                               Disabled="@(!CanMutate || saving)" data-testid="homepage-brand-button-label" />
+                                <ShopTextField id="homepage-brand-button-link" Label="@Strings.HomepageBrand_ButtonLink" @bind-Value="_model.ButtonLink"
+                                               Disabled="@(!CanMutate || saving)" data-testid="homepage-brand-button-link" />
+                            </section>
+                            <div class="shop-homepage-brand-status" role="group" aria-labelledby="homepage-brand-status-label">
+                                <p id="homepage-brand-status-label">@Strings.HomepageBrand_Status</p>
+                                <div>
+                                    <ShopChip Selected="@_model.IsVisible" SelectedChanged="@(_ => SetVisible(true))" Disabled="@(!CanMutate || saving)">@Strings.HomepageBrand_Visible</ShopChip>
+                                    <ShopChip Selected="@(!_model.IsVisible)" SelectedChanged="@(_ => SetVisible(false))" Disabled="@(!CanMutate || saving)">@Strings.HomepageBrand_Hidden</ShopChip>
+                                </div>
+                            </div>
+                            <div class="shop-homepage-brand-actions">
+                                @if (CanMutate)
+                                {
+                                    <ShopButton Type="submit" Size="ShopSize.Large" Loading="@saving" EndIcon="@ShopIcons.Outlined.Arrow_Right_MD"
+                                                data-testid="homepage-brand-save">@Strings.Save</ShopButton>
+                                }
+                                <ShopButton Href="@Routes.Admin.ManageHomepage" Variant="ShopVariant.Outlined" Disabled="@saving">@Strings.Cancel</ShopButton>
+                            </div>
+                        </div>
+                    </div>
+                </BusyFor>
+            </EditForm>
+        }
+    </BusyFor>
+</section>
+
+@if (_pickerOpen)
+{
+    <HomepageBrandPickerDialog InitialSelectedIds="@_model.BrandIds" OnCompleted="OnPickerCompletedAsync" />
+}
