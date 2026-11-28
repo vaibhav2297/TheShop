@@ -1,0 +1,51 @@
+{
+  "feature": "008_homepage-brand",
+  "trait": "008_homepage-brand",
+  "date": "2026-11-28",
+  "journeys": [
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageHomepageBrandJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests",
+      "tests": 10,
+      "methods": [
+        { "name": "AC1_AddPrefillsFieldsButNoBrands", "ac": 1 },
+        { "name": "AC2_EditRestoresSavedFieldsStatusAndOrder", "ac": 2 },
+        { "name": "AC3_ChoosingActiveBrandsUpdatesDraftOnceWithIdentity", "ac": 3 },
+        { "name": "AC5_ReorderedBrandsPersistAfterSave", "ac": 5 },
+        { "name": "AC8_ChangedFieldsAndHiddenStatusPersistTogether", "ac": 8 },
+        { "name": "AC9_CancelDiscardsUnsavedChanges", "ac": 9 },
+        { "name": "AC12_ResponsiveKeyboardControlsRemainOperable", "ac": 12 },
+        { "name": "AC13_InactiveBrandNeverAppearsInPickerOrSearch", "ac": 13 },
+        { "name": "AC14_DialogCancelAndCloseDiscardChoicesUntilApply", "ac": 14 },
+        { "name": "AC15_UnmatchedSearchShowsGuidanceAndClearRestoresChoices", "ac": 15 }
+      ]
+    },
+    {
+      "file": "tests/TheShop.E2E.Tests/Journeys/ManageHomepageBrandGuestJourneyTests.cs",
+      "fqn": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandGuestJourneyTests",
+      "tests": 1,
+      "methods": [
+        { "name": "AC11_GuestCannotOpenEditor", "ac": 11 }
+      ]
+    }
+  ],
+  "totalTests": 11,
+  "acceptanceCriteria": [
+    { "id": "AC-1", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests.AC1_AddPrefillsFieldsButNoBrands", "reason": "Admin route and rendered Add defaults." },
+    { "id": "AC-2", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests.AC2_EditRestoresSavedFieldsStatusAndOrder", "reason": "Saved configuration reopens through the database." },
+    { "id": "AC-3", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests.AC3_ChoosingActiveBrandsUpdatesDraftOnceWithIdentity", "reason": "Dialog selection updates editor identity and count." },
+    { "id": "AC-4", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.FullSelection_DisablesAddUntilOneRemoved", "reason": "Six-brand control boundary is covered by the mapped component test." },
+    { "id": "AC-5", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests.AC5_ReorderedBrandsPersistAfterSave", "reason": "Reordered brands survive Save and reopen." },
+    { "id": "AC-6", "coverage": "unit", "evidence": "TheShop.Domain.Tests.Entities.HomepageBrandSectionTests.Create_HiddenEmptySelection_AcceptsZeroButVisibleRequiresOne", "reason": "Visible and Hidden cardinality is a pure rule; handler and schema tests cover active and duplicate rejection." },
+    { "id": "AC-7", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Save_ValidationError_RetainsDraftAndDoesNotNavigate", "reason": "Inline validation and retained draft are covered by component, validator, and domain tests." },
+    { "id": "AC-8", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests.AC8_ChangedFieldsAndHiddenStatusPersistTogether", "reason": "Text, link, status, and selected brands survive Save and reopen." },
+    { "id": "AC-9", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests.AC9_CancelDiscardsUnsavedChanges", "reason": "Cancel navigation leaves persisted values intact." },
+    { "id": "AC-10", "coverage": "unit", "evidence": "TheShop.Web.Tests.Pages.Admin.ManageHomepageBrandTests.Edit_PendingLoadShowsSkeletonThenFailureAllowsRetry", "reason": "Deterministic pending and failed load states are covered in bUnit." },
+    { "id": "AC-11", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandGuestJourneyTests.AC11_GuestCannotOpenEditor", "reason": "Guest navigation is redirected before management content renders; permission and RLS tests cover staff without rights." },
+    { "id": "AC-12", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests.AC12_ResponsiveKeyboardControlsRemainOperable", "reason": "Browser widths, focus, and keyboard activation." },
+    { "id": "AC-13", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests.AC13_InactiveBrandNeverAppearsInPickerOrSearch", "reason": "Real inactive row remains absent in picker and search." },
+    { "id": "AC-14", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests.AC14_DialogCancelAndCloseDiscardChoicesUntilApply", "reason": "Dialog choices stage until Apply in browser." },
+    { "id": "AC-15", "coverage": "e2e", "evidence": "TheShop.E2E.Tests.Journeys.ManageHomepageBrandJourneyTests.AC15_UnmatchedSearchShowsGuidanceAndClearRestoresChoices", "reason": "Rendered no-results panel and clear action; loading/retry states have mapped component evidence." }
+  ],
+  "pageObjects": ["tests/TheShop.E2E.Tests/Pages/Admin/ManageHomepageBrandPage.cs"]
+}

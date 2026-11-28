@@ -44,6 +44,16 @@ public sealed class SupabaseBrandRepository(Supabase.Client client, IFileStorage
     }
 
     /// <inheritdoc/>
+    public async Task<IReadOnlyList<Brand>> GetActiveForHomepageAsync(CancellationToken ct)
+    {
+        var query = client.From<BrandRecord>();
+        query.Filter(IsActiveColumn, Operator.Equals, "true");
+        query.Order(NameColumn, Ordering.Ascending);
+        var response = await query.Get(ct);
+        return [.. response.Models.Select(record => record.ToDomain())];
+    }
+
+    /// <inheritdoc/>
     public async Task<bool> ExistsByNormalizedNameAsync(string name, Guid? excludeBrandId, CancellationToken ct)
     {
         var trimmed = name.Trim();

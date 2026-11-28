@@ -68,4 +68,7 @@ public interface IBrandRepository
     /// picker controls (AC-23). Unpaginated — brand counts are small reference data.
     /// </summary>
     Task<IReadOnlyList<BrandLookupDto>> GetActiveLookupAsync(CancellationToken ct);
+
+    /// <summary>Returns active brands with logo paths for the Homepage picker.</summary>
+    Task<IReadOnlyList<Brand>> GetActiveForHomepageAsync(CancellationToken ct);
 }

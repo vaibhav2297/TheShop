@@ -2141,4 +2141,50 @@
   <data name="ProductVariantImages_Apply" xml:space="preserve"><value>Apply</value></data>
   <data name="ProductDetail_CombinationUnavailable" xml:space="preserve"><value>This option combination is unavailable.</value></data>
   <data name="ProductDetail_SelectedVariant" xml:space="preserve"><value>Selected variant: {0}</value></data>
+  <data name="HomepageBrand_DefaultTitle" xml:space="preserve"><value>Shop by Brand</value></data>
+  <data name="HomepageBrand_ViewAllBrands" xml:space="preserve"><value>View All Brands</value></data>
+  <data name="HomepageBrand_AddHeading" xml:space="preserve"><value>Add {0}</value></data>
+  <data name="HomepageBrand_EditHeading" xml:space="preserve"><value>Edit {0}</value></data>
+  <data name="HomepageBrand_Brands" xml:space="preserve"><value>Brands</value></data>
+  <data name="HomepageBrand_Brand" xml:space="preserve"><value>Brand</value></data>
+  <data name="HomepageBrand_Actions" xml:space="preserve"><value>Actions</value></data>
+  <data name="HomepageBrand_Section" xml:space="preserve"><value>Section</value></data>
+  <data name="HomepageBrand_Title" xml:space="preserve"><value>Title</value></data>
+  <data name="HomepageBrand_ButtonLabel" xml:space="preserve"><value>Button label</value></data>
+  <data name="HomepageBrand_ButtonLink" xml:space="preserve"><value>Button link</value></data>
+  <data name="HomepageBrand_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="HomepageBrand_Visible" xml:space="preserve"><value>Visible</value></data>
+  <data name="HomepageBrand_Hidden" xml:space="preserve"><value>Hidden</value></data>
+  <data name="HomepageBrand_SelectedCount" xml:space="preserve"><value>{0} of 6 selected</value></data>
+  <data name="HomepageBrand_AddBrand" xml:space="preserve"><value>Add Brand</value></data>
+  <data name="HomepageBrand_AddBrands" xml:space="preserve"><value>Add Brands</value></data>
+  <data name="HomepageBrand_SearchBrands" xml:space="preserve"><value>Search brands</value></data>
+  <data name="HomepageBrand_ClearSearch" xml:space="preserve"><value>Clear brand search</value></data>
+  <data name="HomepageBrand_NoResults" xml:space="preserve"><value>No brands found</value></data>
+  <data name="HomepageBrand_NoResultsHint" xml:space="preserve"><value>No brands match “{0}”. Try a different brand name.</value></data>
+  <data name="HomepageBrand_NoChoices" xml:space="preserve"><value>No active brands available.</value></data>
+  <data name="HomepageBrand_EmptyTitle" xml:space="preserve"><value>No brands added yet</value></data>
+  <data name="HomepageBrand_EmptyHint" xml:space="preserve"><value>Add at least one active brand to show this section.</value></data>
+  <data name="HomepageBrand_SelectionHint" xml:space="preserve"><value>Shows up to 6 active brands with their one-colour logo. Brands without a logo show their name.</value></data>
+  <data name="HomepageBrand_RemoveFirst" xml:space="preserve"><value>Remove a brand to add another.</value></data>
+  <data name="HomepageBrand_MoveUp" xml:space="preserve"><value>Move up</value></data>
+  <data name="HomepageBrand_MoveDown" xml:space="preserve"><value>Move down</value></data>
+  <data name="HomepageBrand_Remove" xml:space="preserve"><value>Remove brand</value></data>
+  <data name="HomepageBrand_UnavailableBrand" xml:space="preserve"><value>This brand is inactive or unavailable. Remove it and choose an active brand.</value></data>
+  <data name="HomepageBrand_Absent" xml:space="preserve"><value>This section has not been added yet.</value></data>
+  <data name="HomepageBrand_Reload" xml:space="preserve"><value>Reload brand section</value></data>
+  <data name="HomepageBrand_RetryChoices" xml:space="preserve"><value>Retry loading brands</value></data>
+  <data name="HomepageBrand_PickerTitle" xml:space="preserve"><value>Add brands</value></data>
+  <data name="HomepageBrand_Saved" xml:space="preserve"><value>Brand section saved.</value></data>
+  <data name="HomepageBrand_TitleRequired" xml:space="preserve"><value>Enter a section title.</value></data>
+  <data name="HomepageBrand_ButtonLabelRequired" xml:space="preserve"><value>Enter a button label.</value></data>
+  <data name="HomepageBrand_ButtonLinkRequired" xml:space="preserve"><value>Enter a button link.</value></data>
+  <data name="HomepageBrand_ButtonLinkInvalid" xml:space="preserve"><value>Enter a site path or HTTP/HTTPS URL.</value></data>
+  <data name="HomepageBrand_SelectionInvalid" xml:space="preserve"><value>Choose one to six different brands when visible, or up to six when hidden.</value></data>
+  <data name="HomepageBrand_BrandUnavailable" xml:space="preserve"><value>A selected brand is inactive or unavailable. Choose another brand.</value></data>
+  <data name="HomepageBrand_AlreadyExists" xml:space="preserve"><value>This section already exists. Reload to edit it.</value></data>
+  <data name="HomepageBrand_NotFound" xml:space="preserve"><value>This section no longer exists. Reload to add it.</value></data>
+  <data name="HomepageBrand_LoadFailed" xml:space="preserve"><value>The brand section could not load. Try again.</value></data>
+  <data name="HomepageBrand_SaveFailed" xml:space="preserve"><value>The brand section could not save. Try again.</value></data>
+  <data name="HomepageBrand_ChoicesLoadFailed" xml:space="preserve"><value>Brands could not load. Try again.</value></data>
 </root>

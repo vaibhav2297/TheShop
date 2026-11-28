@@ -64,6 +64,8 @@ public static class Routes
         public const string ManageFeatured = "/admin/homepage/featured";
         /// <summary>The singleton homepage category Add/Edit route.</summary>
         public const string ManageHomepageCategory = "/admin/homepage/category";
+        /// <summary>The singleton Shop by Brand Add/Edit route.</summary>
+        public const string ManageHomepageBrand = "/admin/homepage/brand";
 
         /// <summary>
         /// The Manage Products admin harness shell. Requires a signed-in user via

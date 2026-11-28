@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<IHeroBannerRepository, SupabaseHeroBannerRepository>();
         services.AddScoped<IFreshDropsRepository, SupabaseFreshDropsRepository>();
         services.AddScoped<IHomepageCategoryRepository, SupabaseHomepageCategoryRepository>();
+        services.AddScoped<IHomepageBrandRepository, SupabaseHomepageBrandRepository>();
         services.AddScoped<IFeaturedRepository, SupabaseFeaturedRepository>();
         services.AddScoped<IFreshDropsProductReader, SupabaseFreshDropsProductReader>();
         services.AddScoped<IHeroBannerImageInspector, BrowserHeroBannerImageInspector>();

@@ -18,6 +18,9 @@ public static class BusyKeys
         public const string SearchFreshDrops = "homepage.fresh-drops.search";
         public const string LoadCategorySection = "homepage.category.load";
         public const string SaveCategorySection = "homepage.category.save";
+        public const string LoadBrandSection = "homepage.brand.load";
+        public const string LoadBrandChoices = "homepage.brand.choices";
+        public const string SaveBrandSection = "homepage.brand.save";
     }
     /// <summary>Prefix for per-instance local image preparation.</summary>
     public const string ImageSelection = "images.selection";
